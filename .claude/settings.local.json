@@ -13,7 +13,11 @@
       "Bash(git rm *)",
       "Bash(git add *)",
       "Bash(git commit *)",
-      "Bash(git push *)"
+      "Bash(git push *)",
+      "Bash(git remote *)",
+      "Bash(gh auth *)",
+      "Bash(/usr/local/bin/gh auth *)",
+      "Bash(/opt/homebrew/bin/gh auth *)"
     ]
   }
 }
