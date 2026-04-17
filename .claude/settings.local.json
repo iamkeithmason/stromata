@@ -9,7 +9,11 @@
       "Bash(/usr/local/bin/npm --version)",
       "Bash(/usr/local/bin/npm install *)",
       "Bash(/usr/local/bin/npm run *)",
-      "mcp__Claude_Preview__preview_start"
+      "mcp__Claude_Preview__preview_start",
+      "Bash(git rm *)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(git push *)"
     ]
   }
 }
