@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx create-next-app@latest . --typescript --tailwind --eslint --app --no-src-dir --import-alias \"@/*\" --no-turbopack)",
+      "Bash(npm --version)",
+      "Read(//usr/local/bin/**)",
+      "Read(//usr/local/**)",
+      "Bash(/usr/local/bin/node --version)",
+      "Bash(/usr/local/bin/npm --version)",
+      "Bash(/usr/local/bin/npm install *)",
+      "Bash(/usr/local/bin/npm run *)",
+      "mcp__Claude_Preview__preview_start"
+    ]
+  }
+}
