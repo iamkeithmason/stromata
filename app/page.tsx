@@ -138,15 +138,13 @@ export default async function Home() {
                     <Link
                       key={theme.slug}
                       href={`/search?q=${encodeURIComponent(theme.name)}`}
-                      className="inline-flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-sm border transition-colors hover:bg-stone-100"
+                      className="inline-flex items-center gap-1.5 text-xs px-2.5 py-1 rounded border transition-colors hover:bg-stone-100"
                       style={{ color: '#1b1b1b', borderColor: '#c8c3bb', background: 'transparent' }}
                     >
                       {theme.name}
-                      {count > 0 && (
-                        <span style={{ color: '#6f6a60' }} className="font-mono text-[10px]">
-                          {count}
-                        </span>
-                      )}
+                      <span style={{ color: '#6f6a60' }} className="font-mono text-[10px]">
+                        {count}
+                      </span>
                     </Link>
                   )
                 })}
@@ -274,10 +272,10 @@ export default async function Home() {
                     )}
                     {themes.length > 0 && (
                       <div className="flex flex-wrap gap-1">
-                        {themes.slice(0, 2).map(t => (
+                        {themes.map(t => (
                           <span
                             key={t}
-                            className="text-[10px] px-2 py-0.5 rounded-sm border"
+                            className="text-[10px] px-2 py-0.5 rounded border"
                             style={{ color: '#6f6a60', borderColor: '#c8c3bb' }}
                           >
                             {t}
