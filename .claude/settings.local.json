@@ -17,7 +17,12 @@
       "Bash(git remote *)",
       "Bash(gh auth *)",
       "Bash(/usr/local/bin/gh auth *)",
-      "Bash(/opt/homebrew/bin/gh auth *)"
+      "Bash(/opt/homebrew/bin/gh auth *)",
+      "WebFetch(domain:api.anthropic.com)",
+      "mcp__Claude_in_Chrome__tabs_context_mcp",
+      "Bash(gunzip -c \"/Users/keithmason/.claude/projects/-Users-keithmason-Documents-projects-stromata/3cc48d68-d2be-4d13-af01-ad8f32bf7d4f/tool-results/webfetch-1777044196643-tlyrb3.bin\")",
+      "Bash(tar -xO stromata/project/wireframes.jsx)",
+      "Bash(pkill -f \"next dev\")"
     ]
   }
 }
