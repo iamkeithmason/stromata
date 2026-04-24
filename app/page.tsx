@@ -15,13 +15,14 @@ const COVER_COLORS = [
   '#3A5C3B', // dark green
 ]
 
+// author and genre are many-to-one from texts, so PostgREST returns objects not arrays
 type TextRow = {
   id: string
   title: string
   slug: string
-  author: { name: string; slug: string | null; death_year: number | null }[]
-  genre: { name: string }[]
-  text_themes: { theme: { name: string }[] }[]
+  author: { name: string; slug: string | null; death_year: number | null } | null
+  genre: { name: string } | null
+  text_themes: { theme: { name: string } | null }[]
 }
 
 export const metadata = {
@@ -68,6 +69,8 @@ export default async function Home() {
   }
 
   // Recently added texts with author date + themes for the book cards
+  // Note: author and genre are many-to-one (texts.author_id → authors.id) so
+  // Supabase/PostgREST returns them as plain objects, not arrays.
   const { data: recentTexts } = await supabase
     .from('texts')
     .select(`
@@ -80,7 +83,7 @@ export default async function Home() {
     .order('created_at', { ascending: false })
     .limit(8)
 
-  const texts = (recentTexts ?? []) as TextRow[]
+  const texts = (recentTexts ?? []) as unknown as TextRow[]
 
   return (
     <div style={{ background: '#FBF8F1' }} className="min-h-screen">
@@ -164,10 +167,10 @@ export default async function Home() {
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-6">
             {texts.map((text, i) => {
               const color = COVER_COLORS[i % COVER_COLORS.length]
-              const author = text.author?.[0]
-              const genre = text.genre?.[0]
+              const author = text.author   // plain object, not array
+              const genre = text.genre     // plain object, not array
               const themes = text.text_themes
-                .map(tt => tt.theme?.[0]?.name)
+                .map(tt => tt.theme?.name)
                 .filter(Boolean) as string[]
 
               // Format author date for bottom-left of cover
