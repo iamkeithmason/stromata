@@ -190,44 +190,44 @@ export default async function Home() {
                           backgroundImage: `repeating-linear-gradient(
                             135deg,
                             transparent,
-                            transparent 4px,
-                            rgba(0,0,0,0.03) 4px,
-                            rgba(0,0,0,0.03) 5px
+                            transparent 3px,
+                            rgba(0,0,0,0.07) 3px,
+                            rgba(0,0,0,0.07) 4px
                           )`,
                         }}
                       />
 
                       {/* Top bar: STROMATA · catalogue number */}
                       <div
-                        className="absolute top-0 left-0 right-0 flex items-center justify-between px-3 py-2"
-                        style={{ borderBottom: '1px solid rgba(251,248,241,0.18)' }}
+                        className="absolute top-0 left-0 right-0 flex items-center justify-between px-3 py-2.5"
+                        style={{ borderBottom: '1px solid rgba(251,248,241,0.35)' }}
                       >
                         <span
-                          className="text-[9px] uppercase tracking-[0.2em]"
-                          style={{ color: 'rgba(251,248,241,0.55)' }}
+                          className="text-[10px] uppercase tracking-[0.18em]"
+                          style={{ color: 'rgba(251,248,241,0.75)' }}
                         >
                           Stromata
                         </span>
                         <span
-                          className="text-[9px] font-mono"
-                          style={{ color: 'rgba(251,248,241,0.45)' }}
+                          className="text-[10px] font-mono"
+                          style={{ color: 'rgba(251,248,241,0.75)' }}
                         >
                           № {String(i + 1).padStart(2, '0')}
                         </span>
                       </div>
 
-                      {/* Centre: title + author */}
-                      <div className="absolute inset-0 flex flex-col items-center justify-center px-4 text-center">
+                      {/* Centre: title + author — padded so it never hides behind the bars */}
+                      <div className="absolute inset-0 flex flex-col items-center justify-center px-5 pt-10 pb-10 text-center">
                         <p
-                          className="font-serif text-sm leading-snug mb-2 group-hover:opacity-90 transition-opacity"
+                          className="font-serif text-base leading-snug mb-3 group-hover:opacity-90 transition-opacity"
                           style={{ color: '#FBF8F1' }}
                         >
                           {text.title}
                         </p>
                         {author && (
                           <p
-                            className="font-serif italic text-[11px] leading-snug"
-                            style={{ color: 'rgba(251,248,241,0.72)' }}
+                            className="font-serif italic text-xs leading-snug"
+                            style={{ color: 'rgba(251,248,241,0.85)' }}
                           >
                             {author.name}
                           </p>
@@ -236,18 +236,18 @@ export default async function Home() {
 
                       {/* Bottom bar: date · genre */}
                       <div
-                        className="absolute bottom-0 left-0 right-0 flex items-center justify-between px-3 py-2"
-                        style={{ borderTop: '1px solid rgba(251,248,241,0.18)' }}
+                        className="absolute bottom-0 left-0 right-0 flex items-center justify-between px-3 py-2.5"
+                        style={{ borderTop: '1px solid rgba(251,248,241,0.35)' }}
                       >
                         <span
-                          className="text-[9px] font-mono"
-                          style={{ color: 'rgba(251,248,241,0.45)' }}
+                          className="text-[10px] font-mono"
+                          style={{ color: 'rgba(251,248,241,0.75)' }}
                         >
                           {authorDate ?? ''}
                         </span>
                         <span
-                          className="text-[9px] uppercase tracking-[0.15em]"
-                          style={{ color: 'rgba(251,248,241,0.55)' }}
+                          className="text-[10px] uppercase tracking-[0.15em]"
+                          style={{ color: 'rgba(251,248,241,0.75)' }}
                         >
                           {genre?.name ?? ''}
                         </span>
