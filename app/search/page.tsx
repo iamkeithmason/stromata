@@ -3,19 +3,20 @@ import { createServerClient } from '@/lib/supabase/server'
 
 type Props = { searchParams: Promise<{ q?: string }> }
 
+// author, genre, tradition are many-to-one → plain objects
 type TextResult = {
   id: string
   title: string
   slug: string
-  author: { name: string; slug: string | null }[]
-  genre: { name: string }[]
+  author: { name: string; slug: string | null } | null
+  genre: { name: string } | null
 }
 
 type AuthorResult = {
   id: string
   name: string
   slug: string | null
-  tradition: { name: string }[]
+  tradition: { name: string } | null
 }
 
 export async function generateMetadata({ searchParams }: Props) {
@@ -52,8 +53,8 @@ export default async function SearchPage({ searchParams }: Props) {
         .limit(10),
     ])
 
-    texts = (textData ?? []) as TextResult[]
-    authors = (authorData ?? []) as AuthorResult[]
+    texts = (textData ?? []) as unknown as TextResult[]
+    authors = (authorData ?? []) as unknown as AuthorResult[]
   }
 
   const total = texts.length + authors.length
@@ -61,19 +62,25 @@ export default async function SearchPage({ searchParams }: Props) {
   return (
     <div style={{ background: '#FBF8F1' }} className="min-h-screen">
       <header
-        className="border-b px-8 py-5 flex gap-4 text-sm"
-        style={{ borderColor: '#e5e0d8', color: '#6f6a60', background: 'white' }}
+        className="border-b bg-white px-8 py-5 flex justify-between items-center"
+        style={{ borderColor: '#e5e0d8' }}
       >
-        <Link href="/" className="hover:text-stone-700">The Stromata</Link>
-        <span>/</span>
-        <span>Search</span>
+        <div className="flex gap-4 text-sm" style={{ color: '#6f6a60' }}>
+          <Link href="/" className="hover:opacity-70 transition-opacity">The Stromata</Link>
+          <span>/</span>
+          <span>Search</span>
+        </div>
+        <div className="flex gap-6 text-sm" style={{ color: '#6f6a60' }}>
+          <Link href="/authors" className="hover:text-stone-900 transition-colors">Authors</Link>
+          <Link href="/texts" className="hover:text-stone-900 transition-colors">Library</Link>
+        </div>
       </header>
 
       <main className="max-w-2xl mx-auto px-6 py-12">
         {/* Search form */}
         <form method="GET" action="/search" className="mb-10">
           <div
-            className="flex items-center gap-3 px-4 py-3 rounded-lg border shadow-sm"
+            className="flex items-center gap-3 px-4 py-3 rounded border shadow-sm"
             style={{ background: 'white', borderColor: '#d6d0c8' }}
           >
             <svg
@@ -112,12 +119,12 @@ export default async function SearchPage({ searchParams }: Props) {
         {/* Authors */}
         {authors.length > 0 && (
           <section className="mb-10">
-            <h2
-              className="text-xs font-semibold uppercase tracking-widest mb-4"
-              style={{ color: '#6f6a60' }}
-            >
-              Authors
-            </h2>
+            <div className="mb-4">
+              <div className="flex items-baseline justify-between mb-3">
+                <h2 className="font-serif italic text-base" style={{ color: '#1b1b1b' }}>Authors</h2>
+              </div>
+              <hr style={{ borderColor: '#1b1b1b', borderTopWidth: '1px' }} />
+            </div>
             <ul className="divide-y" style={{ borderColor: '#e5e0d8' }}>
               {authors.map(a => (
                 <li key={a.id}>
@@ -132,7 +139,7 @@ export default async function SearchPage({ searchParams }: Props) {
                       {a.name}
                     </span>
                     <span className="text-xs ml-4 shrink-0" style={{ color: '#6f6a60' }}>
-                      {a.tradition?.[0]?.name}
+                      {a.tradition?.name}
                     </span>
                   </Link>
                 </li>
@@ -144,12 +151,12 @@ export default async function SearchPage({ searchParams }: Props) {
         {/* Texts */}
         {texts.length > 0 && (
           <section>
-            <h2
-              className="text-xs font-semibold uppercase tracking-widest mb-4"
-              style={{ color: '#6f6a60' }}
-            >
-              Texts
-            </h2>
+            <div className="mb-4">
+              <div className="flex items-baseline justify-between mb-3">
+                <h2 className="font-serif italic text-base" style={{ color: '#1b1b1b' }}>Texts</h2>
+              </div>
+              <hr style={{ borderColor: '#1b1b1b', borderTopWidth: '1px' }} />
+            </div>
             <ul className="divide-y" style={{ borderColor: '#e5e0d8' }}>
               {texts.map(t => (
                 <li key={t.id}>
@@ -164,12 +171,14 @@ export default async function SearchPage({ searchParams }: Props) {
                       >
                         {t.title}
                       </span>
-                      <span className="text-xs ml-3" style={{ color: '#6f6a60' }}>
-                        {t.author?.[0]?.name}
-                      </span>
+                      {t.author && (
+                        <span className="text-xs ml-3" style={{ color: '#6f6a60' }}>
+                          {t.author.name}
+                        </span>
+                      )}
                     </div>
                     <span className="text-xs ml-4 shrink-0" style={{ color: '#6f6a60' }}>
-                      {t.genre?.[0]?.name}
+                      {t.genre?.name}
                     </span>
                   </Link>
                 </li>

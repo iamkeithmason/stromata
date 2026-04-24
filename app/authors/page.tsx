@@ -1,11 +1,14 @@
 import Link from 'next/link'
 import { createServerClient } from '@/lib/supabase/server'
 
+// tradition is many-to-one from authors → plain object not array
 type AuthorRow = {
-  id: string; name: string; slug: string
-  birth_year: number | null; death_year: number | null
-  tradition: { name: string }[]
-  era: { label: string }[]
+  id: string
+  name: string
+  slug: string
+  birth_year: number | null
+  death_year: number | null
+  tradition: { name: string } | null
 }
 
 export const metadata = {
@@ -17,33 +20,54 @@ export default async function AuthorsPage() {
 
   const { data: authors } = await supabase
     .from('authors')
-    .select('id, name, slug, birth_year, death_year, tradition:traditions(name), era:eras(label)')
+    .select('id, name, slug, birth_year, death_year, tradition:traditions(name)')
     .not('slug', 'is', null)
     .order('name')
 
+  const rows = (authors ?? []) as unknown as AuthorRow[]
+
   return (
-    <div className="min-h-screen bg-stone-50">
-      <header className="border-b border-stone-200 bg-white px-8 py-5">
-        <Link href="/" className="text-stone-400 text-sm hover:text-stone-600">The Stromata</Link>
+    <div style={{ background: '#FBF8F1' }} className="min-h-screen">
+      <header
+        className="border-b bg-white px-8 py-5 flex justify-between items-center"
+        style={{ borderColor: '#e5e0d8' }}
+      >
+        <Link href="/" className="font-serif text-sm hover:opacity-70 transition-opacity" style={{ color: '#6f6a60' }}>
+          The Stromata
+        </Link>
+        <div className="flex gap-6 text-sm" style={{ color: '#6f6a60' }}>
+          <Link href="/authors" className="hover:text-stone-900 transition-colors">Authors</Link>
+          <Link href="/texts" className="hover:text-stone-900 transition-colors">Library</Link>
+        </div>
       </header>
 
       <main className="max-w-2xl mx-auto px-6 py-12">
-        <h1 className="text-3xl font-serif text-stone-800 mb-2">Authors</h1>
-        <p className="text-stone-500 text-sm mb-10">{authors?.length ?? 0} authors</p>
+        <div className="mb-8">
+          <div className="flex items-baseline justify-between mb-3">
+            <h1 className="font-serif italic text-xl" style={{ color: '#1b1b1b' }}>Authors</h1>
+            <span className="text-xs tracking-[0.18em] uppercase" style={{ color: '#6f6a60' }}>
+              {rows.length} in the library
+            </span>
+          </div>
+          <hr style={{ borderColor: '#1b1b1b', borderTopWidth: '1px' }} />
+        </div>
 
-        {authors && authors.length > 0 ? (
-          <ul className="divide-y divide-stone-100">
-            {authors.map((a: AuthorRow) => (
+        {rows.length > 0 ? (
+          <ul className="divide-y" style={{ borderColor: '#e5e0d8' }}>
+            {rows.map(a => (
               <li key={a.id}>
                 <Link
                   href={`/authors/${a.slug}`}
                   className="flex items-baseline justify-between py-4 group"
                 >
                   <div>
-                    <span className="text-stone-800 font-serif group-hover:text-stone-600 transition-colors">
+                    <span
+                      className="font-serif group-hover:opacity-70 transition-opacity"
+                      style={{ color: '#1b1b1b' }}
+                    >
                       {a.name}
                     </span>
-                    <span className="text-stone-400 text-sm ml-3">
+                    <span className="text-sm ml-3" style={{ color: '#6f6a60' }}>
                       {a.birth_year && a.death_year
                         ? `${a.birth_year}–${a.death_year}`
                         : a.death_year
@@ -51,13 +75,15 @@ export default async function AuthorsPage() {
                           : ''}
                     </span>
                   </div>
-                  <span className="text-stone-400 text-xs ml-4 shrink-0">{a.tradition?.[0]?.name}</span>
+                  <span className="text-xs ml-4 shrink-0" style={{ color: '#6f6a60' }}>
+                    {a.tradition?.name}
+                  </span>
                 </Link>
               </li>
             ))}
           </ul>
         ) : (
-          <p className="text-stone-400">No authors published yet.</p>
+          <p className="text-sm" style={{ color: '#6f6a60' }}>No authors published yet.</p>
         )}
       </main>
     </div>

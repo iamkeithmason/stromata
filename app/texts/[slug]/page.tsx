@@ -9,7 +9,7 @@ export async function generateMetadata({ params }: Props) {
   const supabase = createServerClient()
   const { data } = await supabase
     .from('texts')
-    .select('title, author:authors(name)')
+    .select('title')
     .eq('slug', slug)
     .eq('published', true)
     .single()
@@ -28,7 +28,7 @@ export default async function TextPage({ params }: Props) {
       *,
       author:authors(name, slug),
       genre:genres(name),
-      text_themes(theme:themes(name, cluster))
+      text_themes(theme:themes(name))
     `)
     .eq('slug', slug)
     .eq('published', true)
@@ -36,13 +36,14 @@ export default async function TextPage({ params }: Props) {
 
   if (!text) notFound()
 
-  // Supabase returns joins as arrays; grab the first element
-  const author = (text.author as { name: string; slug: string | null }[])?.[0] ?? null
-  const genre = (text.genre as { name: string }[])?.[0] ?? null
+  // author and genre are many-to-one → plain objects
+  const author = text.author as { name: string; slug: string | null } | null
+  const genre = text.genre as { name: string } | null
 
-  const themes = (text.text_themes as { theme: { name: string }[] }[])
-    .map(tt => tt.theme?.[0]?.name)
-    .filter(Boolean)
+  // text_themes is one-to-many → array; theme within it is many-to-one → object
+  const themes = (text.text_themes as { theme: { name: string } | null }[])
+    .map(tt => tt.theme?.name)
+    .filter(Boolean) as string[]
 
   const paragraphs = (text.body as string)
     .split(/\n{2,}/)
@@ -50,26 +51,35 @@ export default async function TextPage({ params }: Props) {
     .filter(Boolean)
 
   return (
-    <div className="min-h-screen bg-stone-50">
-      <header className="border-b border-stone-200 bg-white px-8 py-5 flex gap-4 text-sm text-stone-400">
-        <Link href="/" className="hover:text-stone-600">The Stromata</Link>
-        {author?.slug && (
-          <>
-            <span>/</span>
-            <Link href={`/authors/${author.slug}`} className="hover:text-stone-600">
-              {author.name}
-            </Link>
-          </>
-        )}
+    <div style={{ background: '#FBF8F1' }} className="min-h-screen">
+      <header
+        className="border-b bg-white px-8 py-5 flex justify-between items-center"
+        style={{ borderColor: '#e5e0d8' }}
+      >
+        <div className="flex gap-4 text-sm" style={{ color: '#6f6a60' }}>
+          <Link href="/" className="hover:opacity-70 transition-opacity">The Stromata</Link>
+          {author?.slug && (
+            <>
+              <span>/</span>
+              <Link href={`/authors/${author.slug}`} className="hover:opacity-70 transition-opacity">
+                {author.name}
+              </Link>
+            </>
+          )}
+        </div>
+        <div className="flex gap-6 text-sm" style={{ color: '#6f6a60' }}>
+          <Link href="/authors" className="hover:text-stone-900 transition-colors">Authors</Link>
+          <Link href="/texts" className="hover:text-stone-900 transition-colors">Library</Link>
+        </div>
       </header>
 
       <main className="max-w-2xl mx-auto px-6 py-12">
         {/* Text header */}
         <div className="mb-10">
-          <h1 className="text-3xl font-serif text-stone-800 mb-3">{text.title}</h1>
-          <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-stone-500">
+          <h1 className="font-serif text-3xl mb-3" style={{ color: '#1b1b1b' }}>{text.title}</h1>
+          <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm" style={{ color: '#6f6a60' }}>
             {author?.slug ? (
-              <Link href={`/authors/${author.slug}`} className="hover:text-stone-700">
+              <Link href={`/authors/${author.slug}`} className="hover:opacity-70 transition-opacity">
                 {author.name}
               </Link>
             ) : (
@@ -81,29 +91,42 @@ export default async function TextPage({ params }: Props) {
 
           {/* OCR quality notice */}
           {text.ocr_quality === 'low' && (
-            <p className="mt-4 text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded px-3 py-2">
+            <p
+              className="mt-4 text-xs rounded px-3 py-2 border"
+              style={{ color: '#92400e', background: '#fffbeb', borderColor: '#fcd34d' }}
+            >
               This text was digitised from a scan and may contain OCR errors. If you spot mistakes,
               please let us know.
             </p>
           )}
           {text.ocr_quality === 'medium' && (
-            <p className="mt-4 text-xs text-stone-500 bg-stone-100 border border-stone-200 rounded px-3 py-2">
+            <p
+              className="mt-4 text-xs rounded px-3 py-2 border"
+              style={{ color: '#6f6a60', background: '#f4f0e8', borderColor: '#e5e0d8' }}
+            >
               This text was digitised from a scan and has been partially reviewed for accuracy.
             </p>
           )}
         </div>
 
         {/* Body */}
-        <article className="mb-12">
+        <article className="mb-16">
           {paragraphs.map((para: string, i: number) => (
-            <p key={i} className="font-serif text-stone-800 leading-loose mb-5 text-[1.05rem]">
+            <p
+              key={i}
+              className="font-serif leading-loose mb-5 text-[1.05rem]"
+              style={{ color: '#1b1b1b' }}
+            >
               {para}
             </p>
           ))}
         </article>
 
         {/* Footer metadata */}
-        <footer className="border-t border-stone-200 pt-6 text-xs text-stone-400 space-y-1">
+        <footer
+          className="border-t pt-6 text-xs space-y-1"
+          style={{ borderColor: '#e5e0d8', color: '#6f6a60' }}
+        >
           {text.source_attribution && <p>Source: {text.source_attribution}</p>}
           {text.provenance_notes && <p>{text.provenance_notes}</p>}
           {text.translation_notes && <p>Translation: {text.translation_notes}</p>}

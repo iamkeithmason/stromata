@@ -62,8 +62,8 @@ export default async function Home() {
 
   const themeCountMap: Record<string, number> = {}
   for (const text of publishedTextsForCounts ?? []) {
-    for (const tt of (text.text_themes as { theme: { slug: string }[] }[])) {
-      const slug = tt.theme?.[0]?.slug
+    for (const tt of (text.text_themes as unknown as { theme: { slug: string } | null }[])) {
+      const slug = tt.theme?.slug   // many-to-one: object not array
       if (slug) themeCountMap[slug] = (themeCountMap[slug] ?? 0) + 1
     }
   }
@@ -123,13 +123,9 @@ export default async function Home() {
           {THEME_CLUSTERS.map(cluster => (
             <div key={cluster.cluster}>
               {/* Cluster name */}
-              <p className="font-serif text-base mb-1" style={{ color: '#1b1b1b' }}>
+              <p className="font-serif text-base mb-3" style={{ color: '#1b1b1b' }}>
                 {cluster.cluster}
               </p>
-              {/* Decorative curved rule */}
-              <svg width="36" height="6" viewBox="0 0 36 6" className="mb-3" fill="none">
-                <path d="M2 4 Q18 0 34 4" stroke="#1b1b1b" strokeWidth="1.2" strokeLinecap="round"/>
-              </svg>
               {/* Tags — auto-width, stacked */}
               <div className="flex flex-col gap-1.5 items-start">
                 {cluster.themes.map(theme => {

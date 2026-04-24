@@ -4,10 +4,13 @@ import { createServerClient } from '@/lib/supabase/server'
 
 type Props = { params: Promise<{ slug: string }> }
 
+// genre is many-to-one from texts → object; text_themes is one-to-many → array of { theme: object }
 type TextRow = {
-  id: string; title: string; slug: string
-  genre: { name: string }[]
-  text_themes: { theme: { name: string }[] }[]
+  id: string
+  title: string
+  slug: string
+  genre: { name: string } | null
+  text_themes: { theme: { name: string } | null }[]
 }
 
 export async function generateMetadata({ params }: Props) {
@@ -21,6 +24,7 @@ export default async function AuthorPage({ params }: Props) {
   const { slug } = await params
   const supabase = createServerClient()
 
+  // tradition and era are many-to-one from authors → objects
   const { data: author } = await supabase
     .from('authors')
     .select('*, tradition:traditions(name), era:eras(label)')
@@ -36,47 +40,73 @@ export default async function AuthorPage({ params }: Props) {
     .eq('published', true)
     .order('title')
 
+  const rows = (texts ?? []) as unknown as TextRow[]
+
+  // tradition/era come back as objects (many-to-one)
+  const tradition = (author.tradition as { name: string } | null)?.name
+  const era = (author.era as { label: string } | null)?.label
+
+  const dateLine = [
+    author.birth_year && author.death_year
+      ? `${author.birth_year}–${author.death_year}`
+      : author.death_year
+        ? `d. ${author.death_year}`
+        : null,
+    tradition,
+    era,
+  ].filter(Boolean).join(' · ')
+
   return (
-    <div className="min-h-screen bg-stone-50">
-      <header className="border-b border-stone-200 bg-white px-8 py-5 flex gap-4 text-sm text-stone-400">
-        <Link href="/" className="hover:text-stone-600">The Stromata</Link>
-        <span>/</span>
-        <Link href="/authors" className="hover:text-stone-600">Authors</Link>
+    <div style={{ background: '#FBF8F1' }} className="min-h-screen">
+      <header
+        className="border-b bg-white px-8 py-5 flex justify-between items-center"
+        style={{ borderColor: '#e5e0d8' }}
+      >
+        <div className="flex gap-4 text-sm" style={{ color: '#6f6a60' }}>
+          <Link href="/" className="hover:opacity-70 transition-opacity">The Stromata</Link>
+          <span>/</span>
+          <Link href="/authors" className="hover:opacity-70 transition-opacity">Authors</Link>
+        </div>
+        <div className="flex gap-6 text-sm" style={{ color: '#6f6a60' }}>
+          <Link href="/authors" className="hover:text-stone-900 transition-colors">Authors</Link>
+          <Link href="/texts" className="hover:text-stone-900 transition-colors">Library</Link>
+        </div>
       </header>
 
       <main className="max-w-2xl mx-auto px-6 py-12">
         {/* Author header */}
         <div className="mb-10">
-          <h1 className="text-3xl font-serif text-stone-800 mb-2">{author.name}</h1>
-          <p className="text-stone-500 text-sm">
-            {author.birth_year && author.death_year
-              ? `${author.birth_year}–${author.death_year} · `
-              : author.death_year
-                ? `d. ${author.death_year} · `
-                : ''}
-            {author.tradition?.[0]?.name}
-            {author.era?.[0]?.label ? ` · ${author.era[0].label}` : ''}
-          </p>
+          <h1 className="font-serif text-3xl mb-2" style={{ color: '#1b1b1b' }}>{author.name}</h1>
+          {dateLine && (
+            <p className="text-sm" style={{ color: '#6f6a60' }}>{dateLine}</p>
+          )}
         </div>
 
         {/* Bio */}
         {author.bio && (
-          <div className="mb-10 prose-none">
-            <p className="text-stone-700 leading-relaxed font-serif">{author.bio}</p>
+          <div className="mb-10">
+            <p className="font-serif leading-relaxed" style={{ color: '#1b1b1b' }}>{author.bio}</p>
           </div>
         )}
 
         {/* Texts */}
-        {texts && texts.length > 0 && (
+        {rows.length > 0 && (
           <div>
-            <h2 className="text-xs font-semibold text-stone-500 uppercase tracking-wide mb-4">
-              Texts in the library
-            </h2>
-            <ul className="divide-y divide-stone-100">
-              {texts.map((t: TextRow) => {
-                const themes = t.text_themes
-                  .map(tt => tt.theme?.[0]?.name)
-                  .filter(Boolean)
+            <div className="mb-6">
+              <div className="flex items-baseline justify-between mb-3">
+                <h2 className="font-serif italic text-base" style={{ color: '#1b1b1b' }}>
+                  Texts in the library
+                </h2>
+                <span className="text-xs tracking-[0.18em] uppercase" style={{ color: '#6f6a60' }}>
+                  {rows.length}
+                </span>
+              </div>
+              <hr style={{ borderColor: '#1b1b1b', borderTopWidth: '1px' }} />
+            </div>
+
+            <ul className="divide-y" style={{ borderColor: '#e5e0d8' }}>
+              {rows.map(t => {
+                const themes = t.text_themes.map(tt => tt.theme?.name).filter(Boolean)
                 return (
                   <li key={t.id}>
                     <Link
@@ -84,14 +114,21 @@ export default async function AuthorPage({ params }: Props) {
                       className="flex items-baseline justify-between py-4 group"
                     >
                       <div>
-                        <span className="text-stone-800 font-serif group-hover:text-stone-600 transition-colors">
+                        <span
+                          className="font-serif group-hover:opacity-70 transition-opacity"
+                          style={{ color: '#1b1b1b' }}
+                        >
                           {t.title}
                         </span>
                         {themes.length > 0 && (
-                          <span className="text-stone-400 text-xs ml-3">{themes.join(', ')}</span>
+                          <span className="text-xs ml-3" style={{ color: '#6f6a60' }}>
+                            {themes.join(' · ')}
+                          </span>
                         )}
                       </div>
-                      <span className="text-stone-400 text-xs ml-4 shrink-0">{t.genre?.[0]?.name}</span>
+                      <span className="text-xs ml-4 shrink-0" style={{ color: '#6f6a60' }}>
+                        {t.genre?.name}
+                      </span>
                     </Link>
                   </li>
                 )
@@ -100,8 +137,8 @@ export default async function AuthorPage({ params }: Props) {
           </div>
         )}
 
-        {texts && texts.length === 0 && (
-          <p className="text-stone-400 text-sm">No texts published yet.</p>
+        {rows.length === 0 && (
+          <p className="text-sm" style={{ color: '#6f6a60' }}>No texts published yet.</p>
         )}
       </main>
     </div>
