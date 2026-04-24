@@ -14,7 +14,7 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   const body = await request.json()
-  const { name, tradition_slug, birth_year, death_year, era_slug, bio, bio_source } = body
+  const { name, slug, tradition_slug, birth_year, death_year, era_slug, bio, bio_source } = body
 
   if (!name || !tradition_slug) {
     return NextResponse.json({ error: 'Name and tradition are required.' }, { status: 400 })
@@ -44,6 +44,7 @@ export async function POST(request: NextRequest) {
 
   const { error } = await supabase.from('authors').insert({
     name,
+    slug: slug || null,
     tradition_id: tradition.id,
     birth_year: birth_year ?? null,
     death_year: death_year ?? null,
