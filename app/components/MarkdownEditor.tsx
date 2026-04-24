@@ -11,9 +11,22 @@ type Props = {
   rows?: number
 }
 
+const MARKDOWN_REFERENCE = [
+  { syntax: '# Heading',        result: 'Large chapter heading' },
+  { syntax: '## Sub-heading',   result: 'Smaller section heading' },
+  { syntax: '**bold**',         result: 'Bold text' },
+  { syntax: '*italic*',         result: 'Italic text' },
+  { syntax: '> quoted text',    result: 'Blockquote — good for scripture' },
+  { syntax: '---',              result: 'Horizontal rule / section break' },
+  { syntax: '- item',           result: 'Bullet list item' },
+  { syntax: '1. item',          result: 'Numbered list item' },
+  { syntax: 'blank line',       result: 'New paragraph' },
+]
+
 export default function MarkdownEditor({ name, defaultValue = '', value, onChange, rows = 24 }: Props) {
   const [tab, setTab] = useState<'write' | 'preview'>('write')
   const [internal, setInternal] = useState(defaultValue)
+  const [showRef, setShowRef] = useState(false)
 
   // Support both controlled (value+onChange) and uncontrolled (defaultValue) modes
   const content = value !== undefined ? value : internal
@@ -44,10 +57,56 @@ export default function MarkdownEditor({ name, defaultValue = '', value, onChang
             {t}
           </button>
         ))}
-        <span className="ml-auto text-xs self-center pr-1" style={{ color: '#6f6a60' }}>
-          Markdown supported
-        </span>
+        <button
+          type="button"
+          onClick={() => setShowRef(v => !v)}
+          className="ml-auto text-xs self-center pr-1 hover:opacity-70 transition-opacity"
+          style={{ color: '#6f6a60' }}
+        >
+          {showRef ? 'Hide formatting guide ↑' : 'Formatting guide ↓'}
+        </button>
       </div>
+
+      {/* Markdown reference table */}
+      {showRef && (
+        <div
+          className="mb-2 rounded border text-xs"
+          style={{ borderColor: '#e5e0d8', background: '#f9f6f0' }}
+        >
+          <table className="w-full">
+            <thead>
+              <tr style={{ borderBottom: '1px solid #e5e0d8' }}>
+                <th className="text-left px-3 py-2 font-medium" style={{ color: '#1b1b1b', width: '45%' }}>
+                  You type
+                </th>
+                <th className="text-left px-3 py-2 font-medium" style={{ color: '#1b1b1b' }}>
+                  Result
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {MARKDOWN_REFERENCE.map((row, i) => (
+                <tr
+                  key={i}
+                  style={{ borderBottom: i < MARKDOWN_REFERENCE.length - 1 ? '1px solid #e5e0d8' : undefined }}
+                >
+                  <td className="px-3 py-1.5">
+                    <code
+                      className="font-mono text-[11px] px-1.5 py-0.5 rounded"
+                      style={{ background: '#ede9e0', color: '#1b1b1b' }}
+                    >
+                      {row.syntax}
+                    </code>
+                  </td>
+                  <td className="px-3 py-1.5" style={{ color: '#6f6a60' }}>
+                    {row.result}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
 
       {tab === 'write' ? (
         <textarea
