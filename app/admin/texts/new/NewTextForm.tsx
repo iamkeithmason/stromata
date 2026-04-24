@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { GENRES, THEME_CLUSTERS } from '@/lib/constants'
+import MarkdownEditor from '@/app/components/MarkdownEditor'
 
 type Author = { id: string; name: string }
 
@@ -206,13 +207,7 @@ export default function NewTextForm() {
         <label className={label}>
           Text body <span className="text-red-500">*</span>
         </label>
-        <textarea
-          name="body"
-          required
-          rows={20}
-          className={`${input} font-mono text-sm`}
-          placeholder="Paste the full text here…"
-        />
+        <MarkdownEditor name="body" rows={24} />
       </div>
 
       <div className="flex items-center gap-2">

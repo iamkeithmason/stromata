@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { createServerClient } from '@/lib/supabase/server'
+import MarkdownBody from '@/app/components/MarkdownBody'
 
 type Props = { params: Promise<{ slug: string }> }
 
@@ -45,10 +46,7 @@ export default async function TextPage({ params }: Props) {
     .map(tt => tt.theme?.name)
     .filter(Boolean) as string[]
 
-  const paragraphs = (text.body as string)
-    .split(/\n{2,}/)
-    .map((p: string) => p.trim())
-    .filter(Boolean)
+  const body = text.body as string
 
   return (
     <div style={{ background: '#FBF8F1' }} className="min-h-screen">
@@ -111,15 +109,7 @@ export default async function TextPage({ params }: Props) {
 
         {/* Body */}
         <article className="mb-16">
-          {paragraphs.map((para: string, i: number) => (
-            <p
-              key={i}
-              className="font-serif leading-loose mb-5 text-[1.05rem]"
-              style={{ color: '#1b1b1b' }}
-            >
-              {para}
-            </p>
-          ))}
+          <MarkdownBody content={body} />
         </article>
 
         {/* Footer metadata */}
