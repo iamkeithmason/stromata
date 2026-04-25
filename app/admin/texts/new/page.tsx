@@ -3,8 +3,8 @@ import NewTextForm from './NewTextForm'
 
 export default function NewTextPage() {
   return (
-    <main className="p-8">
-      <div className="max-w-2xl">
+    <main>
+      <div>
         <div className="mb-8">
           <Link href="/admin" className="text-sm text-stone-500 hover:text-stone-700">
             ← Back to dashboard

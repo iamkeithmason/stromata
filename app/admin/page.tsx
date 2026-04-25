@@ -29,8 +29,8 @@ export default async function AdminDashboard({ searchParams }: Props) {
   ])
 
   return (
-    <main className="p-8">
-      <div className="max-w-3xl space-y-12">
+    <main>
+      <div className="space-y-12">
 
         {params.success === 'author' && (
           <p className="text-sm text-green-700 bg-green-50 border border-green-200 rounded px-3 py-2">
