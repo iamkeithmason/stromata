@@ -412,6 +412,14 @@ For gap-scoring and curatorial focus. These are editorial judgments, not algorit
 
 ---
 
+## Analytics Events (Umami)
+
+| Event | Attributes | Status |
+|-------|------------|--------|
+| `collection-nav` | `direction` (prev/next/end), `collection` (title) | Implemented |
+
+---
+
 ## Immediate next steps (to reach Phase 1 launch)
 
 Priority order:

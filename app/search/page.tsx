@@ -1,14 +1,20 @@
 import Link from 'next/link'
 import { createServerClient } from '@/lib/supabase/server'
+import { Wordmark } from '@/app/components/Wordmark'
 
 type Props = { searchParams: Promise<{ q?: string }> }
 
-// author, genre, tradition are many-to-one → plain objects
 type TextResult = {
   id: string
   title: string
   slug: string
-  author: { name: string; slug: string | null } | null
+  body: string
+  author: {
+    name: string
+    slug: string | null
+    tradition: { name: string } | null
+    era: { label: string } | null
+  } | null
   genre: { name: string } | null
 }
 
@@ -17,6 +23,24 @@ type AuthorResult = {
   name: string
   slug: string | null
   tradition: { name: string } | null
+}
+
+type SuggestedText = {
+  id: string
+  title: string
+  slug: string
+  genre: { name: string } | null
+  author: { name: string } | null
+}
+
+function bodySnippet(body: string, max = 150): string {
+  const stripped = body
+    .replace(/^#{1,6}\s+/gm, '')
+    .replace(/[*_`~]/g, '')
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
+    .replace(/\s+/g, ' ')
+    .trim()
+  return stripped.length > max ? stripped.slice(0, max).trimEnd() + '…' : stripped
 }
 
 export async function generateMetadata({ searchParams }: Props) {
@@ -32,20 +56,37 @@ export default async function SearchPage({ searchParams }: Props) {
 
   let texts: TextResult[] = []
   let authors: AuthorResult[] = []
+  let suggested: SuggestedText[] | null = null
+
+  const textSelect = `id, title, slug, body,
+    author:authors(name, slug, tradition:traditions(name), era:eras(label)),
+    genre:genres(name)`
 
   if (query) {
     const pattern = `%${query}%`
 
-    const [{ data: textData }, { data: authorData }] = await Promise.all([
-      supabase
-        .from('texts')
-        .select('id, title, slug, author:authors(name, slug), genre:genres(name)')
-        .eq('published', true)
-        .ilike('title', pattern)
-        .order('title')
-        .limit(20),
-      supabase
-        .from('authors')
+    // Phase 1: gather matching IDs for extended dimensions (parallel)
+    const [
+      { data: genreMatches },
+      { data: themeMatches },
+      { data: traditionAuthorMatches },
+      { data: eraAuthorMatches },
+      { data: authorData },
+    ] = await Promise.all([
+      supabase.from('genres').select('id').ilike('name', pattern).limit(50),
+      supabase.from('text_themes')
+        .select('text_id, theme:themes!inner(name)')
+        .ilike('themes.name', pattern)
+        .limit(100),
+      supabase.from('authors')
+        .select('id, tradition:traditions!inner(name)')
+        .ilike('traditions.name', pattern)
+        .limit(100),
+      supabase.from('authors')
+        .select('id, era:eras!inner(label)')
+        .ilike('eras.label', pattern)
+        .limit(100),
+      supabase.from('authors')
         .select('id, name, slug, tradition:traditions(name)')
         .ilike('name', pattern)
         .not('slug', 'is', null)
@@ -53,11 +94,59 @@ export default async function SearchPage({ searchParams }: Props) {
         .limit(10),
     ])
 
-    texts = (textData ?? []) as unknown as TextResult[]
+    const genreIds = (genreMatches ?? []).map((g: { id: number }) => g.id)
+    const themeTextIds = (themeMatches ?? []).map((tt: { text_id: string }) => tt.text_id)
+    const extendedAuthorIds = [
+      ...(traditionAuthorMatches ?? []).map((a: { id: string }) => a.id),
+      ...(eraAuthorMatches ?? []).map((a: { id: string }) => a.id),
+    ]
+    const uniqueAuthorIds = [...new Set(extendedAuthorIds)]
+
     authors = (authorData ?? []) as unknown as AuthorResult[]
+
+    // Phase 2: text queries (always by title; conditionally by extended dimensions)
+    const textQueryPromises = [
+      supabase.from('texts').select(textSelect).eq('published', true).ilike('title', pattern).order('title').limit(20),
+      ...(genreIds.length > 0
+        ? [supabase.from('texts').select(textSelect).eq('published', true).in('genre_id', genreIds).order('title').limit(20)]
+        : []),
+      ...(themeTextIds.length > 0
+        ? [supabase.from('texts').select(textSelect).eq('published', true).in('id', themeTextIds).order('title').limit(20)]
+        : []),
+      ...(uniqueAuthorIds.length > 0
+        ? [supabase.from('texts').select(textSelect).eq('published', true).in('author_id', uniqueAuthorIds).order('title').limit(20)]
+        : []),
+    ]
+
+    const textResults = await Promise.all(textQueryPromises)
+
+    // Phase 3: merge and deduplicate
+    const seen = new Set<string>()
+    const merged: TextResult[] = []
+    for (const { data } of textResults) {
+      for (const t of (data ?? []) as unknown as TextResult[]) {
+        if (!seen.has(t.id)) {
+          seen.add(t.id)
+          merged.push(t)
+        }
+      }
+    }
+    merged.sort((a, b) => a.title.localeCompare(b.title))
+    texts = merged.slice(0, 20)
   }
 
   const total = texts.length + authors.length
+
+  // Suggested texts for zero-results state
+  if (query && total === 0) {
+    const { data } = await supabase
+      .from('texts')
+      .select('id, title, slug, genre:genres(name), author:authors(name)')
+      .eq('published', true)
+      .order('created_at', { ascending: false })
+      .limit(4)
+    suggested = data as unknown as SuggestedText[]
+  }
 
   return (
     <div style={{ background: '#FBF8F1' }} className="min-h-screen">
@@ -65,15 +154,15 @@ export default async function SearchPage({ searchParams }: Props) {
         className="border-b bg-white px-8 py-5 flex justify-between items-center"
         style={{ borderColor: '#e5e0d8' }}
       >
-        <div className="flex gap-4 text-sm" style={{ color: '#6f6a60' }}>
-          <Link href="/" className="hover:opacity-70 transition-opacity">The Stromata</Link>
+        <div className="flex gap-4 text-sm items-baseline font-serif" style={{ color: 'var(--ink-mute)' }}>
+          <Wordmark size={16} />
           <span>/</span>
           <span>Search</span>
         </div>
-        <div className="hidden sm:flex gap-6 text-sm" style={{ color: '#6f6a60' }}>
-          <Link href="/authors" className="hover:text-stone-900 transition-colors">Authors</Link>
-          <Link href="/texts" className="hover:text-stone-900 transition-colors">Library</Link>
-          <Link href="/about" className="hover:text-stone-900 transition-colors">About</Link>
+        <div className="hidden sm:flex gap-6 text-sm font-serif" style={{ color: 'var(--ink-soft)' }}>
+          <Link href="/authors" className="hover:opacity-70 transition-opacity">Authors</Link>
+          <Link href="/texts" className="hover:opacity-70 transition-opacity">Library</Link>
+          <Link href="/about" className="hover:opacity-70 transition-opacity">About</Link>
         </div>
       </header>
 
@@ -159,7 +248,65 @@ export default async function SearchPage({ searchParams }: Props) {
               <hr style={{ borderColor: '#1b1b1b', borderTopWidth: '1px' }} />
             </div>
             <ul className="divide-y" style={{ borderColor: '#e5e0d8' }}>
-              {texts.map(t => (
+              {texts.map(t => {
+                const author = t.author
+                const tradition = author?.tradition?.name
+                const era = author?.era?.label
+                const metaParts = [tradition, era].filter(Boolean).join(' · ')
+                const snippet = t.body ? bodySnippet(t.body) : ''
+                return (
+                  <li key={t.id}>
+                    <Link
+                      href={`/texts/${t.slug}`}
+                      className="flex items-start justify-between py-4 gap-4 group"
+                    >
+                      <div className="min-w-0">
+                        <div className="flex items-baseline flex-wrap gap-x-3">
+                          <span
+                            className="font-serif group-hover:opacity-70 transition-opacity"
+                            style={{ color: '#1b1b1b' }}
+                          >
+                            {t.title}
+                          </span>
+                          {author && (
+                            <span className="text-xs" style={{ color: '#6f6a60' }}>
+                              {author.name}
+                            </span>
+                          )}
+                        </div>
+                        {metaParts && (
+                          <p className="text-xs mt-0.5" style={{ color: '#9c9589' }}>
+                            {metaParts}
+                          </p>
+                        )}
+                        {snippet && (
+                          <p className="font-serif text-xs mt-1 leading-relaxed" style={{ color: '#9c9589' }}>
+                            {snippet}
+                          </p>
+                        )}
+                      </div>
+                      <span className="text-xs mt-1 shrink-0" style={{ color: '#6f6a60' }}>
+                        {t.genre?.name}
+                      </span>
+                    </Link>
+                  </li>
+                )
+              })}
+            </ul>
+          </section>
+        )}
+
+        {/* Zero-results suggestions */}
+        {query && total === 0 && suggested && suggested.length > 0 && (
+          <section className="mt-10">
+            <div className="mb-4">
+              <div className="flex items-baseline justify-between mb-3">
+                <h2 className="font-serif italic text-base" style={{ color: '#1b1b1b' }}>From the library</h2>
+              </div>
+              <hr style={{ borderColor: '#1b1b1b', borderTopWidth: '1px' }} />
+            </div>
+            <ul className="divide-y" style={{ borderColor: '#e5e0d8' }}>
+              {suggested.map(t => (
                 <li key={t.id}>
                   <Link
                     href={`/texts/${t.slug}`}
@@ -190,7 +337,7 @@ export default async function SearchPage({ searchParams }: Props) {
 
         {!query && (
           <p className="text-sm" style={{ color: '#6f6a60' }}>
-            Enter a title, author name, or theme above to search the library.
+            Search by title, author, theme, or tradition.
           </p>
         )}
       </main>

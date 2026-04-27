@@ -32,7 +32,10 @@
       "Bash(npx tsc *)",
       "Bash(gh pr *)",
       "Bash(brew install *)",
-      "Bash(awk '{print $2}')"
+      "Bash(awk '{print $2}')",
+      "Bash(npm run *)",
+      "Bash(cp \"/Users/keithmason/.claude/projects/-Users-keithmason-Documents-projects-stromata/c007a36e-6dc6-449e-be6a-157d19ae2b6d/tool-results/webfetch-1777299991751-z1uws6.bin\" /tmp/design.gz)",
+      "Bash(gunzip -c /tmp/design.gz)"
     ]
   }
 }

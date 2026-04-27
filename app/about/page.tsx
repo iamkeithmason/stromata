@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { Wordmark } from '@/app/components/Wordmark'
 
 export const metadata = {
   title: 'About — The Stromata',
@@ -13,13 +14,11 @@ export default function AboutPage() {
         className="border-b bg-white px-8 py-5 flex justify-between items-center"
         style={{ borderColor: '#e5e0d8' }}
       >
-        <Link href="/" className="font-serif text-sm hover:opacity-70 transition-opacity" style={{ color: '#6f6a60' }}>
-          The Stromata
-        </Link>
-        <div className="hidden sm:flex gap-6 text-sm" style={{ color: '#6f6a60' }}>
-          <Link href="/authors" className="hover:text-stone-900 transition-colors">Authors</Link>
-          <Link href="/texts" className="hover:text-stone-900 transition-colors">Library</Link>
-          <Link href="/about" className="hover:text-stone-900 transition-colors" style={{ color: '#1b1b1b' }}>About</Link>
+        <Wordmark size={16} />
+        <div className="hidden sm:flex gap-6 text-sm font-serif" style={{ color: 'var(--ink-soft)' }}>
+          <Link href="/authors" className="hover:opacity-70 transition-opacity">Authors</Link>
+          <Link href="/texts" className="hover:opacity-70 transition-opacity">Library</Link>
+          <Link href="/about" className="hover:opacity-70 transition-opacity" style={{ color: 'var(--ink)' }}>About</Link>
         </div>
       </header>
 

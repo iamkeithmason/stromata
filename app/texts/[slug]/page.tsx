@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { createServerClient } from '@/lib/supabase/server'
 import MarkdownBody from '@/app/components/MarkdownBody'
+import { Wordmark } from '@/app/components/Wordmark'
 
 type Props = { params: Promise<{ slug: string }> }
 
@@ -77,12 +78,12 @@ export default async function TextPage({ params }: Props) {
         className="border-b bg-white px-8 py-5 flex justify-between items-center"
         style={{ borderColor: '#e5e0d8' }}
       >
-        <div className="flex gap-4 text-sm" style={{ color: '#6f6a60' }}>
-          <Link href="/" className="hover:opacity-70 transition-opacity">The Stromata</Link>
+        <div className="flex gap-4 text-sm items-baseline" style={{ color: 'var(--ink-mute)' }}>
+          <Wordmark size={16} />
           {author?.slug && (
             <>
               <span>/</span>
-              <Link href={`/authors/${author.slug}`} className="hover:opacity-70 transition-opacity">
+              <Link href={`/authors/${author.slug}`} className="hover:opacity-70 transition-opacity font-serif">
                 {author.name}
               </Link>
             </>
@@ -98,14 +99,15 @@ export default async function TextPage({ params }: Props) {
       <main className="max-w-2xl mx-auto px-6 py-12">
         {/* Collection breadcrumb */}
         {collection && (
-          <div className="mb-6">
+          <div className="mb-6 flex items-center gap-2 text-xs uppercase tracking-widest" style={{ color: '#6f6a60' }}>
             <Link
               href={`/collections/${collection.slug}`}
-              className="text-xs uppercase tracking-widest hover:opacity-70 transition-opacity"
-              style={{ color: '#6f6a60' }}
+              className="hover:opacity-70 transition-opacity"
             >
-              ← {collection.title}
+              {collection.title}
             </Link>
+            <span>→</span>
+            <span style={{ color: '#1b1b1b' }}>{text.title}</span>
           </div>
         )}
 
@@ -145,12 +147,12 @@ export default async function TextPage({ params }: Props) {
         </div>
 
         {/* Body */}
-        <article className="mb-16">
+        <article className="prose-body mb-16">
           <MarkdownBody content={body} />
         </article>
 
         {/* Prev / next within collection */}
-        {(prevText || nextText) && (
+        {(prevText || nextText || collection) && (
           <nav
             className="flex justify-between gap-4 mb-12 pt-6 border-t"
             style={{ borderColor: '#e5e0d8' }}
@@ -159,6 +161,9 @@ export default async function TextPage({ params }: Props) {
               <Link
                 href={`/texts/${prevText.slug}`}
                 className="group flex flex-col max-w-[45%]"
+                data-umami-event="collection-nav"
+                data-umami-event-direction="prev"
+                data-umami-event-collection={collection?.title}
               >
                 <span className="text-xs uppercase tracking-widest mb-1 group-hover:opacity-70 transition-opacity" style={{ color: '#6f6a60' }}>
                   ← Previous
@@ -172,12 +177,30 @@ export default async function TextPage({ params }: Props) {
               <Link
                 href={`/texts/${nextText.slug}`}
                 className="group flex flex-col text-right max-w-[45%]"
+                data-umami-event="collection-nav"
+                data-umami-event-direction="next"
+                data-umami-event-collection={collection?.title}
               >
                 <span className="text-xs uppercase tracking-widest mb-1 group-hover:opacity-70 transition-opacity" style={{ color: '#6f6a60' }}>
                   Next →
                 </span>
                 <span className="font-serif text-sm group-hover:opacity-70 transition-opacity" style={{ color: '#1b1b1b' }}>
                   {nextText.title}
+                </span>
+              </Link>
+            ) : collection ? (
+              <Link
+                href={`/collections/${collection.slug}`}
+                className="group flex flex-col text-right max-w-[45%]"
+                data-umami-event="collection-nav"
+                data-umami-event-direction="end"
+                data-umami-event-collection={collection.title}
+              >
+                <span className="text-xs uppercase tracking-widest mb-1 group-hover:opacity-70 transition-opacity" style={{ color: '#6f6a60' }}>
+                  End of collection
+                </span>
+                <span className="font-serif text-sm group-hover:opacity-70 transition-opacity" style={{ color: '#1b1b1b' }}>
+                  Return to {collection.title} →
                 </span>
               </Link>
             ) : <span />}

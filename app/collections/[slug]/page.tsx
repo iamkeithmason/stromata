@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { createServerClient } from '@/lib/supabase/server'
+import { Wordmark } from '@/app/components/Wordmark'
 
 type Props = { params: Promise<{ slug: string }> }
 
@@ -48,8 +49,8 @@ export default async function CollectionPage({ params }: Props) {
         className="border-b bg-white px-8 py-5 flex justify-between items-center"
         style={{ borderColor: '#e5e0d8' }}
       >
-        <div className="flex gap-4 text-sm" style={{ color: '#6f6a60' }}>
-          <Link href="/" className="hover:opacity-70 transition-opacity">The Stromata</Link>
+        <div className="flex gap-4 text-sm items-baseline font-serif" style={{ color: 'var(--ink-mute)' }}>
+          <Wordmark size={16} />
           {author?.slug && (
             <>
               <span>/</span>
@@ -59,10 +60,10 @@ export default async function CollectionPage({ params }: Props) {
             </>
           )}
         </div>
-        <div className="hidden sm:flex gap-6 text-sm" style={{ color: '#6f6a60' }}>
-          <Link href="/authors" className="hover:text-stone-900 transition-colors">Authors</Link>
-          <Link href="/texts" className="hover:text-stone-900 transition-colors">Library</Link>
-          <Link href="/about" className="hover:text-stone-900 transition-colors">About</Link>
+        <div className="hidden sm:flex gap-6 text-sm font-serif" style={{ color: 'var(--ink-soft)' }}>
+          <Link href="/authors" className="hover:opacity-70 transition-opacity">Authors</Link>
+          <Link href="/texts" className="hover:opacity-70 transition-opacity">Library</Link>
+          <Link href="/about" className="hover:opacity-70 transition-opacity">About</Link>
         </div>
       </header>
 

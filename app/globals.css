@@ -1,3 +1,91 @@
+/* =============================================================
+   Stromata — font faces
+   ============================================================= */
+
+@font-face {
+  font-family: "EB Garamond";
+  src: url("/fonts/EBGaramond-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "EB Garamond";
+  src: url("/fonts/EBGaramond-Italic.woff2") format("woff2");
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: "EB Garamond";
+  src: url("/fonts/EBGaramond-Medium.woff2") format("woff2");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "EB Garamond";
+  src: url("/fonts/EBGaramond-SemiBold.woff2") format("woff2");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "IM Fell English";
+  src: url("/fonts/IMFellEnglish-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* =============================================================
+   Design tokens
+   ============================================================= */
+
+:root {
+  --paper:        #F5F0E6;
+  --paper-deep:   #EDE6D6;
+  --paper-edge:   #E2D9C4;
+  --vellum:       #FAF6EC;
+
+  --ink:          #1E2D3D;
+  --ink-soft:     #3D4B5C;
+  --ink-mute:     #6B7280;
+  --ink-faint:    #A3A089;
+
+  --rule:         #C9BFA8;
+  --rule-soft:    #DDD3BD;
+
+  --accent:       #2C4A6B;
+  --accent-hover: #1E3552;
+  --accent-soft:  #B8C4D2;
+
+  --highlight:    #F4E4A9;
+  --highlight-2:  #D4E8D0;
+  --highlight-3:  #E8D0E0;
+
+  --serif:         "EB Garamond", "Garamond", Georgia, serif;
+  --serif-display: "IM Fell English", "EB Garamond", Georgia, serif;
+
+  --ease:      cubic-bezier(.2,.6,.2,1);
+  --dur-fast:  120ms;
+  --dur:       200ms;
+  --dur-slow:  320ms;
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* =============================================================
+   Dropcap — first letter of the opening paragraph in text reader
+   ============================================================= */
+
+article.prose-body p:first-child::first-letter {
+  font-family: var(--serif-display);
+  float: left;
+  font-size: 4.4em;
+  line-height: 0.88;
+  padding: 0.06em 0.08em 0 0;
+  color: var(--ink);
+}

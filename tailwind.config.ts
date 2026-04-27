@@ -7,7 +7,12 @@ const config: Config = {
     './lib/**/*.{ts,tsx}',
   ],
   theme: {
-    extend: {},
+    extend: {
+      fontFamily: {
+        serif: ['"EB Garamond"', 'Georgia', 'serif'],
+        display: ['"IM Fell English"', '"EB Garamond"', 'Georgia', 'serif'],
+      },
+    },
   },
   plugins: [require('@tailwindcss/typography')],
 }

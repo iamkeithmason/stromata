@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { createServerClient } from '@/lib/supabase/server'
+import { Wordmark } from '@/app/components/Wordmark'
 
 // tradition is many-to-one from authors → plain object not array
 type AuthorRow = {
@@ -32,13 +33,11 @@ export default async function AuthorsPage() {
         className="border-b bg-white px-8 py-5 flex justify-between items-center"
         style={{ borderColor: '#e5e0d8' }}
       >
-        <Link href="/" className="font-serif text-sm hover:opacity-70 transition-opacity" style={{ color: '#6f6a60' }}>
-          The Stromata
-        </Link>
-        <div className="hidden sm:flex gap-6 text-sm" style={{ color: '#6f6a60' }}>
-          <Link href="/authors" className="hover:text-stone-900 transition-colors">Authors</Link>
-          <Link href="/texts" className="hover:text-stone-900 transition-colors">Library</Link>
-          <Link href="/about" className="hover:text-stone-900 transition-colors">About</Link>
+        <Wordmark size={16} />
+        <div className="hidden sm:flex gap-6 text-sm font-serif" style={{ color: 'var(--ink-soft)' }}>
+          <Link href="/authors" className="hover:opacity-70 transition-opacity">Authors</Link>
+          <Link href="/texts" className="hover:opacity-70 transition-opacity">Library</Link>
+          <Link href="/about" className="hover:opacity-70 transition-opacity">About</Link>
         </div>
       </header>
 
