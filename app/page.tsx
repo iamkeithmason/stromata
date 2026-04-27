@@ -20,6 +20,7 @@ type TextRow = {
   id: string
   title: string
   slug: string
+  accession_number: number | null
   author: { name: string; slug: string | null; death_year: number | null } | null
   genre: { name: string } | null
   text_themes: { theme: { name: string } | null }[]
@@ -74,7 +75,7 @@ export default async function Home() {
   const { data: recentTexts } = await supabase
     .from('texts')
     .select(`
-      id, title, slug,
+      id, title, slug, accession_number,
       author:authors(name, slug, death_year),
       genre:genres(name),
       text_themes(theme:themes(name))
@@ -89,15 +90,18 @@ export default async function Home() {
     <div style={{ background: '#FBF8F1' }} className="min-h-screen">
 
       {/* Nav */}
-      <nav className="flex justify-between items-center px-8 py-5 max-w-6xl mx-auto">
-        <span className="font-serif text-sm" style={{ color: '#6f6a60' }}>
-          The Stromata
-        </span>
-        <div className="flex gap-6 text-sm" style={{ color: '#6f6a60' }}>
-          <Link href="/authors" className="hover:text-stone-900 transition-colors">Authors</Link>
-          <Link href="/texts" className="hover:text-stone-900 transition-colors">Library</Link>
-        </div>
-      </nav>
+      <header className="border-b bg-white" style={{ borderColor: '#e5e0d8' }}>
+        <nav className="flex justify-between items-center px-6 py-5 max-w-6xl mx-auto">
+          <Link href="/" className="font-serif text-sm hover:opacity-70 transition-opacity" style={{ color: '#6f6a60' }}>
+            The Stromata
+          </Link>
+          <div className="flex gap-6 text-sm" style={{ color: '#6f6a60' }}>
+            <Link href="/authors" className="hover:text-stone-900 transition-colors">Authors</Link>
+            <Link href="/texts" className="hover:text-stone-900 transition-colors">Library</Link>
+            <Link href="/about" className="hover:text-stone-900 transition-colors">About</Link>
+          </div>
+        </nav>
+      </header>
 
       {/* Hero */}
       <section className="text-center px-6 pt-16 pb-20">
@@ -209,14 +213,14 @@ export default async function Home() {
                           className="text-[10px] font-mono"
                           style={{ color: 'rgba(251,248,241,0.75)' }}
                         >
-                          № {String(i + 1).padStart(2, '0')}
+                          № {String(text.accession_number ?? i + 1).padStart(2, '0')}
                         </span>
                       </div>
 
                       {/* Centre: title + author — padded so it never hides behind the bars */}
-                      <div className="absolute inset-0 flex flex-col items-center justify-center px-5 pt-10 pb-10 text-center">
+                      <div className="absolute inset-0 flex flex-col items-center justify-center px-5 pt-10 pb-10 text-center overflow-hidden">
                         <p
-                          className="font-serif text-base leading-snug mb-3 group-hover:opacity-90 transition-opacity"
+                          className="font-serif text-base leading-snug mb-3 group-hover:opacity-90 transition-opacity line-clamp-4"
                           style={{ color: '#FBF8F1' }}
                         >
                           {text.title}
@@ -294,6 +298,15 @@ export default async function Home() {
       >
         <p className="text-xs" style={{ color: '#6f6a60' }}>
           The Stromata — freely accessible texts from the Christian tradition
+        </p>
+        <p className="text-xs mt-2">
+          <a
+            href="/rss"
+            className="hover:opacity-70 transition-opacity"
+            style={{ color: '#c8c3bb' }}
+          >
+            RSS feed
+          </a>
         </p>
       </footer>
 

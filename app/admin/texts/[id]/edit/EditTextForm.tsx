@@ -6,6 +6,7 @@ import { GENRES, THEME_CLUSTERS } from '@/lib/constants'
 import MarkdownEditor from '@/app/components/MarkdownEditor'
 
 type Author = { id: string; name: string }
+type Collection = { id: string; title: string }
 
 const input = 'w-full px-3 py-2 border border-stone-300 rounded text-stone-800 focus:outline-none focus:ring-2 focus:ring-stone-400 bg-white'
 const label = 'block text-sm font-medium text-stone-700 mb-1'
@@ -17,6 +18,8 @@ type Props = {
   initialAuthorId: string
   initialGenreSlug: string
   initialThemeSlugs: string[]
+  initialCollectionId: string
+  initialCollectionOrder: number | null
   initialSourceAttribution: string
   initialProvenanceNotes: string
   initialTranslationNotes: string
@@ -32,6 +35,8 @@ export default function EditTextForm({
   initialAuthorId,
   initialGenreSlug,
   initialThemeSlugs,
+  initialCollectionId,
+  initialCollectionOrder,
   initialSourceAttribution,
   initialProvenanceNotes,
   initialTranslationNotes,
@@ -41,12 +46,17 @@ export default function EditTextForm({
 }: Props) {
   const router = useRouter()
   const [authors, setAuthors] = useState<Author[]>([])
+  const [collections, setCollections] = useState<Collection[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [authorId, setAuthorId] = useState(initialAuthorId)
+  const [genreSlug, setGenreSlug] = useState(initialGenreSlug)
   const [selectedThemes, setSelectedThemes] = useState<string[]>(initialThemeSlugs)
+  const [collectionId, setCollectionId] = useState(initialCollectionId)
 
   useEffect(() => {
     fetch('/api/admin/authors').then(r => r.json()).then(setAuthors)
+    fetch('/api/admin/collections').then(r => r.json()).then(setCollections)
   }, [])
 
   function toggleTheme(themeSlug: string) {
@@ -62,9 +72,11 @@ export default function EditTextForm({
     const payload = {
       title: data.get('title') as string,
       slug: data.get('slug') as string,
-      author_id: data.get('author_id') as string,
-      genre_slug: data.get('genre_slug') as string,
+      author_id: authorId,
+      genre_slug: genreSlug,
       theme_slugs: selectedThemes,
+      collection_id: collectionId || null,
+      collection_order: collectionId ? (Number(data.get('collection_order')) || null) : null,
       source_attribution: (data.get('source_attribution') as string) || null,
       provenance_notes: (data.get('provenance_notes') as string) || null,
       translation_notes: (data.get('translation_notes') as string) || null,
@@ -108,7 +120,12 @@ export default function EditTextForm({
 
       <div>
         <label className={label}>Author <span className="text-red-500">*</span></label>
-        <select name="author_id" required defaultValue={initialAuthorId} className={input}>
+        <select
+          value={authorId}
+          onChange={e => setAuthorId(e.target.value)}
+          required
+          className={input}
+        >
           <option value="">Select author…</option>
           {authors.map(a => (
             <option key={a.id} value={a.id}>{a.name}</option>
@@ -118,12 +135,50 @@ export default function EditTextForm({
 
       <div>
         <label className={label}>Genre <span className="text-red-500">*</span></label>
-        <select name="genre_slug" required defaultValue={initialGenreSlug} className={input}>
+        <select
+          value={genreSlug}
+          onChange={e => setGenreSlug(e.target.value)}
+          required
+          className={input}
+        >
           <option value="">Select genre…</option>
           {GENRES.map(g => (
             <option key={g.slug} value={g.slug}>{g.name}</option>
           ))}
         </select>
+      </div>
+
+      {/* Collection */}
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <label className={label}>
+            Collection <span className="text-stone-400 font-normal">(optional)</span>
+          </label>
+          <select
+            value={collectionId}
+            onChange={e => setCollectionId(e.target.value)}
+            className={input}
+          >
+            <option value="">— not part of a collection —</option>
+            {collections.map(c => (
+              <option key={c.id} value={c.id}>{c.title}</option>
+            ))}
+          </select>
+        </div>
+        {collectionId && (
+          <div>
+            <label className={label}>Position in collection</label>
+            <input
+              type="number"
+              name="collection_order"
+              min={1}
+              defaultValue={initialCollectionOrder ?? ''}
+              className={input}
+              placeholder="e.g. 1"
+            />
+            <p className="text-xs text-stone-400 mt-1">Controls the reading order.</p>
+          </div>
+        )}
       </div>
 
       <div>

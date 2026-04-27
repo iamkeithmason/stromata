@@ -12,8 +12,10 @@ function slugify(text: string): string {
 }
 
 function extractYears(text: string): { birth: number | null; death: number | null } {
-  // Match "(c. 347 – 407)" or "(347–407)" or "c. 100 – 165"
-  const range = text.match(/\(?c?\.?\s*(\d{3,4})\s*[–—-]\s*(?:\d{1,2}\s+\w+\s+)?(\d{3,4})\)?/)
+  // Match full-date ranges inside parentheses:
+  //   "(2 July 1489 – 21 March 1556)"  "(c. 347 – 407)"  "(347–407)"  "(c. 100 – c. 165 AD)"
+  // [^)]*? skips over any leading day/month/circa text before each year.
+  const range = text.match(/\([^)]*?(\d{3,4})\s*[–—-]\s*[^)]*?(\d{3,4})[^)]*?\)/)
   if (range) return { birth: parseInt(range[1]), death: parseInt(range[2]) }
   const born = text.match(/born\s+(?:c\.?\s*)?(\d{3,4})/)
   const died = text.match(/died\s+(?:c\.?\s*)?(\d{3,4})/)
@@ -22,15 +24,29 @@ function extractYears(text: string): { birth: number | null; death: number | nul
 
 function suggestTradition(text: string): string {
   const t = text.toLowerCase()
+  // Reformation traditions — check before catholic to avoid false positives
   if (t.includes('reformed') || t.includes('calvinist') || t.includes('presbyterian')) return 'reformed'
   if (t.includes('lutheran')) return 'lutheran'
   if (t.includes('anglican') || t.includes('church of england')) return 'anglican'
   if (t.includes('methodist')) return 'methodist'
-  if (t.includes('anabaptist') || t.includes('mennonite')) return 'radical-reformation'
+  if (t.includes('anabaptist') || t.includes('mennonite') || t.includes('quaker')) return 'radical-reformation'
+  // Post-schism traditions
   if (t.includes('eastern orthodox') || t.includes('greek orthodox') || t.includes('russian orthodox')) return 'eastern-orthodox'
-  if (t.includes('roman catholic') || t.includes('jesuit') || t.includes('dominican') || t.includes('franciscan')) return 'roman-catholic'
-  if (t.includes('church father') || t.includes('patristic') || t.includes('archbishop') || t.includes('patriarch')) return 'patristic'
-  if (t.includes('early church') || t.includes('apostolic father')) return 'early-church'
+  if (t.includes('roman catholic') || t.includes('jesuit') || t.includes('dominican') || t.includes('franciscan') || t.includes('benedictine')) return 'roman-catholic'
+  // Oriental Orthodox — check before generic 'orthodox' matches above
+  if (t.includes('coptic') || t.includes('syriac') || t.includes('armenian church') || t.includes('ethiopian') || t.includes('oriental orthodox')) return 'oriental-orthodox'
+  // Byzantine — pre-schism medieval (roughly 600–1054), both East and Latin West
+  if (t.includes('byzantine') || t.includes('carolingian') || t.includes('john of damascus') || t.includes('maximus the confessor')) return 'byzantine'
+  // Patristic (c. 325–600) — broad net; Chrysostom, Augustine, Cappadocians etc.
+  if (
+    t.includes('church father') || t.includes('patristic') ||
+    t.includes('archbishop of constantinople') || t.includes('bishop of hippo') ||
+    t.includes('bishop of milan') || t.includes('bishop of carthage') ||
+    t.includes('cappadocian') || t.includes('doctor of the church') ||
+    t.includes('archbishop') || t.includes('patriarch')
+  ) return 'patristic'
+  // Early Church (pre-Nicene, to c. 325)
+  if (t.includes('early church') || t.includes('apostolic father') || t.includes('apologist') || t.includes('ante-nicene')) return 'early-church'
   return ''
 }
 
@@ -77,6 +93,7 @@ export default function NewAuthorForm() {
       if (birth) setBirthYear(String(birth))
       if (death) setDeathYear(String(death))
 
+      setTraditionSlug('')  // reset before each lookup so stale values don't persist
       const suggested = suggestTradition(extract + ' ' + description)
       if (suggested) setTraditionSlug(suggested)
 

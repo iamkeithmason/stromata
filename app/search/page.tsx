@@ -70,9 +70,10 @@ export default async function SearchPage({ searchParams }: Props) {
           <span>/</span>
           <span>Search</span>
         </div>
-        <div className="flex gap-6 text-sm" style={{ color: '#6f6a60' }}>
+        <div className="hidden sm:flex gap-6 text-sm" style={{ color: '#6f6a60' }}>
           <Link href="/authors" className="hover:text-stone-900 transition-colors">Authors</Link>
           <Link href="/texts" className="hover:text-stone-900 transition-colors">Library</Link>
+          <Link href="/about" className="hover:text-stone-900 transition-colors">About</Link>
         </div>
       </header>
 

@@ -5,6 +5,11 @@ export const metadata: Metadata = {
   title: 'The Stromata',
   description:
     'A freely accessible library of out-of-print historical Christian texts, organised by author, tradition, era, theme, and genre.',
+  alternates: {
+    types: {
+      'application/rss+xml': 'https://www.thestromata.com/rss',
+    },
+  },
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

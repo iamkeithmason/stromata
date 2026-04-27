@@ -35,9 +35,10 @@ export default async function AuthorsPage() {
         <Link href="/" className="font-serif text-sm hover:opacity-70 transition-opacity" style={{ color: '#6f6a60' }}>
           The Stromata
         </Link>
-        <div className="flex gap-6 text-sm" style={{ color: '#6f6a60' }}>
+        <div className="hidden sm:flex gap-6 text-sm" style={{ color: '#6f6a60' }}>
           <Link href="/authors" className="hover:text-stone-900 transition-colors">Authors</Link>
           <Link href="/texts" className="hover:text-stone-900 transition-colors">Library</Link>
+          <Link href="/about" className="hover:text-stone-900 transition-colors">About</Link>
         </div>
       </header>
 

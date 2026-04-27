@@ -11,7 +11,7 @@ export default async function EditTextPage({ params }: Props) {
 
   const { data: text } = await supabase
     .from('texts')
-    .select('*, genre:genres(slug), text_themes(theme:themes(slug))')
+    .select('*, genre:genres(slug), text_themes(theme:themes(slug)), collection:collections(id, slug)')
     .eq('id', id)
     .single()
 
@@ -37,6 +37,8 @@ export default async function EditTextPage({ params }: Props) {
           initialAuthorId={text.author_id}
           initialGenreSlug={text.genre?.slug ?? ''}
           initialThemeSlugs={themeSlugs}
+          initialCollectionId={text.collection_id ?? ''}
+          initialCollectionOrder={text.collection_order ?? null}
           initialSourceAttribution={text.source_attribution ?? ''}
           initialProvenanceNotes={text.provenance_notes ?? ''}
           initialTranslationNotes={text.translation_notes ?? ''}

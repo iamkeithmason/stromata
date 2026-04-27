@@ -1,14 +1,17 @@
 export const TRADITIONS = [
-  { slug: 'early-church', name: 'Early Church (pre-Nicene)' },
-  { slug: 'patristic', name: 'Patristic' },
-  { slug: 'eastern-orthodox', name: 'Eastern Orthodox' },
-  { slug: 'roman-catholic', name: 'Roman Catholic' },
-  { slug: 'anglican', name: 'Anglican' },
-  { slug: 'reformed', name: 'Reformed' },
-  { slug: 'lutheran', name: 'Lutheran' },
-  { slug: 'radical-reformation', name: 'Radical Reformation' },
-  { slug: 'methodist', name: 'Methodist' },
-  { slug: 'ecumenical', name: 'Ecumenical' },
+  // Ordered roughly chronologically — early through to modern
+  { slug: 'early-church',        name: 'Early Church (pre-Nicene)' },  // to c. 325
+  { slug: 'patristic',           name: 'Patristic' },                  // c. 325–600
+  { slug: 'byzantine',           name: 'Byzantine' },                  // c. 600–1054 (East & Latin West, undivided)
+  { slug: 'oriental-orthodox',   name: 'Oriental Orthodox' },          // Coptic, Syriac, Armenian, Ethiopian — all eras
+  { slug: 'eastern-orthodox',    name: 'Eastern Orthodox' },           // post-1054
+  { slug: 'roman-catholic',      name: 'Roman Catholic' },             // post-1054 (medieval Latin church)
+  { slug: 'anglican',            name: 'Anglican' },                   // from c. 1530
+  { slug: 'reformed',            name: 'Reformed' },                   // from c. 1520
+  { slug: 'lutheran',            name: 'Lutheran' },                   // from c. 1517
+  { slug: 'radical-reformation', name: 'Radical Reformation' },        // c. 1520–1700
+  { slug: 'methodist',           name: 'Methodist' },                  // from c. 1740
+  { slug: 'ecumenical',          name: 'Ecumenical' },                 // figures genuinely resistant to categorisation
 ]
 
 export const ERAS = [

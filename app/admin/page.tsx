@@ -10,6 +10,11 @@ type TextRow = {
   id: string; title: string; slug: string; published: boolean
   author: { name: string }[]
   genre: { name: string }[]
+  collection: { title: string } | null
+}
+type CollectionRow = {
+  id: string; title: string; slug: string; published: boolean
+  author: { name: string } | null
 }
 type Props = { searchParams: Promise<{ success?: string }> }
 
@@ -17,14 +22,18 @@ export default async function AdminDashboard({ searchParams }: Props) {
   const params = await searchParams
   const supabase = createServerClient()
 
-  const [{ data: authors }, { data: texts }] = await Promise.all([
+  const [{ data: authors }, { data: texts }, { data: collections }] = await Promise.all([
     supabase
       .from('authors')
       .select('id, name, slug, tradition:traditions(name), era:eras(label)')
       .order('name'),
     supabase
       .from('texts')
-      .select('id, title, slug, published, author:authors(name), genre:genres(name)')
+      .select('id, title, slug, published, author:authors(name), genre:genres(name), collection:collections(title)')
+      .order('title'),
+    supabase
+      .from('collections')
+      .select('id, title, slug, published, author:authors(name)')
       .order('title'),
   ])
 
@@ -40,6 +49,11 @@ export default async function AdminDashboard({ searchParams }: Props) {
         {params.success === 'text' && (
           <p className="text-sm text-green-700 bg-green-50 border border-green-200 rounded px-3 py-2">
             Text saved successfully.
+          </p>
+        )}
+        {params.success === 'collection' && (
+          <p className="text-sm text-green-700 bg-green-50 border border-green-200 rounded px-3 py-2">
+            Collection saved successfully.
           </p>
         )}
 
@@ -79,6 +93,43 @@ export default async function AdminDashboard({ searchParams }: Props) {
           )}
         </section>
 
+        {/* Collections */}
+        <section>
+          <div className="flex items-baseline justify-between mb-4">
+            <h2 className="text-lg font-semibold text-stone-800">
+              Collections <span className="text-stone-400 font-normal text-sm">({collections?.length ?? 0})</span>
+            </h2>
+            <Link href="/admin/collections/new" className="text-sm text-stone-600 hover:text-stone-900">
+              + Add collection
+            </Link>
+          </div>
+          {collections && collections.length > 0 ? (
+            <div className="border border-stone-200 rounded divide-y divide-stone-100">
+              {(collections as unknown as CollectionRow[]).map((c: CollectionRow) => (
+                <div key={c.id} className="flex items-center justify-between px-4 py-3">
+                  <div>
+                    <span className="text-stone-800 text-sm font-medium">{c.title}</span>
+                    <span className="text-stone-400 text-xs ml-3">
+                      {(c.author as { name: string } | null)?.name}
+                    </span>
+                    <span className={`ml-3 text-xs ${c.published ? 'text-green-600' : 'text-stone-400'}`}>
+                      {c.published ? '● Published' : '○ Draft'}
+                    </span>
+                  </div>
+                  <Link
+                    href={`/admin/collections/${c.id}/edit`}
+                    className="text-xs text-stone-500 hover:text-stone-900"
+                  >
+                    Edit
+                  </Link>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-sm text-stone-400">No collections yet.</p>
+          )}
+        </section>
+
         {/* Texts */}
         <section>
           <div className="flex items-baseline justify-between mb-4">
@@ -91,23 +142,34 @@ export default async function AdminDashboard({ searchParams }: Props) {
           </div>
           {texts && texts.length > 0 ? (
             <div className="border border-stone-200 rounded divide-y divide-stone-100">
-              {texts.map((t: TextRow) => (
+              {(texts as unknown as TextRow[]).map((t: TextRow) => (
                 <div key={t.id} className="flex items-center justify-between px-4 py-3">
                   <div>
                     <span className="text-stone-800 text-sm font-medium">{t.title}</span>
                     <span className="text-stone-400 text-xs ml-3">
-                      {t.author?.[0]?.name} · {t.genre?.[0]?.name}
+                      {(t.author as unknown as { name: string }[])?.[0]?.name} · {(t.genre as unknown as { name: string }[])?.[0]?.name}
+                      {(t.collection as { title: string } | null)?.title && (
+                        <> · <span className="italic">{(t.collection as { title: string }).title}</span></>
+                      )}
                     </span>
                     <span className={`ml-3 text-xs ${t.published ? 'text-green-600' : 'text-stone-400'}`}>
                       {t.published ? '● Published' : '○ Draft'}
                     </span>
                   </div>
-                  <Link
-                    href={`/admin/texts/${t.id}/edit`}
-                    className="text-xs text-stone-500 hover:text-stone-900"
-                  >
-                    Edit
-                  </Link>
+                  <div className="flex gap-4">
+                    <Link
+                      href={`/admin/texts/new?from=${t.id}`}
+                      className="text-xs text-stone-400 hover:text-stone-700"
+                    >
+                      Duplicate
+                    </Link>
+                    <Link
+                      href={`/admin/texts/${t.id}/edit`}
+                      className="text-xs text-stone-500 hover:text-stone-900"
+                    >
+                      Edit
+                    </Link>
+                  </div>
                 </div>
               ))}
             </div>
