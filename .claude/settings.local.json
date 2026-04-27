@@ -27,7 +27,12 @@
       "Bash(/usr/local/bin/npm --prefix /Users/keithmason/Documents/projects/stromata run dev)",
       "Bash(/usr/local/bin/npm --prefix /Users/keithmason/Documents/projects/stromata install react-markdown remark-gfm @tailwindcss/typography)",
       "Bash(/usr/local/bin/npm --prefix /Users/keithmason/Documents/projects/stromata run build)",
-      "Bash(chmod +x /Users/keithmason/Documents/projects/stromata/dev.sh)"
+      "Bash(chmod +x /Users/keithmason/Documents/projects/stromata/dev.sh)",
+      "Read(//private/tmp/**)",
+      "Bash(npx tsc *)",
+      "Bash(gh pr *)",
+      "Bash(brew install *)",
+      "Bash(awk '{print $2}')"
     ]
   }
 }
