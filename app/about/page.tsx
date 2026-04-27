@@ -40,8 +40,8 @@ export default function AboutPage() {
 
           <p>
             The writers gathered here — from Justin Martyr in the second century to the Reformers,
-            from Augustine to the Anglican divines — are often described as "the Fathers" or "the
-            tradition" in ways that make them feel remote. They were not. They were working pastors
+            from Augustine to the Anglican divines — are often described as &ldquo;the Fathers&rdquo; or &ldquo;the
+            tradition&rdquo; in ways that make them feel remote. They were not. They were working pastors
             and careful theologians, monks who wrote about prayer and repentance from lives given
             entirely to both, bishops who shepherded communities through plague, invasion, and the
             collapse of empires. Their writing is direct, often surprising, and more contemporary in

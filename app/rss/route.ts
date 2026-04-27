@@ -25,8 +25,8 @@ export async function GET() {
   const siteUrl = 'https://www.thestromata.com'
 
   const items = (texts ?? []).map(text => {
-    const author = (text.author as { name: string } | null)?.name ?? ''
-    const genre = (text.genre as { name: string } | null)?.name ?? ''
+    const author = (text.author as unknown as { name: string } | null)?.name ?? ''
+    const genre = (text.genre as unknown as { name: string } | null)?.name ?? ''
     const pubDate = new Date(text.created_at as string).toUTCString()
     const link = `${siteUrl}/texts/${text.slug}`
     const description = [author, genre].filter(Boolean).join(' · ')
