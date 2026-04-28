@@ -24,6 +24,7 @@ type Props = {
   initialProvenanceNotes: string
   initialTranslationNotes: string
   initialOcrQuality: string
+  initialEditorialIntroduction: string
   initialBody: string
   initialPublished: boolean
 }
@@ -41,6 +42,7 @@ export default function EditTextForm({
   initialProvenanceNotes,
   initialTranslationNotes,
   initialOcrQuality,
+  initialEditorialIntroduction,
   initialBody,
   initialPublished,
 }: Props) {
@@ -81,6 +83,7 @@ export default function EditTextForm({
       provenance_notes: (data.get('provenance_notes') as string) || null,
       translation_notes: (data.get('translation_notes') as string) || null,
       ocr_quality: (data.get('ocr_quality') as string) || null,
+      editorial_introduction: (data.get('editorial_introduction') as string) || null,
       body: data.get('body') as string,
       published: data.get('published') === 'on',
     }
@@ -231,6 +234,14 @@ export default function EditTextForm({
           <option value="medium">Medium</option>
           <option value="low">Low</option>
         </select>
+      </div>
+
+      <div>
+        <label className={label}>
+          Editorial introduction{' '}
+          <span className="text-stone-400 font-normal">(optional — your editorial voice, shown above the text)</span>
+        </label>
+        <MarkdownEditor name="editorial_introduction" defaultValue={initialEditorialIntroduction} rows={6} />
       </div>
 
       <div>

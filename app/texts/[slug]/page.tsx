@@ -53,6 +53,7 @@ export default async function TextPage({ params }: Props) {
     .filter(Boolean) as string[]
 
   const body = text.body as string
+  const editorialIntro = text.editorial_introduction as string | null
 
   // If this text belongs to a collection, fetch siblings for prev/next navigation
   type Sibling = { id: string; title: string; slug: string; collection_order: number | null }
@@ -153,6 +154,24 @@ export default async function TextPage({ params }: Props) {
             </p>
           )}
         </div>
+
+        {/* Editorial introduction */}
+        {editorialIntro && (
+          <div
+            className="mb-12 pb-10 border-b"
+            style={{ borderColor: 'var(--rule)' }}
+          >
+            <p
+              className="text-xs uppercase tracking-widest mb-4 font-serif"
+              style={{ color: 'var(--ink-mute)' }}
+            >
+              Introduction
+            </p>
+            <div className="prose-body italic" style={{ color: 'var(--ink-soft)' }}>
+              <MarkdownBody content={editorialIntro} />
+            </div>
+          </div>
+        )}
 
         {/* Body */}
         <article className="prose-body mb-16">

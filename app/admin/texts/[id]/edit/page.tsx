@@ -43,6 +43,7 @@ export default async function EditTextPage({ params }: Props) {
           initialProvenanceNotes={text.provenance_notes ?? ''}
           initialTranslationNotes={text.translation_notes ?? ''}
           initialOcrQuality={text.ocr_quality ?? ''}
+          initialEditorialIntroduction={text.editorial_introduction ?? ''}
           initialBody={text.body}
           initialPublished={text.published}
         />

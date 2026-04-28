@@ -44,6 +44,7 @@ function NewTextFormInner() {
   const [provenanceNotes, setProvenanceNotes] = useState('')
   const [translationNotes, setTranslationNotes] = useState('')
   const [ocrQuality, setOcrQuality] = useState('')
+  const [editorialIntroduction, setEditorialIntroduction] = useState('')
   const [body, setBody] = useState('')
   const [published, setPublished] = useState(false)
 
@@ -106,6 +107,7 @@ function NewTextFormInner() {
       provenance_notes: provenanceNotes || null,
       translation_notes: translationNotes || null,
       ocr_quality: ocrQuality || null,
+      editorial_introduction: editorialIntroduction || null,
       body,
       published,
     }
@@ -307,6 +309,14 @@ function NewTextFormInner() {
           <option value="medium">Medium</option>
           <option value="low">Low</option>
         </select>
+      </div>
+
+      <div>
+        <label className={label}>
+          Editorial introduction{' '}
+          <span className="text-stone-400 font-normal">(optional — your editorial voice, shown above the text)</span>
+        </label>
+        <MarkdownEditor name="editorial_introduction" value={editorialIntroduction} onChange={setEditorialIntroduction} rows={6} />
       </div>
 
       <div>
