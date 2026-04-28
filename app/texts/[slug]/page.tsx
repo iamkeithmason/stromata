@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation'
 import { createServerClient } from '@/lib/supabase/server'
 import MarkdownBody from '@/app/components/MarkdownBody'
 import { SiteHeader } from '@/app/components/SiteHeader'
+import { RecordVisit } from '@/app/components/RecordVisit'
 
 type Props = { params: Promise<{ slug: string }> }
 
@@ -28,7 +29,7 @@ export default async function TextPage({ params }: Props) {
     .from('texts')
     .select(`
       *,
-      author:authors(name, slug),
+      author:authors(name, slug, death_year, tradition:traditions(slug)),
       genre:genres(name),
       text_themes(theme:themes(name)),
       collection:collections(id, title, slug)
@@ -40,7 +41,7 @@ export default async function TextPage({ params }: Props) {
   if (!text) notFound()
 
   // author and genre are many-to-one → plain objects
-  const author = text.author as { name: string; slug: string | null } | null
+  const author = text.author as { name: string; slug: string | null; death_year: number | null; tradition: { slug: string } | null } | null
   const genre = text.genre as { name: string } | null
   const collection = text.collection as { id: string; title: string; slug: string } | null
 
@@ -231,6 +232,15 @@ export default async function TextPage({ params }: Props) {
           </p>
         </footer>
       </main>
+
+      <RecordVisit
+        slug={slug}
+        title={text.title}
+        authorName={author?.name ?? null}
+        deathYear={author?.death_year ?? null}
+        accessionNumber={text.accession_number ?? null}
+        traditionSlug={author?.tradition?.slug ?? null}
+      />
     </div>
   )
 }

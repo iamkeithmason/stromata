@@ -4,6 +4,7 @@ import { THEME_CLUSTERS } from '@/lib/constants'
 import SearchBar from './SearchBar'
 import { BookCover } from './components/BookCover'
 import { SiteHeader } from './components/SiteHeader'
+import { ReadingHistorySection } from './components/ReadingHistorySection'
 
 type TextRow = {
   id: string
@@ -113,24 +114,22 @@ export default async function Home() {
               </p>
               <div className="flex flex-col gap-1.5 items-start">
                 {cluster.themes.map(theme => {
-                  const count = themeCountMap[theme.slug] ?? 0
                   return (
                     <Link
                       key={theme.slug}
                       href={`/search?q=${encodeURIComponent(theme.name)}`}
-                      className="inline-flex items-center gap-1.5 text-xs px-2.5 py-1 transition-colors hover:opacity-70"
+                      className="inline-flex items-center text-xs px-2.5 py-1 transition-colors hover:opacity-70"
                       style={{
-                        color: 'var(--ink)',
+                        color: 'var(--ink-mute)',
                         borderColor: 'var(--rule)',
                         border: '1px solid var(--rule)',
                         background: 'transparent',
-                        fontFamily: 'var(--serif)',
+                        fontFamily: '"EB Garamond", Georgia, serif',
+                        letterSpacing: '0.1rem',
+                        textTransform: 'uppercase',
                       }}
                     >
                       {theme.name}
-                      <span style={{ color: 'var(--ink-mute)' }} className="font-mono text-[10px]">
-                        {count}
-                      </span>
                     </Link>
                   )
                 })}
@@ -139,6 +138,8 @@ export default async function Home() {
           ))}
         </div>
       </section>
+
+      <ReadingHistorySection />
 
       {/* Recently added */}
       {texts.length > 0 && (
@@ -205,7 +206,7 @@ export default async function Home() {
       )}
 
       {/* Footer */}
-      <footer style={{ borderTop: '1px solid var(--rule)', padding: '0 32px 64px' }}>
+      <footer style={{ padding: '0 32px 64px' }}>
         {/* Ornament rule */}
         <div
           style={{
