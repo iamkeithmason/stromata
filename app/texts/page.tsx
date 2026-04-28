@@ -1,12 +1,14 @@
 import Link from 'next/link'
 import { createServerClient } from '@/lib/supabase/server'
 import { SiteHeader } from '@/app/components/SiteHeader'
+import { readingTime } from '@/lib/reading-time'
 
 // author and genre are many-to-one from texts → objects; text_themes is one-to-many → array
 type TextRow = {
   id: string
   title: string
   slug: string
+  body: string
   author: { name: string; slug: string | null } | null
   genre: { name: string } | null
   text_themes: { theme: { name: string } | null }[]
@@ -21,7 +23,7 @@ export default async function TextsPage() {
 
   const { data } = await supabase
     .from('texts')
-    .select('id, title, slug, author:authors(name, slug), genre:genres(name), text_themes(theme:themes(name))')
+    .select('id, title, slug, body, author:authors(name, slug), genre:genres(name), text_themes(theme:themes(name))')
     .eq('published', true)
     .order('title')
 
@@ -50,27 +52,32 @@ export default async function TextsPage() {
                 <li key={t.id}>
                   <Link
                     href={`/texts/${t.slug}`}
-                    className="flex items-baseline justify-between py-4 group"
+                    className="flex items-start justify-between py-4 group"
                   >
                     <div>
-                      <span
-                        className="font-serif group-hover:opacity-70 transition-opacity"
-                        style={{ color: '#1b1b1b' }}
-                      >
-                        {t.title}
-                      </span>
-                      {t.author && (
-                        <span className="text-sm ml-3" style={{ color: '#6f6a60' }}>
-                          {t.author.name}
+                      <div>
+                        <span
+                          className="font-serif group-hover:opacity-70 transition-opacity"
+                          style={{ color: '#1b1b1b' }}
+                        >
+                          {t.title}
                         </span>
-                      )}
-                      {themes.length > 0 && (
-                        <span className="text-xs ml-3" style={{ color: '#6f6a60' }}>
-                          {themes.join(' · ')}
-                        </span>
-                      )}
+                        {t.author && (
+                          <span className="text-sm ml-3" style={{ color: '#6f6a60' }}>
+                            {t.author.name}
+                          </span>
+                        )}
+                        {themes.length > 0 && (
+                          <span className="text-xs ml-3" style={{ color: '#6f6a60' }}>
+                            {themes.join(' · ')}
+                          </span>
+                        )}
+                      </div>
+                      <div className="text-xs mt-0.5" style={{ color: '#9c9589' }}>
+                        approx. {readingTime(t.body)} min read
+                      </div>
                     </div>
-                    <span className="text-xs ml-4 shrink-0" style={{ color: '#6f6a60' }}>
+                    <span className="text-xs ml-4 shrink-0 mt-0.5" style={{ color: '#6f6a60' }}>
                       {t.genre?.name}
                     </span>
                   </Link>

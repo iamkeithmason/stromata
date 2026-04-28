@@ -3,6 +3,7 @@ import { SiteHeader } from '@/app/components/SiteHeader'
 import { TrackPageEvent } from '@/app/components/TrackPageEvent'
 import { notFound } from 'next/navigation'
 import { createServerClient } from '@/lib/supabase/server'
+import { readingTime } from '@/lib/reading-time'
 
 type Props = { params: Promise<{ slug: string }> }
 
@@ -11,6 +12,7 @@ type TextRow = {
   id: string
   title: string
   slug: string
+  body: string
   genre: { name: string } | null
   text_themes: { theme: { name: string } | null }[]
 }
@@ -37,7 +39,7 @@ export default async function AuthorPage({ params }: Props) {
 
   const { data: texts } = await supabase
     .from('texts')
-    .select('id, title, slug, genre:genres(name), text_themes(theme:themes(name))')
+    .select('id, title, slug, body, genre:genres(name), text_themes(theme:themes(name))')
     .eq('author_id', author.id)
     .eq('published', true)
     .order('title')
@@ -100,22 +102,27 @@ export default async function AuthorPage({ params }: Props) {
                   <li key={t.id}>
                     <Link
                       href={`/texts/${t.slug}`}
-                      className="flex items-baseline justify-between py-4 group"
+                      className="flex items-start justify-between py-4 group"
                     >
                       <div>
-                        <span
-                          className="font-serif group-hover:opacity-70 transition-opacity"
-                          style={{ color: '#1b1b1b' }}
-                        >
-                          {t.title}
-                        </span>
-                        {themes.length > 0 && (
-                          <span className="text-xs ml-3" style={{ color: '#6f6a60' }}>
-                            {themes.join(' · ')}
+                        <div>
+                          <span
+                            className="font-serif group-hover:opacity-70 transition-opacity"
+                            style={{ color: '#1b1b1b' }}
+                          >
+                            {t.title}
                           </span>
-                        )}
+                          {themes.length > 0 && (
+                            <span className="text-xs ml-3" style={{ color: '#6f6a60' }}>
+                              {themes.join(' · ')}
+                            </span>
+                          )}
+                        </div>
+                        <div className="text-xs mt-0.5" style={{ color: '#9c9589' }}>
+                          approx. {readingTime(t.body)} min read
+                        </div>
                       </div>
-                      <span className="text-xs ml-4 shrink-0" style={{ color: '#6f6a60' }}>
+                      <span className="text-xs ml-4 shrink-0 mt-0.5" style={{ color: '#6f6a60' }}>
                         {t.genre?.name}
                       </span>
                     </Link>

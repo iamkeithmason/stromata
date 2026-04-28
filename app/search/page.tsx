@@ -3,6 +3,7 @@ import { createServerClient } from '@/lib/supabase/server'
 import { BookCover } from '@/app/components/BookCover'
 import { SiteHeader } from '@/app/components/SiteHeader'
 import { TrackPageEvent } from '@/app/components/TrackPageEvent'
+import { readingTime } from '@/lib/reading-time'
 
 type Props = { searchParams: Promise<{ q?: string }> }
 
@@ -276,11 +277,9 @@ export default async function SearchPage({ searchParams }: Props) {
                             </span>
                           )}
                         </div>
-                        {metaParts && (
-                          <p className="text-xs mt-0.5" style={{ color: '#9c9589' }}>
-                            {metaParts}
-                          </p>
-                        )}
+                        <p className="text-xs mt-0.5" style={{ color: '#9c9589' }}>
+                          {[metaParts, `approx. ${readingTime(t.body)} min read`].filter(Boolean).join(' · ')}
+                        </p>
                         {snippet && (
                           <p className="font-serif text-xs mt-1 leading-relaxed" style={{ color: '#9c9589' }}>
                             {snippet}

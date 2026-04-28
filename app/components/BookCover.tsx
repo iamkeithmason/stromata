@@ -21,6 +21,7 @@ export function BookCover({
   accessionNumber,
   traditionSlug,
   index,
+  readingMinutes,
 }: {
   title: string
   authorName: string | null
@@ -28,6 +29,7 @@ export function BookCover({
   accessionNumber: number | null
   traditionSlug: string | null
   index: number
+  readingMinutes?: number
 }) {
   const ground = TRADITION_COLORS[traditionSlug ?? ''] ?? FALLBACK_COLOR
   const num = String(accessionNumber ?? index + 1).padStart(2, '0')
@@ -153,20 +155,43 @@ export function BookCover({
         )}
       </div>
 
-      {/* Bottom band: S mark */}
+      {/* Bottom band: reading time (optional) + S mark */}
       <div
         style={{
           textAlign: 'center',
-          padding: '1.5rem 1rem',
+          padding: readingMinutes ? '0.75rem 1rem' : '1.5rem 1rem',
           borderTop: '1px solid rgba(245,240,230,.18)',
-          fontFamily: 'var(--serif-display)',
-          fontSize: '1.25rem',
-          color: 'rgba(245,240,230,0.70)',
-          lineHeight: 1,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          gap: '0.35rem',
           flexShrink: 0,
         }}
       >
-        S
+        {readingMinutes && (
+          <span
+            style={{
+              fontFamily: 'var(--serif-display)',
+              fontSize: '0.45rem',
+              letterSpacing: '0.2em',
+              textTransform: 'uppercase',
+              color: 'rgba(245,240,230,0.55)',
+              lineHeight: 1,
+            }}
+          >
+            ~ {readingMinutes} min
+          </span>
+        )}
+        <span
+          style={{
+            fontFamily: 'var(--serif-display)',
+            fontSize: '1.25rem',
+            color: 'rgba(245,240,230,0.70)',
+            lineHeight: 1,
+          }}
+        >
+          S
+        </span>
       </div>
     </div>
   )
