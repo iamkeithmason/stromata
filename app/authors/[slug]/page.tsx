@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { SiteHeader } from '@/app/components/SiteHeader'
+import { TrackPageEvent } from '@/app/components/TrackPageEvent'
 import { notFound } from 'next/navigation'
 import { createServerClient } from '@/lib/supabase/server'
 
@@ -129,6 +130,8 @@ export default async function AuthorPage({ params }: Props) {
           <p className="text-sm" style={{ color: '#6f6a60' }}>No texts published yet.</p>
         )}
       </main>
+
+      <TrackPageEvent event="author-page-view" data={{ author: slug, tradition: tradition ?? null }} />
     </div>
   )
 }
