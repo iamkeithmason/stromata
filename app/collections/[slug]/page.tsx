@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation'
 import { createServerClient } from '@/lib/supabase/server'
 import { SiteHeader } from '@/app/components/SiteHeader'
 import { TrackPageEvent } from '@/app/components/TrackPageEvent'
+import { readingTime } from '@/lib/reading-time'
 
 type Props = { params: Promise<{ slug: string }> }
 
@@ -36,7 +37,7 @@ export default async function CollectionPage({ params }: Props) {
   // Fetch published texts in this collection, ordered by collection_order then title
   const { data: texts } = await supabase
     .from('texts')
-    .select('id, title, slug, collection_order, genre:genres(name)')
+    .select('id, title, slug, body, collection_order, genre:genres(name)')
     .eq('collection_id', collection.id)
     .eq('published', true)
     .order('collection_order', { ascending: true, nullsFirst: false })
@@ -89,29 +90,34 @@ export default async function CollectionPage({ params }: Props) {
                 <li key={text.id}>
                   <Link
                     href={`/texts/${text.slug}`}
-                    className="flex items-baseline gap-4 py-3 group"
+                    className="flex items-start gap-4 py-3 group"
                     style={{ borderBottom: '1px solid #e5e0d8' }}
                   >
                     <span
-                      className="text-sm tabular-nums shrink-0 w-6 text-right"
+                      className="text-sm tabular-nums shrink-0 w-6 text-right mt-0.5"
                       style={{ color: '#c8c3bb' }}
                     >
                       {position}
                     </span>
                     <span className="flex-1">
-                      <span
-                        className="font-serif group-hover:opacity-70 transition-opacity"
-                        style={{ color: '#1b1b1b' }}
-                      >
-                        {text.title}
-                      </span>
-                      {genre?.name && (
-                        <span className="ml-3 text-xs" style={{ color: '#6f6a60' }}>
-                          {genre.name}
+                      <span className="block">
+                        <span
+                          className="font-serif group-hover:opacity-70 transition-opacity"
+                          style={{ color: '#1b1b1b' }}
+                        >
+                          {text.title}
                         </span>
-                      )}
+                        {genre?.name && (
+                          <span className="ml-3 text-xs" style={{ color: '#6f6a60' }}>
+                            {genre.name}
+                          </span>
+                        )}
+                      </span>
+                      <span className="block text-xs mt-0.5" style={{ color: '#9c9589' }}>
+                        approx. {readingTime((text as unknown as { body: string }).body)} min read
+                      </span>
                     </span>
-                    <span className="text-xs shrink-0" style={{ color: '#c8c3bb' }}>→</span>
+                    <span className="text-xs shrink-0 mt-0.5" style={{ color: '#c8c3bb' }}>→</span>
                   </Link>
                 </li>
               )

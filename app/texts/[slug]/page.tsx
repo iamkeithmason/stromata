@@ -5,6 +5,7 @@ import MarkdownBody from '@/app/components/MarkdownBody'
 import { SiteHeader } from '@/app/components/SiteHeader'
 import { RecordVisit } from '@/app/components/RecordVisit'
 import { TrackPageEvent } from '@/app/components/TrackPageEvent'
+import { readingTime } from '@/lib/reading-time'
 
 type Props = { params: Promise<{ slug: string }> }
 
@@ -128,6 +129,10 @@ export default async function TextPage({ params }: Props) {
               ))}
             </div>
           )}
+
+          <p className="text-center text-xs mt-3" style={{ color: 'var(--ink-mute)' }}>
+            approx. {readingTime(body)} min read
+          </p>
 
           {/* OCR quality notice */}
           {text.ocr_quality === 'low' && (

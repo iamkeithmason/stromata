@@ -5,11 +5,13 @@ import SearchBar from './SearchBar'
 import { BookCover } from './components/BookCover'
 import { SiteHeader } from './components/SiteHeader'
 import { ReadingHistorySection } from './components/ReadingHistorySection'
+import { readingTime } from '@/lib/reading-time'
 
 type TextRow = {
   id: string
   title: string
   slug: string
+  body: string
   accession_number: number | null
   author: {
     name: string
@@ -63,7 +65,7 @@ export default async function Home() {
   const { data: recentTexts } = await supabase
     .from('texts')
     .select(`
-      id, title, slug, accession_number,
+      id, title, slug, body, accession_number,
       author:authors(name, slug, death_year, tradition:traditions(slug)),
       genre:genres(name),
       text_themes(theme:themes(name))
@@ -168,6 +170,7 @@ export default async function Home() {
                       accessionNumber={text.accession_number}
                       traditionSlug={author?.tradition?.slug ?? null}
                       index={i}
+                      readingMinutes={readingTime(text.body)}
                     />
                   </Link>
                   <div className="px-0.5 mt-3">
@@ -179,10 +182,13 @@ export default async function Home() {
                       {text.title}
                     </Link>
                     {author && (
-                      <p className="text-xs mt-0.5 mb-2" style={{ color: 'var(--ink-mute)' }}>
+                      <p className="text-xs mt-0.5" style={{ color: 'var(--ink-mute)' }}>
                         {author.name}
                       </p>
                     )}
+                    <p className="text-xs mt-0.5 mb-2" style={{ color: '#9c9589' }}>
+                      approx. {readingTime(text.body)} min read
+                    </p>
                     {themes.length > 0 && (
                       <div className="flex flex-wrap gap-1">
                         {themes.map(t => (
