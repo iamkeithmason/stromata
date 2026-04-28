@@ -128,6 +128,9 @@ export default async function Home() {
                         letterSpacing: '0.1rem',
                         textTransform: 'uppercase',
                       }}
+                      data-umami-event="theme-click"
+                      data-umami-event-theme={theme.name}
+                      data-umami-event-source="homepage"
                     >
                       {theme.name}
                     </Link>
@@ -285,6 +288,8 @@ export default async function Home() {
               target="_blank"
               rel="noopener noreferrer"
               style={{ color: 'var(--ink-soft)' }}
+              data-umami-event="ko-fi-click"
+              data-umami-event-source="homepage"
             >
               a small contribution helps keep the lights on →
             </a>

@@ -4,6 +4,7 @@ import { createServerClient } from '@/lib/supabase/server'
 import MarkdownBody from '@/app/components/MarkdownBody'
 import { SiteHeader } from '@/app/components/SiteHeader'
 import { RecordVisit } from '@/app/components/RecordVisit'
+import { TrackPageEvent } from '@/app/components/TrackPageEvent'
 
 type Props = { params: Promise<{ slug: string }> }
 
@@ -118,6 +119,9 @@ export default async function TextPage({ params }: Props) {
                   href={`/search?q=${encodeURIComponent(theme)}`}
                   className="text-xs tracking-widest uppercase font-serif hover:opacity-70 transition-opacity"
                   style={{ color: 'var(--ink-mute)' }}
+                  data-umami-event="theme-click"
+                  data-umami-event-theme={theme}
+                  data-umami-event-source="text-page"
                 >
                   {theme}
                 </Link>
@@ -226,6 +230,8 @@ export default async function TextPage({ params }: Props) {
               target="_blank"
               rel="noopener noreferrer"
               className="hover:opacity-70 transition-opacity underline underline-offset-2"
+              data-umami-event="ko-fi-click"
+              data-umami-event-source="text-page"
             >
               Support the library on Ko-fi →
             </a>
@@ -240,6 +246,15 @@ export default async function TextPage({ params }: Props) {
         deathYear={author?.death_year ?? null}
         accessionNumber={text.accession_number ?? null}
         traditionSlug={author?.tradition?.slug ?? null}
+      />
+      <TrackPageEvent
+        event="text-open"
+        data={{
+          text: text.slug,
+          author: author?.slug ?? null,
+          tradition: author?.tradition?.slug ?? null,
+          genre: genre?.name ?? null,
+        }}
       />
     </div>
   )

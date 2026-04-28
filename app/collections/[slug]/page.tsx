@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { createServerClient } from '@/lib/supabase/server'
 import { SiteHeader } from '@/app/components/SiteHeader'
+import { TrackPageEvent } from '@/app/components/TrackPageEvent'
 
 type Props = { params: Promise<{ slug: string }> }
 
@@ -122,6 +123,8 @@ export default async function CollectionPage({ params }: Props) {
           </p>
         )}
       </main>
+
+      <TrackPageEvent event="collection-view" data={{ collection: slug }} />
     </div>
   )
 }

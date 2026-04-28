@@ -2,14 +2,22 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 
+declare global {
+  interface Window {
+    umami?: { track: (event: string, data?: Record<string, string | number | null>) => void }
+  }
+}
+
 export default function SearchBar() {
   const [query, setQuery] = useState('')
   const router = useRouter()
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    if (query.trim()) {
-      router.push(`/search?q=${encodeURIComponent(query.trim())}`)
+    const q = query.trim()
+    if (q) {
+      window.umami?.track('search-submit', { query: q.toLowerCase() })
+      router.push(`/search?q=${encodeURIComponent(q)}`)
     }
   }
 

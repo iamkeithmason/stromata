@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { createServerClient } from '@/lib/supabase/server'
 import { BookCover } from '@/app/components/BookCover'
 import { SiteHeader } from '@/app/components/SiteHeader'
+import { TrackPageEvent } from '@/app/components/TrackPageEvent'
 
 type Props = { searchParams: Promise<{ q?: string }> }
 
@@ -298,6 +299,7 @@ export default async function SearchPage({ searchParams }: Props) {
         )}
 
         {/* Zero-results suggestions */}
+        {query && total === 0 && <TrackPageEvent event="search-no-results" data={{ query }} />}
         {query && total === 0 && suggested && suggested.length > 0 && (
           <section className="mt-10">
             <div className="mb-4">
