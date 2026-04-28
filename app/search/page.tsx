@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { createServerClient } from '@/lib/supabase/server'
-import { Wordmark } from '@/app/components/Wordmark'
+import { BookCover } from '@/app/components/BookCover'
+import { SiteHeader } from '@/app/components/SiteHeader'
 
 type Props = { searchParams: Promise<{ q?: string }> }
 
@@ -9,10 +10,12 @@ type TextResult = {
   title: string
   slug: string
   body: string
+  accession_number: number | null
   author: {
     name: string
     slug: string | null
-    tradition: { name: string } | null
+    death_year: number | null
+    tradition: { name: string; slug: string } | null
     era: { label: string } | null
   } | null
   genre: { name: string } | null
@@ -58,8 +61,8 @@ export default async function SearchPage({ searchParams }: Props) {
   let authors: AuthorResult[] = []
   let suggested: SuggestedText[] | null = null
 
-  const textSelect = `id, title, slug, body,
-    author:authors(name, slug, tradition:traditions(name), era:eras(label)),
+  const textSelect = `id, title, slug, body, accession_number,
+    author:authors(name, slug, death_year, tradition:traditions(name, slug), era:eras(label)),
     genre:genres(name)`
 
   if (query) {
@@ -149,22 +152,8 @@ export default async function SearchPage({ searchParams }: Props) {
   }
 
   return (
-    <div style={{ background: '#FBF8F1' }} className="min-h-screen">
-      <header
-        className="border-b bg-white px-8 py-5 flex justify-between items-center"
-        style={{ borderColor: '#e5e0d8' }}
-      >
-        <div className="flex gap-4 text-sm items-baseline font-serif" style={{ color: 'var(--ink-mute)' }}>
-          <Wordmark size={16} />
-          <span>/</span>
-          <span>Search</span>
-        </div>
-        <div className="hidden sm:flex gap-6 text-sm font-serif" style={{ color: 'var(--ink-soft)' }}>
-          <Link href="/authors" className="hover:opacity-70 transition-opacity">Authors</Link>
-          <Link href="/texts" className="hover:opacity-70 transition-opacity">Library</Link>
-          <Link href="/about" className="hover:opacity-70 transition-opacity">About</Link>
-        </div>
-      </header>
+    <div style={{ background: 'var(--paper)', paddingTop: '4rem' }} className="min-h-screen">
+      <SiteHeader breadcrumb={<span>Search</span>} />
 
       <main className="max-w-2xl mx-auto px-6 py-12">
         {/* Search form */}
@@ -248,7 +237,7 @@ export default async function SearchPage({ searchParams }: Props) {
               <hr style={{ borderColor: '#1b1b1b', borderTopWidth: '1px' }} />
             </div>
             <ul className="divide-y" style={{ borderColor: '#e5e0d8' }}>
-              {texts.map(t => {
+              {texts.map((t, i) => {
                 const author = t.author
                 const tradition = author?.tradition?.name
                 const era = author?.era?.label
@@ -258,9 +247,21 @@ export default async function SearchPage({ searchParams }: Props) {
                   <li key={t.id}>
                     <Link
                       href={`/texts/${t.slug}`}
-                      className="flex items-start justify-between py-4 gap-4 group"
+                      className="flex items-start py-4 gap-4 group"
                     >
-                      <div className="min-w-0">
+                      <div style={{ width: 64, height: 96, flexShrink: 0, overflow: 'hidden', position: 'relative' }} className="group-hover:opacity-80 transition-opacity">
+                        <div style={{ width: 256, transformOrigin: 'top left', transform: 'scale(0.25)', position: 'absolute', top: 0, left: 0 }}>
+                          <BookCover
+                            title={t.title}
+                            authorName={author?.name ?? null}
+                            deathYear={author?.death_year ?? null}
+                            accessionNumber={t.accession_number}
+                            traditionSlug={author?.tradition?.slug ?? null}
+                            index={i}
+                          />
+                        </div>
+                      </div>
+                      <div className="min-w-0 flex-1">
                         <div className="flex items-baseline flex-wrap gap-x-3">
                           <span
                             className="font-serif group-hover:opacity-70 transition-opacity"

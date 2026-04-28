@@ -1,0 +1,30 @@
+import Link from 'next/link'
+import { Wordmark } from './Wordmark'
+
+export function SiteHeader({ breadcrumb }: { breadcrumb?: React.ReactNode }) {
+  return (
+    <header
+      style={{
+        position: 'fixed', top: 0, left: 0, right: 0, zIndex: 50,
+        background: 'var(--paper)',
+        borderBottom: '1px solid var(--rule)',
+      }}
+      className="px-8 py-5 flex justify-between items-center"
+    >
+      <div className="flex gap-4 text-sm items-baseline font-serif" style={{ color: 'var(--ink-mute)' }}>
+        <Wordmark size={16} />
+        {breadcrumb && (
+          <>
+            <span>/</span>
+            {breadcrumb}
+          </>
+        )}
+      </div>
+      <nav className="hidden sm:flex gap-6 text-sm font-serif" style={{ color: 'var(--ink-soft)' }}>
+        <Link href="/authors" className="hover:opacity-70 transition-opacity">Authors</Link>
+        <Link href="/texts" className="hover:opacity-70 transition-opacity">Library</Link>
+        <Link href="/about" className="hover:opacity-70 transition-opacity">About</Link>
+      </nav>
+    </header>
+  )
+}

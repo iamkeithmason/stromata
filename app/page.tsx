@@ -2,23 +2,8 @@ import Link from 'next/link'
 import { createServerClient } from '@/lib/supabase/server'
 import { THEME_CLUSTERS } from '@/lib/constants'
 import SearchBar from './SearchBar'
-import { Wordmark } from './components/Wordmark'
-
-const TRADITION_COLORS: Record<string, string> = {
-  'early-church':        '#7A6147',
-  'patristic':           '#5A2A2A',
-  'eastern-orthodox':    '#2C3A4A',
-  'roman-catholic':      '#3D2E20',
-  'anglican':            '#3D5167',
-  'reformed':            '#2C3E2E',
-  'lutheran':            '#3A3825',
-  'radical-reformation': '#5A3A2A',
-  'methodist':           '#2E3A4A',
-  'ecumenical':          '#3D3D35',
-  'byzantine':           '#2C2E4A',
-  'oriental-orthodox':   '#3A2E20',
-}
-const FALLBACK_COLOR = '#3D5167'
+import { BookCover } from './components/BookCover'
+import { SiteHeader } from './components/SiteHeader'
 
 type TextRow = {
   id: string
@@ -57,163 +42,6 @@ function SectionHeader({ title, aside }: { title: string; aside?: string }) {
   )
 }
 
-function BookCover({
-  title,
-  authorName,
-  deathYear,
-  accessionNumber,
-  traditionSlug,
-  index,
-}: {
-  title: string
-  authorName: string | null
-  deathYear: number | null
-  accessionNumber: number | null
-  traditionSlug: string | null
-  index: number
-}) {
-  const ground = TRADITION_COLORS[traditionSlug ?? ''] ?? FALLBACK_COLOR
-  const num = String(accessionNumber ?? index + 1).padStart(2, '0')
-  const year = deathYear
-    ? deathYear < 600
-      ? `c. ${deathYear}`
-      : `d. ${deathYear}`
-    : null
-
-  return (
-    <div
-      style={{
-        background: ground,
-        aspectRatio: '2/3',
-        display: 'flex',
-        flexDirection: 'column',
-        width: '100%',
-      }}
-    >
-      {/* Top band: Stromata left + № right */}
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          padding: '7px 10px',
-          borderBottom: '1px solid rgba(245,240,230,.18)',
-          flexShrink: 0,
-        }}
-      >
-        <span
-          style={{
-            fontFamily: 'var(--serif-display)',
-            fontSize: 8,
-            letterSpacing: '0.24em',
-            color: 'rgba(245,240,230,0.70)',
-            textTransform: 'uppercase',
-          }}
-        >
-          Stromata
-        </span>
-        <span
-          style={{
-            fontFamily: 'monospace',
-            fontSize: 8,
-            color: 'rgba(245,240,230,0.60)',
-            letterSpacing: '0.04em',
-          }}
-        >
-          № {num}
-        </span>
-      </div>
-
-      {/* Mid panel: vellum, italic title + rule + author */}
-      <div
-        style={{
-          flex: 1,
-          background: '#F5F0E6',
-          margin: '8px 10px',
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'center',
-          alignItems: 'center',
-          textAlign: 'center',
-          padding: '12px 8px',
-          overflow: 'hidden',
-          minHeight: 0,
-        }}
-      >
-        <p
-          style={{
-            fontFamily: 'var(--serif)',
-            fontSize: 13,
-            fontStyle: 'italic',
-            fontWeight: 500,
-            lineHeight: 1.15,
-            color: 'var(--ink)',
-            margin: 0,
-            display: '-webkit-box',
-            WebkitLineClamp: 4,
-            WebkitBoxOrient: 'vertical',
-            overflow: 'hidden',
-          }}
-        >
-          {title}
-        </p>
-        <div
-          style={{
-            width: 20,
-            height: 1,
-            background: 'var(--ink)',
-            opacity: 0.35,
-            margin: '8px auto',
-            flexShrink: 0,
-          }}
-        />
-        {authorName && (
-          <p
-            style={{
-              fontFamily: 'var(--serif)',
-              fontSize: 8,
-              letterSpacing: '0.14em',
-              textTransform: 'uppercase',
-              color: 'var(--ink-soft)',
-              margin: 0,
-            }}
-          >
-            {authorName}
-          </p>
-        )}
-        {year && (
-          <p
-            style={{
-              fontFamily: 'var(--serif)',
-              fontStyle: 'italic',
-              fontSize: 8,
-              color: 'var(--ink-mute)',
-              margin: '5px 0 0',
-            }}
-          >
-            {year}
-          </p>
-        )}
-      </div>
-
-      {/* Bottom band: S mark */}
-      <div
-        style={{
-          textAlign: 'center',
-          padding: '5px 10px 6px',
-          borderTop: '1px solid rgba(245,240,230,.18)',
-          fontFamily: 'var(--serif-display)',
-          fontSize: 15,
-          color: 'rgba(245,240,230,0.70)',
-          lineHeight: 1,
-          flexShrink: 0,
-        }}
-      >
-        S
-      </div>
-    </div>
-  )
-}
 
 export default async function Home() {
   const supabase = createServerClient()
@@ -246,19 +74,9 @@ export default async function Home() {
   const texts = (recentTexts ?? []) as unknown as TextRow[]
 
   return (
-    <div style={{ background: 'var(--paper)' }} className="min-h-screen">
+    <div style={{ background: 'var(--paper)', paddingTop: '4rem' }} className="min-h-screen">
 
-      {/* Nav */}
-      <header className="border-b" style={{ borderColor: 'var(--rule)', background: 'var(--paper)' }}>
-        <nav className="flex justify-between items-center px-6 py-5 max-w-6xl mx-auto">
-          <Wordmark size={18} />
-          <div className="flex gap-6 text-sm" style={{ color: 'var(--ink-soft)' }}>
-            <Link href="/authors" className="hover:opacity-70 transition-opacity font-serif">Authors</Link>
-            <Link href="/texts" className="hover:opacity-70 transition-opacity font-serif">Library</Link>
-            <Link href="/about" className="hover:opacity-70 transition-opacity font-serif">About</Link>
-          </div>
-        </nav>
-      </header>
+      <SiteHeader />
 
       {/* Hero */}
       <section className="text-center px-6 pt-16 pb-20">

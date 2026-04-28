@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { Wordmark } from '@/app/components/Wordmark'
+import { SiteHeader } from '@/app/components/SiteHeader'
 
 export const metadata = {
   title: 'About — The Stromata',
@@ -9,18 +9,8 @@ export const metadata = {
 
 export default function AboutPage() {
   return (
-    <div style={{ background: '#FBF8F1' }} className="min-h-screen">
-      <header
-        className="border-b bg-white px-8 py-5 flex justify-between items-center"
-        style={{ borderColor: '#e5e0d8' }}
-      >
-        <Wordmark size={16} />
-        <div className="hidden sm:flex gap-6 text-sm font-serif" style={{ color: 'var(--ink-soft)' }}>
-          <Link href="/authors" className="hover:opacity-70 transition-opacity">Authors</Link>
-          <Link href="/texts" className="hover:opacity-70 transition-opacity">Library</Link>
-          <Link href="/about" className="hover:opacity-70 transition-opacity" style={{ color: 'var(--ink)' }}>About</Link>
-        </div>
-      </header>
+    <div style={{ background: 'var(--paper)', paddingTop: '4rem' }} className="min-h-screen">
+      <SiteHeader />
 
       <main className="max-w-2xl mx-auto px-6 py-16">
 

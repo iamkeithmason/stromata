@@ -2,7 +2,7 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { createServerClient } from '@/lib/supabase/server'
 import MarkdownBody from '@/app/components/MarkdownBody'
-import { Wordmark } from '@/app/components/Wordmark'
+import { SiteHeader } from '@/app/components/SiteHeader'
 
 type Props = { params: Promise<{ slug: string }> }
 
@@ -73,58 +73,56 @@ export default async function TextPage({ params }: Props) {
   }
 
   return (
-    <div style={{ background: '#FBF8F1' }} className="min-h-screen">
-      <header
-        className="border-b bg-white px-8 py-5 flex justify-between items-center"
-        style={{ borderColor: '#e5e0d8' }}
-      >
-        <div className="flex gap-4 text-sm items-baseline" style={{ color: 'var(--ink-mute)' }}>
-          <Wordmark size={16} />
-          {author?.slug && (
-            <>
-              <span>/</span>
-              <Link href={`/authors/${author.slug}`} className="hover:opacity-70 transition-opacity font-serif">
-                {author.name}
-              </Link>
-            </>
-          )}
-        </div>
-        <div className="hidden sm:flex gap-6 text-sm" style={{ color: '#6f6a60' }}>
-          <Link href="/authors" className="hover:text-stone-900 transition-colors">Authors</Link>
-          <Link href="/texts" className="hover:text-stone-900 transition-colors">Library</Link>
-          <Link href="/about" className="hover:text-stone-900 transition-colors">About</Link>
-        </div>
-      </header>
+    <div style={{ background: 'var(--paper)', paddingTop: '4rem' }} className="min-h-screen">
+      <SiteHeader breadcrumb={author?.slug
+        ? <Link href={`/authors/${author.slug}`} className="hover:opacity-70 transition-opacity">{author.name}</Link>
+        : undefined}
+      />
 
       <main className="max-w-2xl mx-auto px-6 py-12">
-        {/* Collection breadcrumb */}
-        {collection && (
-          <div className="mb-6 flex items-center gap-2 text-xs uppercase tracking-widest" style={{ color: '#6f6a60' }}>
-            <Link
-              href={`/collections/${collection.slug}`}
-              className="hover:opacity-70 transition-opacity"
-            >
-              {collection.title}
-            </Link>
-            <span>→</span>
-            <span style={{ color: '#1b1b1b' }}>{text.title}</span>
-          </div>
-        )}
-
         {/* Text header */}
-        <div className="mb-10">
-          <h1 className="font-serif text-3xl mb-3" style={{ color: '#1b1b1b' }}>{text.title}</h1>
-          <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm" style={{ color: '#6f6a60' }}>
-            {author?.slug ? (
-              <Link href={`/authors/${author.slug}`} className="hover:opacity-70 transition-opacity">
-                {author.name}
+        <div className="mb-20">
+          {/* Author left / Collection right */}
+          <div
+            className="flex justify-between items-baseline mb-4 text-xs tracking-widest uppercase font-serif"
+            style={{ color: 'var(--ink-mute)' }}
+          >
+            <div>
+              {author?.slug ? (
+                <Link href={`/authors/${author.slug}`} className="hover:opacity-70 transition-opacity">
+                  {author.name}
+                </Link>
+              ) : author?.name ? (
+                <span>{author.name}</span>
+              ) : null}
+            </div>
+            {collection && (
+              <Link href={`/collections/${collection.slug}`} className="hover:opacity-70 transition-opacity">
+                {collection.title}
               </Link>
-            ) : (
-              <span>{author?.name}</span>
             )}
-            {genre?.name && <span>{genre.name}</span>}
-            {themes.length > 0 && <span>{themes.join(' · ')}</span>}
           </div>
+
+          <hr style={{ borderColor: 'var(--rule)', borderTopWidth: '1px', marginBottom: '5rem' }} />
+
+          <h1 className="font-serif text-3xl text-center italic mb-4" style={{ color: 'var(--ink)' }}>
+            {text.title}
+          </h1>
+
+          {themes.length > 0 && (
+            <div className="flex flex-wrap justify-center gap-x-4 gap-y-1 mb-4">
+              {themes.map(theme => (
+                <Link
+                  key={theme}
+                  href={`/search?q=${encodeURIComponent(theme)}`}
+                  className="text-xs tracking-widest uppercase font-serif hover:opacity-70 transition-opacity"
+                  style={{ color: 'var(--ink-mute)' }}
+                >
+                  {theme}
+                </Link>
+              ))}
+            </div>
+          )}
 
           {/* OCR quality notice */}
           {text.ocr_quality === 'low' && (
@@ -139,7 +137,7 @@ export default async function TextPage({ params }: Props) {
           {text.ocr_quality === 'medium' && (
             <p
               className="mt-4 text-xs rounded px-3 py-2 border"
-              style={{ color: '#6f6a60', background: '#f4f0e8', borderColor: '#e5e0d8' }}
+              style={{ color: 'var(--ink-mute)', background: '#f4f0e8', borderColor: 'var(--rule)' }}
             >
               This text was digitised from a scan and has been partially reviewed for accuracy.
             </p>

@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { createServerClient } from '@/lib/supabase/server'
+import { SiteHeader } from '@/app/components/SiteHeader'
 
 // author and genre are many-to-one from texts → objects; text_themes is one-to-many → array
 type TextRow = {
@@ -27,22 +28,8 @@ export default async function TextsPage() {
   const texts = (data ?? []) as unknown as TextRow[]
 
   return (
-    <div style={{ background: '#FBF8F1' }} className="min-h-screen">
-      <header
-        className="border-b bg-white px-8 py-5 flex justify-between items-center"
-        style={{ borderColor: '#e5e0d8' }}
-      >
-        <div className="flex gap-4 text-sm" style={{ color: '#6f6a60' }}>
-          <Link href="/" className="hover:opacity-70 transition-opacity">The Stromata</Link>
-          <span>/</span>
-          <span>Library</span>
-        </div>
-        <div className="hidden sm:flex gap-6 text-sm" style={{ color: '#6f6a60' }}>
-          <Link href="/authors" className="hover:text-stone-900 transition-colors">Authors</Link>
-          <Link href="/texts" className="hover:text-stone-900 transition-colors">Library</Link>
-          <Link href="/about" className="hover:text-stone-900 transition-colors">About</Link>
-        </div>
-      </header>
+    <div style={{ background: 'var(--paper)', paddingTop: '4rem' }} className="min-h-screen">
+      <SiteHeader />
 
       <main className="max-w-2xl mx-auto px-6 py-12">
         <div className="mb-8">
