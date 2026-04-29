@@ -182,13 +182,10 @@ export default async function Home() {
                       {text.title}
                     </Link>
                     {author && (
-                      <p className="text-xs mt-0.5" style={{ color: 'var(--ink-mute)' }}>
+                      <p className="text-xs mt-0.5 mb-2" style={{ color: 'var(--ink-mute)' }}>
                         {author.name}
                       </p>
                     )}
-                    <p className="text-xs mt-0.5 mb-2" style={{ color: '#9c9589' }}>
-                      approx. {readingTime(text.body)} min read
-                    </p>
                     {themes.length > 0 && (
                       <div className="flex flex-wrap gap-1">
                         {themes.map(t => (

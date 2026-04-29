@@ -45,6 +45,7 @@ export function ReadingHistorySection() {
                 accessionNumber={entry.accessionNumber}
                 traditionSlug={entry.traditionSlug}
                 index={i}
+                readingMinutes={entry.readingMinutes ?? undefined}
               />
             </Link>
             <div className="px-0.5 mt-3">

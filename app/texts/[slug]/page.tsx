@@ -251,6 +251,7 @@ export default async function TextPage({ params }: Props) {
         deathYear={author?.death_year ?? null}
         accessionNumber={text.accession_number ?? null}
         traditionSlug={author?.tradition?.slug ?? null}
+        readingMinutes={readingTime(text.body)}
       />
       <TrackPageEvent
         event="text-open"
