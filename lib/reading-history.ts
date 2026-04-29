@@ -8,6 +8,7 @@ export type ReadingHistoryEntry = {
   deathYear: number | null
   accessionNumber: number | null
   traditionSlug: string | null
+  readingMinutes: number | null
   visitedAt: number
 }
 

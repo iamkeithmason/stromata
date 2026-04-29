@@ -100,6 +100,7 @@ export function BookCover({
         }}
       >
         <p
+          className="book-cover-title"
           style={{
             fontFamily: 'var(--serif)',
             fontSize: '1.25rem',
@@ -168,6 +169,16 @@ export function BookCover({
           flexShrink: 0,
         }}
       >
+        <span
+          style={{
+            fontFamily: 'var(--serif-display)',
+            fontSize: '1.25rem',
+            color: 'rgba(245,240,230,0.70)',
+            lineHeight: 1,
+          }}
+        >
+          S
+        </span>
         {readingMinutes && (
           <span
             style={{
@@ -182,16 +193,6 @@ export function BookCover({
             ~ {readingMinutes} min
           </span>
         )}
-        <span
-          style={{
-            fontFamily: 'var(--serif-display)',
-            fontSize: '1.25rem',
-            color: 'rgba(245,240,230,0.70)',
-            lineHeight: 1,
-          }}
-        >
-          S
-        </span>
       </div>
     </div>
   )

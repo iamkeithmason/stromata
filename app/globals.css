@@ -78,6 +78,14 @@
 @tailwind utilities;
 
 /* =============================================================
+   Book cover — responsive title sizing on narrow mobile columns
+   ============================================================= */
+
+@media (max-width: 639px) {
+  .book-cover-title { font-size: 0.9rem !important; }
+}
+
+/* =============================================================
    Dropcap — first letter of the opening paragraph in text reader
    ============================================================= */
 
