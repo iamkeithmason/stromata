@@ -31,7 +31,7 @@ export default async function AuthorPage({ params }: Props) {
   // tradition and era are many-to-one from authors → objects
   const { data: author } = await supabase
     .from('authors')
-    .select('*, tradition:traditions(name), era:eras(label)')
+    .select('*, tradition:traditions(name), era:eras(label, slug)')
     .eq('slug', slug)
     .single()
 
@@ -48,17 +48,15 @@ export default async function AuthorPage({ params }: Props) {
 
   // tradition/era come back as objects (many-to-one)
   const tradition = (author.tradition as { name: string } | null)?.name
-  const era = (author.era as { label: string } | null)?.label
+  const eraObj = author.era as { label: string; slug: string } | null
+  const eraLabel = eraObj?.label
+  const eraSlug = eraObj?.slug
 
-  const dateLine = [
-    author.birth_year && author.death_year
-      ? `${author.birth_year}–${author.death_year}`
-      : author.death_year
-        ? `d. ${author.death_year}`
-        : null,
-    tradition,
-    era,
-  ].filter(Boolean).join(' · ')
+  const dateStr = author.birth_year && author.death_year
+    ? `${author.birth_year}–${author.death_year}`
+    : author.death_year
+      ? `d. ${author.death_year}`
+      : null
 
   return (
     <div style={{ background: 'var(--paper)', paddingTop: '4rem' }} className="min-h-screen">
@@ -68,8 +66,24 @@ export default async function AuthorPage({ params }: Props) {
         {/* Author header */}
         <div className="mb-10">
           <h1 className="font-serif text-3xl mb-2" style={{ color: '#1b1b1b' }}>{author.name}</h1>
-          {dateLine && (
-            <p className="text-sm" style={{ color: '#6f6a60' }}>{dateLine}</p>
+          {(dateStr || tradition || eraLabel) && (
+            <p className="text-sm" style={{ color: '#6f6a60' }}>
+              {[
+                dateStr,
+                tradition,
+              ].filter(Boolean).join(' · ')}
+              {eraLabel && eraSlug && (
+                <>
+                  {(dateStr || tradition) ? ' · ' : ''}
+                  <Link href={`/eras/${eraSlug}`} className="hover:opacity-70 transition-opacity">
+                    {eraLabel}
+                  </Link>
+                </>
+              )}
+              {eraLabel && !eraSlug && (
+                <>{(dateStr || tradition) ? ' · ' : ''}{eraLabel}</>
+              )}
+            </p>
           )}
         </div>
 

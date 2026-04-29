@@ -1,6 +1,9 @@
 import Link from 'next/link'
 import { createServerClient } from '@/lib/supabase/server'
 
+type EraRow = {
+  id: number; slug: string; label: string; description: string | null
+}
 type AuthorRow = {
   id: string; name: string; slug: string | null
   tradition: { name: string }[]
@@ -22,7 +25,7 @@ export default async function AdminDashboard({ searchParams }: Props) {
   const params = await searchParams
   const supabase = createServerClient()
 
-  const [{ data: authors }, { data: texts }, { data: collections }] = await Promise.all([
+  const [{ data: authors }, { data: texts }, { data: collections }, { data: eras }] = await Promise.all([
     supabase
       .from('authors')
       .select('id, name, slug, tradition:traditions(name), era:eras(label)')
@@ -35,6 +38,10 @@ export default async function AdminDashboard({ searchParams }: Props) {
       .from('collections')
       .select('id, title, slug, published, author:authors(name)')
       .order('title'),
+    supabase
+      .from('eras')
+      .select('id, slug, label, description')
+      .order('year_start', { nullsFirst: true }),
   ])
 
   return (
@@ -56,6 +63,46 @@ export default async function AdminDashboard({ searchParams }: Props) {
             Collection saved successfully.
           </p>
         )}
+        {params.success === 'era' && (
+          <p className="text-sm text-green-700 bg-green-50 border border-green-200 rounded px-3 py-2">
+            Era saved successfully.
+          </p>
+        )}
+
+        {/* Eras */}
+        <section>
+          <div className="flex items-baseline justify-between mb-4">
+            <h2 className="text-lg font-semibold text-stone-800">
+              Eras <span className="text-stone-400 font-normal text-sm">({eras?.length ?? 0})</span>
+            </h2>
+          </div>
+          {eras && eras.length > 0 ? (
+            <div className="border border-stone-200 rounded divide-y divide-stone-100">
+              {(eras as unknown as EraRow[]).map((era: EraRow) => (
+                <div key={era.id} className="flex items-center justify-between px-4 py-3">
+                  <div>
+                    <span className="text-stone-800 text-sm font-medium">{era.label}</span>
+                    <span className="text-stone-400 text-xs ml-3">
+                      {era.description
+                        ? era.description.length > 80
+                          ? era.description.slice(0, 80) + '…'
+                          : era.description
+                        : 'No description'}
+                    </span>
+                  </div>
+                  <Link
+                    href={`/admin/eras/${era.slug}/edit`}
+                    className="text-xs text-stone-500 hover:text-stone-900"
+                  >
+                    Edit
+                  </Link>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-sm text-stone-400">No eras found.</p>
+          )}
+        </section>
 
         {/* Authors */}
         <section>

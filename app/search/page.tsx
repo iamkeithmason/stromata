@@ -18,7 +18,7 @@ type TextResult = {
     slug: string | null
     death_year: number | null
     tradition: { name: string; slug: string } | null
-    era: { label: string } | null
+    era: { label: string; slug: string } | null
   } | null
   genre: { name: string } | null
 }
@@ -64,7 +64,7 @@ export default async function SearchPage({ searchParams }: Props) {
   let suggested: SuggestedText[] | null = null
 
   const textSelect = `id, title, slug, body, accession_number,
-    author:authors(name, slug, death_year, tradition:traditions(name, slug), era:eras(label)),
+    author:authors(name, slug, death_year, tradition:traditions(name, slug), era:eras(label, slug)),
     genre:genres(name)`
 
   if (query) {
@@ -242,15 +242,15 @@ export default async function SearchPage({ searchParams }: Props) {
               {texts.map((t, i) => {
                 const author = t.author
                 const tradition = author?.tradition?.name
-                const era = author?.era?.label
-                const metaParts = [tradition, era].filter(Boolean).join(' · ')
+                const eraLabel = author?.era?.label
+                const eraSlug = author?.era?.slug
                 const snippet = t.body ? bodySnippet(t.body) : ''
+                const readTime = `approx. ${readingTime(t.body)} min read`
                 return (
-                  <li key={t.id}>
-                    <Link
-                      href={`/texts/${t.slug}`}
-                      className="flex items-start py-4 gap-4 group"
-                    >
+                  <li key={t.id} className="relative group">
+                    {/* Stretched invisible link covers the whole card; era link sits above via relative positioning */}
+                    <Link href={`/texts/${t.slug}`} className="absolute inset-0" aria-label={t.title} />
+                    <div className="flex items-start py-4 gap-4">
                       <div style={{ width: 64, height: 96, flexShrink: 0, overflow: 'hidden', position: 'relative' }} className="group-hover:opacity-80 transition-opacity">
                         <div style={{ width: 256, transformOrigin: 'top left', transform: 'scale(0.25)', position: 'absolute', top: 0, left: 0 }}>
                           <BookCover
@@ -263,7 +263,7 @@ export default async function SearchPage({ searchParams }: Props) {
                           />
                         </div>
                       </div>
-                      <div className="min-w-0 flex-1">
+                      <div className="min-w-0 flex-1 relative">
                         <div className="flex items-baseline flex-wrap gap-x-3">
                           <span
                             className="font-serif group-hover:opacity-70 transition-opacity"
@@ -278,7 +278,12 @@ export default async function SearchPage({ searchParams }: Props) {
                           )}
                         </div>
                         <p className="text-xs mt-0.5" style={{ color: '#9c9589' }}>
-                          {[metaParts, `approx. ${readingTime(t.body)} min read`].filter(Boolean).join(' · ')}
+                          {tradition && <>{tradition}{eraLabel ? ' · ' : ''}</>}
+                          {eraLabel && eraSlug
+                            ? <Link href={`/eras/${eraSlug}`} className="relative hover:opacity-70 transition-opacity" style={{ zIndex: 1 }}>{eraLabel}</Link>
+                            : eraLabel
+                          }
+                          {(tradition || eraLabel) ? ' · ' : ''}{readTime}
                         </p>
                         {snippet && (
                           <p className="font-serif text-xs mt-1 leading-relaxed" style={{ color: '#9c9589' }}>
@@ -286,10 +291,10 @@ export default async function SearchPage({ searchParams }: Props) {
                           </p>
                         )}
                       </div>
-                      <span className="text-xs mt-1 shrink-0" style={{ color: '#6f6a60' }}>
+                      <span className="text-xs mt-1 shrink-0 relative" style={{ color: '#6f6a60' }}>
                         {t.genre?.name}
                       </span>
-                    </Link>
+                    </div>
                   </li>
                 )
               })}
