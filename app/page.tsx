@@ -20,7 +20,7 @@ type TextRow = {
     tradition: { slug: string } | null
   } | null
   genre: { name: string } | null
-  text_themes: { theme: { name: string } | null }[]
+  text_themes: { theme: { name: string; slug: string } | null }[]
 }
 
 export const metadata = {
@@ -68,7 +68,7 @@ export default async function Home() {
       id, title, slug, body, accession_number,
       author:authors(name, slug, death_year, tradition:traditions(slug)),
       genre:genres(name),
-      text_themes(theme:themes(name))
+      text_themes(theme:themes(name, slug))
     `)
     .eq('published', true)
     .order('created_at', { ascending: false })
@@ -87,7 +87,7 @@ export default async function Home() {
           className="mb-5"
           style={{
             fontFamily: 'var(--serif-display)',
-            fontSize: 64,
+            fontSize: '4rem',
             fontWeight: 400,
             letterSpacing: '-0.01em',
             lineHeight: 1.05,
@@ -119,7 +119,7 @@ export default async function Home() {
                   return (
                     <Link
                       key={theme.slug}
-                      href={`/search?q=${encodeURIComponent(theme.name)}`}
+                      href={`/themes/${theme.slug}`}
                       className="inline-flex items-center text-xs px-2.5 py-1 transition-colors hover:opacity-70"
                       style={{
                         color: 'var(--ink-mute)',
@@ -153,12 +153,12 @@ export default async function Home() {
             title="Recently added"
             aside={`${texts.length} new volume${texts.length === 1 ? '' : 's'}`}
           />
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-4 gap-6">
             {texts.map((text, i) => {
               const author = text.author
               const themes = text.text_themes
-                .map(tt => tt.theme?.name)
-                .filter(Boolean) as string[]
+                .map(tt => tt.theme)
+                .filter(Boolean) as { name: string; slug: string }[]
 
               return (
                 <div key={text.id}>
@@ -170,36 +170,30 @@ export default async function Home() {
                       accessionNumber={text.accession_number}
                       traditionSlug={author?.tradition?.slug ?? null}
                       index={i}
-                      readingMinutes={readingTime(text.body)}
                     />
                   </Link>
                   <div className="px-0.5 mt-3">
-                    <Link
-                      href={`/texts/${text.slug}`}
-                      className="font-serif italic text-sm leading-snug hover:opacity-70 transition-opacity"
-                      style={{ color: 'var(--ink)' }}
-                    >
-                      {text.title}
-                    </Link>
-                    {author && (
-                      <p className="text-xs mt-0.5 mb-2" style={{ color: 'var(--ink-mute)' }}>
-                        {author.name}
-                      </p>
-                    )}
+                    <p className="mb-2" style={{ color: 'var(--ink-mute)', fontFamily: 'var(--serif)', fontSize: '0.8rem', letterSpacing: '0.12em' }}>
+                      ~ {readingTime(text.body)} min
+                    </p>
                     {themes.length > 0 && (
                       <div className="flex flex-wrap gap-1">
                         {themes.map(t => (
-                          <span
-                            key={t}
-                            className="text-[10px] px-2 py-0.5"
+                          <Link
+                            key={t.slug}
+                            href={`/themes/${t.slug}`}
+                            className="px-2 py-0.5 hover:opacity-70 transition-opacity"
                             style={{
                               color: 'var(--ink-mute)',
                               border: '1px solid var(--rule)',
                               fontFamily: 'var(--serif)',
+                              fontSize: '0.625rem',
+                              letterSpacing: '0.1em',
+                              textTransform: 'uppercase',
                             }}
                           >
-                            {t}
-                          </span>
+                            {t.name}
+                          </Link>
                         ))}
                       </div>
                     )}
@@ -222,7 +216,7 @@ export default async function Home() {
             margin: '32px 0',
             color: 'var(--ink-mute)',
             fontFamily: 'var(--serif-display)',
-            fontSize: 22,
+            fontSize: '1.375rem',
           }}
         >
           <span style={{ flex: 1, height: 1, background: 'var(--rule)' }} />
@@ -237,7 +231,7 @@ export default async function Home() {
             justifyContent: 'space-between',
             gap: 48,
             fontFamily: 'var(--serif)',
-            fontSize: 14,
+            fontSize: '0.875rem',
             color: 'var(--ink-soft)',
             lineHeight: 1.85,
           }}
@@ -245,7 +239,7 @@ export default async function Home() {
           <div>
             <div
               style={{
-                fontSize: 11,
+                fontSize: '0.6875rem',
                 letterSpacing: '0.18em',
                 textTransform: 'uppercase',
                 color: 'var(--ink-mute)',
@@ -263,7 +257,7 @@ export default async function Home() {
           <div>
             <div
               style={{
-                fontSize: 11,
+                fontSize: '0.6875rem',
                 letterSpacing: '0.18em',
                 textTransform: 'uppercase',
                 color: 'var(--ink-mute)',
@@ -281,7 +275,7 @@ export default async function Home() {
               color: 'var(--ink-mute)',
               maxWidth: '44ch',
               lineHeight: 1.6,
-              fontSize: 14,
+              fontSize: '0.875rem',
             }}
           >
             Public-domain texts, edited for legibility. Stromata has no investors and no

@@ -33,7 +33,7 @@ export default async function TextPage({ params }: Props) {
       *,
       author:authors(name, slug, death_year, tradition:traditions(slug)),
       genre:genres(name),
-      text_themes(theme:themes(name)),
+      text_themes(theme:themes(name, slug)),
       collection:collections(id, title, slug)
     `)
     .eq('slug', slug)
@@ -48,9 +48,9 @@ export default async function TextPage({ params }: Props) {
   const collection = text.collection as { id: string; title: string; slug: string } | null
 
   // text_themes is one-to-many → array; theme within it is many-to-one → object
-  const themes = (text.text_themes as { theme: { name: string } | null }[])
-    .map(tt => tt.theme?.name)
-    .filter(Boolean) as string[]
+  const themes = (text.text_themes as { theme: { name: string; slug: string } | null }[])
+    .map(tt => tt.theme)
+    .filter(Boolean) as { name: string; slug: string }[]
 
   const body = text.body as string
   const editorialIntro = text.editorial_introduction as string | null
@@ -117,15 +117,15 @@ export default async function TextPage({ params }: Props) {
             <div className="flex flex-wrap justify-center gap-x-4 gap-y-1 mb-4">
               {themes.map(theme => (
                 <Link
-                  key={theme}
-                  href={`/search?q=${encodeURIComponent(theme)}`}
+                  key={theme.slug}
+                  href={`/themes/${theme.slug}`}
                   className="text-xs tracking-widest uppercase font-serif hover:opacity-70 transition-opacity"
                   style={{ color: 'var(--ink-mute)' }}
                   data-umami-event="theme-click"
-                  data-umami-event-theme={theme}
+                  data-umami-event-theme={theme.name}
                   data-umami-event-source="text-page"
                 >
-                  {theme}
+                  {theme.name}
                 </Link>
               ))}
             </div>

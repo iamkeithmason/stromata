@@ -78,11 +78,16 @@
 @tailwind utilities;
 
 /* =============================================================
-   Book cover — responsive title sizing on narrow mobile columns
+   Book cover — scale text up for single-column mobile layout
+   Desktop: 4-column (~226px wide). Mobile: 1-column (~342px wide). Ratio ≈ 1.5×
    ============================================================= */
 
 @media (max-width: 639px) {
-  .book-cover-title { font-size: 0.9rem !important; }
+  .book-cover .book-cover-title      { font-size: 1.875rem !important; }
+  .book-cover .book-cover-author     { font-size: 1.2rem   !important; }
+  .book-cover .book-cover-year       { font-size: 1.2rem   !important; }
+  .book-cover .book-cover-band-label { font-size: 0.75rem  !important; }
+  .book-cover .book-cover-s          { font-size: 1.875rem !important; }
 }
 
 /* =============================================================

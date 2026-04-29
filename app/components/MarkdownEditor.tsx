@@ -92,7 +92,7 @@ export default function MarkdownEditor({ name, defaultValue = '', value, onChang
                 >
                   <td className="px-3 py-1.5">
                     <code
-                      className="font-mono text-[11px] px-1.5 py-0.5 rounded"
+                      className="font-mono text-[0.6875rem] px-1.5 py-0.5 rounded"
                       style={{ background: '#ede9e0', color: '#1b1b1b' }}
                     >
                       {row.syntax}

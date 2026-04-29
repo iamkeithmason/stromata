@@ -34,7 +34,7 @@ export function ReadingHistorySection() {
   return (
     <section className="max-w-5xl mx-auto px-6 pb-20">
       <SectionHeader title="Reading history" aside="Recently read" />
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-4 gap-6">
         {history.map((entry, i) => (
           <div key={entry.slug}>
             <Link href={`/texts/${entry.slug}`} className="group block">
@@ -45,23 +45,15 @@ export function ReadingHistorySection() {
                 accessionNumber={entry.accessionNumber}
                 traditionSlug={entry.traditionSlug}
                 index={i}
-                readingMinutes={entry.readingMinutes ?? undefined}
               />
             </Link>
-            <div className="px-0.5 mt-3">
-              <Link
-                href={`/texts/${entry.slug}`}
-                className="font-serif italic text-sm leading-snug hover:opacity-70 transition-opacity"
-                style={{ color: 'var(--ink)' }}
-              >
-                {entry.title}
-              </Link>
-              {entry.authorName && (
-                <p className="text-xs mt-0.5" style={{ color: 'var(--ink-mute)' }}>
-                  {entry.authorName}
+            {entry.readingMinutes && (
+              <div className="px-0.5 mt-3">
+                <p style={{ color: 'var(--ink-mute)', fontFamily: 'var(--serif)', fontSize: '0.8rem', letterSpacing: '0.12em' }}>
+                  ~ {entry.readingMinutes} min
                 </p>
-              )}
-            </div>
+              </div>
+            )}
           </div>
         ))}
       </div>

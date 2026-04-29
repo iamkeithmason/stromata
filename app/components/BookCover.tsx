@@ -41,6 +41,7 @@ export function BookCover({
 
   return (
     <div
+      className="book-cover"
       style={{
         background: ground,
         aspectRatio: '2/3',
@@ -61,6 +62,7 @@ export function BookCover({
         }}
       >
         <span
+          className="book-cover-band-label"
           style={{
             fontFamily: 'var(--serif-display)',
             fontSize: '0.5rem',
@@ -72,6 +74,7 @@ export function BookCover({
           Stromata
         </span>
         <span
+          className="book-cover-band-label"
           style={{
             fontFamily: 'monospace',
             fontSize: '0.5rem',
@@ -129,6 +132,7 @@ export function BookCover({
         />
         {authorName && (
           <p
+            className="book-cover-author"
             style={{
               fontFamily: 'var(--serif)',
               fontSize: '0.8rem',
@@ -143,6 +147,7 @@ export function BookCover({
         )}
         {year && (
           <p
+            className="book-cover-year"
             style={{
               fontFamily: 'var(--serif)',
               fontStyle: 'italic',
@@ -170,6 +175,7 @@ export function BookCover({
         }}
       >
         <span
+          className="book-cover-s"
           style={{
             fontFamily: 'var(--serif-display)',
             fontSize: '1.25rem',
