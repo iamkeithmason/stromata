@@ -33,6 +33,7 @@ export async function PATCH(request: NextRequest, { params }: Params) {
     provenance_notes,
     translation_notes,
     ocr_quality,
+    editorial_introduction,
     body: textBody,
     published,
   } = payload
@@ -67,6 +68,7 @@ export async function PATCH(request: NextRequest, { params }: Params) {
       provenance_notes: provenance_notes || null,
       translation_notes: translation_notes || null,
       ocr_quality: ocr_quality || null,
+      editorial_introduction: editorial_introduction || null,
       published: published ?? false,
     })
     .eq('id', id)

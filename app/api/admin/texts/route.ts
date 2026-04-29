@@ -26,6 +26,7 @@ export async function POST(request: NextRequest) {
     provenance_notes,
     translation_notes,
     ocr_quality,
+    editorial_introduction,
     body: textBody,
     published,
   } = payload
@@ -60,6 +61,7 @@ export async function POST(request: NextRequest) {
       provenance_notes: provenance_notes || null,
       translation_notes: translation_notes || null,
       ocr_quality: ocr_quality || null,
+      editorial_introduction: editorial_introduction || null,
       published: published ?? false,
     })
     .select('id')
