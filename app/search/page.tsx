@@ -248,8 +248,6 @@ export default async function SearchPage({ searchParams }: Props) {
                 const readTime = `approx. ${readingTime(t.body)} min read`
                 return (
                   <li key={t.id} className="relative group">
-                    {/* Stretched invisible link covers the whole card; era link sits above via relative positioning */}
-                    <Link href={`/texts/${t.slug}`} className="absolute inset-0" aria-label={t.title} />
                     <div className="flex items-start py-4 gap-4">
                       <div style={{ width: 64, height: 96, flexShrink: 0, overflow: 'hidden', position: 'relative' }} className="group-hover:opacity-80 transition-opacity">
                         <div style={{ width: 256, transformOrigin: 'top left', transform: 'scale(0.25)', position: 'absolute', top: 0, left: 0 }}>
@@ -280,7 +278,7 @@ export default async function SearchPage({ searchParams }: Props) {
                         <p className="text-xs mt-0.5" style={{ color: '#9c9589' }}>
                           {tradition && <>{tradition}{eraLabel ? ' · ' : ''}</>}
                           {eraLabel && eraSlug
-                            ? <Link href={`/eras/${eraSlug}`} className="relative hover:opacity-70 transition-opacity" style={{ zIndex: 1 }}>{eraLabel}</Link>
+                            ? <Link href={`/eras/${eraSlug}`} className="relative hover:opacity-70 transition-opacity" style={{ zIndex: 2 }}>{eraLabel}</Link>
                             : eraLabel
                           }
                           {(tradition || eraLabel) ? ' · ' : ''}{readTime}
@@ -295,6 +293,8 @@ export default async function SearchPage({ searchParams }: Props) {
                         {t.genre?.name}
                       </span>
                     </div>
+                    {/* Stretched link last in DOM so it sits above content; era link uses zIndex 2 to remain clickable */}
+                    <Link href={`/texts/${t.slug}`} className="absolute inset-0" style={{ zIndex: 1 }} aria-label={t.title} />
                   </li>
                 )
               })}
