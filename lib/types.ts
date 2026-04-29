@@ -10,6 +10,7 @@ export type Era = {
   label: string
   year_start: number | null
   year_end: number | null
+  description: string | null
 }
 
 export type Genre = {
