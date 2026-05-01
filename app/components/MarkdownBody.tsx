@@ -28,7 +28,7 @@ function buildParagraphLineMap(content: string): Map<number, number> {
   return map
 }
 
-export default function MarkdownBody({ content }: { content: string }) {
+export default function MarkdownBody({ content, numbered = true }: { content: string; numbered?: boolean }) {
   const paragraphLineMap = useMemo(() => buildParagraphLineMap(content), [content])
 
   return (
@@ -37,7 +37,7 @@ export default function MarkdownBody({ content }: { content: string }) {
       components={{
         // Paragraphs
         p: ({ node, children }) => {
-          const num = node?.position?.start?.line
+          const num = numbered && node?.position?.start?.line
             ? paragraphLineMap.get(node.position.start.line)
             : undefined
           return (

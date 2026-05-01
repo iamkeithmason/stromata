@@ -4,6 +4,7 @@ import { TrackPageEvent } from '@/app/components/TrackPageEvent'
 import { notFound } from 'next/navigation'
 import { createServerClient } from '@/lib/supabase/server'
 import { readingTime } from '@/lib/reading-time'
+import MarkdownBody from '@/app/components/MarkdownBody'
 
 type Props = { params: Promise<{ slug: string }> }
 
@@ -106,7 +107,7 @@ export default async function AuthorPage({ params }: Props) {
         {/* Bio */}
         {author.bio && (
           <div className="mb-10">
-            <p className="font-serif leading-relaxed" style={{ color: '#1b1b1b' }}>{author.bio}</p>
+            <MarkdownBody content={author.bio} numbered={false} />
           </div>
         )}
 

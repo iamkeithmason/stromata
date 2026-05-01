@@ -41,7 +41,7 @@ export default function NewLocationForm() {
       body: JSON.stringify(payload),
     })
     if (res.ok) {
-      router.push('/admin?success=location')
+      router.push('/admin/locations?success=location')
     } else {
       const json = await res.json()
       setError(json.error || 'Something went wrong.')

@@ -41,7 +41,7 @@ export default function EditEraForm({ slug, label, initialDescription }: Props) 
       return
     }
 
-    router.push('/admin?success=era')
+    router.push('/admin/eras?success=era')
   }
 
   return (

@@ -79,6 +79,29 @@
 
 
 /* =============================================================
+   Book cover — responsive container scaling
+   ============================================================= */
+
+.book-cover {
+  container-type: inline-size;
+}
+
+@container (max-width: 200px) {
+  .book-cover {
+    --bc-band-pad: 0.6rem 0.75rem;
+    --bc-band-pad-compact: 0.4rem 0.75rem;
+    --bc-bottom-band-pad: 0.55rem 0.75rem;
+    --bc-title-size: 0.875rem;
+    --bc-author-size: 0.62rem;
+    --bc-year-size: 0.62rem;
+    --bc-s-size: 1rem;
+    --bc-mid-margin: 5px 7px;
+    --bc-mid-pad: 0.6rem 0.875rem;
+    --bc-rule-margin: 0.5rem auto;
+  }
+}
+
+/* =============================================================
    Dropcap — first letter of the opening paragraph in text reader
    ============================================================= */
 

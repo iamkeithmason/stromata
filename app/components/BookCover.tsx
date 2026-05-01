@@ -56,7 +56,7 @@ export function BookCover({
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
-          padding: '1.5rem 1rem',
+          padding: 'var(--bc-band-pad, 1.5rem 1rem)',
           borderBottom: '1px solid rgba(245,240,230,.18)',
           flexShrink: 0,
         }}
@@ -88,16 +88,17 @@ export function BookCover({
 
       {/* Mid panel: vellum, italic title + rule + author */}
       <div
+        className="book-cover-mid"
         style={{
           flex: 1,
           background: '#F5F0E6',
-          margin: '8px 10px',
+          margin: 'var(--bc-mid-margin, 8px 10px)',
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'center',
           alignItems: 'center',
           textAlign: 'center',
-          padding: '1rem 1.25rem',
+          padding: 'var(--bc-mid-pad, 1rem 1.25rem)',
           overflow: 'hidden',
           minHeight: 0,
         }}
@@ -106,7 +107,7 @@ export function BookCover({
           className="book-cover-title"
           style={{
             fontFamily: 'var(--serif)',
-            fontSize: '1.25rem',
+            fontSize: 'var(--bc-title-size, 1rem)',
             fontStyle: 'italic',
             fontWeight: 500,
             lineHeight: 1.15,
@@ -127,7 +128,7 @@ export function BookCover({
             height: 1,
             background: 'var(--ink)',
             opacity: 0.35,
-            margin: '1rem auto',
+            margin: 'var(--bc-rule-margin, 1rem auto)',
             flexShrink: 0,
           }}
         />
@@ -136,7 +137,7 @@ export function BookCover({
             className="book-cover-author"
             style={{
               fontFamily: 'var(--serif)',
-              fontSize: '0.8rem',
+              fontSize: 'var(--bc-author-size, 0.8rem)',
               letterSpacing: '0.14em',
               textTransform: 'uppercase',
               color: 'var(--ink-soft)',
@@ -152,7 +153,7 @@ export function BookCover({
             style={{
               fontFamily: 'var(--serif)',
               fontStyle: 'italic',
-              fontSize: '0.8rem',
+              fontSize: 'var(--bc-year-size, 0.8rem)',
               color: 'var(--ink-mute)',
               margin: '5px 0 0',
             }}
@@ -166,7 +167,9 @@ export function BookCover({
       <div
         style={{
           textAlign: 'center',
-          padding: readingMinutes ? '0.75rem 1rem' : '1.5rem 1rem',
+          padding: readingMinutes
+            ? 'var(--bc-band-pad-compact, 0.6rem 1rem)'
+            : 'var(--bc-bottom-band-pad, 1rem 1rem)',
           borderTop: '1px solid rgba(245,240,230,.18)',
           display: 'flex',
           flexDirection: 'column',
@@ -179,7 +182,7 @@ export function BookCover({
           className="book-cover-s"
           style={{
             fontFamily: 'var(--serif-display)',
-            fontSize: '1.25rem',
+            fontSize: 'var(--bc-s-size, 1.25rem)',
             color: 'rgba(245,240,230,0.70)',
             lineHeight: 1,
           }}

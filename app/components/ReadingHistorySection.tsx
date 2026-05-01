@@ -34,7 +34,7 @@ export function ReadingHistorySection() {
   return (
     <section className="max-w-5xl mx-auto px-6 pb-20">
       <SectionHeader title="Reading history" aside="Recently read" />
-      <div className="grid grid-cols-1 sm:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         {history.map((entry, i) => (
           <div key={entry.slug} className="w-2/3 mx-auto sm:w-full">
             <Link href={`/texts/${entry.slug}`} className="group block">

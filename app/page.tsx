@@ -153,7 +153,7 @@ export default async function Home() {
             title="Recently added"
             aside={`${texts.length} new volume${texts.length === 1 ? '' : 's'}`}
           />
-          <div className="grid grid-cols-1 sm:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {texts.map((text, i) => {
               const author = text.author
               const themes = text.text_themes

@@ -75,7 +75,7 @@ export default function EditAuthorForm({
     })
 
     if (res.ok) {
-      router.push('/admin?success=author')
+      router.push('/admin/authors?success=author')
     } else {
       const json = await res.json()
       setError(json.error || 'Something went wrong.')

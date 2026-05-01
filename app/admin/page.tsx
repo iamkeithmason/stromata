@@ -1,17 +1,6 @@
 import Link from 'next/link'
 import { createServerClient } from '@/lib/supabase/server'
 
-type EraRow = {
-  id: number; slug: string; label: string; description: string | null
-}
-type LocationRow = {
-  id: number; slug: string; name: string; alternative_names: string | null; description: string | null
-}
-type AuthorRow = {
-  id: string; name: string; slug: string | null; bio: string | null
-  tradition: { name: string }[]
-  era: { label: string }[]
-}
 type TextRow = {
   id: string; title: string; slug: string; published: boolean; editorial_introduction: string | null
   author: { name: string }[]
@@ -43,17 +32,12 @@ export default async function AdminDashboard({ searchParams }: Props) {
   const supabase = createServerClient()
 
   const [
-    { data: authors },
     { data: texts },
     { data: collections },
-    { data: eras },
-    { data: locations },
-    { count: authorsWithLocation },
+    { count: authorCount },
+    { count: locationCount },
+    { count: eraCount },
   ] = await Promise.all([
-    supabase
-      .from('authors')
-      .select('id, name, slug, bio, tradition:traditions(name), era:eras(label)')
-      .order('name'),
     supabase
       .from('texts')
       .select('id, title, slug, published, editorial_introduction, author:authors(name), genre:genres(name), collection:collections(title)')
@@ -62,29 +46,15 @@ export default async function AdminDashboard({ searchParams }: Props) {
       .from('collections')
       .select('id, title, slug, published, description, author:authors(name)')
       .order('title'),
-    supabase
-      .from('eras')
-      .select('id, slug, label, description')
-      .order('year_start', { nullsFirst: true }),
-    supabase
-      .from('locations')
-      .select('id, slug, name, alternative_names, description')
-      .order('name'),
-    supabase
-      .from('authors')
-      .select('id', { count: 'exact', head: true })
-      .not('location_id', 'is', null),
+    supabase.from('authors').select('id', { count: 'exact', head: true }),
+    supabase.from('locations').select('id', { count: 'exact', head: true }),
+    supabase.from('eras').select('id', { count: 'exact', head: true }),
   ])
 
   return (
     <main>
       <div className="space-y-12">
 
-        {params.success === 'author' && (
-          <p className="text-sm text-green-700 bg-green-50 border border-green-200 rounded px-3 py-2">
-            Author saved successfully.
-          </p>
-        )}
         {params.success === 'text' && (
           <p className="text-sm text-green-700 bg-green-50 border border-green-200 rounded px-3 py-2">
             Text saved successfully.
@@ -95,128 +65,24 @@ export default async function AdminDashboard({ searchParams }: Props) {
             Collection saved successfully.
           </p>
         )}
-        {params.success === 'era' && (
-          <p className="text-sm text-green-700 bg-green-50 border border-green-200 rounded px-3 py-2">
-            Era saved successfully.
-          </p>
-        )}
-        {params.success === 'location' && (
-          <p className="text-sm text-green-700 bg-green-50 border border-green-200 rounded px-3 py-2">
-            Location saved successfully.
-          </p>
-        )}
 
-        {/* Eras */}
-        <section>
-          <div className="flex items-baseline justify-between mb-4">
-            <h2 className="text-lg font-semibold text-stone-800">
-              Eras <span className="text-stone-400 font-normal text-sm">({eras?.length ?? 0})</span>
-            </h2>
-          </div>
-          {eras && eras.length > 0 ? (
-            <div className="border border-stone-200 rounded divide-y divide-stone-100">
-              {(eras as unknown as EraRow[]).map((era: EraRow) => (
-                <div key={era.id} className="flex items-center justify-between px-4 py-3">
-                  <div>
-                    <span className="text-stone-800 text-sm font-medium">{era.label}</span>
-                    {era.description && (
-                      <span className="text-stone-400 text-xs ml-3">
-                        {era.description.length > 80 ? era.description.slice(0, 80) + '…' : era.description}
-                      </span>
-                    )}
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <Dot filled={!!era.description} emptyLabel="No description" />
-                    <Link href={`/admin/eras/${era.slug}/edit`} className="text-xs text-stone-500 hover:text-stone-900">
-                      Edit
-                    </Link>
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <p className="text-sm text-stone-400">No eras found.</p>
-          )}
-        </section>
-
-        {/* Locations */}
-        <section>
-          <div className="flex items-baseline justify-between mb-4">
-            <h2 className="text-lg font-semibold text-stone-800">
-              Locations <span className="text-stone-400 font-normal text-sm">({locations?.length ?? 0})</span>
-            </h2>
-            <Link href="/admin/locations/new" className="text-sm text-stone-600 hover:text-stone-900">
-              + Add location
+        {/* Nav cards */}
+        <div className="grid grid-cols-3 gap-3">
+          {[
+            { label: 'Authors', href: '/admin/authors', count: authorCount ?? 0 },
+            { label: 'Locations', href: '/admin/locations', count: locationCount ?? 0 },
+            { label: 'Eras', href: '/admin/eras', count: eraCount ?? 0 },
+          ].map(({ label, href, count }) => (
+            <Link
+              key={href}
+              href={href}
+              className="border border-stone-200 rounded px-4 py-3 hover:border-stone-400 transition-colors"
+            >
+              <div className="text-xs text-stone-400 uppercase tracking-wide mb-1">{label}</div>
+              <div className="text-lg font-semibold text-stone-800">{count}</div>
             </Link>
-          </div>
-          {locations && locations.length > 0 ? (
-            <div className="border border-stone-200 rounded divide-y divide-stone-100">
-              {(locations as unknown as LocationRow[]).map((loc: LocationRow) => (
-                <div key={loc.id} className="flex items-center justify-between px-4 py-3">
-                  <div>
-                    <span className="text-stone-800 text-sm font-medium">{loc.name}</span>
-                    {loc.alternative_names && (
-                      <span className="text-stone-400 text-xs ml-3">
-                        {loc.alternative_names.length > 60 ? loc.alternative_names.slice(0, 60) + '…' : loc.alternative_names}
-                      </span>
-                    )}
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <Dot filled={!!loc.alternative_names} emptyLabel="No alternative names" />
-                    <Link href={`/admin/locations/${loc.id}/edit`} className="text-xs text-stone-500 hover:text-stone-900">
-                      Edit
-                    </Link>
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <p className="text-sm text-stone-400">No locations yet.</p>
-          )}
-        </section>
-
-        {/* Authors */}
-        <section>
-          <div className="flex items-baseline justify-between mb-4">
-            <div>
-              <h2 className="text-lg font-semibold text-stone-800">
-                Authors <span className="text-stone-400 font-normal text-sm">({authors?.length ?? 0})</span>
-              </h2>
-              {authors && authors.length > 0 && authorsWithLocation !== null && (
-                <p className="text-xs text-stone-400 mt-0.5">
-                  {authorsWithLocation} of {authors.length} have location data
-                </p>
-              )}
-            </div>
-            <Link href="/admin/authors/new" className="text-sm text-stone-600 hover:text-stone-900">
-              + Add author
-            </Link>
-          </div>
-          {authors && authors.length > 0 ? (
-            <div className="border border-stone-200 rounded divide-y divide-stone-100">
-              {authors.map((a: AuthorRow) => (
-                <div key={a.id} className="flex items-center justify-between px-4 py-3">
-                  <div>
-                    <span className="text-stone-800 text-sm font-medium">{a.name}</span>
-                    <span className="text-stone-400 text-xs ml-3">
-                      {a.tradition?.[0]?.name}
-                      {a.era?.[0]?.label ? ` · ${a.era[0].label}` : ''}
-                      {!a.slug && <span className="ml-2 text-amber-500">⚠ no slug</span>}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <Dot filled={!!a.bio} emptyLabel="No bio" />
-                    <Link href={`/admin/authors/${a.id}/edit`} className="text-xs text-stone-500 hover:text-stone-900">
-                      Edit
-                    </Link>
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <p className="text-sm text-stone-400">No authors yet.</p>
-          )}
-        </section>
+          ))}
+        </div>
 
         {/* Collections */}
         <section>
