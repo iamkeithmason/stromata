@@ -115,7 +115,6 @@ export function BookCover({
             display: '-webkit-box',
             WebkitLineClamp: 4,
             WebkitBoxOrient: 'vertical',
-            overflow: 'hidden',
           }}
         >
           {title}
@@ -126,7 +125,7 @@ export function BookCover({
             height: 1,
             background: 'var(--ink)',
             opacity: 0.35,
-            margin: '8px auto',
+            margin: '1rem auto',
             flexShrink: 0,
           }}
         />
