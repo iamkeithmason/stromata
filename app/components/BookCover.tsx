@@ -115,6 +115,8 @@ export function BookCover({
             display: '-webkit-box',
             WebkitLineClamp: 4,
             WebkitBoxOrient: 'vertical',
+            overflow: 'hidden',
+            paddingBottom: '0.2em',
           }}
         >
           {title}

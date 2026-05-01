@@ -161,7 +161,7 @@ export default async function Home() {
                 .filter(Boolean) as { name: string; slug: string }[]
 
               return (
-                <div key={text.id} className="w-2/3 mx-auto sm:w-auto">
+                <div key={text.id} className="w-2/3 mx-auto sm:w-full">
                   <Link href={`/texts/${text.slug}`} className="group block">
                     <BookCover
                       title={text.title}
