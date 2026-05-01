@@ -4,6 +4,9 @@ import { createServerClient } from '@/lib/supabase/server'
 type EraRow = {
   id: number; slug: string; label: string; description: string | null
 }
+type LocationRow = {
+  id: number; slug: string; name: string; alternative_names: string | null; description: string | null
+}
 type AuthorRow = {
   id: string; name: string; slug: string | null; bio: string | null
   tradition: { name: string }[]
@@ -32,13 +35,21 @@ function Dot({ filled, emptyLabel }: { filled: boolean; emptyLabel: string }) {
     </span>
   )
 }
+
 type Props = { searchParams: Promise<{ success?: string }> }
 
 export default async function AdminDashboard({ searchParams }: Props) {
   const params = await searchParams
   const supabase = createServerClient()
 
-  const [{ data: authors }, { data: texts }, { data: collections }, { data: eras }] = await Promise.all([
+  const [
+    { data: authors },
+    { data: texts },
+    { data: collections },
+    { data: eras },
+    { data: locations },
+    { count: authorsWithLocation },
+  ] = await Promise.all([
     supabase
       .from('authors')
       .select('id, name, slug, bio, tradition:traditions(name), era:eras(label)')
@@ -55,6 +66,14 @@ export default async function AdminDashboard({ searchParams }: Props) {
       .from('eras')
       .select('id, slug, label, description')
       .order('year_start', { nullsFirst: true }),
+    supabase
+      .from('locations')
+      .select('id, slug, name, alternative_names, description')
+      .order('name'),
+    supabase
+      .from('authors')
+      .select('id', { count: 'exact', head: true })
+      .not('location_id', 'is', null),
   ])
 
   return (
@@ -81,6 +100,11 @@ export default async function AdminDashboard({ searchParams }: Props) {
             Era saved successfully.
           </p>
         )}
+        {params.success === 'location' && (
+          <p className="text-sm text-green-700 bg-green-50 border border-green-200 rounded px-3 py-2">
+            Location saved successfully.
+          </p>
+        )}
 
         {/* Eras */}
         <section>
@@ -103,10 +127,7 @@ export default async function AdminDashboard({ searchParams }: Props) {
                   </div>
                   <div className="flex items-center gap-3">
                     <Dot filled={!!era.description} emptyLabel="No description" />
-                    <Link
-                      href={`/admin/eras/${era.slug}/edit`}
-                      className="text-xs text-stone-500 hover:text-stone-900"
-                    >
+                    <Link href={`/admin/eras/${era.slug}/edit`} className="text-xs text-stone-500 hover:text-stone-900">
                       Edit
                     </Link>
                   </div>
@@ -118,12 +139,55 @@ export default async function AdminDashboard({ searchParams }: Props) {
           )}
         </section>
 
-        {/* Authors */}
+        {/* Locations */}
         <section>
           <div className="flex items-baseline justify-between mb-4">
             <h2 className="text-lg font-semibold text-stone-800">
-              Authors <span className="text-stone-400 font-normal text-sm">({authors?.length ?? 0})</span>
+              Locations <span className="text-stone-400 font-normal text-sm">({locations?.length ?? 0})</span>
             </h2>
+            <Link href="/admin/locations/new" className="text-sm text-stone-600 hover:text-stone-900">
+              + Add location
+            </Link>
+          </div>
+          {locations && locations.length > 0 ? (
+            <div className="border border-stone-200 rounded divide-y divide-stone-100">
+              {(locations as unknown as LocationRow[]).map((loc: LocationRow) => (
+                <div key={loc.id} className="flex items-center justify-between px-4 py-3">
+                  <div>
+                    <span className="text-stone-800 text-sm font-medium">{loc.name}</span>
+                    {loc.alternative_names && (
+                      <span className="text-stone-400 text-xs ml-3">
+                        {loc.alternative_names.length > 60 ? loc.alternative_names.slice(0, 60) + '…' : loc.alternative_names}
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <Dot filled={!!loc.alternative_names} emptyLabel="No alternative names" />
+                    <Link href={`/admin/locations/${loc.id}/edit`} className="text-xs text-stone-500 hover:text-stone-900">
+                      Edit
+                    </Link>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-sm text-stone-400">No locations yet.</p>
+          )}
+        </section>
+
+        {/* Authors */}
+        <section>
+          <div className="flex items-baseline justify-between mb-4">
+            <div>
+              <h2 className="text-lg font-semibold text-stone-800">
+                Authors <span className="text-stone-400 font-normal text-sm">({authors?.length ?? 0})</span>
+              </h2>
+              {authors && authors.length > 0 && authorsWithLocation !== null && (
+                <p className="text-xs text-stone-400 mt-0.5">
+                  {authorsWithLocation} of {authors.length} have location data
+                </p>
+              )}
+            </div>
             <Link href="/admin/authors/new" className="text-sm text-stone-600 hover:text-stone-900">
               + Add author
             </Link>
@@ -142,10 +206,7 @@ export default async function AdminDashboard({ searchParams }: Props) {
                   </div>
                   <div className="flex items-center gap-3">
                     <Dot filled={!!a.bio} emptyLabel="No bio" />
-                    <Link
-                      href={`/admin/authors/${a.id}/edit`}
-                      className="text-xs text-stone-500 hover:text-stone-900"
-                    >
+                    <Link href={`/admin/authors/${a.id}/edit`} className="text-xs text-stone-500 hover:text-stone-900">
                       Edit
                     </Link>
                   </div>
@@ -182,10 +243,7 @@ export default async function AdminDashboard({ searchParams }: Props) {
                   </div>
                   <div className="flex items-center gap-3">
                     <Dot filled={!!c.description} emptyLabel="No description" />
-                    <Link
-                      href={`/admin/collections/${c.id}/edit`}
-                      className="text-xs text-stone-500 hover:text-stone-900"
-                    >
+                    <Link href={`/admin/collections/${c.id}/edit`} className="text-xs text-stone-500 hover:text-stone-900">
                       Edit
                     </Link>
                   </div>
@@ -225,16 +283,10 @@ export default async function AdminDashboard({ searchParams }: Props) {
                   </div>
                   <div className="flex items-center gap-3">
                     <Dot filled={!!t.editorial_introduction} emptyLabel="No editorial introduction" />
-                    <Link
-                      href={`/admin/texts/new?from=${t.id}`}
-                      className="text-xs text-stone-400 hover:text-stone-700"
-                    >
+                    <Link href={`/admin/texts/new?from=${t.id}`} className="text-xs text-stone-400 hover:text-stone-700">
                       Duplicate
                     </Link>
-                    <Link
-                      href={`/admin/texts/${t.id}/edit`}
-                      className="text-xs text-stone-500 hover:text-stone-900"
-                    >
+                    <Link href={`/admin/texts/${t.id}/edit`} className="text-xs text-stone-500 hover:text-stone-900">
                       Edit
                     </Link>
                   </div>

@@ -36,6 +36,8 @@ export default async function EditAuthorPage({ params }: Props) {
           initialDeathYear={author.death_year}
           initialBio={author.bio ?? ''}
           initialBioSource={author.bio_source ?? ''}
+          initialLocationId={author.location_id ?? null}
+          initialLocation={author.location ?? ''}
         />
       </div>
     </main>

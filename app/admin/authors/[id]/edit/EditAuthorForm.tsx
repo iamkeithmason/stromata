@@ -1,11 +1,13 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { TRADITIONS, ERAS } from '@/lib/constants'
 
 const input = 'w-full px-3 py-2 border border-stone-300 rounded text-stone-800 focus:outline-none focus:ring-2 focus:ring-stone-400 bg-white'
 const label = 'block text-sm font-medium text-stone-700 mb-1'
+
+type LocationOption = { id: number; name: string; slug: string }
 
 type Props = {
   id: string
@@ -17,6 +19,8 @@ type Props = {
   initialDeathYear: number | null
   initialBio: string
   initialBioSource: string
+  initialLocationId: number | null
+  initialLocation: string
 }
 
 export default function EditAuthorForm({
@@ -29,10 +33,20 @@ export default function EditAuthorForm({
   initialDeathYear,
   initialBio,
   initialBioSource,
+  initialLocationId,
+  initialLocation,
 }: Props) {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [locationOptions, setLocationOptions] = useState<LocationOption[]>([])
+
+  useEffect(() => {
+    fetch('/api/admin/locations')
+      .then(r => r.json())
+      .then(data => setLocationOptions(data ?? []))
+      .catch(() => {})
+  }, [])
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -47,6 +61,8 @@ export default function EditAuthorForm({
       era_slug: (data.get('era_slug') as string) || null,
       bio: (data.get('bio') as string) || null,
       bio_source: (data.get('bio_source') as string) || null,
+      location_id: data.get('location_id') ? Number(data.get('location_id')) : null,
+      location: (data.get('location') as string) || null,
     }
 
     setLoading(true)
@@ -79,14 +95,7 @@ export default function EditAuthorForm({
           Slug <span className="text-red-500">*</span>{' '}
           <span className="text-stone-400 font-normal">(used in the URL)</span>
         </label>
-        <input
-          name="slug"
-          type="text"
-          defaultValue={initialSlug}
-          required
-          className={input}
-          placeholder="e.g. john-chrysostom"
-        />
+        <input name="slug" type="text" defaultValue={initialSlug} required className={input} placeholder="e.g. john-chrysostom" />
       </div>
 
       <div>
@@ -128,6 +137,24 @@ export default function EditAuthorForm({
       <div>
         <label className={label}>Bio source</label>
         <input name="bio_source" type="text" defaultValue={initialBioSource} className={input} />
+      </div>
+
+      {/* Location */}
+      <div className="pt-2 border-t border-stone-200">
+        <p className="text-xs uppercase tracking-widest text-stone-400 mb-4">Location</p>
+        <div className="space-y-4">
+          <div>
+            <label className={label}>Country / region <span className="text-stone-400 font-normal">(optional)</span></label>
+            <select name="location_id" defaultValue={initialLocationId ?? ''} className={input}>
+              <option value="">— select location —</option>
+              {locationOptions.map(l => <option key={l.id} value={l.id}>{l.name}</option>)}
+            </select>
+          </div>
+          <div>
+            <label className={label}>Primary location <span className="text-stone-400 font-normal">(optional)</span></label>
+            <input name="location" type="text" defaultValue={initialLocation} className={input} placeholder="e.g. Canterbury" />
+          </div>
+        </div>
       </div>
 
       {error && (

@@ -12,9 +12,6 @@ function slugify(text: string): string {
 }
 
 function extractYears(text: string): { birth: number | null; death: number | null } {
-  // Match full-date ranges inside parentheses:
-  //   "(2 July 1489 – 21 March 1556)"  "(c. 347 – 407)"  "(347–407)"  "(c. 100 – c. 165 AD)"
-  // [^)]*? skips over any leading day/month/circa text before each year.
   const range = text.match(/\([^)]*?(\d{3,4})\s*[–—-]\s*[^)]*?(\d{3,4})[^)]*?\)/)
   if (range) return { birth: parseInt(range[1]), death: parseInt(range[2]) }
   const born = text.match(/born\s+(?:c\.?\s*)?(\d{3,4})/)
@@ -24,20 +21,15 @@ function extractYears(text: string): { birth: number | null; death: number | nul
 
 function suggestTradition(text: string): string {
   const t = text.toLowerCase()
-  // Reformation traditions — check before catholic to avoid false positives
   if (t.includes('reformed') || t.includes('calvinist') || t.includes('presbyterian')) return 'reformed'
   if (t.includes('lutheran')) return 'lutheran'
   if (t.includes('anglican') || t.includes('church of england')) return 'anglican'
   if (t.includes('methodist')) return 'methodist'
   if (t.includes('anabaptist') || t.includes('mennonite') || t.includes('quaker')) return 'radical-reformation'
-  // Post-schism traditions
   if (t.includes('eastern orthodox') || t.includes('greek orthodox') || t.includes('russian orthodox')) return 'eastern-orthodox'
   if (t.includes('roman catholic') || t.includes('jesuit') || t.includes('dominican') || t.includes('franciscan') || t.includes('benedictine')) return 'roman-catholic'
-  // Oriental Orthodox — check before generic 'orthodox' matches above
   if (t.includes('coptic') || t.includes('syriac') || t.includes('armenian church') || t.includes('ethiopian') || t.includes('oriental orthodox')) return 'oriental-orthodox'
-  // Byzantine — pre-schism medieval (roughly 600–1054), both East and Latin West
   if (t.includes('byzantine') || t.includes('carolingian') || t.includes('john of damascus') || t.includes('maximus the confessor')) return 'byzantine'
-  // Patristic (c. 325–600) — broad net; Chrysostom, Augustine, Cappadocians etc.
   if (
     t.includes('church father') || t.includes('patristic') ||
     t.includes('archbishop of constantinople') || t.includes('bishop of hippo') ||
@@ -45,17 +37,17 @@ function suggestTradition(text: string): string {
     t.includes('cappadocian') || t.includes('doctor of the church') ||
     t.includes('archbishop') || t.includes('patriarch')
   ) return 'patristic'
-  // Early Church (pre-Nicene, to c. 325)
   if (t.includes('early church') || t.includes('apostolic father') || t.includes('apologist') || t.includes('ante-nicene')) return 'early-church'
   return ''
 }
+
+type LocationOption = { id: number; name: string; slug: string }
 
 export default function NewAuthorForm() {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
-  // Controlled fields so Wikipedia can pre-fill them
   const [name, setName] = useState('')
   const [slug, setSlug] = useState('')
   const [slugEdited, setSlugEdited] = useState(false)
@@ -64,6 +56,8 @@ export default function NewAuthorForm() {
   const [traditionSlug, setTraditionSlug] = useState('')
   const [bio, setBio] = useState('')
   const [bioSource, setBioSource] = useState('')
+  const [locationId, setLocationId] = useState('')
+  const [locationOptions, setLocationOptions] = useState<LocationOption[]>([])
 
   const [wikiLoading, setWikiLoading] = useState(false)
   const [wikiNote, setWikiNote] = useState<{ type: 'success' | 'warn'; text: string } | null>(null)
@@ -71,6 +65,13 @@ export default function NewAuthorForm() {
   useEffect(() => {
     if (!slugEdited) setSlug(slugify(name))
   }, [name, slugEdited])
+
+  useEffect(() => {
+    fetch('/api/admin/locations')
+      .then(r => r.json())
+      .then(data => setLocationOptions(data ?? []))
+      .catch(() => {})
+  }, [])
 
   async function lookupWikipedia() {
     if (!name.trim()) return
@@ -93,11 +94,10 @@ export default function NewAuthorForm() {
       if (birth) setBirthYear(String(birth))
       if (death) setDeathYear(String(death))
 
-      setTraditionSlug('')  // reset before each lookup so stale values don't persist
+      setTraditionSlug('')
       const suggested = suggestTradition(extract + ' ' + description)
       if (suggested) setTraditionSlug(suggested)
 
-      // First 3 sentences as bio
       const sentences = extract.replace(/\n+/g, ' ').split(/(?<=[.!?])\s+/)
       setBio(sentences.slice(0, 3).join(' '))
       setBioSource(`Wikipedia, cached ${new Date().toISOString().split('T')[0]}`)
@@ -122,6 +122,8 @@ export default function NewAuthorForm() {
       era_slug: (data.get('era_slug') as string) || null,
       bio: bio || null,
       bio_source: bioSource || null,
+      location_id: locationId ? Number(locationId) : null,
+      location: (data.get('location') as string) || null,
     }
     setLoading(true)
     setError('')
@@ -193,12 +195,7 @@ export default function NewAuthorForm() {
       {/* Tradition */}
       <div>
         <label className={label}>Tradition <span className="text-red-500">*</span></label>
-        <select
-          value={traditionSlug}
-          onChange={e => setTraditionSlug(e.target.value)}
-          required
-          className={input}
-        >
+        <select value={traditionSlug} onChange={e => setTraditionSlug(e.target.value)} required className={input}>
           <option value="">Select tradition…</option>
           {TRADITIONS.map(t => (
             <option key={t.slug} value={t.slug}>{t.name}</option>
@@ -210,23 +207,11 @@ export default function NewAuthorForm() {
       <div className="grid grid-cols-2 gap-4">
         <div>
           <label className={label}>Birth year</label>
-          <input
-            type="number"
-            value={birthYear}
-            onChange={e => setBirthYear(e.target.value)}
-            className={input}
-            placeholder="e.g. 354"
-          />
+          <input type="number" value={birthYear} onChange={e => setBirthYear(e.target.value)} className={input} placeholder="e.g. 354" />
         </div>
         <div>
           <label className={label}>Death year</label>
-          <input
-            type="number"
-            value={deathYear}
-            onChange={e => setDeathYear(e.target.value)}
-            className={input}
-            placeholder="e.g. 430"
-          />
+          <input type="number" value={deathYear} onChange={e => setDeathYear(e.target.value)} className={input} placeholder="e.g. 430" />
         </div>
       </div>
 
@@ -244,25 +229,34 @@ export default function NewAuthorForm() {
       {/* Bio */}
       <div>
         <label className={label}>Bio</label>
-        <textarea
-          value={bio}
-          onChange={e => setBio(e.target.value)}
-          rows={6}
-          className={input}
-          placeholder="Wikipedia-sourced biography, editorially reviewed…"
-        />
+        <textarea value={bio} onChange={e => setBio(e.target.value)} rows={6} className={input} placeholder="Wikipedia-sourced biography, editorially reviewed…" />
       </div>
 
       {/* Bio source */}
       <div>
         <label className={label}>Bio source</label>
-        <input
-          type="text"
-          value={bioSource}
-          onChange={e => setBioSource(e.target.value)}
-          className={input}
-          placeholder="e.g. Wikipedia, cached 2026-04-17"
-        />
+        <input type="text" value={bioSource} onChange={e => setBioSource(e.target.value)} className={input} placeholder="e.g. Wikipedia, cached 2026-04-17" />
+      </div>
+
+      {/* Location */}
+      <div className="pt-2 border-t border-stone-200">
+        <p className="text-xs uppercase tracking-widest text-stone-400 mb-4">Location</p>
+        <div className="space-y-4">
+          <div>
+            <label className={label}>Country / region <span className="text-stone-400 font-normal">(optional)</span></label>
+            <select value={locationId} onChange={e => setLocationId(e.target.value)} className={input}>
+              <option value="">— select location —</option>
+              {locationOptions.map(l => <option key={l.id} value={l.id}>{l.name}</option>)}
+            </select>
+            {locationOptions.length === 0 && (
+              <p className="mt-1 text-xs text-stone-400">No locations yet — <a href="/admin/locations/new" className="underline">add one first</a>.</p>
+            )}
+          </div>
+          <div>
+            <label className={label}>Primary location <span className="text-stone-400 font-normal">(optional)</span></label>
+            <input name="location" type="text" className={input} placeholder="e.g. Canterbury" />
+          </div>
+        </div>
       </div>
 
       {error && (
@@ -270,11 +264,7 @@ export default function NewAuthorForm() {
       )}
 
       <div className="pt-2">
-        <button
-          type="submit"
-          disabled={loading}
-          className="px-6 py-2 bg-stone-800 text-white rounded hover:bg-stone-700 disabled:opacity-50 transition-colors"
-        >
+        <button type="submit" disabled={loading} className="px-6 py-2 bg-stone-800 text-white rounded hover:bg-stone-700 disabled:opacity-50 transition-colors">
           {loading ? 'Saving…' : 'Add author'}
         </button>
       </div>

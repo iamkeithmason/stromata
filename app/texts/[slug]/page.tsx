@@ -31,7 +31,7 @@ export default async function TextPage({ params }: Props) {
     .from('texts')
     .select(`
       *,
-      author:authors(name, slug, death_year, tradition:traditions(slug)),
+      author:authors(name, slug, death_year, loc:locations(name, slug), tradition:traditions(slug)),
       genre:genres(name),
       text_themes(theme:themes(name, slug)),
       collection:collections(id, title, slug)
@@ -43,7 +43,7 @@ export default async function TextPage({ params }: Props) {
   if (!text) notFound()
 
   // author and genre are many-to-one → plain objects
-  const author = text.author as { name: string; slug: string | null; death_year: number | null; tradition: { slug: string } | null } | null
+  const author = text.author as { name: string; slug: string | null; death_year: number | null; loc: { name: string; slug: string } | null; tradition: { slug: string } | null } | null
   const genre = text.genre as { name: string } | null
   const collection = text.collection as { id: string; title: string; slug: string } | null
 
@@ -113,7 +113,7 @@ export default async function TextPage({ params }: Props) {
             {text.title}
           </h1>
 
-          {themes.length > 0 && (
+          {(themes.length > 0 || author?.loc) && (
             <div className="flex flex-wrap justify-center gap-x-4 gap-y-1 mb-4">
               {themes.map(theme => (
                 <Link
@@ -128,6 +128,18 @@ export default async function TextPage({ params }: Props) {
                   {theme.name}
                 </Link>
               ))}
+              {author?.loc && (
+                <Link
+                  href={`/locations/${author.loc.slug}`}
+                  className="text-xs tracking-widest uppercase font-serif hover:opacity-70 transition-opacity"
+                  style={{ color: 'var(--ink-mute)' }}
+                  data-umami-event="location-country-click"
+                  data-umami-event-country={author.loc.name}
+                  data-umami-event-from="text-reader"
+                >
+                  {author.loc.name}
+                </Link>
+              )}
             </div>
           )}
 

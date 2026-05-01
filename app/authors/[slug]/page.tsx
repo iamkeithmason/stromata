@@ -31,7 +31,7 @@ export default async function AuthorPage({ params }: Props) {
   // tradition and era are many-to-one from authors → objects
   const { data: author } = await supabase
     .from('authors')
-    .select('*, tradition:traditions(name), era:eras(label, slug)')
+    .select('*, tradition:traditions(name), era:eras(label, slug), loc:locations(name, slug)')
     .eq('slug', slug)
     .single()
 
@@ -51,6 +51,8 @@ export default async function AuthorPage({ params }: Props) {
   const eraObj = author.era as { label: string; slug: string } | null
   const eraLabel = eraObj?.label
   const eraSlug = eraObj?.slug
+  const locationObj = author.loc as { name: string; slug: string } | null
+  const locationCity = author.location as string | null
 
   const dateStr = author.birth_year && author.death_year
     ? `${author.birth_year}–${author.death_year}`
@@ -66,12 +68,9 @@ export default async function AuthorPage({ params }: Props) {
         {/* Author header */}
         <div className="mb-10">
           <h1 className="font-serif text-3xl mb-2" style={{ color: '#1b1b1b' }}>{author.name}</h1>
-          {(dateStr || tradition || eraLabel) && (
+          {(dateStr || tradition || eraLabel || locationObj) && (
             <p className="text-sm" style={{ color: '#6f6a60' }}>
-              {[
-                dateStr,
-                tradition,
-              ].filter(Boolean).join(' · ')}
+              {[dateStr, tradition].filter(Boolean).join(' · ')}
               {eraLabel && eraSlug && (
                 <>
                   {(dateStr || tradition) ? ' · ' : ''}
@@ -83,7 +82,24 @@ export default async function AuthorPage({ params }: Props) {
               {eraLabel && !eraSlug && (
                 <>{(dateStr || tradition) ? ' · ' : ''}{eraLabel}</>
               )}
+              {locationObj && (
+                <>
+                  {(dateStr || tradition || eraLabel) ? ' · ' : ''}
+                  <Link
+                    href={`/locations/${locationObj.slug}`}
+                    className="hover:opacity-70 transition-opacity"
+                    data-umami-event="location-country-click"
+                    data-umami-event-country={locationObj.name}
+                    data-umami-event-from="author-page"
+                  >
+                    {locationObj.name}
+                  </Link>
+                </>
+              )}
             </p>
+          )}
+          {locationCity && (
+            <p className="text-sm mt-0.5" style={{ color: '#6f6a60' }}>{locationCity}</p>
           )}
         </div>
 

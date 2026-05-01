@@ -22,6 +22,7 @@ export function SiteHeader({ breadcrumb }: { breadcrumb?: React.ReactNode }) {
       </div>
       <nav className="hidden sm:flex gap-6 text-sm font-serif" style={{ color: 'var(--ink-soft)' }}>
         <Link href="/authors" className="hover:opacity-70 transition-opacity">Authors</Link>
+        <Link href="/locations" className="hover:opacity-70 transition-opacity">Locations</Link>
         <Link href="/texts" className="hover:opacity-70 transition-opacity">Library</Link>
         <Link href="/about" className="hover:opacity-70 transition-opacity">About</Link>
       </nav>
