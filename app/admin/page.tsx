@@ -5,19 +5,32 @@ type EraRow = {
   id: number; slug: string; label: string; description: string | null
 }
 type AuthorRow = {
-  id: string; name: string; slug: string | null
+  id: string; name: string; slug: string | null; bio: string | null
   tradition: { name: string }[]
   era: { label: string }[]
 }
 type TextRow = {
-  id: string; title: string; slug: string; published: boolean
+  id: string; title: string; slug: string; published: boolean; editorial_introduction: string | null
   author: { name: string }[]
   genre: { name: string }[]
   collection: { title: string } | null
 }
 type CollectionRow = {
-  id: string; title: string; slug: string; published: boolean
+  id: string; title: string; slug: string; published: boolean; description: string | null
   author: { name: string } | null
+}
+
+function Dot({ filled, emptyLabel }: { filled: boolean; emptyLabel: string }) {
+  return (
+    <span className="relative group inline-flex items-center cursor-help">
+      <span className={filled ? 'text-green-500' : 'text-amber-400'} style={{ fontSize: '0.5rem', lineHeight: 1 }}>●</span>
+      {!filled && (
+        <span className="absolute bottom-full right-0 mb-1.5 px-2 py-1 text-xs bg-stone-800 text-white rounded whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-10">
+          {emptyLabel}
+        </span>
+      )}
+    </span>
+  )
 }
 type Props = { searchParams: Promise<{ success?: string }> }
 
@@ -28,15 +41,15 @@ export default async function AdminDashboard({ searchParams }: Props) {
   const [{ data: authors }, { data: texts }, { data: collections }, { data: eras }] = await Promise.all([
     supabase
       .from('authors')
-      .select('id, name, slug, tradition:traditions(name), era:eras(label)')
+      .select('id, name, slug, bio, tradition:traditions(name), era:eras(label)')
       .order('name'),
     supabase
       .from('texts')
-      .select('id, title, slug, published, author:authors(name), genre:genres(name), collection:collections(title)')
-      .order('title'),
+      .select('id, title, slug, published, editorial_introduction, author:authors(name), genre:genres(name), collection:collections(title)')
+      .order('created_at', { ascending: false }),
     supabase
       .from('collections')
-      .select('id, title, slug, published, author:authors(name)')
+      .select('id, title, slug, published, description, author:authors(name)')
       .order('title'),
     supabase
       .from('eras')
@@ -82,20 +95,21 @@ export default async function AdminDashboard({ searchParams }: Props) {
                 <div key={era.id} className="flex items-center justify-between px-4 py-3">
                   <div>
                     <span className="text-stone-800 text-sm font-medium">{era.label}</span>
-                    <span className="text-stone-400 text-xs ml-3">
-                      {era.description
-                        ? era.description.length > 80
-                          ? era.description.slice(0, 80) + '…'
-                          : era.description
-                        : 'No description'}
-                    </span>
+                    {era.description && (
+                      <span className="text-stone-400 text-xs ml-3">
+                        {era.description.length > 80 ? era.description.slice(0, 80) + '…' : era.description}
+                      </span>
+                    )}
                   </div>
-                  <Link
-                    href={`/admin/eras/${era.slug}/edit`}
-                    className="text-xs text-stone-500 hover:text-stone-900"
-                  >
-                    Edit
-                  </Link>
+                  <div className="flex items-center gap-3">
+                    <Dot filled={!!era.description} emptyLabel="No description" />
+                    <Link
+                      href={`/admin/eras/${era.slug}/edit`}
+                      className="text-xs text-stone-500 hover:text-stone-900"
+                    >
+                      Edit
+                    </Link>
+                  </div>
                 </div>
               ))}
             </div>
@@ -126,12 +140,15 @@ export default async function AdminDashboard({ searchParams }: Props) {
                       {!a.slug && <span className="ml-2 text-amber-500">⚠ no slug</span>}
                     </span>
                   </div>
-                  <Link
-                    href={`/admin/authors/${a.id}/edit`}
-                    className="text-xs text-stone-500 hover:text-stone-900"
-                  >
-                    Edit
-                  </Link>
+                  <div className="flex items-center gap-3">
+                    <Dot filled={!!a.bio} emptyLabel="No bio" />
+                    <Link
+                      href={`/admin/authors/${a.id}/edit`}
+                      className="text-xs text-stone-500 hover:text-stone-900"
+                    >
+                      Edit
+                    </Link>
+                  </div>
                 </div>
               ))}
             </div>
@@ -163,12 +180,15 @@ export default async function AdminDashboard({ searchParams }: Props) {
                       {c.published ? '● Published' : '○ Draft'}
                     </span>
                   </div>
-                  <Link
-                    href={`/admin/collections/${c.id}/edit`}
-                    className="text-xs text-stone-500 hover:text-stone-900"
-                  >
-                    Edit
-                  </Link>
+                  <div className="flex items-center gap-3">
+                    <Dot filled={!!c.description} emptyLabel="No description" />
+                    <Link
+                      href={`/admin/collections/${c.id}/edit`}
+                      className="text-xs text-stone-500 hover:text-stone-900"
+                    >
+                      Edit
+                    </Link>
+                  </div>
                 </div>
               ))}
             </div>
@@ -203,7 +223,8 @@ export default async function AdminDashboard({ searchParams }: Props) {
                       {t.published ? '● Published' : '○ Draft'}
                     </span>
                   </div>
-                  <div className="flex gap-4">
+                  <div className="flex items-center gap-3">
+                    <Dot filled={!!t.editorial_introduction} emptyLabel="No editorial introduction" />
                     <Link
                       href={`/admin/texts/new?from=${t.id}`}
                       className="text-xs text-stone-400 hover:text-stone-700"
