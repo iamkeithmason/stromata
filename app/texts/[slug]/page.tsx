@@ -31,7 +31,7 @@ export default async function TextPage({ params }: Props) {
     .from('texts')
     .select(`
       *,
-      author:authors(name, slug, death_year, loc:locations(name, slug), tradition:traditions(slug)),
+      author:authors(name, slug, death_year, loc:locations(name, slug), tradition:traditions(slug, name), era:eras(label)),
       genre:genres(name),
       text_themes(theme:themes(name, slug)),
       collection:collections(id, title, slug)
@@ -43,7 +43,7 @@ export default async function TextPage({ params }: Props) {
   if (!text) notFound()
 
   // author and genre are many-to-one → plain objects
-  const author = text.author as { name: string; slug: string | null; death_year: number | null; loc: { name: string; slug: string } | null; tradition: { slug: string } | null } | null
+  const author = text.author as { name: string; slug: string | null; death_year: number | null; loc: { name: string; slug: string } | null; tradition: { slug: string; name: string } | null; era: { label: string } | null } | null
   const genre = text.genre as { name: string } | null
   const collection = text.collection as { id: string; title: string; slug: string } | null
 
@@ -78,10 +78,23 @@ export default async function TextPage({ params }: Props) {
 
   return (
     <div style={{ background: 'var(--paper)', paddingTop: '4rem' }} className="min-h-screen">
-      <SiteHeader breadcrumb={author?.slug
-        ? <Link href={`/authors/${author.slug}`} className="hover:opacity-70 transition-opacity">{author.name}</Link>
-        : undefined}
-      />
+      <SiteHeader breadcrumb={author ? (() => {
+        const eraName = author.era?.label?.replace(/\s*\(.*?\)/, '') ?? null
+        return (
+          <>
+            {author.slug
+              ? <Link href={`/authors/${author.slug}`} className="hover:opacity-70 transition-opacity">{author.name}</Link>
+              : <span>{author.name}</span>
+            }
+            {author.tradition?.name && (
+              <span className="hidden sm:inline" style={{ color: 'var(--ink-faint)' }}> {author.tradition.name}</span>
+            )}
+            {eraName && (
+              <span className="hidden sm:inline" style={{ color: 'var(--ink-faint)' }}> {eraName}</span>
+            )}
+          </>
+        )
+      })() : undefined} />
 
       <main className="max-w-2xl mx-auto px-6 py-12">
         {/* Text header */}
