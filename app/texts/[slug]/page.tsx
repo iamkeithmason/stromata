@@ -306,6 +306,15 @@ export default async function TextPage({ params }: Props) {
           genre: genre?.name ?? null,
         }}
       />
+      <TrackPageEvent
+        event="text-view"
+        data={{
+          text: text.slug,
+          author: author?.slug ?? null,
+          tradition: author?.tradition?.slug ?? null,
+          genre: genre?.name ?? null,
+        }}
+      />
     </div>
   )
 }
