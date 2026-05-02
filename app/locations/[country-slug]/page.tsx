@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { createServerClient } from '@/lib/supabase/server'
 import { SiteHeader } from '@/app/components/SiteHeader'
+import { TrackPageEvent } from '@/app/components/TrackPageEvent'
 import { readingTime } from '@/lib/reading-time'
 
 type Props = { params: Promise<{ 'country-slug': string }> }
@@ -163,6 +164,7 @@ export default async function CountryPage({ params }: Props) {
           <p className="text-sm" style={{ color: '#6f6a60' }}>No authors from this location yet.</p>
         )}
       </main>
+      <TrackPageEvent event="location-page-view" data={{ location: location.name }} />
     </div>
   )
 }

@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { createServerClient } from '@/lib/supabase/server'
 import { SiteHeader } from '@/app/components/SiteHeader'
+import { TrackPageEvent } from '@/app/components/TrackPageEvent'
 
 export const metadata = {
   title: 'Locations — The Stromata',
@@ -60,6 +61,7 @@ export default async function LocationsPage() {
           <p className="text-sm" style={{ color: '#6f6a60' }}>No location data yet.</p>
         )}
       </main>
+      <TrackPageEvent event="location-page-view" />
     </div>
   )
 }
