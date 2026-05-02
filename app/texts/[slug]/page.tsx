@@ -5,6 +5,7 @@ import MarkdownBody from '@/app/components/MarkdownBody'
 import { SiteHeader } from '@/app/components/SiteHeader'
 import { RecordVisit } from '@/app/components/RecordVisit'
 import { TrackPageEvent } from '@/app/components/TrackPageEvent'
+import { TrackWeeklyReader } from '@/app/components/TrackWeeklyReader'
 import { readingTime } from '@/lib/reading-time'
 
 type Props = { params: Promise<{ slug: string }> }
@@ -315,6 +316,7 @@ export default async function TextPage({ params }: Props) {
           genre: genre?.name ?? null,
         }}
       />
+      <TrackWeeklyReader />
     </div>
   )
 }
