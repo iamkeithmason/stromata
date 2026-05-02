@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { createServerClient } from '@/lib/supabase/server'
 import { SiteHeader } from '@/app/components/SiteHeader'
+import { TrackPageEvent } from '@/app/components/TrackPageEvent'
 import { THEME_CLUSTERS } from '@/lib/constants'
 import { readingTime } from '@/lib/reading-time'
 
@@ -130,6 +131,7 @@ export default async function ThemePage({ params }: Props) {
           <p className="text-sm" style={{ color: '#6f6a60' }}>No texts published yet.</p>
         )}
       </main>
+      <TrackPageEvent event="theme-page-view" data={{ theme: theme.name }} />
     </div>
   )
 }
