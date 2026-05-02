@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { createServerClient } from '@/lib/supabase/server'
 import { SiteHeader } from '@/app/components/SiteHeader'
+import { TrackPageEvent } from '@/app/components/TrackPageEvent'
 import { ERAS } from '@/lib/constants'
 import { readingTime } from '@/lib/reading-time'
 
@@ -139,6 +140,7 @@ export default async function EraPage({ params }: Props) {
           <p className="text-sm" style={{ color: '#6f6a60' }}>No texts published yet.</p>
         )}
       </main>
+      <TrackPageEvent event="era-page-view" data={{ era: era.label }} />
     </div>
   )
 }

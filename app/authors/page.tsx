@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { createServerClient } from '@/lib/supabase/server'
 import { SiteHeader } from '@/app/components/SiteHeader'
+import { TrackPageEvent } from '@/app/components/TrackPageEvent'
 
 // tradition is many-to-one from authors → plain object not array
 type AuthorRow = {
@@ -76,6 +77,7 @@ export default async function AuthorsPage() {
           <p className="text-sm" style={{ color: '#6f6a60' }}>No authors published yet.</p>
         )}
       </main>
+      <TrackPageEvent event="authors-page-view" />
     </div>
   )
 }
