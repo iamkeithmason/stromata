@@ -35,12 +35,18 @@ async function generateDraft(title, authorName, body) {
 
   const message = await anthropic.messages.create({
     model: 'claude-opus-4-7',
-    max_tokens: 300,
+    max_tokens: 400,
     system: NOTE_PROMPT,
     messages: [{ role: 'user', content: userMessage }],
   });
 
-  return message.content[0].text.trim();
+  return trimToCompleteSentence(message.content[0].text.trim());
+}
+
+function trimToCompleteSentence(text) {
+  const lastEnd = Math.max(text.lastIndexOf('.'), text.lastIndexOf('!'), text.lastIndexOf('?'));
+  if (lastEnd === -1) return text;
+  return text.slice(0, lastEnd + 1).trim();
 }
 
 async function main() {
