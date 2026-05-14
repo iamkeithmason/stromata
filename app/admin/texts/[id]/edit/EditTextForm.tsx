@@ -58,6 +58,9 @@ export default function EditTextForm({
   const [selectedThemes, setSelectedThemes] = useState<string[]>(initialThemeSlugs)
   const [collectionId, setCollectionId] = useState(initialCollectionId)
   const [editorialIntroduction, setEditorialIntroduction] = useState(initialEditorialIntroduction)
+  const [noteDraft, setNoteDraft] = useState(initialNoteDraft)
+  const [generating, setGenerating] = useState(false)
+  const [generateError, setGenerateError] = useState('')
 
   useEffect(() => {
     fetch('/api/admin/authors').then(r => r.json()).then(setAuthors)
@@ -68,6 +71,19 @@ export default function EditTextForm({
     setSelectedThemes(prev =>
       prev.includes(themeSlug) ? prev.filter(s => s !== themeSlug) : [...prev, themeSlug]
     )
+  }
+
+  async function handleGenerateDraft() {
+    setGenerating(true)
+    setGenerateError('')
+    const res = await fetch(`/api/admin/texts/${id}/generate-note-draft`, { method: 'POST' })
+    const json = await res.json()
+    if (res.ok) {
+      setNoteDraft(json.note_draft)
+    } else {
+      setGenerateError(json.error || 'Generation failed.')
+    }
+    setGenerating(false)
   }
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -239,23 +255,39 @@ export default function EditTextForm({
         </select>
       </div>
 
-      {initialNoteDraft && (
-        <div>
-          <label className="block text-sm font-medium text-stone-500 mb-1">
-            Draft note <span className="font-normal">(AI-generated)</span>
-          </label>
-          <div className="w-full px-3 py-2 border border-stone-200 rounded bg-stone-50 text-stone-500 text-sm leading-relaxed whitespace-pre-wrap">
-            {initialNoteDraft}
-          </div>
-          <button
-            type="button"
-            onClick={() => setEditorialIntroduction(initialNoteDraft)}
-            className="mt-2 px-3 py-1 text-xs border border-stone-300 rounded text-stone-600 hover:bg-stone-100 transition-colors"
-          >
-            Use this draft
-          </button>
-        </div>
-      )}
+      <div>
+        <label className="block text-sm font-medium text-stone-500 mb-1">
+          Draft note <span className="font-normal">(AI-generated)</span>
+        </label>
+        {noteDraft ? (
+          <>
+            <div className="w-full px-3 py-2 border border-stone-200 rounded bg-stone-50 text-stone-500 text-sm leading-relaxed whitespace-pre-wrap">
+              {noteDraft}
+            </div>
+            <button
+              type="button"
+              onClick={() => setEditorialIntroduction(noteDraft)}
+              className="mt-2 px-3 py-1 text-xs border border-stone-300 rounded text-stone-600 hover:bg-stone-100 transition-colors"
+            >
+              Use this draft
+            </button>
+          </>
+        ) : (
+          <>
+            <button
+              type="button"
+              onClick={handleGenerateDraft}
+              disabled={generating}
+              className="px-3 py-1.5 text-xs border border-stone-300 rounded text-stone-600 hover:bg-stone-100 disabled:opacity-50 transition-colors"
+            >
+              {generating ? 'Generating…' : 'Generate draft'}
+            </button>
+            {generateError && (
+              <p className="mt-1 text-xs text-red-600">{generateError}</p>
+            )}
+          </>
+        )}
+      </div>
 
       <div>
         <label className={label}>
