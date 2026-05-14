@@ -23,10 +23,45 @@ import TurndownService from "turndown";
 import fs from "fs/promises";
 import path from "path";
 import { fileURLToPath } from "url";
+import Anthropic from "@anthropic-ai/sdk";
+import { NOTE_PROMPT } from "../lib/note-prompt.mjs";
 
 // Load config from same directory
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const config = (await import(path.join(__dirname, "config.js"))).default;
+
+// ---------------------------------------------------------------------------
+// Anthropic client (API key from env — optional; ingest continues without it)
+// ---------------------------------------------------------------------------
+
+const anthropic = process.env.ANTHROPIC_API_KEY
+  ? new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
+  : null;
+
+async function generateNoteDraft(title, authorName, markdown) {
+  if (!anthropic) {
+    console.warn("  ⚠ ANTHROPIC_API_KEY not set — skipping note_draft generation");
+    return "";
+  }
+  const userMessage = [
+    `Title: ${title}`,
+    `Author: ${authorName}`,
+    "",
+    markdown.slice(0, 3000),
+  ].join("\n");
+  try {
+    const message = await anthropic.messages.create({
+      model: "claude-opus-4-7",
+      max_tokens: 300,
+      system: NOTE_PROMPT,
+      messages: [{ role: "user", content: userMessage }],
+    });
+    return message.content[0].text.trim();
+  } catch (err) {
+    console.warn(`  ⚠ Claude API error for "${title}": ${err.message} — note_draft left empty`);
+    return "";
+  }
+}
 
 // ---------------------------------------------------------------------------
 // Turndown setup
@@ -180,10 +215,11 @@ function extractTitle(markdown, url) {
   return path.basename(url, path.extname(url));
 }
 
-function generateFrontmatter(title, index, cfg) {
+function generateFrontmatter(title, index, cfg, noteDraft = "") {
   const slug = slugify(title);
   const themeList = ALL_THEMES.join(", ");
   const genreList = ALL_GENRES.join(", ");
+  const escapedDraft = noteDraft.replace(/\\/g, "\\\\").replace(/"/g, '\\"').replace(/\n/g, " ");
 
   return `---
 title: "${title}"
@@ -199,6 +235,7 @@ translation_notes: "${cfg.knownFields.translationNotes || "# TODO — confirm tr
 ocr_quality: "high"
 published: false
 copyright_safe: ${cfg.knownFields.copyrightSafe ?? true}
+note_draft: "${escapedDraft}"
 ---
 
 <!-- EDITORIAL INTRO — write 2–4 sentences here explaining what this text is and why it matters. This appears above the text on the reader page. -->
@@ -288,7 +325,10 @@ async function fetchAndProcess(url, index, cfg) {
   const markdown = td.turndown(contentHtml || "");
   const title = extractTitle(markdown, url);
   const slug = slugify(title);
-  const frontmatter = generateFrontmatter(title, index, cfg);
+
+  const noteDraft = await generateNoteDraft(title, cfg.collection.author, markdown);
+
+  const frontmatter = generateFrontmatter(title, index, cfg, noteDraft);
   const fullContent = frontmatter + markdown;
 
   console.log(`  ✓ "${title}" (${markdown.length} chars)`);

@@ -24,6 +24,7 @@ type Props = {
   initialProvenanceNotes: string
   initialTranslationNotes: string
   initialOcrQuality: string
+  initialNoteDraft: string
   initialEditorialIntroduction: string
   initialBody: string
   initialPublished: boolean
@@ -42,6 +43,7 @@ export default function EditTextForm({
   initialProvenanceNotes,
   initialTranslationNotes,
   initialOcrQuality,
+  initialNoteDraft,
   initialEditorialIntroduction,
   initialBody,
   initialPublished,
@@ -55,6 +57,7 @@ export default function EditTextForm({
   const [genreSlug, setGenreSlug] = useState(initialGenreSlug)
   const [selectedThemes, setSelectedThemes] = useState<string[]>(initialThemeSlugs)
   const [collectionId, setCollectionId] = useState(initialCollectionId)
+  const [editorialIntroduction, setEditorialIntroduction] = useState(initialEditorialIntroduction)
 
   useEffect(() => {
     fetch('/api/admin/authors').then(r => r.json()).then(setAuthors)
@@ -83,7 +86,7 @@ export default function EditTextForm({
       provenance_notes: (data.get('provenance_notes') as string) || null,
       translation_notes: (data.get('translation_notes') as string) || null,
       ocr_quality: (data.get('ocr_quality') as string) || null,
-      editorial_introduction: (data.get('editorial_introduction') as string) || null,
+      editorial_introduction: editorialIntroduction || null,
       body: data.get('body') as string,
       published: data.get('published') === 'on',
     }
@@ -236,12 +239,35 @@ export default function EditTextForm({
         </select>
       </div>
 
+      {initialNoteDraft && (
+        <div>
+          <label className="block text-sm font-medium text-stone-500 mb-1">
+            Draft note <span className="font-normal">(AI-generated)</span>
+          </label>
+          <div className="w-full px-3 py-2 border border-stone-200 rounded bg-stone-50 text-stone-500 text-sm leading-relaxed whitespace-pre-wrap">
+            {initialNoteDraft}
+          </div>
+          <button
+            type="button"
+            onClick={() => setEditorialIntroduction(initialNoteDraft)}
+            className="mt-2 px-3 py-1 text-xs border border-stone-300 rounded text-stone-600 hover:bg-stone-100 transition-colors"
+          >
+            Use this draft
+          </button>
+        </div>
+      )}
+
       <div>
         <label className={label}>
           Editorial introduction{' '}
           <span className="text-stone-400 font-normal">(optional — your editorial voice, shown above the text)</span>
         </label>
-        <MarkdownEditor name="editorial_introduction" defaultValue={initialEditorialIntroduction} rows={6} />
+        <MarkdownEditor
+          name="editorial_introduction"
+          value={editorialIntroduction}
+          onChange={setEditorialIntroduction}
+          rows={6}
+        />
       </div>
 
       <div>
