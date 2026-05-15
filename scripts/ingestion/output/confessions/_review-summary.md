@@ -1,9 +1,9 @@
 # Review Summary — Confessions
 
-Generated: 2026-05-01  
+Generated: 2026-05-08  
 Author: Augustine of Hippo  
 Source: newadvent  
-Texts: 7
+Texts: 13
 
 ---
 
@@ -93,6 +93,72 @@ _Rationale:_ Keywords found in text suggest Prayer, Contemplation, Humility as p
 **Theme suggestions:** Contemplation, Humility, Suffering, Baptism, Liturgy, Christology
 
 _Rationale:_ Keywords found in text suggest Contemplation, Humility, Suffering as primary themes. Confirm against the full controlled vocabulary.
+
+---
+
+## 8. The Confessions (Book VIII)
+
+**File:** `the-confessions-book-viii.md`  
+**Source:** https://www.newadvent.org/fathers/110108.htm  
+**Genre suggestion:** Confession _(known)_  
+**Theme suggestions:** Prayer, Repentance, Humility, Baptism, Sacraments, Liturgy
+
+_Rationale:_ Keywords found in text suggest Prayer, Repentance, Humility as primary themes. Confirm against the full controlled vocabulary.
+
+---
+
+## 9. The Confessions (Book IX)
+
+**File:** `the-confessions-book-ix.md`  
+**Source:** https://www.newadvent.org/fathers/110109.htm  
+**Genre suggestion:** Confession _(known)_  
+**Theme suggestions:** Prayer, Humility, Baptism, Sacraments, Christology, Salvation
+
+_Rationale:_ Keywords found in text suggest Prayer, Humility, Baptism as primary themes. Confirm against the full controlled vocabulary.
+
+---
+
+## 10. The Confessions (Book X)
+
+**File:** `the-confessions-book-x.md`  
+**Source:** https://www.newadvent.org/fathers/110110.htm  
+**Genre suggestion:** Confession _(known)_  
+**Theme suggestions:** Prayer, Contemplation, Humility, Baptism, Sacraments, Liturgy
+
+_Rationale:_ Keywords found in text suggest Prayer, Contemplation, Humility as primary themes. Confirm against the full controlled vocabulary.
+
+---
+
+## 11. The Confessions (Book XI)
+
+**File:** `the-confessions-book-xi.md`  
+**Source:** https://www.newadvent.org/fathers/110111.htm  
+**Genre suggestion:** Confession _(known)_  
+**Theme suggestions:** Prayer, Contemplation, Humility, Baptism, Sacraments, Liturgy
+
+_Rationale:_ Keywords found in text suggest Prayer, Contemplation, Humility as primary themes. Confirm against the full controlled vocabulary.
+
+---
+
+## 12. The Confessions (Book XII)
+
+**File:** `the-confessions-book-xii.md`  
+**Source:** https://www.newadvent.org/fathers/110112.htm  
+**Genre suggestion:** Confession _(known)_  
+**Theme suggestions:** Contemplation, Humility, Baptism, Liturgy, Trinity, Scripture
+
+_Rationale:_ Keywords found in text suggest Contemplation, Humility, Baptism as primary themes. Confirm against the full controlled vocabulary.
+
+---
+
+## 13. The Confessions (Book XIII)
+
+**File:** `the-confessions-book-xiii.md`  
+**Source:** https://www.newadvent.org/fathers/110113.htm  
+**Genre suggestion:** Confession _(known)_  
+**Theme suggestions:** Prayer, Repentance, Contemplation, Suffering, Baptism, Sacraments
+
+_Rationale:_ Keywords found in text suggest Prayer, Repentance, Contemplation as primary themes. Confirm against the full controlled vocabulary.
 
 ---
 
