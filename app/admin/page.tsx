@@ -47,7 +47,7 @@ export default async function AdminDashboard({ searchParams }: Props) {
       .select('id, title, slug, published, description, author:authors(name)')
       .order('title'),
     supabase.from('authors').select('id', { count: 'exact', head: true }),
-    supabase.from('author_locations').select('id', { count: 'exact', head: true }),
+    supabase.from('locations').select('id', { count: 'exact', head: true }),
     supabase.from('eras').select('id', { count: 'exact', head: true }),
   ])
 
