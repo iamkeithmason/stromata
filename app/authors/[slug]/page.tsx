@@ -22,7 +22,8 @@ export async function generateMetadata({ params }: Props) {
   const { slug } = await params
   const supabase = createServerClient()
   const { data } = await supabase.from('authors').select('name').eq('slug', slug).single()
-  return { title: data ? `${data.name} — The Stromata` : 'Author — The Stromata' }
+  // Format: "Author Name | The Stromata"
+  return { title: data ? `${data.name} | The Stromata` : 'Author — The Stromata' }
 }
 
 export default async function AuthorPage({ params }: Props) {

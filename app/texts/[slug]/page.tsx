@@ -14,13 +14,23 @@ export async function generateMetadata({ params }: Props) {
   const supabase = createServerClient()
   const { data } = await supabase
     .from('texts')
-    .select('title')
+    .select('title, author:authors(name)')
     .eq('slug', slug)
     .eq('published', true)
     .single()
-  return {
-    title: data ? `${data.title} — The Stromata` : 'Text — The Stromata',
-  }
+
+  if (!data) return { title: 'Text — The Stromata' }
+
+  const author = (data.author as unknown as { name: string } | null)?.name
+  // Format: "Author Name — Text Title | The Stromata"
+  // Note: combined length can exceed 60 chars for long titles (e.g.
+  // "Augustine of Hippo — Exposition on Psalm 115 | The Stromata" = 60 chars).
+  // No programmatic truncation applied; flag for review if needed.
+  const title = author
+    ? `${author} — ${data.title} | The Stromata`
+    : `${data.title} — The Stromata`
+
+  return { title }
 }
 
 export default async function TextPage({ params }: Props) {

@@ -23,7 +23,7 @@ export async function POST(_request: NextRequest, { params }: Params) {
 
   if (!text) return NextResponse.json({ error: 'Not found.' }, { status: 404 })
 
-  const authorName = (text.author as { name: string }[] | null)?.[0]?.name ?? 'Unknown'
+  const authorName = (text.author as unknown as { name: string } | null)?.name ?? 'Unknown'
 
   const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
 

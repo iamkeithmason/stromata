@@ -12,13 +12,21 @@ export async function generateMetadata({ params }: Props) {
   const supabase = createServerClient()
   const { data } = await supabase
     .from('collections')
-    .select('title')
+    .select('title, author:authors(name)')
     .eq('slug', slug)
     .eq('published', true)
     .single()
-  return {
-    title: data ? `${data.title} — The Stromata` : 'Collection — The Stromata',
-  }
+
+  if (!data) return { title: 'Collection — The Stromata' }
+
+  const author = (data.author as unknown as { name: string } | null)?.name
+  // Format: "Collection Title — Author Name | The Stromata"
+  // Omits author segment if the collection has no linked author.
+  const title = author
+    ? `${data.title} — ${author} | The Stromata`
+    : `${data.title} | The Stromata`
+
+  return { title }
 }
 
 export default async function CollectionPage({ params }: Props) {
