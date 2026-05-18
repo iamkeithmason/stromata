@@ -136,8 +136,8 @@ export default async function TextPage({ params }: Props) {
             {text.title}
           </h1>
 
-          {(themes.length > 0 || author?.loc) && (
-            <div className="flex flex-wrap justify-center gap-x-4 gap-y-1 mb-4">
+          {themes.length > 0 && (
+            <div className="flex flex-wrap justify-center gap-x-4 gap-y-1 mb-2">
               {themes.map(theme => (
                 <Link
                   key={theme.slug}
@@ -151,18 +151,20 @@ export default async function TextPage({ params }: Props) {
                   {theme.name}
                 </Link>
               ))}
-              {author?.loc && (
-                <Link
-                  href={`/locations/${author.loc.slug}`}
-                  className="text-xs tracking-widest uppercase font-serif hover:opacity-70 transition-opacity"
-                  style={{ color: 'var(--ink-mute)' }}
-                  data-umami-event="location-country-click"
-                  data-umami-event-country={author.loc.name}
-                  data-umami-event-from="text-reader"
-                >
-                  {author.loc.name}
-                </Link>
-              )}
+            </div>
+          )}
+          {author?.loc && (
+            <div className="flex justify-center mb-4">
+              <Link
+                href={`/locations/${author.loc.slug}`}
+                className="text-xs tracking-widest uppercase font-serif hover:opacity-70 transition-opacity"
+                style={{ color: 'var(--ink-mute)' }}
+                data-umami-event="location-country-click"
+                data-umami-event-country={author.loc.name}
+                data-umami-event-from="text-reader"
+              >
+                {author.loc.name}
+              </Link>
             </div>
           )}
 
