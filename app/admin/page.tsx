@@ -37,6 +37,7 @@ export default async function AdminDashboard({ searchParams }: Props) {
     { count: authorCount },
     { count: locationCount },
     { count: eraCount },
+    { count: traditionCount },
   ] = await Promise.all([
     supabase
       .from('texts')
@@ -49,6 +50,7 @@ export default async function AdminDashboard({ searchParams }: Props) {
     supabase.from('authors').select('id', { count: 'exact', head: true }),
     supabase.from('locations').select('id', { count: 'exact', head: true }),
     supabase.from('eras').select('id', { count: 'exact', head: true }),
+    supabase.from('traditions').select('id', { count: 'exact', head: true }),
   ])
 
   return (
@@ -67,11 +69,12 @@ export default async function AdminDashboard({ searchParams }: Props) {
         )}
 
         {/* Nav cards */}
-        <div className="grid grid-cols-3 gap-3">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           {[
             { label: 'Authors', href: '/admin/authors', count: authorCount ?? 0 },
-            { label: 'Locations', href: '/admin/locations', count: locationCount ?? 0 },
+            { label: 'Traditions', href: '/admin/traditions', count: traditionCount ?? 0 },
             { label: 'Eras', href: '/admin/eras', count: eraCount ?? 0 },
+            { label: 'Locations', href: '/admin/locations', count: locationCount ?? 0 },
           ].map(({ label, href, count }) => (
             <Link
               key={href}

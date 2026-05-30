@@ -10,7 +10,7 @@ type AuthorRow = {
   slug: string
   birth_year: number | null
   death_year: number | null
-  tradition: { name: string } | null
+  tradition: { name: string; slug: string } | null
 }
 
 export const metadata = {
@@ -22,7 +22,7 @@ export default async function AuthorsPage() {
 
   const { data: authors } = await supabase
     .from('authors')
-    .select('id, name, slug, birth_year, death_year, tradition:traditions(name)')
+    .select('id, name, slug, birth_year, death_year, tradition:traditions(name, slug)')
     .not('slug', 'is', null)
     .order('name')
 
@@ -47,10 +47,8 @@ export default async function AuthorsPage() {
           <ul className="divide-y" style={{ borderColor: '#e5e0d8' }}>
             {rows.map(a => (
               <li key={a.id}>
-                <Link
-                  href={`/authors/${a.slug}`}
-                  className="flex items-baseline justify-between py-4 group"
-                >
+                {/* Stretched-link pattern: author row is the base, tradition link sits above */}
+                <div className="relative flex items-baseline justify-between py-4 group">
                   <div>
                     <span
                       className="font-serif group-hover:opacity-70 transition-opacity"
@@ -66,10 +64,22 @@ export default async function AuthorsPage() {
                           : ''}
                     </span>
                   </div>
-                  <span className="text-xs ml-4 shrink-0" style={{ color: '#6f6a60' }}>
-                    {a.tradition?.name}
-                  </span>
-                </Link>
+                  {a.tradition?.slug ? (
+                    <Link
+                      href={`/traditions/${a.tradition.slug}`}
+                      className="text-xs ml-4 shrink-0 relative hover:opacity-70 transition-opacity"
+                      style={{ color: '#6f6a60', zIndex: 2 }}
+                    >
+                      {a.tradition.name}
+                    </Link>
+                  ) : (
+                    <span className="text-xs ml-4 shrink-0" style={{ color: '#6f6a60' }}>
+                      {a.tradition?.name}
+                    </span>
+                  )}
+                  {/* Stretched link covers the row but sits below the tradition link */}
+                  <Link href={`/authors/${a.slug}`} className="absolute inset-0" style={{ zIndex: 1 }} aria-label={a.name} />
+                </div>
               </li>
             ))}
           </ul>

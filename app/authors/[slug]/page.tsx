@@ -33,7 +33,7 @@ export default async function AuthorPage({ params }: Props) {
   // tradition and era are many-to-one from authors → objects
   const { data: author } = await supabase
     .from('authors')
-    .select('*, tradition:traditions(name), era:eras(label, slug), loc:locations(name, slug)')
+    .select('*, tradition:traditions(name, slug), era:eras(label, slug), loc:locations(name, slug)')
     .eq('slug', slug)
     .single()
 
@@ -49,7 +49,8 @@ export default async function AuthorPage({ params }: Props) {
   const rows = (texts ?? []) as unknown as TextRow[]
 
   // tradition/era come back as objects (many-to-one)
-  const tradition = (author.tradition as { name: string } | null)?.name
+  const traditionObj = author.tradition as { name: string; slug: string } | null
+  const tradition = traditionObj?.name
   const eraObj = author.era as { label: string; slug: string } | null
   const eraLabel = eraObj?.label
   const eraSlug = eraObj?.slug
@@ -72,7 +73,13 @@ export default async function AuthorPage({ params }: Props) {
           <h1 className="font-serif text-3xl mb-2" style={{ color: '#1b1b1b' }}>{author.name}</h1>
           {(dateStr || tradition || eraLabel || locationObj) && (
             <p className="text-sm" style={{ color: '#6f6a60' }}>
-              {[dateStr, tradition].filter(Boolean).join(' · ')}
+              {dateStr}
+              {dateStr && tradition ? ' · ' : ''}
+              {tradition && traditionObj?.slug ? (
+                <Link href={`/traditions/${traditionObj.slug}`} className="hover:opacity-70 transition-opacity">
+                  {tradition}
+                </Link>
+              ) : tradition}
               {eraLabel && eraSlug && (
                 <>
                   {(dateStr || tradition) ? ' · ' : ''}
