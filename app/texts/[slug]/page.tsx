@@ -5,7 +5,9 @@ import MarkdownBody from '@/app/components/MarkdownBody'
 import { SiteHeader } from '@/app/components/SiteHeader'
 import { RecordVisit } from '@/app/components/RecordVisit'
 import { TrackPageEvent } from '@/app/components/TrackPageEvent'
+import TableOfContents from '@/app/components/TableOfContents'
 import { readingTime } from '@/lib/reading-time'
+import { extractHeadings } from '@/lib/headings'
 
 type Props = { params: Promise<{ slug: string }> }
 
@@ -65,6 +67,11 @@ export default async function TextPage({ params }: Props) {
   const body = text.body as string
   const editorialIntro = text.editorial_introduction as string | null
 
+  // Extract headings for the TOC sidebar. Only show TOC if 3+ headings exist —
+  // short letters and prayers are flowing prose with no meaningful structure to navigate.
+  const headings = extractHeadings(body)
+  const hasToc = headings.length >= 3
+
   // If this text belongs to a collection, fetch siblings for prev/next navigation
   type Sibling = { id: string; title: string; slug: string; collection_order: number | null; author: { name: string } | null }
   let prevText: Sibling | null = null
@@ -107,7 +114,28 @@ export default async function TextPage({ params }: Props) {
         )
       })() : undefined} />
 
-      <main className="max-w-2xl mx-auto px-6 py-12">
+      {/* Outer container expands to accommodate the TOC sidebar on large screens.
+          Without a TOC (< 3 headings) the layout is pixel-identical to before. */}
+      <div className={hasToc ? 'max-w-5xl mx-auto px-6 py-12' : 'max-w-2xl mx-auto px-6 py-12'}>
+        <div className={hasToc ? 'lg:grid lg:grid-cols-[220px_1fr] lg:gap-14' : undefined}>
+
+          {/* Desktop TOC sidebar — sticky, hidden on mobile */}
+          {hasToc && (
+            <aside className="hidden lg:block">
+              <div className="sticky" style={{ top: '6rem' }}>
+                <TableOfContents headings={headings} />
+              </div>
+            </aside>
+          )}
+
+          <main className="min-w-0">
+            {/* Mobile TOC disclosure — visible only below lg breakpoint */}
+            {hasToc && (
+              <div className="lg:hidden mb-8">
+                <TableOfContents headings={headings} mobile />
+              </div>
+            )}
+
         {/* Text header */}
         <div className="mb-20">
           {/* Author left / Collection right */}
@@ -309,7 +337,9 @@ export default async function TextPage({ params }: Props) {
             </a>
           </p>
         </footer>
-      </main>
+          </main>{/* end content column */}
+        </div>{/* end grid */}
+      </div>{/* end outer container */}
 
       <RecordVisit
         slug={slug}
