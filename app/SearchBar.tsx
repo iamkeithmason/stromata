@@ -1,5 +1,5 @@
 'use client'
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 
 declare global {
@@ -11,6 +11,19 @@ declare global {
 export default function SearchBar() {
   const [query, setQuery] = useState('')
   const router = useRouter()
+  const inputRef = useRef<HTMLInputElement>(null)
+
+  useEffect(() => {
+    function handleKeydown(e: KeyboardEvent) {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault()
+        inputRef.current?.focus()
+        inputRef.current?.select()
+      }
+    }
+    window.addEventListener('keydown', handleKeydown)
+    return () => window.removeEventListener('keydown', handleKeydown)
+  }, [])
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -41,6 +54,7 @@ export default function SearchBar() {
           <path d="m21 21-4.35-4.35" />
         </svg>
         <input
+          ref={inputRef}
           type="text"
           value={query}
           onChange={e => setQuery(e.target.value)}

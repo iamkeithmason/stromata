@@ -38,14 +38,64 @@ type SuggestedText = {
   author: { name: string } | null
 }
 
-function bodySnippet(body: string, max = 150): string {
-  const stripped = body
+// Strip markdown and return plain text
+function stripMarkdown(body: string): string {
+  return body
     .replace(/^#{1,6}\s+/gm, '')
     .replace(/[*_`~]/g, '')
     .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
     .replace(/\s+/g, ' ')
     .trim()
+}
+
+// Return a ~160-char snippet centred on the first occurrence of `query` in the body.
+// Falls back to the opening of the text if the term isn't found in the body.
+function bodySnippet(body: string, query = '', max = 160): string {
+  const stripped = stripMarkdown(body)
+  if (query) {
+    const idx = stripped.toLowerCase().indexOf(query.toLowerCase())
+    if (idx !== -1) {
+      const half = Math.floor((max - query.length) / 2)
+      const start = Math.max(0, idx - half)
+      const end = Math.min(stripped.length, start + max)
+      let snip = stripped.slice(start, end).trimEnd()
+      if (start > 0) snip = '…' + snip
+      if (end < stripped.length) snip += '…'
+      return snip
+    }
+  }
   return stripped.length > max ? stripped.slice(0, max).trimEnd() + '…' : stripped
+}
+
+// Highlight occurrences of `query` within `text` using <mark>.
+// Safe for server components — pure JSX, no hooks.
+function Highlight({ text, query }: { text: string; query: string }) {
+  if (!query.trim()) return <>{text}</>
+  const escaped = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+  const parts = text.split(new RegExp(`(${escaped})`, 'gi'))
+  const lower = query.toLowerCase()
+  return (
+    <>
+      {parts.map((part, i) =>
+        part.toLowerCase() === lower ? (
+          <mark
+            key={i}
+            style={{
+              background: 'var(--highlight)',
+              color: 'var(--ink)',
+              padding: '0 1px',
+              borderRadius: '2px',
+              fontStyle: 'inherit',
+            }}
+          >
+            {part}
+          </mark>
+        ) : (
+          <span key={i}>{part}</span>
+        )
+      )}
+    </>
+  )
 }
 
 export async function generateMetadata({ searchParams }: Props) {
@@ -110,6 +160,8 @@ export default async function SearchPage({ searchParams }: Props) {
     authors = (authorData ?? []) as unknown as AuthorResult[]
 
     // Phase 2: text queries (always by title; conditionally by extended dimensions)
+    // Body search runs last — lowest priority in dedup (title/theme/tradition matches rank higher).
+    // Note: ilike on body is fine at current scale (~100 texts). Phase 3 will add a GIN tsvector index.
     const textQueryPromises = [
       supabase.from('texts').select(textSelect).eq('published', true).ilike('title', pattern).order('title').limit(20),
       ...(genreIds.length > 0
@@ -121,6 +173,8 @@ export default async function SearchPage({ searchParams }: Props) {
       ...(uniqueAuthorIds.length > 0
         ? [supabase.from('texts').select(textSelect).eq('published', true).in('author_id', uniqueAuthorIds).order('title').limit(20)]
         : []),
+      // Body search — runs last so title/metadata matches take priority in dedup
+      supabase.from('texts').select(textSelect).eq('published', true).ilike('body', pattern).order('title').limit(10),
     ]
 
     const textResults = await Promise.all(textQueryPromises)
@@ -244,7 +298,7 @@ export default async function SearchPage({ searchParams }: Props) {
                 const tradition = author?.tradition?.name
                 const eraLabel = author?.era?.label
                 const eraSlug = author?.era?.slug
-                const snippet = t.body ? bodySnippet(t.body) : ''
+                const snippet = t.body ? bodySnippet(t.body, query) : ''
                 const readTime = `approx. ${readingTime(t.body)} min read`
                 return (
                   <li key={t.id} className="relative group">
@@ -267,25 +321,25 @@ export default async function SearchPage({ searchParams }: Props) {
                             className="font-serif group-hover:opacity-70 transition-opacity"
                             style={{ color: '#1b1b1b' }}
                           >
-                            {t.title}
+                            <Highlight text={t.title} query={query} />
                           </span>
                           {author && (
                             <span className="text-xs" style={{ color: '#6f6a60' }}>
-                              {author.name}
+                              <Highlight text={author.name} query={query} />
                             </span>
                           )}
                         </div>
                         <p className="text-xs mt-0.5" style={{ color: '#9c9589' }}>
-                          {tradition && <>{tradition}{eraLabel ? ' · ' : ''}</>}
+                          {tradition && <><Highlight text={tradition} query={query} />{eraLabel ? ' · ' : ''}</>}
                           {eraLabel && eraSlug
-                            ? <Link href={`/eras/${eraSlug}`} className="relative hover:opacity-70 transition-opacity" style={{ zIndex: 2 }}>{eraLabel}</Link>
-                            : eraLabel
+                            ? <Link href={`/eras/${eraSlug}`} className="relative hover:opacity-70 transition-opacity" style={{ zIndex: 2 }}><Highlight text={eraLabel} query={query} /></Link>
+                            : eraLabel ? <Highlight text={eraLabel} query={query} /> : null
                           }
                           {(tradition || eraLabel) ? ' · ' : ''}{readTime}
                         </p>
                         {snippet && (
                           <p className="font-serif text-xs mt-1 leading-relaxed" style={{ color: '#9c9589' }}>
-                            {snippet}
+                            <Highlight text={snippet} query={query} />
                           </p>
                         )}
                       </div>
