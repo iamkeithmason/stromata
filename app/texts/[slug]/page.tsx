@@ -66,23 +66,24 @@ export default async function TextPage({ params }: Props) {
   const editorialIntro = text.editorial_introduction as string | null
 
   // If this text belongs to a collection, fetch siblings for prev/next navigation
-  type Sibling = { id: string; title: string; slug: string; collection_order: number | null }
+  type Sibling = { id: string; title: string; slug: string; collection_order: number | null; author: { name: string } | null }
   let prevText: Sibling | null = null
   let nextText: Sibling | null = null
 
   if (collection && text.collection_id) {
     const { data: siblings } = await supabase
       .from('texts')
-      .select('id, title, slug, collection_order')
+      .select('id, title, slug, collection_order, author:authors(name)')
       .eq('collection_id', text.collection_id)
       .eq('published', true)
       .order('collection_order', { ascending: true, nullsFirst: false })
       .order('title')
 
     if (siblings) {
-      const idx = siblings.findIndex((s: Sibling) => s.id === text.id)
-      if (idx > 0) prevText = siblings[idx - 1]
-      if (idx < siblings.length - 1) nextText = siblings[idx + 1]
+      const rows = siblings as unknown as Sibling[]
+      const idx = rows.findIndex(s => s.id === text.id)
+      if (idx > 0) prevText = rows[idx - 1]
+      if (idx < rows.length - 1) nextText = rows[idx + 1]
     }
   }
 
@@ -235,6 +236,11 @@ export default async function TextPage({ params }: Props) {
                 <span className="font-serif text-sm group-hover:opacity-70 transition-opacity" style={{ color: '#1b1b1b' }}>
                   {prevText.title}
                 </span>
+                {prevText.author && (
+                  <span className="text-xs mt-0.5 group-hover:opacity-70 transition-opacity" style={{ color: '#6f6a60' }}>
+                    {prevText.author.name}
+                  </span>
+                )}
               </Link>
             ) : <span />}
             {nextText ? (
@@ -251,6 +257,11 @@ export default async function TextPage({ params }: Props) {
                 <span className="font-serif text-sm group-hover:opacity-70 transition-opacity" style={{ color: '#1b1b1b' }}>
                   {nextText.title}
                 </span>
+                {nextText.author && (
+                  <span className="text-xs mt-0.5 group-hover:opacity-70 transition-opacity" style={{ color: '#6f6a60' }}>
+                    {nextText.author.name}
+                  </span>
+                )}
               </Link>
             ) : collection ? (
               <Link
