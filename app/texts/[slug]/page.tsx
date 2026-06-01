@@ -181,13 +181,20 @@ export default async function TextPage({ params }: Props) {
           </h1>
 
           {themes.length > 0 && (
-            <div className="flex flex-wrap gap-x-4 gap-y-1 mb-2">
+            <div className="flex flex-wrap gap-2 mb-2">
               {themes.map(theme => (
                 <Link
                   key={theme.slug}
                   href={`/themes/${theme.slug}`}
-                  className="text-xs tracking-widest uppercase font-serif hover:opacity-70 transition-opacity"
-                  style={{ color: 'var(--ink-mute)' }}
+                  className="inline-flex items-center text-xs px-2.5 py-1 hover:opacity-70 transition-opacity"
+                  style={{
+                    color: 'var(--ink-mute)',
+                    border: '1px solid var(--rule)',
+                    background: 'transparent',
+                    fontFamily: '"EB Garamond", Georgia, serif',
+                    letterSpacing: '0.1rem',
+                    textTransform: 'uppercase',
+                  }}
                   data-umami-event="theme-click"
                   data-umami-event-theme={theme.name}
                   data-umami-event-source="text-page"
