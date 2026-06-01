@@ -180,10 +180,11 @@ export default async function Home() {
       {/* ── Featured slot ─────────────────────────────────────────────────── */}
       {featured && (
         <section className="max-w-5xl mx-auto px-6 pb-20">
-          <div
-            className="border-t border-b py-10"
-            style={{ borderColor: 'var(--rule)' }}
-          >
+          <SectionHeader
+            title={featured.type === 'feast' ? 'Featured author' : 'Editorial pick'}
+            aside={featured.type === 'feast' ? 'Feast day' : 'Editor\'s choice'}
+          />
+          <div className="pb-4">
             {featured.type === 'feast' ? (
               /* ── Feast day ── */
               <div>
