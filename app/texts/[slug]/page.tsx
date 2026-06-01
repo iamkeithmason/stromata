@@ -169,7 +169,7 @@ export default async function TextPage({ params }: Props) {
 
           {/* Title — IM Fell English at display size, left-aligned */}
           <h1
-            className="mb-6"
+            className="mb-2"
             style={{
               fontFamily: 'var(--serif-display)',
               fontSize: '3rem',
