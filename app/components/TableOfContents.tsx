@@ -9,13 +9,14 @@ function TocLinks({ headings }: { headings: Heading[] }) {
   return (
     <ul className="space-y-2">
       {headings.map(h => (
-        <li key={h.id} className={h.level === 3 ? 'pl-3' : ''}>
+        <li key={h.id} className={h.level === 3 ? 'pl-3' : h.level === 2 ? 'pl-1.5' : ''}>
           <a
             href={`#${h.id}`}
             className="block font-serif leading-snug hover:opacity-70 transition-opacity"
             style={{
-              color: 'var(--ink-mute)',
-              fontSize: h.level === 2 ? '0.8125rem' : '0.75rem',
+              color: h.level === 1 ? 'var(--ink-soft)' : 'var(--ink-mute)',
+              fontSize: h.level === 1 ? '0.875rem' : h.level === 2 ? '0.8125rem' : '0.75rem',
+              fontWeight: h.level === 1 ? 500 : 400,
             }}
           >
             {h.text}
@@ -88,10 +89,10 @@ export default function TableOfContents({ headings, mobile = false }: Props) {
           <div
             key={h.id}
             style={{
-              width: h.level === 2 ? 20 : 12,
+              width: h.level === 1 ? 24 : h.level === 2 ? 18 : 11,
               height: 2,
               borderRadius: 1,
-              background: 'var(--rule)',
+              background: h.level === 1 ? 'var(--ink-faint)' : 'var(--rule)',
             }}
           />
         ))}

@@ -1,4 +1,4 @@
-export type Heading = { level: 2 | 3; text: string; id: string }
+export type Heading = { level: 1 | 2 | 3; text: string; id: string }
 
 /**
  * Converts heading text to a URL-safe anchor ID.
@@ -40,9 +40,9 @@ function stripInlineMarkdown(text: string): string {
 export function extractHeadings(markdown: string): Heading[] {
   const headings: Heading[] = []
   for (const line of markdown.split('\n')) {
-    const match = line.match(/^(#{2,3})\s+(.+)$/)
+    const match = line.match(/^(#{1,3})\s+(.+)$/)
     if (!match) continue
-    const level = match[1].length as 2 | 3
+    const level = match[1].length as 1 | 2 | 3
     const text = stripInlineMarkdown(match[2])
     if (!text) continue
     headings.push({ level, text, id: slugify(text) })
