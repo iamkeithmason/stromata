@@ -114,27 +114,15 @@ export default async function TextPage({ params }: Props) {
         )
       })() : undefined} />
 
-      {/* Outer container expands to accommodate the TOC sidebar on large screens.
-          Without a TOC (< 3 headings) the layout is pixel-identical to before. */}
-      <div className={hasToc ? 'max-w-5xl mx-auto px-6 py-12' : 'max-w-2xl mx-auto px-6 py-12'}>
-        <div className={hasToc ? 'lg:grid lg:grid-cols-[220px_1fr] lg:gap-14' : undefined}>
-
-          {/* Desktop TOC sidebar — sticky, hidden on mobile */}
-          {hasToc && (
-            <aside className="hidden lg:block">
-              <div className="sticky" style={{ top: '6rem' }}>
-                <TableOfContents headings={headings} />
-              </div>
-            </aside>
-          )}
-
-          <main className="min-w-0">
-            {/* Mobile TOC disclosure — visible only below lg breakpoint */}
-            {hasToc && (
-              <div className="lg:hidden mb-8">
-                <TableOfContents headings={headings} mobile />
-              </div>
-            )}
+      {/* Content column — always max-w-2xl, unaffected by TOC presence.
+          The desktop TOC is fixed in the right margin (see below). */}
+      <main className="max-w-2xl mx-auto px-6 py-12">
+        {/* Mobile TOC disclosure — visible below xl where fixed TOC is hidden */}
+        {hasToc && (
+          <div className="xl:hidden mb-8">
+            <TableOfContents headings={headings} mobile />
+          </div>
+        )}
 
         {/* Text header */}
         <div className="mb-20">
@@ -337,9 +325,12 @@ export default async function TextPage({ params }: Props) {
             </a>
           </p>
         </footer>
-          </main>{/* end content column */}
-        </div>{/* end grid */}
-      </div>{/* end outer container */}
+      </main>
+
+      {/* Desktop TOC — fixed in right viewport margin, hover to expand.
+          Renders outside <main> so it doesn't affect content column width.
+          Only shown at xl (1280px+) where the right margin has enough room. */}
+      {hasToc && <TableOfContents headings={headings} />}
 
       <RecordVisit
         slug={slug}
