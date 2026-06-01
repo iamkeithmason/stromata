@@ -114,9 +114,8 @@ export default async function TextPage({ params }: Props) {
         )
       })() : undefined} />
 
-      {/* Content column — always max-w-2xl, unaffected by TOC presence.
-          The desktop TOC is fixed in the right margin (see below). */}
-      <main className="max-w-2xl mx-auto px-6 py-12">
+      {/* Content column — max-w-3xl. The desktop TOC is fixed in the right margin (see below). */}
+      <main className="max-w-3xl mx-auto px-6 py-12">
         {/* Mobile TOC disclosure — visible below xl where fixed TOC is hidden */}
         {hasToc && (
           <div className="xl:hidden mb-8">
@@ -147,14 +146,28 @@ export default async function TextPage({ params }: Props) {
             )}
           </div>
 
-          <hr style={{ borderColor: 'var(--rule)', borderTopWidth: '1px', marginBottom: '5rem' }} />
+          <hr style={{ borderColor: 'var(--rule)', borderTopWidth: '1px', marginBottom: '3rem' }} />
 
-          <h1 className="font-serif text-3xl text-center italic mb-4" style={{ color: 'var(--ink)' }}>
+          {/* Reading time — kicker above the title */}
+          <p className="text-xs mb-3" style={{ color: 'var(--ink-mute)' }}>
+            approx. {readingTime(body)} min read
+          </p>
+
+          {/* Title — IM Fell English at display size, left-aligned */}
+          <h1
+            className="mb-6"
+            style={{
+              fontFamily: 'var(--serif-display)',
+              fontSize: '3rem',
+              lineHeight: 1.1,
+              color: 'var(--ink)',
+            }}
+          >
             {text.title}
           </h1>
 
           {themes.length > 0 && (
-            <div className="flex flex-wrap justify-center gap-x-4 gap-y-1 mb-2">
+            <div className="flex flex-wrap gap-x-4 gap-y-1 mb-2">
               {themes.map(theme => (
                 <Link
                   key={theme.slug}
@@ -171,7 +184,7 @@ export default async function TextPage({ params }: Props) {
             </div>
           )}
           {author?.loc && (
-            <div className="flex justify-center mb-4">
+            <div className="flex mb-4">
               <Link
                 href={`/locations/${author.loc.slug}`}
                 className="text-xs tracking-widest uppercase font-serif hover:opacity-70 transition-opacity"
@@ -184,10 +197,6 @@ export default async function TextPage({ params }: Props) {
               </Link>
             </div>
           )}
-
-          <p className="text-center text-xs mt-3" style={{ color: 'var(--ink-mute)' }}>
-            approx. {readingTime(body)} min read
-          </p>
 
           {/* OCR quality notice */}
           {text.ocr_quality === 'low' && (
@@ -221,7 +230,7 @@ export default async function TextPage({ params }: Props) {
             >
               Introduction
             </p>
-            <div className="prose-body italic" style={{ color: 'var(--ink-soft)' }}>
+            <div className="prose-body" style={{ color: 'var(--ink-soft)' }}>
               <MarkdownBody content={editorialIntro} numbered={false} />
             </div>
           </div>
