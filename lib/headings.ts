@@ -22,6 +22,7 @@ export function slugify(text: string): string {
  */
 function stripInlineMarkdown(text: string): string {
   return text
+    .replace(/\\([\\`*_{}\[\]()#+\-.!|])/g, '$1') // backslash escapes e.g. \. → .
     .replace(/\*\*([^*]+)\*\*/g, '$1') // **bold**
     .replace(/\*([^*]+)\*/g, '$1')     // *italic*
     .replace(/__([^_]+)__/g, '$1')     // __bold__
