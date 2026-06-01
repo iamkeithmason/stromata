@@ -159,7 +159,7 @@ export default async function TextPage({ params }: Props) {
             style={{
               fontFamily: 'var(--serif-display)',
               fontSize: '3rem',
-              lineHeight: 1.1,
+              lineHeight: 1.5,
               color: 'var(--ink)',
             }}
           >
