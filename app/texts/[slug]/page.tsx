@@ -222,7 +222,7 @@ export default async function TextPage({ params }: Props) {
               Introduction
             </p>
             <div className="prose-body italic" style={{ color: 'var(--ink-soft)' }}>
-              <MarkdownBody content={editorialIntro} />
+              <MarkdownBody content={editorialIntro} numbered={false} />
             </div>
           </div>
         )}
