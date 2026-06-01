@@ -83,6 +83,8 @@ export default function TableOfContents({ headings, mobile = false }: Props) {
         style={{
           opacity: expanded ? 0 : 1,
           pointerEvents: expanded ? 'none' : 'auto',
+          maxHeight: 'calc(100vh - 7rem)',
+          overflowY: 'hidden',
         }}
       >
         {headings.map(h => (
@@ -118,6 +120,8 @@ export default function TableOfContents({ headings, mobile = false }: Props) {
           padding: '12px 14px',
           minWidth: 180,
           maxWidth: 220,
+          maxHeight: 'calc(100vh - 7rem)',
+          overflowY: 'auto',
           boxShadow: '0 1px 6px rgba(0,0,0,0.07)',
         }}
       >
