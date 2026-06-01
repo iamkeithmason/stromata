@@ -36,7 +36,18 @@
       "Bash(npm run *)",
       "Bash(cp \"/Users/keithmason/.claude/projects/-Users-keithmason-Documents-projects-stromata/c007a36e-6dc6-449e-be6a-157d19ae2b6d/tool-results/webfetch-1777299991751-z1uws6.bin\" /tmp/design.gz)",
       "Bash(gunzip -c /tmp/design.gz)",
-      "Bash(xargs ls *)"
+      "Bash(xargs ls *)",
+      "mcp__90846c03-28e1-4862-900f-0cd845f17b8e__whoami",
+      "mcp__90846c03-28e1-4862-900f-0cd845f17b8e__use_figma",
+      "mcp__supabase__execute_sql",
+      "Bash(xargs cat)",
+      "Bash(mkdir -p /Users/keithmason/Documents/projects/stromata/app/traditions/\\\\[slug\\\\])",
+      "Bash(mkdir -p \"/Users/keithmason/Documents/projects/stromata/app/admin/traditions/[slug]/edit\")",
+      "Bash(mkdir -p \"/Users/keithmason/Documents/projects/stromata/app/api/admin/traditions/[slug]\")"
     ]
-  }
+  },
+  "enableAllProjectMcpServers": true,
+  "enabledMcpjsonServers": [
+    "supabase"
+  ]
 }
