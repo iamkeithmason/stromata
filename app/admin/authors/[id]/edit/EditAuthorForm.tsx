@@ -168,15 +168,15 @@ export default function EditAuthorForm({
         <p className="text-xs uppercase tracking-widest text-stone-400 mb-4">Feast day</p>
         <div className="space-y-4">
           <div>
-            <label className={label}>Feast day <span className="text-stone-400 font-normal">(MM-DD format, e.g. 01-27)</span></label>
+            <label className={label}>Feast day <span className="text-stone-400 font-normal">(DD/MM format, e.g. 27/01)</span></label>
             <input
               name="feast_day"
               type="text"
               defaultValue={initialFeastDay}
               className={input}
-              placeholder="01-27"
-              pattern="\d{2}-\d{2}"
-              title="MM-DD format e.g. 01-27"
+              placeholder="27/01"
+              pattern="\d{2}/\d{2}"
+              title="DD/MM format e.g. 27/01"
             />
           </div>
           <div>

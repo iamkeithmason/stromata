@@ -83,9 +83,10 @@ export default async function Home() {
   const supabase = createServerClient()
 
   // ── Featured slot ─────────────────────────────────────────────────────────
-  // Today as MM-DD in UTC. Phase 1 limitation: off by one for readers many
-  // timezones ahead/behind UTC — acceptable for now.
-  const mmdd = new Date().toISOString().slice(5, 10)
+  // Today as DD/MM in UTC (British format, matching feast_day column).
+  // Phase 1 limitation: off by one for readers many timezones from UTC.
+  const now = new Date()
+  const mmdd = `${String(now.getUTCDate()).padStart(2, '0')}/${String(now.getUTCMonth() + 1).padStart(2, '0')}`
 
   let featured: FeaturedSlot | null = null
 
