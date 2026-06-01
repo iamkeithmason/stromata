@@ -115,7 +115,7 @@ export default async function TextPage({ params }: Props) {
       })() : undefined} />
 
       {/* Content column — max-w-3xl. The desktop TOC is fixed in the right margin (see below). */}
-      <main className="max-w-3xl mx-auto px-6 py-12">
+      <main className="max-w-4xl mx-auto px-6 py-12">
         {/* Mobile TOC disclosure — visible below xl where fixed TOC is hidden */}
         {hasToc && (
           <div className="xl:hidden mb-8">
@@ -150,7 +150,7 @@ export default async function TextPage({ params }: Props) {
 
           {/* Reading time — kicker above the title */}
           <p className="text-xs mb-3" style={{ color: 'var(--ink-mute)' }}>
-            approx. {readingTime(body)} min read
+            Approx. {readingTime(body)} min read
           </p>
 
           {/* Title — IM Fell English at display size, left-aligned */}
@@ -231,7 +231,7 @@ export default async function TextPage({ params }: Props) {
               Introduction
             </p>
             <div className="prose-body" style={{ color: 'var(--ink-soft)' }}>
-              <MarkdownBody content={editorialIntro} numbered={false} />
+              <MarkdownBody content={editorialIntro} numbered={false} size="large" />
             </div>
           </div>
         )}

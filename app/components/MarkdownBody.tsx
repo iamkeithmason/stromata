@@ -42,7 +42,7 @@ function buildParagraphLineMap(content: string): Map<number, number> {
   return map
 }
 
-export default function MarkdownBody({ content, numbered = true }: { content: string; numbered?: boolean }) {
+export default function MarkdownBody({ content, numbered = true, size = 'default' }: { content: string; numbered?: boolean; size?: 'default' | 'large' }) {
   const paragraphLineMap = useMemo(() => buildParagraphLineMap(content), [content])
 
   return (
@@ -71,7 +71,7 @@ export default function MarkdownBody({ content, numbered = true }: { content: st
                   {num}
                 </span>
               )}
-              <p className="font-serif leading-loose mb-5 text-[1.25rem]" style={{ color: '#1b1b1b' }}>
+              <p className="font-serif leading-loose mb-5" style={{ color: '#1b1b1b', fontSize: size === 'large' ? '1.5rem' : '1.25rem' }}>
                 {children}
               </p>
             </div>
