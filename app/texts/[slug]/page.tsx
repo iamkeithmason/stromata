@@ -130,7 +130,7 @@ export default async function TextPage({ params }: Props) {
             className="flex justify-between items-baseline mb-4 text-xs tracking-widest uppercase font-serif"
             style={{ color: 'var(--ink-mute)' }}
           >
-            <div>
+            <div className="flex items-baseline gap-2">
               {author?.slug ? (
                 <Link href={`/authors/${author.slug}`} className="hover:opacity-70 transition-opacity">
                   {author.name}
@@ -138,6 +138,20 @@ export default async function TextPage({ params }: Props) {
               ) : author?.name ? (
                 <span>{author.name}</span>
               ) : null}
+              {author?.loc && (
+                <>
+                  <span style={{ color: 'var(--rule)' }}>·</span>
+                  <Link
+                    href={`/locations/${author.loc.slug}`}
+                    className="hover:opacity-70 transition-opacity"
+                    data-umami-event="location-country-click"
+                    data-umami-event-country={author.loc.name}
+                    data-umami-event-from="text-reader"
+                  >
+                    {author.loc.name}
+                  </Link>
+                </>
+              )}
             </div>
             {collection && (
               <Link href={`/collections/${collection.slug}`} className="hover:opacity-70 transition-opacity">
@@ -183,21 +197,6 @@ export default async function TextPage({ params }: Props) {
               ))}
             </div>
           )}
-          {author?.loc && (
-            <div className="flex mb-4">
-              <Link
-                href={`/locations/${author.loc.slug}`}
-                className="text-xs tracking-widest uppercase font-serif hover:opacity-70 transition-opacity"
-                style={{ color: 'var(--ink-mute)' }}
-                data-umami-event="location-country-click"
-                data-umami-event-country={author.loc.name}
-                data-umami-event-from="text-reader"
-              >
-                {author.loc.name}
-              </Link>
-            </div>
-          )}
-
           {/* OCR quality notice */}
           {text.ocr_quality === 'low' && (
             <p
