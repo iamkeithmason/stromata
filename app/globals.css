@@ -77,6 +77,12 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Offset anchor-link scroll targets to clear the fixed site header (4rem)
+   plus a small breathing gap. Applies to all #fragment navigation. */
+html {
+  scroll-padding-top: 5.5rem;
+}
+
 
 /* =============================================================
    Book cover — responsive container scaling
