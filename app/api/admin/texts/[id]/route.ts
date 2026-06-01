@@ -36,6 +36,9 @@ export async function PATCH(request: NextRequest, { params }: Params) {
     editorial_introduction,
     body: textBody,
     published,
+    featured,
+    featured_from,
+    featured_note,
   } = payload
 
   if (!title || !slug || !author_id || !genre_slug || !textBody) {
@@ -70,6 +73,9 @@ export async function PATCH(request: NextRequest, { params }: Params) {
       ocr_quality: ocr_quality || null,
       editorial_introduction: editorial_introduction || null,
       published: published ?? false,
+      featured: featured ?? false,
+      featured_from: featured_from || null,
+      featured_note: featured_note || null,
     })
     .eq('id', id)
 

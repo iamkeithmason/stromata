@@ -47,6 +47,9 @@ export default async function EditTextPage({ params }: Props) {
           initialEditorialIntroduction={text.editorial_introduction ?? ''}
           initialBody={text.body}
           initialPublished={text.published}
+          initialFeatured={text.featured ?? false}
+          initialFeaturedFrom={text.featured_from ?? ''}
+          initialFeaturedNote={text.featured_note ?? ''}
         />
       </div>
     </main>

@@ -21,6 +21,8 @@ type Props = {
   initialBioSource: string
   initialLocationId: number | null
   initialLocation: string
+  initialFeastDay: string
+  initialFeastDayNote: string
 }
 
 export default function EditAuthorForm({
@@ -35,6 +37,8 @@ export default function EditAuthorForm({
   initialBioSource,
   initialLocationId,
   initialLocation,
+  initialFeastDay,
+  initialFeastDayNote,
 }: Props) {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
@@ -63,6 +67,8 @@ export default function EditAuthorForm({
       bio_source: (data.get('bio_source') as string) || null,
       location_id: data.get('location_id') ? Number(data.get('location_id')) : null,
       location: (data.get('location') as string) || null,
+      feast_day: (data.get('feast_day') as string) || null,
+      feast_day_note: (data.get('feast_day_note') as string) || null,
     }
 
     setLoading(true)
@@ -153,6 +159,35 @@ export default function EditAuthorForm({
           <div>
             <label className={label}>Primary location <span className="text-stone-400 font-normal">(optional)</span></label>
             <input name="location" type="text" defaultValue={initialLocation} className={input} placeholder="e.g. Canterbury" />
+          </div>
+        </div>
+      </div>
+
+      {/* Feast day */}
+      <div className="pt-2 border-t border-stone-200">
+        <p className="text-xs uppercase tracking-widest text-stone-400 mb-4">Feast day</p>
+        <div className="space-y-4">
+          <div>
+            <label className={label}>Feast day <span className="text-stone-400 font-normal">(MM-DD format, e.g. 01-27)</span></label>
+            <input
+              name="feast_day"
+              type="text"
+              defaultValue={initialFeastDay}
+              className={input}
+              placeholder="01-27"
+              pattern="\d{2}-\d{2}"
+              title="MM-DD format e.g. 01-27"
+            />
+          </div>
+          <div>
+            <label className={label}>Calendar note <span className="text-stone-400 font-normal">(optional)</span></label>
+            <input
+              name="feast_day_note"
+              type="text"
+              defaultValue={initialFeastDayNote}
+              className={input}
+              placeholder="e.g. Western calendar, or Roman and Eastern"
+            />
           </div>
         </div>
       </div>

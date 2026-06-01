@@ -28,6 +28,9 @@ type Props = {
   initialEditorialIntroduction: string
   initialBody: string
   initialPublished: boolean
+  initialFeatured: boolean
+  initialFeaturedFrom: string
+  initialFeaturedNote: string
 }
 
 export default function EditTextForm({
@@ -47,6 +50,9 @@ export default function EditTextForm({
   initialEditorialIntroduction,
   initialBody,
   initialPublished,
+  initialFeatured,
+  initialFeaturedFrom,
+  initialFeaturedNote,
 }: Props) {
   const router = useRouter()
   const [authors, setAuthors] = useState<Author[]>([])
@@ -105,6 +111,9 @@ export default function EditTextForm({
       editorial_introduction: editorialIntroduction || null,
       body: data.get('body') as string,
       published: data.get('published') === 'on',
+      featured: data.get('featured') === 'on',
+      featured_from: (data.get('featured_from') as string) || null,
+      featured_note: (data.get('featured_note') as string) || null,
     }
 
     setLoading(true)
@@ -316,6 +325,47 @@ export default function EditTextForm({
           className="rounded border-stone-300"
         />
         <label htmlFor="published" className="text-sm text-stone-700">Published</label>
+      </div>
+
+      {/* Featured slot */}
+      <div className="border border-stone-200 rounded p-4 space-y-4">
+        <div className="flex items-center gap-2">
+          <input
+            type="checkbox"
+            name="featured"
+            id="featured"
+            defaultChecked={initialFeatured}
+            className="rounded border-stone-300"
+          />
+          <label htmlFor="featured" className="text-sm font-medium text-stone-700">
+            Feature this text on the homepage
+          </label>
+        </div>
+        <p className="text-xs text-stone-400 -mt-2">
+          One text is shown at a time — the most recently featured wins. Feast days take priority over editorial picks.
+        </p>
+        <div>
+          <label className={label} htmlFor="featured_from">Featured from</label>
+          <input
+            type="date"
+            name="featured_from"
+            id="featured_from"
+            defaultValue={initialFeaturedFrom}
+            className={input}
+          />
+        </div>
+        <div>
+          <label className={label} htmlFor="featured_note">Curator&rsquo;s note</label>
+          <p className="text-xs text-stone-400 mb-1">Why is this text worth reading now? Shown on the homepage below the title.</p>
+          <textarea
+            name="featured_note"
+            id="featured_note"
+            rows={4}
+            defaultValue={initialFeaturedNote}
+            className={input}
+            placeholder="Here is why I chose this text this week…"
+          />
+        </div>
       </div>
 
       {error && (

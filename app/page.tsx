@@ -23,6 +23,31 @@ type TextRow = {
   text_themes: { theme: { name: string; slug: string } | null }[]
 }
 
+type FeastAuthor = {
+  id: string
+  name: string
+  slug: string
+  bio: string | null
+  feast_day_note: string | null
+  tradition: { name: string } | null
+  era: { label: string } | null
+}
+type FeastText = { id: string; title: string; slug: string; genre: { name: string } | null }
+
+type EditorialText = {
+  id: string
+  title: string
+  slug: string
+  accession_number: number | null
+  featured_note: string | null
+  author: { name: string; slug: string | null; death_year: number | null; tradition: { slug: string } | null } | null
+  genre: { name: string } | null
+}
+
+type FeaturedSlot =
+  | { type: 'feast'; author: FeastAuthor; texts: FeastText[] }
+  | { type: 'editorial'; text: EditorialText }
+
 export const metadata = {
   title: 'The Stromata — A reading room for the works of the ages',
 }
@@ -48,6 +73,53 @@ function SectionHeader({ title, aside }: { title: string; aside?: string }) {
 
 export default async function Home() {
   const supabase = createServerClient()
+
+  // ── Featured slot ─────────────────────────────────────────────────────────
+  // Today as MM-DD in UTC. Phase 1 limitation: off by one for readers many
+  // timezones ahead/behind UTC — acceptable for now.
+  const mmdd = new Date().toISOString().slice(5, 10)
+
+  let featured: FeaturedSlot | null = null
+
+  // 1. Feast day: check if any author's feast_day matches today
+  const { data: feastAuthorRaw } = await supabase
+    .from('authors')
+    .select('id, name, slug, bio, feast_day_note, tradition:traditions(name), era:eras(label)')
+    .eq('feast_day', mmdd)
+    .not('slug', 'is', null)
+    .limit(1)
+    .maybeSingle()
+
+  if (feastAuthorRaw) {
+    const feastAuthor = feastAuthorRaw as unknown as FeastAuthor
+    const { data: feastTexts } = await supabase
+      .from('texts')
+      .select('id, title, slug, genre:genres(name)')
+      .eq('author_id', feastAuthor.id)
+      .eq('published', true)
+      .order('title')
+    if (feastTexts && feastTexts.length > 0) {
+      featured = { type: 'feast', author: feastAuthor, texts: feastTexts as unknown as FeastText[] }
+    }
+  }
+
+  // 2. Editorial pick fallback: most recently featured published text
+  if (!featured) {
+    const { data: editorialRaw } = await supabase
+      .from('texts')
+      .select(`id, title, slug, accession_number, featured_note,
+        author:authors(name, slug, death_year, tradition:traditions(slug)),
+        genre:genres(name)`)
+      .eq('published', true)
+      .eq('featured', true)
+      .order('featured_from', { ascending: false })
+      .limit(1)
+      .maybeSingle()
+    if (editorialRaw) {
+      featured = { type: 'editorial', text: editorialRaw as unknown as EditorialText }
+    }
+  }
+  // ── End featured slot ──────────────────────────────────────────────────────
 
   const { data: publishedTextsForCounts } = await supabase
     .from('texts')
@@ -104,6 +176,140 @@ export default async function Home() {
           try: &lsquo;grace&rsquo;&thinsp;·&thinsp;Augustine&thinsp;·&thinsp;on suffering
         </p>
       </section>
+
+      {/* ── Featured slot ─────────────────────────────────────────────────── */}
+      {featured && (
+        <section className="max-w-5xl mx-auto px-6 pb-20">
+          <div
+            className="border-t border-b py-10"
+            style={{ borderColor: 'var(--rule)' }}
+          >
+            {featured.type === 'feast' ? (
+              /* ── Feast day ── */
+              <div>
+                <p className="text-xs uppercase tracking-widest mb-4 font-serif" style={{ color: 'var(--ink-mute)' }}>
+                  Today is the feast of
+                </p>
+                <Link
+                  href={`/authors/${featured.author.slug}`}
+                  className="hover:opacity-70 transition-opacity"
+                  data-umami-event="featured-click"
+                  data-umami-event-type="feast"
+                >
+                  <h2
+                    className="mb-2"
+                    style={{ fontFamily: 'var(--serif-display)', fontSize: '2rem', lineHeight: 1.2, color: 'var(--ink)' }}
+                  >
+                    {featured.author.name}
+                  </h2>
+                </Link>
+                <p className="text-sm mb-4 font-serif" style={{ color: 'var(--ink-mute)' }}>
+                  {[
+                    featured.author.tradition?.name,
+                    featured.author.era?.label?.replace(/\s*\(.*?\)/, ''),
+                  ].filter(Boolean).join(' · ')}
+                  {featured.author.feast_day_note && (
+                    <span className="italic"> · {featured.author.feast_day_note}</span>
+                  )}
+                </p>
+                {featured.author.bio && (
+                  <p className="font-serif leading-relaxed mb-6 max-w-2xl" style={{ color: 'var(--ink-soft)', fontSize: '1rem' }}>
+                    {featured.author.bio.length > 300
+                      ? featured.author.bio.slice(0, 300).trimEnd() + '…'
+                      : featured.author.bio}
+                  </p>
+                )}
+                <div className="mb-3">
+                  <p className="font-serif italic text-sm mb-3" style={{ color: 'var(--ink-mute)' }}>
+                    Texts in the library
+                  </p>
+                  <ul className="space-y-1.5">
+                    {(featured.texts as FeastText[]).map(t => (
+                      <li key={t.id}>
+                        <Link
+                          href={`/texts/${t.slug}`}
+                          className="font-serif hover:opacity-70 transition-opacity"
+                          style={{ color: 'var(--ink)', fontSize: '1rem' }}
+                        >
+                          {t.title}
+                          {t.genre && (
+                            <span className="ml-2 text-xs" style={{ color: 'var(--ink-mute)' }}>{t.genre.name}</span>
+                          )}
+                          <span style={{ color: 'var(--ink-faint)' }}> →</span>
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            ) : (
+              /* ── Editorial pick ── */
+              <div className="sm:flex sm:gap-8 items-start">
+                <div className="shrink-0 mb-4 sm:mb-0" style={{ width: 80 }}>
+                  <Link
+                    href={`/texts/${featured.text.slug}`}
+                    data-umami-event="featured-click"
+                    data-umami-event-type="editorial"
+                  >
+                    <div style={{ width: 256, transformOrigin: 'top left', transform: 'scale(0.3125)', position: 'absolute' }}>
+                      <BookCover
+                        title={featured.text.title}
+                        authorName={(featured.text.author as unknown as { name: string } | null)?.name ?? null}
+                        deathYear={(featured.text.author as unknown as { death_year: number | null } | null)?.death_year ?? null}
+                        accessionNumber={featured.text.accession_number}
+                        traditionSlug={(featured.text.author as unknown as { tradition: { slug: string } | null } | null)?.tradition?.slug ?? null}
+                        index={0}
+                      />
+                    </div>
+                    <div style={{ height: 80 }} />
+                  </Link>
+                </div>
+                <div className="flex-1">
+                  <p className="text-xs uppercase tracking-widest mb-3 font-serif" style={{ color: 'var(--ink-mute)' }}>
+                    Editorial pick
+                  </p>
+                  <Link
+                    href={`/texts/${featured.text.slug}`}
+                    className="hover:opacity-70 transition-opacity"
+                    data-umami-event="featured-click"
+                    data-umami-event-type="editorial"
+                  >
+                    <h2
+                      className="mb-2"
+                      style={{ fontFamily: 'var(--serif-display)', fontSize: '1.75rem', lineHeight: 1.2, color: 'var(--ink)' }}
+                    >
+                      {featured.text.title}
+                    </h2>
+                  </Link>
+                  {featured.text.author && (
+                    <p className="text-sm mb-4 font-serif" style={{ color: 'var(--ink-mute)' }}>
+                      {(featured.text.author as unknown as { slug: string | null; name: string }).slug ? (
+                        <Link href={`/authors/${(featured.text.author as unknown as { slug: string }).slug}`} className="hover:opacity-70 transition-opacity">
+                          {(featured.text.author as unknown as { name: string }).name}
+                        </Link>
+                      ) : (featured.text.author as unknown as { name: string }).name}
+                    </p>
+                  )}
+                  {featured.text.featured_note && (
+                    <p className="font-serif leading-relaxed mb-5 max-w-2xl" style={{ color: 'var(--ink-soft)', fontSize: '1rem' }}>
+                      {featured.text.featured_note}
+                    </p>
+                  )}
+                  <Link
+                    href={`/texts/${featured.text.slug}`}
+                    className="font-serif text-sm hover:opacity-70 transition-opacity"
+                    style={{ color: 'var(--ink)' }}
+                    data-umami-event="featured-click"
+                    data-umami-event-type="editorial"
+                  >
+                    Read this text →
+                  </Link>
+                </div>
+              </div>
+            )}
+          </div>
+        </section>
+      )}
 
       {/* Theme clusters */}
       <section className="max-w-5xl mx-auto px-6 pb-20">
