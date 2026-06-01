@@ -231,7 +231,7 @@ export default async function TextPage({ params }: Props) {
             style={{ borderColor: 'var(--rule)' }}
           >
             <p
-              className="text-xs uppercase tracking-widest mb-4 font-serif"
+              className="text-xs uppercase tracking-[0.18em] mb-4"
               style={{ color: 'var(--ink-mute)' }}
             >
               Introduction
