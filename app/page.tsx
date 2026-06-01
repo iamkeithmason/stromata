@@ -28,11 +28,19 @@ type FeastAuthor = {
   name: string
   slug: string
   bio: string | null
+  death_year: number | null
   feast_day_note: string | null
-  tradition: { name: string } | null
+  tradition: { name: string; slug: string } | null
   era: { label: string } | null
 }
-type FeastText = { id: string; title: string; slug: string; genre: { name: string } | null }
+type FeastText = {
+  id: string
+  title: string
+  slug: string
+  body: string
+  accession_number: number | null
+  genre: { name: string } | null
+}
 
 type EditorialText = {
   id: string
@@ -84,7 +92,7 @@ export default async function Home() {
   // 1. Feast day: check if any author's feast_day matches today
   const { data: feastAuthorRaw } = await supabase
     .from('authors')
-    .select('id, name, slug, bio, feast_day_note, tradition:traditions(name), era:eras(label)')
+    .select('id, name, slug, bio, death_year, feast_day_note, tradition:traditions(name, slug), era:eras(label)')
     .eq('feast_day', mmdd)
     .not('slug', 'is', null)
     .limit(1)
@@ -94,7 +102,7 @@ export default async function Home() {
     const feastAuthor = feastAuthorRaw as unknown as FeastAuthor
     const { data: feastTexts } = await supabase
       .from('texts')
-      .select('id, title, slug, genre:genres(name)')
+      .select('id, title, slug, body, accession_number, genre:genres(name)')
       .eq('author_id', feastAuthor.id)
       .eq('published', true)
       .order('title')
@@ -220,27 +228,26 @@ export default async function Home() {
                       : featured.author.bio}
                   </p>
                 )}
-                <div className="mb-3">
-                  <p className="font-serif italic text-sm mb-3" style={{ color: 'var(--ink-mute)' }}>
-                    Texts in the library
-                  </p>
-                  <ul className="space-y-1.5">
-                    {(featured.texts as FeastText[]).map(t => (
-                      <li key={t.id}>
-                        <Link
-                          href={`/texts/${t.slug}`}
-                          className="font-serif hover:opacity-70 transition-opacity"
-                          style={{ color: 'var(--ink)', fontSize: '1rem' }}
-                        >
-                          {t.title}
-                          {t.genre && (
-                            <span className="ml-2 text-xs" style={{ color: 'var(--ink-mute)' }}>{t.genre.name}</span>
-                          )}
-                          <span style={{ color: 'var(--ink-faint)' }}> →</span>
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
+                  {(featured.texts as FeastText[]).map((t, i) => (
+                    <div key={t.id} className="w-2/3 mx-auto sm:w-full">
+                      <Link href={`/texts/${t.slug}`} className="group block">
+                        <BookCover
+                          title={t.title}
+                          authorName={featured.type === 'feast' ? featured.author.name : null}
+                          deathYear={featured.type === 'feast' ? featured.author.death_year : null}
+                          accessionNumber={t.accession_number}
+                          traditionSlug={featured.type === 'feast' ? (featured.author.tradition?.slug ?? null) : null}
+                          index={i}
+                        />
+                      </Link>
+                      <div className="px-0.5 mt-3">
+                        <p style={{ color: 'var(--ink-mute)', fontFamily: 'var(--serif)', fontSize: '0.8rem', letterSpacing: '0.12em' }}>
+                          ~ {readingTime(t.body)} min
+                        </p>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
             ) : (
