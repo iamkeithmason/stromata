@@ -19,7 +19,7 @@ import { createClient } from '@supabase/supabase-js';
 import Anthropic from '@anthropic-ai/sdk';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-dotenv.config({ path: path.join(__dirname, '..', '.env.local') });
+dotenv.config({ path: path.join(__dirname, '..', '.env.local'), override: true });
 
 const dryRun = process.argv.includes('--dry-run');
 
@@ -30,15 +30,22 @@ const supabase = createClient(
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
-const SUMMARY_PROMPT = `You are writing a meta description for a text on The Stromata, a curated library of out-of-print Christian theological texts. Write 1–2 sentences, maximum 160 characters total. Be descriptive and specific — tell the reader exactly what the text is and what it addresses. Do not be evaluative or promotional. Do not begin with the author's name or the title. Do not use phrases like "this important work" or "a must-read". Return only the summary text, no preamble.`;
+const SUMMARY_PROMPT = `You are writing a meta description for a text on The Stromata, a curated library of out-of-print Christian theological texts.
+
+Write 1–2 complete sentences. Hard limit: 160 characters total — count carefully before responding. Every sentence must end with a period. If a sentence would push the total past 160 characters, write a shorter sentence instead. Never cut off mid-sentence or use ellipses.
+
+Be descriptive and specific — tell the reader exactly what the text is and what it addresses. Do not be evaluative or promotional. Do not begin with the author's name or the title. Do not use phrases like "this important work" or "a must-read".
+
+Return only the summary, with no preamble or explanation.`;
 
 function trimToLength(text, max) {
   if (text.length <= max) return text;
+  // Only trim at a real sentence boundary — never add ellipses to a cut sentence.
   const truncated = text.slice(0, max);
   const lastEnd = Math.max(truncated.lastIndexOf('.'), truncated.lastIndexOf('!'), truncated.lastIndexOf('?'));
-  if (lastEnd > max * 0.7) return truncated.slice(0, lastEnd + 1).trim();
-  const lastSpace = truncated.lastIndexOf(' ');
-  return truncated.slice(0, lastSpace).trim() + '…';
+  if (lastEnd > 0) return truncated.slice(0, lastEnd + 1).trim();
+  // No sentence boundary found within limit — return as-is up to the limit.
+  return truncated.trim();
 }
 
 async function generateSummary(title, authorName, body) {

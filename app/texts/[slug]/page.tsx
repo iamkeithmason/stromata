@@ -75,6 +75,7 @@ export default async function TextPage({ params }: Props) {
     .filter(Boolean) as { name: string; slug: string }[]
 
   const body = text.body as string
+  const summary = text.summary as string | null
   const editorialIntro = text.editorial_introduction as string | null
 
   // Extract headings for the TOC sidebar. Only show TOC if 3+ headings exist —
@@ -234,6 +235,27 @@ export default async function TextPage({ params }: Props) {
             </p>
           )}
         </div>
+
+        {/* Summary */}
+        {summary && (
+          <div
+            className="mb-12 pb-10 border-b"
+            style={{ borderColor: 'var(--rule)' }}
+          >
+            <p
+              className="text-xs uppercase tracking-[0.18em] mb-4"
+              style={{ color: 'var(--ink-mute)' }}
+            >
+              Summary
+            </p>
+            <p
+              className="font-serif leading-relaxed"
+              style={{ color: 'var(--ink-soft)', fontSize: '1rem' }}
+            >
+              {summary}
+            </p>
+          </div>
+        )}
 
         {/* Editorial introduction */}
         {editorialIntro && (
