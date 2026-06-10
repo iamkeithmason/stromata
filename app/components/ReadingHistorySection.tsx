@@ -13,12 +13,18 @@ function SectionHeader({ title, aside }: { title: string; aside?: string }) {
           {title}
         </h2>
         {aside && (
-          <span className="text-xs tracking-[0.18em] uppercase" style={{ color: 'var(--ink-mute)' }}>
+          <span style={{
+            color: 'var(--ink-faint)',
+            fontSize: '0.65rem',
+            letterSpacing: '0.18em',
+            textTransform: 'uppercase',
+            fontFamily: 'var(--serif)',
+          }}>
             {aside}
           </span>
         )}
       </div>
-      <hr style={{ borderColor: 'var(--ink)', borderTopWidth: '1px' }} />
+      <hr style={{ borderColor: 'var(--gold-rule)', borderTopWidth: '1px' }} />
     </div>
   )
 }

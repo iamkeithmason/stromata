@@ -10,6 +10,7 @@ declare global {
 
 export default function SearchBar() {
   const [query, setQuery] = useState('')
+  const [focused, setFocused] = useState(false)
   const router = useRouter()
   const inputRef = useRef<HTMLInputElement>(null)
 
@@ -36,15 +37,23 @@ export default function SearchBar() {
 
   return (
     <form onSubmit={handleSubmit} className="relative max-w-2xl mx-auto">
-      {/* Open underline field — no box, no shadow, gold hairline below */}
+      {/* Open underline field — focus thickens the gold hairline */}
       <div
         className="flex items-center gap-3 px-0 py-3"
-        style={{ borderBottom: '1px solid var(--gold-rule)' }}
+        style={{
+          borderBottom: focused ? '2px solid var(--gold)' : '1px solid var(--gold-rule)',
+          transition: 'border-color 150ms ease, border-width 150ms ease',
+        }}
       >
-        {/* Gold search icon */}
+        {/* Gold search icon — brightens on focus */}
         <svg
           className="shrink-0"
-          style={{ color: 'var(--gold)', opacity: 0.75 }}
+          style={{
+            color: 'var(--gold)',
+            opacity: focused ? 1 : 0.75,
+            transition: 'opacity 150ms ease',
+            flexShrink: 0,
+          }}
           width="18"
           height="18"
           viewBox="0 0 24 24"
@@ -62,6 +71,8 @@ export default function SearchBar() {
           type="text"
           value={query}
           onChange={e => setQuery(e.target.value)}
+          onFocus={() => setFocused(true)}
+          onBlur={() => setFocused(false)}
           placeholder="Find an author, a text, a tradition…"
           className="flex-1 outline-none"
           style={{

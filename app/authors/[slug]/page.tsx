@@ -6,9 +6,10 @@ import { createServerClient } from '@/lib/supabase/server'
 import { readingTime } from '@/lib/reading-time'
 import MarkdownBody from '@/app/components/MarkdownBody'
 
+const SITE_URL = 'https://www.thestromata.com'
+
 type Props = { params: Promise<{ slug: string }> }
 
-// genre is many-to-one from texts → object; text_themes is one-to-many → array of { theme: object }
 type TextRow = {
   id: string
   title: string
@@ -18,19 +19,117 @@ type TextRow = {
   text_themes: { theme: { name: string } | null }[]
 }
 
+type RelatedAuthor = {
+  id: string
+  name: string
+  slug: string
+  birth_year: number | null
+  death_year: number | null
+}
+
+// ── Helpers ──────────────────────────────────────────────────────────────────
+
+function formatDates(birth: number | null, death: number | null): string | null {
+  if (birth && death) return `${birth}–${death}`
+  if (death) return `d. ${death}`
+  if (birth) return `b. ${birth}`
+  return null
+}
+
+function stripEraDates(label: string): string {
+  return label.replace(/\s*\(.*?\)/, '').trim()
+}
+
+/**
+ * Author-specific meta description, ~150–160 chars.
+ * Format: "Read the works of [Name] ([dates]), [tradition] — N texts freely
+ * available, edited for legibility. [first sentence of bio if room]."
+ */
+function buildMetaDescription(
+  name: string,
+  dates: string | null,
+  tradition: string | null,
+  textCount: number,
+  bio: string | null
+): string {
+  let desc = `Read the works of ${name}`
+  if (dates) desc += ` (${dates})`
+  if (tradition) desc += `, ${tradition}`
+  desc += ' — '
+  desc += textCount > 0
+    ? `${textCount} text${textCount === 1 ? '' : 's'} freely available, edited for legibility.`
+    : 'works freely available in this library.'
+
+  // Append bio first sentence if there's room
+  if (bio && desc.length < 120) {
+    const m = bio.match(/^[^.!?]+[.!?]/)
+    const first = m?.[0]?.trim() ?? null
+    if (first && desc.length + 1 + first.length <= 160) {
+      desc += ` ${first}`
+    }
+  }
+
+  return desc.length > 160 ? desc.slice(0, 158) + '…' : desc
+}
+
+// ── generateMetadata ──────────────────────────────────────────────────────────
+
 export async function generateMetadata({ params }: Props) {
   const { slug } = await params
   const supabase = createServerClient()
-  const { data } = await supabase.from('authors').select('name').eq('slug', slug).single()
-  // Format: "Author Name | The Stromata"
-  return { title: data ? `${data.name} | The Stromata` : 'Author — The Stromata' }
+
+  const { data: author } = await supabase
+    .from('authors')
+    .select('id, name, bio, birth_year, death_year, tradition:traditions(name), era:eras(label)')
+    .eq('slug', slug)
+    .single()
+
+  if (!author) return { title: 'Author — The Stromata' }
+
+  // Count published texts for this author
+  const { count: textCount } = await supabase
+    .from('texts')
+    .select('*', { count: 'exact', head: true })
+    .eq('author_id', author.id)
+    .eq('published', true)
+
+  const tradition = (author.tradition as unknown as { name: string } | null)?.name ?? null
+  const eraLabel = (author.era as unknown as { label: string } | null)?.label ?? null
+  const eraShort = eraLabel ? stripEraDates(eraLabel) : null
+  const dates = formatDates(author.birth_year, author.death_year)
+
+  // "Jeremy Taylor (1613–1667) — Anglican | The Stromata"
+  const descriptor = tradition ?? eraShort
+  const namePart = dates ? `${author.name} (${dates})` : author.name
+  const title = descriptor
+    ? `${namePart} — ${descriptor} | The Stromata`
+    : `${namePart} | The Stromata`
+
+  const description = buildMetaDescription(
+    author.name, dates, tradition, textCount ?? 0, author.bio as string | null
+  )
+  const canonicalUrl = `${SITE_URL}/authors/${slug}`
+
+  return {
+    title,
+    description,
+    alternates: { canonical: canonicalUrl },
+    openGraph: {
+      type: 'profile',
+      title,
+      description,
+      url: canonicalUrl,
+    },
+    twitter: { card: 'summary', title, description },
+  }
 }
+
+// ── Page ──────────────────────────────────────────────────────────────────────
 
 export default async function AuthorPage({ params }: Props) {
   const { slug } = await params
   const supabase = createServerClient()
 
-  // tradition and era are many-to-one from authors → objects
   const { data: author } = await supabase
     .from('authors')
     .select('*, tradition:traditions(name, slug), era:eras(label, slug), loc:locations(name, slug)')
@@ -48,33 +147,93 @@ export default async function AuthorPage({ params }: Props) {
 
   const rows = (texts ?? []) as unknown as TextRow[]
 
-  // tradition/era come back as objects (many-to-one)
+  // Related authors — same tradition, exclude self, limit 6
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const traditionId = (author as any).tradition_id as string | null
+  const { data: relatedRaw } = traditionId ? await supabase
+    .from('authors')
+    .select('id, name, slug, birth_year, death_year')
+    .eq('tradition_id', traditionId)
+    .neq('id', author.id)
+    .not('slug', 'is', null)
+    .order('name')
+    .limit(6) : { data: [] }
+
+  const relatedAuthors = (relatedRaw ?? []) as unknown as RelatedAuthor[]
+
+  // Derived display values
   const traditionObj = author.tradition as { name: string; slug: string } | null
-  const tradition = traditionObj?.name
+  const tradition = traditionObj?.name ?? null
   const eraObj = author.era as { label: string; slug: string } | null
-  const eraLabel = eraObj?.label
-  const eraSlug = eraObj?.slug
+  const eraLabel = eraObj?.label ?? null
+  const eraSlug = eraObj?.slug ?? null
   const locationObj = author.loc as { name: string; slug: string } | null
   const locationCity = author.location as string | null
+  const dates = formatDates(author.birth_year, author.death_year)
+  const canonicalUrl = `${SITE_URL}/authors/${slug}`
 
-  const dateStr = author.birth_year && author.death_year
-    ? `${author.birth_year}–${author.death_year}`
-    : author.death_year
-      ? `d. ${author.death_year}`
-      : null
+  // Top themes for JSON-LD
+  const themeCounts: Record<string, number> = {}
+  for (const text of rows) {
+    for (const tt of text.text_themes) {
+      if (tt.theme?.name) {
+        themeCounts[tt.theme.name] = (themeCounts[tt.theme.name] ?? 0) + 1
+      }
+    }
+  }
+  const topThemes = Object.entries(themeCounts)
+    .sort(([, a], [, b]) => b - a)
+    .slice(0, 4)
+    .map(([name]) => name)
+
+  // JSON-LD Person — populated from real fields only, no fabricated values
+  const jsonLd: Record<string, unknown> = {
+    '@context': 'https://schema.org',
+    '@type': 'Person',
+    name: author.name,
+    url: canonicalUrl,
+    mainEntityOfPage: { '@type': 'WebPage', '@id': canonicalUrl },
+    ...(author.bio ? { description: (author.bio as string).slice(0, 300) } : {}),
+    ...(author.birth_year ? { birthDate: String(author.birth_year) } : {}),
+    ...(author.death_year ? { deathDate: String(author.death_year) } : {}),
+    ...((tradition || topThemes.length > 0)
+      ? { knowsAbout: [tradition, ...topThemes].filter(Boolean) }
+      : {}),
+    // sameAs: omitted — bio_source is a prose note, not a URL.
+    // Wire this field when a proper Wikipedia/VIAF URL field is added to authors.
+  }
+
+  // ── Section header shared style ──────────────────────────────────────────
+  const sectionAside: React.CSSProperties = {
+    color: 'var(--ink-faint)',
+    fontSize: '0.65rem',
+    letterSpacing: '0.18em',
+    textTransform: 'uppercase',
+    fontFamily: 'var(--serif)',
+  }
 
   return (
     <div style={{ background: 'var(--paper)', paddingTop: '4rem' }} className="min-h-screen">
       <SiteHeader breadcrumb={<Link href="/authors" className="hover:opacity-70 transition-opacity">Authors</Link>} />
 
+      {/* JSON-LD structured data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+
       <main className="max-w-2xl mx-auto px-6 py-12">
-        {/* Author header */}
+
+        {/* ── Author header ─────────────────────────────────────────────── */}
         <div className="mb-10">
-          <h1 className="font-serif text-3xl mb-2" style={{ color: '#1b1b1b' }}>{author.name}</h1>
-          {(dateStr || tradition || eraLabel || locationObj) && (
-            <p className="text-sm" style={{ color: '#6f6a60' }}>
-              {dateStr}
-              {dateStr && tradition ? ' · ' : ''}
+          <h1 className="font-serif text-3xl mb-2" style={{ color: 'var(--ink)' }}>
+            {author.name}
+          </h1>
+
+          {(dates || tradition || eraLabel || locationObj) && (
+            <p className="text-sm" style={{ color: 'var(--ink-mute)' }}>
+              {dates}
+              {dates && tradition ? ' · ' : ''}
               {tradition && traditionObj?.slug ? (
                 <Link href={`/traditions/${traditionObj.slug}`} className="hover:opacity-70 transition-opacity">
                   {tradition}
@@ -82,18 +241,18 @@ export default async function AuthorPage({ params }: Props) {
               ) : tradition}
               {eraLabel && eraSlug && (
                 <>
-                  {(dateStr || tradition) ? ' · ' : ''}
+                  {(dates || tradition) ? ' · ' : ''}
                   <Link href={`/eras/${eraSlug}`} className="hover:opacity-70 transition-opacity">
                     {eraLabel}
                   </Link>
                 </>
               )}
               {eraLabel && !eraSlug && (
-                <>{(dateStr || tradition) ? ' · ' : ''}{eraLabel}</>
+                <>{(dates || tradition) ? ' · ' : ''}{eraLabel}</>
               )}
               {locationObj && (
                 <>
-                  {(dateStr || tradition || eraLabel) ? ' · ' : ''}
+                  {(dates || tradition || eraLabel) ? ' · ' : ''}
                   <Link
                     href={`/locations/${locationObj.slug}`}
                     className="hover:opacity-70 transition-opacity"
@@ -108,33 +267,74 @@ export default async function AuthorPage({ params }: Props) {
             </p>
           )}
           {locationCity && (
-            <p className="text-sm mt-0.5" style={{ color: '#6f6a60' }}>{locationCity}</p>
+            <p className="text-sm mt-0.5" style={{ color: 'var(--ink-mute)' }}>
+              {locationCity}
+            </p>
           )}
         </div>
 
-        {/* Bio */}
+        {/* ── Bio ──────────────────────────────────────────────────────────── */}
         {author.bio && (
           <div className="mb-10">
             <MarkdownBody content={author.bio} numbered={false} />
           </div>
         )}
 
-        {/* Texts */}
+        {/* ── Kindred authors ──────────────────────────────────────────────── */}
+        {relatedAuthors.length > 0 && (
+          <div className="mb-10">
+            <div className="mb-4">
+              <div className="flex items-baseline justify-between mb-3">
+                <h2 className="font-serif italic text-base" style={{ color: 'var(--ink)' }}>
+                  Kindred authors
+                </h2>
+                {tradition && <span style={sectionAside}>{tradition}</span>}
+              </div>
+              <hr style={{ borderColor: 'var(--gold-rule)', borderTopWidth: '1px' }} />
+            </div>
+            <ul className="divide-y" style={{ borderColor: 'var(--rule-soft)' }}>
+              {relatedAuthors.map(a => {
+                const aDates = formatDates(a.birth_year, a.death_year)
+                return (
+                  <li key={a.id}>
+                    <Link
+                      href={`/authors/${a.slug}`}
+                      className="flex items-baseline justify-between py-3 group hover:opacity-70 transition-opacity"
+                      style={{ textDecoration: 'none' }}
+                      data-umami-event="author-open"
+                      data-umami-event-from="related-figures"
+                      data-umami-event-author={a.name}
+                    >
+                      <span className="font-serif" style={{ color: 'var(--ink)' }}>
+                        {a.name}
+                      </span>
+                      {aDates && (
+                        <span className="text-xs ml-4 shrink-0" style={{ color: 'var(--ink-mute)' }}>
+                          {aDates}
+                        </span>
+                      )}
+                    </Link>
+                  </li>
+                )
+              })}
+            </ul>
+          </div>
+        )}
+
+        {/* ── Texts in the library ─────────────────────────────────────────── */}
         {rows.length > 0 && (
           <div>
             <div className="mb-6">
               <div className="flex items-baseline justify-between mb-3">
-                <h2 className="font-serif italic text-base" style={{ color: '#1b1b1b' }}>
+                <h2 className="font-serif italic text-base" style={{ color: 'var(--ink)' }}>
                   Texts in the library
                 </h2>
-                <span className="text-xs tracking-[0.18em] uppercase" style={{ color: '#6f6a60' }}>
-                  {rows.length}
-                </span>
+                <span style={sectionAside}>{rows.length}</span>
               </div>
-              <hr style={{ borderColor: '#1b1b1b', borderTopWidth: '1px' }} />
+              <hr style={{ borderColor: 'var(--gold-rule)', borderTopWidth: '1px' }} />
             </div>
 
-            <ul className="divide-y" style={{ borderColor: '#e5e0d8' }}>
+            <ul className="divide-y" style={{ borderColor: 'var(--rule-soft)' }}>
               {rows.map(t => {
                 const themes = t.text_themes.map(tt => tt.theme?.name).filter(Boolean)
                 return (
@@ -142,26 +342,29 @@ export default async function AuthorPage({ params }: Props) {
                     <Link
                       href={`/texts/${t.slug}`}
                       className="flex items-start justify-between py-4 group"
+                      data-umami-event="text-open"
+                      data-umami-event-from="author-page"
+                      data-umami-event-author={author.name}
                     >
                       <div>
                         <div>
                           <span
                             className="font-serif group-hover:opacity-70 transition-opacity"
-                            style={{ color: '#1b1b1b' }}
+                            style={{ color: 'var(--ink)' }}
                           >
                             {t.title}
                           </span>
                           {themes.length > 0 && (
-                            <span className="text-xs ml-3" style={{ color: '#6f6a60' }}>
-                              {themes.join(' · ')}
+                            <span className="text-xs ml-3" style={{ color: 'var(--ink-mute)' }}>
+                              {(themes as string[]).join(' · ')}
                             </span>
                           )}
                         </div>
-                        <div className="text-xs mt-0.5" style={{ color: '#9c9589' }}>
+                        <div className="text-xs mt-0.5" style={{ color: 'var(--ink-faint)' }}>
                           approx. {readingTime(t.body)} min read
                         </div>
                       </div>
-                      <span className="text-xs ml-4 shrink-0 mt-0.5" style={{ color: '#6f6a60' }}>
+                      <span className="text-xs ml-4 shrink-0 mt-0.5" style={{ color: 'var(--ink-mute)' }}>
                         {t.genre?.name}
                       </span>
                     </Link>
@@ -173,11 +376,15 @@ export default async function AuthorPage({ params }: Props) {
         )}
 
         {rows.length === 0 && (
-          <p className="text-sm" style={{ color: '#6f6a60' }}>No texts published yet.</p>
+          <p className="text-sm" style={{ color: 'var(--ink-mute)' }}>No texts published yet.</p>
         )}
+
       </main>
 
-      <TrackPageEvent event="author-page-view" data={{ author: slug, tradition: tradition ?? null }} />
+      <TrackPageEvent
+        event="author-page-view"
+        data={{ author: slug, tradition: tradition ?? null }}
+      />
     </div>
   )
 }

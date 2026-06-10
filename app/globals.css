@@ -56,7 +56,7 @@
   --ink:          #1E2D3D;
   --ink-soft:     #3D4B5C;
   --ink-mute:     #6B7280;
-  --ink-faint:    #A3A089;
+  --ink-faint:    #6E6A5C;   /* warm grey — AA compliant (≥4.5:1) vs --paper */
 
   --rule:         #C9BFA8;
   --rule-soft:    #DDD3BD;

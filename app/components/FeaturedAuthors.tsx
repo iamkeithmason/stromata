@@ -84,7 +84,7 @@ export async function FeaturedAuthors() {
             href="/authors"
             className="transition-opacity hover:opacity-70"
             style={{
-              color: 'var(--gold)',
+              color: 'var(--ink-faint)',
               fontSize: '0.65rem',
               letterSpacing: '0.18em',
               textTransform: 'uppercase',

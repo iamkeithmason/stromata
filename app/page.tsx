@@ -107,7 +107,7 @@ function SectionHeader({
               href={asideHref}
               className="transition-opacity hover:opacity-70"
               style={{
-                color: 'var(--gold)',
+                color: 'var(--ink-faint)',
                 fontSize: '0.65rem',
                 letterSpacing: '0.18em',
                 textTransform: 'uppercase',
@@ -120,7 +120,7 @@ function SectionHeader({
           ) : (
             <span
               style={{
-                color: 'var(--gold)',
+                color: 'var(--ink-faint)',
                 fontSize: '0.65rem',
                 letterSpacing: '0.18em',
                 textTransform: 'uppercase',
@@ -247,14 +247,13 @@ export default async function Home() {
           A reading room for the works of the ages.
         </p>
 
-        {/* Subtitle in gold spaced small caps — above the search field */}
+        {/* Subtitle in spaced small caps — above the search field */}
         <p
           style={{
             fontSize: '0.6rem',
             letterSpacing: '0.22em',
             textTransform: 'uppercase',
-            color: 'var(--gold)',
-            opacity: 0.75,
+            color: 'var(--ink-faint)',
             fontFamily: 'var(--serif)',
             marginBottom: '1.25rem',
           }}
@@ -274,9 +273,8 @@ export default async function Home() {
                 fontSize: '0.58rem',
                 letterSpacing: '0.22em',
                 textTransform: 'uppercase',
-                color: 'var(--gold)',
+                color: 'var(--ink-faint)',
                 fontFamily: 'var(--serif)',
-                opacity: 0.8,
                 marginRight: '0.35rem',
               }}
             >
