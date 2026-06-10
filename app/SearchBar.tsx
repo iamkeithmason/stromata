@@ -36,13 +36,15 @@ export default function SearchBar() {
 
   return (
     <form onSubmit={handleSubmit} className="relative max-w-2xl mx-auto">
+      {/* Open underline field — no box, no shadow, gold hairline below */}
       <div
-        className="flex items-center gap-3 px-4 py-3 rounded-lg border shadow-sm"
-        style={{ background: 'white', borderColor: '#d6d0c8' }}
+        className="flex items-center gap-3 px-0 py-3"
+        style={{ borderBottom: '1px solid var(--gold-rule)' }}
       >
+        {/* Gold search icon */}
         <svg
           className="shrink-0"
-          style={{ color: '#6f6a60' }}
+          style={{ color: 'var(--gold)', opacity: 0.75 }}
           width="18"
           height="18"
           viewBox="0 0 24 24"
@@ -53,18 +55,34 @@ export default function SearchBar() {
           <circle cx="11" cy="11" r="8" />
           <path d="m21 21-4.35-4.35" />
         </svg>
+
+        {/* Large italic Cormorant input */}
         <input
           ref={inputRef}
           type="text"
           value={query}
           onChange={e => setQuery(e.target.value)}
-          placeholder="Search authors, titles, ideas…"
-          className="flex-1 bg-transparent outline-none font-serif text-base"
-          style={{ color: '#1b1b1b' }}
+          placeholder="Find an author, a text, a tradition…"
+          className="flex-1 outline-none"
+          style={{
+            background: 'transparent',
+            fontFamily: 'var(--serif-cormorant)',
+            fontStyle: 'italic',
+            fontSize: '1.25rem',
+            color: 'var(--ink-soft)',
+          }}
         />
+
+        {/* ⌘K shortcut hint — muted, no box */}
         <kbd
-          className="hidden sm:inline-flex items-center px-2 py-1 text-xs rounded font-mono shrink-0"
-          style={{ background: '#f4f0e8', color: '#6f6a60', border: '1px solid #d6d0c8' }}
+          className="hidden sm:inline-flex items-center shrink-0 font-mono"
+          style={{
+            color: 'var(--ink-faint)',
+            fontSize: '0.7rem',
+            background: 'transparent',
+            border: 'none',
+            letterSpacing: '0.04em',
+          }}
         >
           ⌘K
         </kbd>

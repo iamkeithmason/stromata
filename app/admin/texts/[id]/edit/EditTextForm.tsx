@@ -25,6 +25,7 @@ type Props = {
   initialTranslationNotes: string
   initialOcrQuality: string
   initialNoteDraft: string
+  initialSummary: string
   initialEditorialIntroduction: string
   initialBody: string
   initialPublished: boolean
@@ -47,6 +48,7 @@ export default function EditTextForm({
   initialTranslationNotes,
   initialOcrQuality,
   initialNoteDraft,
+  initialSummary,
   initialEditorialIntroduction,
   initialBody,
   initialPublished,
@@ -65,8 +67,11 @@ export default function EditTextForm({
   const [collectionId, setCollectionId] = useState(initialCollectionId)
   const [editorialIntroduction, setEditorialIntroduction] = useState(initialEditorialIntroduction)
   const [noteDraft, setNoteDraft] = useState(initialNoteDraft)
+  const [summary, setSummary] = useState(initialSummary)
   const [generating, setGenerating] = useState(false)
   const [generateError, setGenerateError] = useState('')
+  const [generatingSummary, setGeneratingSummary] = useState(false)
+  const [generateSummaryError, setGenerateSummaryError] = useState('')
 
   useEffect(() => {
     fetch('/api/admin/authors').then(r => r.json()).then(setAuthors)
@@ -77,6 +82,19 @@ export default function EditTextForm({
     setSelectedThemes(prev =>
       prev.includes(themeSlug) ? prev.filter(s => s !== themeSlug) : [...prev, themeSlug]
     )
+  }
+
+  async function handleGenerateSummary() {
+    setGeneratingSummary(true)
+    setGenerateSummaryError('')
+    const res = await fetch(`/api/admin/texts/${id}/generate-summary`, { method: 'POST' })
+    const json = await res.json()
+    if (res.ok) {
+      setSummary(json.summary)
+    } else {
+      setGenerateSummaryError(json.error || 'Generation failed.')
+    }
+    setGeneratingSummary(false)
   }
 
   async function handleGenerateDraft() {
@@ -108,6 +126,7 @@ export default function EditTextForm({
       provenance_notes: (data.get('provenance_notes') as string) || null,
       translation_notes: (data.get('translation_notes') as string) || null,
       ocr_quality: (data.get('ocr_quality') as string) || null,
+      summary: summary || null,
       editorial_introduction: editorialIntroduction || null,
       body: data.get('body') as string,
       published: data.get('published') === 'on',
@@ -296,6 +315,38 @@ export default function EditTextForm({
             )}
           </>
         )}
+      </div>
+
+      <div>
+        <div className="flex items-baseline justify-between mb-1">
+          <label className={label} style={{ marginBottom: 0 }}>
+            Summary{' '}
+            <span className="text-stone-400 font-normal">(meta description · 150–160 chars ideal)</span>
+          </label>
+          <span className={`text-xs tabular-nums ${summary.length > 160 ? 'text-red-500' : 'text-stone-400'}`}>
+            {summary.length}/160
+          </span>
+        </div>
+        <textarea
+          value={summary}
+          onChange={e => setSummary(e.target.value)}
+          rows={3}
+          className={input}
+          placeholder="A short descriptive summary used as the meta description and in search results…"
+        />
+        <div className="mt-1.5 flex items-center gap-2">
+          <button
+            type="button"
+            onClick={handleGenerateSummary}
+            disabled={generatingSummary}
+            className="px-3 py-1 text-xs border border-stone-300 rounded text-stone-600 hover:bg-stone-100 disabled:opacity-50 transition-colors"
+          >
+            {generatingSummary ? 'Generating…' : 'Generate summary'}
+          </button>
+          {generateSummaryError && (
+            <span className="text-xs text-red-600">{generateSummaryError}</span>
+          )}
+        </div>
       </div>
 
       <div>

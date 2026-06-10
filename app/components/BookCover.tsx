@@ -22,6 +22,7 @@ export function BookCover({
   traditionSlug,
   index,
   readingMinutes,
+  accessionDisplay,
 }: {
   title: string
   authorName: string | null
@@ -30,9 +31,19 @@ export function BookCover({
   traditionSlug: string | null
   index: number
   readingMinutes?: number
+  /**
+   * Override the accession display in the top band.
+   * - undefined (default) → "№ XX" computed from accessionNumber or index
+   * - null               → hide the № entirely (used for collections)
+   * - string             → render this exact string (e.g. "№ 100–105")
+   */
+  accessionDisplay?: string | null
 }) {
   const ground = TRADITION_COLORS[traditionSlug ?? ''] ?? FALLBACK_COLOR
   const num = String(accessionNumber ?? index + 1).padStart(2, '0')
+  const bandAccession = accessionDisplay !== undefined
+    ? accessionDisplay   // null → hidden below; string → shown as-is
+    : `№ ${num}`
   const year = deathYear
     ? deathYear < 600
       ? `c. ${deathYear}`
@@ -73,17 +84,19 @@ export function BookCover({
         >
           Stromata
         </span>
-        <span
-          className="book-cover-band-label"
-          style={{
-            fontFamily: 'monospace',
-            fontSize: '0.5rem',
-            color: 'rgba(245,240,230,0.60)',
-            letterSpacing: '0.04em',
-          }}
-        >
-          № {num}
-        </span>
+        {bandAccession !== null && (
+          <span
+            className="book-cover-band-label"
+            style={{
+              fontFamily: 'monospace',
+              fontSize: '0.5rem',
+              color: 'rgba(245,240,230,0.60)',
+              letterSpacing: '0.04em',
+            }}
+          >
+            {bandAccession}
+          </span>
+        )}
       </div>
 
       {/* Mid panel: vellum, italic title + rule + author */}

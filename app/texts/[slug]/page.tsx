@@ -4,6 +4,7 @@ import { createServerClient } from '@/lib/supabase/server'
 import MarkdownBody from '@/app/components/MarkdownBody'
 import { SiteHeader } from '@/app/components/SiteHeader'
 import { RecordVisit } from '@/app/components/RecordVisit'
+import { ReadingProgressBar } from '@/app/components/ReadingProgressBar'
 import { TrackPageEvent } from '@/app/components/TrackPageEvent'
 import TableOfContents from '@/app/components/TableOfContents'
 import { readingTime } from '@/lib/reading-time'
@@ -16,7 +17,7 @@ export async function generateMetadata({ params }: Props) {
   const supabase = createServerClient()
   const { data } = await supabase
     .from('texts')
-    .select('title, author:authors(name)')
+    .select('title, summary, author:authors(name)')
     .eq('slug', slug)
     .eq('published', true)
     .single()
@@ -32,7 +33,16 @@ export async function generateMetadata({ params }: Props) {
     ? `${author} — ${data.title} | The Stromata`
     : `${data.title} — The Stromata`
 
-  return { title }
+  const description = (data.summary as string | null) ?? undefined
+
+  return {
+    title,
+    ...(description && {
+      description,
+      openGraph: { title, description },
+      twitter: { title, description },
+    }),
+  }
 }
 
 export default async function TextPage({ params }: Props) {
@@ -96,6 +106,7 @@ export default async function TextPage({ params }: Props) {
 
   return (
     <div style={{ background: 'var(--paper)', paddingTop: '4rem' }} className="min-h-screen">
+      <ReadingProgressBar slug={slug} title={text.title} />
       <SiteHeader breadcrumb={author ? (() => {
         const eraName = author.era?.label?.replace(/\s*\(.*?\)/, '') ?? null
         return (

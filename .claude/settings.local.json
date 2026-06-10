@@ -43,7 +43,10 @@
       "Bash(xargs cat)",
       "Bash(mkdir -p /Users/keithmason/Documents/projects/stromata/app/traditions/\\\\[slug\\\\])",
       "Bash(mkdir -p \"/Users/keithmason/Documents/projects/stromata/app/admin/traditions/[slug]/edit\")",
-      "Bash(mkdir -p \"/Users/keithmason/Documents/projects/stromata/app/api/admin/traditions/[slug]\")"
+      "Bash(mkdir -p \"/Users/keithmason/Documents/projects/stromata/app/api/admin/traditions/[slug]\")",
+      "Bash(grep -n \"bio_source\\\\|Bio source\\\\|bio source\\\\|feast\\\\|return\\\\|}\\\\s*$\" \"/Users/keithmason/Documents/projects/stromata/app/admin/authors/[id]/edit/EditAuthorForm.tsx\")",
+      "Bash(mkdir -p \"/Users/keithmason/Documents/projects/stromata/app/api/admin/texts/[id]/generate-summary\")",
+      "Bash(node -e ' *)"
     ]
   },
   "enableAllProjectMcpServers": true,

@@ -11,7 +11,7 @@ export default async function EditTextPage({ params }: Props) {
 
   const { data: text } = await supabase
     .from('texts')
-    .select('*, note_draft, genre:genres(slug), text_themes(theme:themes(slug)), collection:collections(id, slug)')
+    .select('*, note_draft, summary, genre:genres(slug), text_themes(theme:themes(slug)), collection:collections(id, slug)')
     .eq('id', id)
     .single()
 
@@ -44,6 +44,7 @@ export default async function EditTextPage({ params }: Props) {
           initialTranslationNotes={text.translation_notes ?? ''}
           initialOcrQuality={text.ocr_quality ?? ''}
           initialNoteDraft={text.note_draft ?? ''}
+          initialSummary={text.summary ?? ''}
           initialEditorialIntroduction={text.editorial_introduction ?? ''}
           initialBody={text.body}
           initialPublished={text.published}
