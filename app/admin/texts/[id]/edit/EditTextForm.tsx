@@ -284,6 +284,38 @@ export default function EditTextForm({
       </div>
 
       <div>
+        <div className="flex items-baseline justify-between mb-1">
+          <label className={label} style={{ marginBottom: 0 }}>
+            Summary{' '}
+            <span className="text-stone-400 font-normal">(meta description · 150–160 chars ideal)</span>
+          </label>
+          <span className={`text-xs tabular-nums ${summary.length > 160 ? 'text-red-500' : 'text-stone-400'}`}>
+            {summary.length}/160
+          </span>
+        </div>
+        <textarea
+          value={summary}
+          onChange={e => setSummary(e.target.value)}
+          rows={3}
+          className={input}
+          placeholder="A short descriptive summary used as the meta description and in search results…"
+        />
+        <div className="mt-1.5 flex items-center gap-2">
+          <button
+            type="button"
+            onClick={handleGenerateSummary}
+            disabled={generatingSummary}
+            className="px-3 py-1 text-xs border border-stone-300 rounded text-stone-600 hover:bg-stone-100 disabled:opacity-50 transition-colors"
+          >
+            {generatingSummary ? 'Generating…' : 'Generate summary'}
+          </button>
+          {generateSummaryError && (
+            <span className="text-xs text-red-600">{generateSummaryError}</span>
+          )}
+        </div>
+      </div>
+
+      <div>
         <label className="block text-sm font-medium text-stone-500 mb-1">
           Draft note <span className="font-normal">(AI-generated)</span>
         </label>
@@ -315,38 +347,6 @@ export default function EditTextForm({
             )}
           </>
         )}
-      </div>
-
-      <div>
-        <div className="flex items-baseline justify-between mb-1">
-          <label className={label} style={{ marginBottom: 0 }}>
-            Summary{' '}
-            <span className="text-stone-400 font-normal">(meta description · 150–160 chars ideal)</span>
-          </label>
-          <span className={`text-xs tabular-nums ${summary.length > 160 ? 'text-red-500' : 'text-stone-400'}`}>
-            {summary.length}/160
-          </span>
-        </div>
-        <textarea
-          value={summary}
-          onChange={e => setSummary(e.target.value)}
-          rows={3}
-          className={input}
-          placeholder="A short descriptive summary used as the meta description and in search results…"
-        />
-        <div className="mt-1.5 flex items-center gap-2">
-          <button
-            type="button"
-            onClick={handleGenerateSummary}
-            disabled={generatingSummary}
-            className="px-3 py-1 text-xs border border-stone-300 rounded text-stone-600 hover:bg-stone-100 disabled:opacity-50 transition-colors"
-          >
-            {generatingSummary ? 'Generating…' : 'Generate summary'}
-          </button>
-          {generateSummaryError && (
-            <span className="text-xs text-red-600">{generateSummaryError}</span>
-          )}
-        </div>
       </div>
 
       <div>
