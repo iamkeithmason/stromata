@@ -58,15 +58,15 @@ const R = {
   note:       'rgba(245,240,230,0.88)',
   rule:       'rgba(245,240,230,0.16)',
   dim:        'rgba(245,240,230,0.55)',
-  gold:       'rgba(201,148,58,0.92)',
-  goldFaint:  'rgba(201,148,58,0.60)',
-  cta:        'rgba(201,148,58,0.90)',
+  gold:       'rgb(224,200,134)',
+  goldFaint:  'rgba(224,200,134,0.55)',
+  cta:        'rgb(224,200,134)',
 }
 
 // Small-caps label style — reused for "THE CHRISTIAN YEAR" and "READ FOR THE SEASON"
 const LABEL_STYLE: React.CSSProperties = {
   fontFamily: 'var(--serif)',
-  fontSize: '0.58rem',
+  fontSize: '0.65rem',
   letterSpacing: '0.24em',
   textTransform: 'uppercase',
   color: R.gold,
@@ -100,6 +100,7 @@ export function SeasonalPanel() {
           backgroundRepeat: 'no-repeat',
           backgroundPosition: 'top left, top right, bottom left, bottom right',
           padding: '28px',
+          filter: 'drop-shadow(0px 2px 0px rgba(30,30,25,0.05)) drop-shadow(0px 22px 40px rgba(30,30,25,0.35))',
         }}
       >
         {/* ── Inset gold keyline border ── */}
@@ -107,6 +108,7 @@ export function SeasonalPanel() {
           style={{
             border: '1px solid rgba(201,148,58,0.32)',
             padding: '1.75rem 2rem',
+            boxShadow: 'rgba(30,30,25,0.05) 0px 2px 0px, rgba(30,30,25,0.45) 0px 22px 50px -28px',
           }}
         >
           <div
@@ -119,7 +121,7 @@ export function SeasonalPanel() {
             <div className="flex-1 min-w-0">
 
               {/* Section label: ✠ THE CHRISTIAN YEAR */}
-              <p style={{ ...LABEL_STYLE, marginBottom: '1rem' }}>
+              <p style={{ ...LABEL_STYLE, fontSize: '1rem', marginBottom: '1rem' }}>
                 ✠ The Christian Year
               </p>
 
@@ -143,7 +145,7 @@ export function SeasonalPanel() {
                 style={{
                   fontFamily: 'var(--serif)',
                   fontStyle: 'italic',
-                  fontSize: '0.88rem',
+                  fontSize: '1rem',
                   color: R.gold,
                   letterSpacing: '0.02em',
                   marginBottom: '1.5rem',
@@ -164,10 +166,10 @@ export function SeasonalPanel() {
               <p
                 style={{
                   fontFamily: 'var(--serif)',
-                  fontSize: '1rem',
+                  fontSize: '1.5rem',
                   lineHeight: 1.75,
                   color: R.note,
-                  maxWidth: '54ch',
+                  maxWidth: '46ch',
                 }}
               >
                 {s.note}
@@ -183,7 +185,7 @@ export function SeasonalPanel() {
                     href={s.pick.href}
                     style={{
                       fontFamily: 'var(--serif)',
-                      fontSize: '0.88rem',
+                      fontSize: '1.5rem',
                       color: R.cta,
                       textDecoration: 'underline',
                       textUnderlineOffset: '3px',
@@ -202,7 +204,7 @@ export function SeasonalPanel() {
                     style={{
                       fontFamily: 'var(--serif)',
                       fontStyle: 'italic',
-                      fontSize: '0.88rem',
+                      fontSize: '1.5rem',
                       color: R.cta,
                       textDecoration: 'underline',
                       textUnderlineOffset: '3px',

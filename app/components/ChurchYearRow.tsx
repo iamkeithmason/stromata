@@ -12,11 +12,10 @@
  */
 
 const SEASONS = [
-  { name: 'Advent',      slug: 'advent' },
-  { name: 'Lent',        slug: 'lent' },
-  { name: 'Eastertide',  slug: 'eastertide' },
-  { name: 'Trinitytide', slug: 'trinitytide' },
-  { name: 'A feast day', slug: 'feast' },
+  { name: 'Advent',        slug: 'advent' },
+  { name: 'Lent',          slug: 'lent' },
+  { name: 'Eastertide',    slug: 'eastertide' },
+  { name: 'Ordinary time', slug: 'trinitytide' },
 ]
 
 type Props = {
@@ -28,12 +27,12 @@ export function ChurchYearRow({ currentSeason }: Props) {
   return (
     <section className="max-w-5xl mx-auto px-6 pb-10">
       <div
-        className="flex flex-wrap items-center gap-x-5 gap-y-2"
-        style={{ fontFamily: 'var(--serif)', fontSize: '0.8rem' }}
+        className="flex flex-wrap items-center justify-center gap-x-3 gap-y-2"
+        style={{ fontFamily: 'var(--serif)', fontSize: '1rem' }}
       >
         <span
           style={{
-            fontSize: '0.6rem',
+            fontSize: '0.65rem',
             letterSpacing: '0.18em',
             textTransform: 'uppercase',
             color: 'var(--ink-faint)',
@@ -41,22 +40,19 @@ export function ChurchYearRow({ currentSeason }: Props) {
             flexShrink: 0,
           }}
         >
-          Church year
+          Texts through the year
         </span>
+
+        <span aria-hidden style={{ color: 'var(--gold)', fontSize: '0.8rem', userSelect: 'none' }}>—</span>
 
         {SEASONS.map((season, i) => {
           const isActive = season.slug === currentSeason
           return (
-            <span key={season.slug} className="flex items-center gap-x-5">
+            <span key={season.slug} className="flex items-center gap-x-3">
               {i > 0 && (
                 <span
                   aria-hidden
-                  style={{
-                    color: 'var(--rule-soft)',
-                    fontSize: '0.65rem',
-                    marginRight: '-1rem',
-                    userSelect: 'none',
-                  }}
+                  style={{ color: 'var(--rule-soft)', userSelect: 'none' }}
                 >
                   ·
                 </span>
@@ -65,6 +61,9 @@ export function ChurchYearRow({ currentSeason }: Props) {
                 style={{
                   color: isActive ? 'var(--gold)' : 'var(--ink-faint)',
                   fontStyle: isActive ? 'italic' : 'normal',
+                  textDecorationLine: isActive ? 'underline' : 'none',
+                  textDecorationColor: 'var(--gold)',
+                  textUnderlineOffset: '3px',
                   cursor: 'default',
                   userSelect: 'none',
                 }}
