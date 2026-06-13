@@ -79,7 +79,7 @@ export default function SearchBar() {
             background: 'transparent',
             fontFamily: 'var(--serif-cormorant)',
             fontStyle: 'italic',
-            fontSize: '1.25rem',
+            fontSize: 'var(--text-prose)',
             color: 'var(--ink-soft)',
           }}
         />
@@ -89,7 +89,7 @@ export default function SearchBar() {
           className="hidden sm:inline-flex items-center shrink-0 font-mono"
           style={{
             color: 'var(--ink-faint)',
-            fontSize: '0.7rem',
+            fontSize: 'var(--text-xs)',
             background: 'transparent',
             border: 'none',
             letterSpacing: '0.04em',

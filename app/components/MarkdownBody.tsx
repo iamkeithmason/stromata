@@ -62,7 +62,7 @@ export default function MarkdownBody({ content, numbered = true, size = 'default
                   style={{
                     left: '-2.5rem',
                     top: 0,
-                    fontSize: '0.8rem',
+                    fontSize: 'var(--text-sm)',
                     color: 'var(--ink-mute)',
                     fontFamily: '"EB Garamond", Georgia, serif',
                     lineHeight: '2.5rem',
@@ -71,7 +71,7 @@ export default function MarkdownBody({ content, numbered = true, size = 'default
                   {num}
                 </span>
               )}
-              <p className="font-serif leading-loose mb-5" style={{ color: '#1b1b1b', fontSize: size === 'large' ? '1.5rem' : '1.25rem' }}>
+              <p className="font-serif leading-loose mb-5" style={{ color: '#1b1b1b', fontSize: size === 'large' ? 'var(--text-xl)' : 'var(--text-prose)' }}>
                 {children}
               </p>
             </div>

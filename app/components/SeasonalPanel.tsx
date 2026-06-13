@@ -66,7 +66,7 @@ const R = {
 // Small-caps label style — reused for "THE CHRISTIAN YEAR" and "READ FOR THE SEASON"
 const LABEL_STYLE: React.CSSProperties = {
   fontFamily: 'var(--serif)',
-  fontSize: '0.8rem',
+  fontSize: 'var(--text-sm)',
   letterSpacing: '0.24em',
   textTransform: 'uppercase',
   color: R.gold,
@@ -121,7 +121,7 @@ export function SeasonalPanel() {
             <div className="flex-1 min-w-0">
 
               {/* Section label: ✠ THE CHRISTIAN YEAR */}
-              <p style={{ ...LABEL_STYLE, fontSize: '1rem', marginBottom: '1rem' }}>
+              <p style={{ ...LABEL_STYLE, fontSize: 'var(--text-base)', marginBottom: '1rem' }}>
                 ✠ The Christian Year
               </p>
 
@@ -145,7 +145,7 @@ export function SeasonalPanel() {
                 style={{
                   fontFamily: 'var(--serif)',
                   fontStyle: 'italic',
-                  fontSize: '1rem',
+                  fontSize: 'var(--text-base)',
                   color: R.gold,
                   letterSpacing: '0.02em',
                   marginBottom: '1.5rem',
@@ -166,7 +166,7 @@ export function SeasonalPanel() {
               <p
                 style={{
                   fontFamily: 'var(--serif)',
-                  fontSize: '1.5rem',
+                  fontSize: 'var(--text-xl)',
                   lineHeight: 1.75,
                   color: R.note,
                   maxWidth: '46ch',
@@ -185,7 +185,7 @@ export function SeasonalPanel() {
                     href={s.pick.href}
                     style={{
                       fontFamily: 'var(--serif)',
-                      fontSize: '1.5rem',
+                      fontSize: 'var(--text-xl)',
                       color: R.cta,
                       textDecoration: 'underline',
                       textUnderlineOffset: '3px',
@@ -204,7 +204,7 @@ export function SeasonalPanel() {
                     style={{
                       fontFamily: 'var(--serif)',
                       fontStyle: 'italic',
-                      fontSize: '1.5rem',
+                      fontSize: 'var(--text-xl)',
                       color: R.cta,
                       textDecoration: 'underline',
                       textUnderlineOffset: '3px',
@@ -240,10 +240,10 @@ export function SeasonalPanel() {
                     label={`${s.pick.title} by ${s.pick.author}`}
                   />
                   <div className="mt-2 text-center">
-                    <p style={{ fontFamily: 'var(--serif)', fontStyle: 'italic', fontSize: '0.78rem', color: R.title, lineHeight: 1.3 }}>
+                    <p style={{ fontFamily: 'var(--serif)', fontStyle: 'italic', fontSize: 'var(--text-sm)', color: R.title, lineHeight: 1.3 }}>
                       {s.pick.title}
                     </p>
-                    <p style={{ fontFamily: 'var(--serif)', fontSize: '0.8rem', color: R.dim, marginTop: '0.2rem' }}>
+                    <p style={{ fontFamily: 'var(--serif)', fontSize: 'var(--text-sm)', color: R.dim, marginTop: '0.2rem' }}>
                       {s.pick.author}
                     </p>
                   </div>

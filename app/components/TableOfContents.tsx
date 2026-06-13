@@ -15,7 +15,7 @@ function TocLinks({ headings }: { headings: Heading[] }) {
             className="block font-serif leading-snug hover:opacity-70 transition-opacity"
             style={{
               color: h.level === 1 ? 'var(--ink-soft)' : 'var(--ink-mute)',
-              fontSize: h.level === 1 ? '0.875rem' : h.level === 2 ? '0.8125rem' : '0.75rem',
+              fontSize: h.level === 1 ? 'var(--text-label)' : h.level === 2 ? 'var(--text-sm)' : 'var(--text-xs)',
               fontWeight: h.level === 1 ? 500 : 400,
             }}
           >

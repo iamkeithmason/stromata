@@ -205,15 +205,6 @@ export default async function AuthorPage({ params }: Props) {
     // Wire this field when a proper Wikipedia/VIAF URL field is added to authors.
   }
 
-  // ── Section header shared style ──────────────────────────────────────────
-  const sectionAside: React.CSSProperties = {
-    color: 'var(--ink-faint)',
-    fontSize: '0.8rem',
-    letterSpacing: '0.18em',
-    textTransform: 'uppercase',
-    fontFamily: 'var(--serif)',
-  }
-
   return (
     <div style={{ background: 'var(--paper)', paddingTop: '4rem' }} className="min-h-screen">
       <SiteHeader breadcrumb={<Link href="/authors" className="hover:opacity-70 transition-opacity">Authors</Link>} />
@@ -290,9 +281,9 @@ export default async function AuthorPage({ params }: Props) {
                 <h2 className="font-serif italic text-base" style={{ color: 'var(--ink)' }}>
                   Kindred authors
                 </h2>
-                {tradition && <span style={sectionAside}>{tradition}</span>}
+                {tradition && <span className="kicker">{tradition}</span>}
               </div>
-              <hr style={{ borderColor: 'var(--gold-rule)', borderTopWidth: '1px' }} />
+              <hr className="rule-gold" />
             </div>
             <ul className="divide-y" style={{ borderColor: 'var(--rule-soft)' }}>
               {relatedAuthors.map(a => {
@@ -331,9 +322,9 @@ export default async function AuthorPage({ params }: Props) {
                 <h2 className="font-serif italic text-base" style={{ color: 'var(--ink)' }}>
                   Texts in the library
                 </h2>
-                <span style={sectionAside}>{rows.length}</span>
+                <span className="kicker">{rows.length}</span>
               </div>
-              <hr style={{ borderColor: 'var(--gold-rule)', borderTopWidth: '1px' }} />
+              <hr className="rule-gold" />
             </div>
 
             <ul className="divide-y" style={{ borderColor: 'var(--rule-soft)' }}>

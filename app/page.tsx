@@ -26,6 +26,26 @@ type CollectionRef = {
   description: string | null
 }
 
+// ── Markdown stripping for body excerpt fallback ───────────────────────────
+function stripMarkdown(text: string): string {
+  return text
+    .replace(/#{1,6}\s+/gm, '')
+    .replace(/\*\*(.+?)\*\*/g, '$1')
+    .replace(/\*(.+?)\*/g, '$1')
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
+    .replace(/`(.+?)`/g, '$1')
+    .replace(/^\s*>+\s?/gm, '')
+    .replace(/\n+/g, ' ')
+    .trim()
+}
+
+function bodyExcerpt(body: string, wordCount = 40): string {
+  const stripped = stripMarkdown(body)
+  const parts = stripped.split(/\s+/).filter(Boolean)
+  if (parts.length <= wordCount) return stripped
+  return parts.slice(0, wordCount).join(' ') + '…'
+}
+
 type TextRow = {
   id: string
   title: string
@@ -50,25 +70,6 @@ type FeedEntry =
   | { kind: 'text'; text: TextRow; created_at: string }
   | { kind: 'collection'; collection: CollectionRef; representative: TextRow; bookCount: number; accessionRange: AccessionRange | null; created_at: string }
 
-// ── Markdown stripping for body excerpt fallback ───────────────────────────
-function stripMarkdown(text: string): string {
-  return text
-    .replace(/#{1,6}\s+/gm, '')
-    .replace(/\*\*(.+?)\*\*/g, '$1')
-    .replace(/\*(.+?)\*/g, '$1')
-    .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
-    .replace(/`(.+?)`/g, '$1')
-    .replace(/^\s*>+\s?/gm, '')
-    .replace(/\n+/g, ' ')
-    .trim()
-}
-
-function bodyExcerpt(body: string, wordCount = 40): string {
-  const stripped = stripMarkdown(body)
-  const parts = stripped.split(/\s+/).filter(Boolean)
-  if (parts.length <= wordCount) return stripped
-  return parts.slice(0, wordCount).join(' ') + '…'
-}
 
 export const metadata = {
   title: 'The Stromata — A reading room for the works of the ages',
@@ -93,36 +94,15 @@ function SectionHeader({
         </h2>
         {aside && (
           asideHref ? (
-            <Link
-              href={asideHref}
-              className="transition-opacity hover:opacity-70"
-              style={{
-                color: 'var(--ink-faint)',
-                fontSize: '0.8rem',
-                letterSpacing: '0.18em',
-                textTransform: 'uppercase',
-                fontFamily: 'var(--serif)',
-                textDecoration: 'none',
-              }}
-            >
+            <Link href={asideHref} className="kicker transition-opacity hover:opacity-70" style={{ textDecoration: 'none' }}>
               {aside}
             </Link>
           ) : (
-            <span
-              style={{
-                color: 'var(--ink-faint)',
-                fontSize: '0.8rem',
-                letterSpacing: '0.18em',
-                textTransform: 'uppercase',
-                fontFamily: 'var(--serif)',
-              }}
-            >
-              {aside}
-            </span>
+            <span className="kicker">{aside}</span>
           )
         )}
       </div>
-      <hr style={{ borderColor: 'var(--gold-rule)', borderTopWidth: '1px' }} />
+      <hr className="rule-gold" />
     </div>
   )
 }
@@ -139,7 +119,7 @@ export default async function Home() {
 
   type ChipTextRow = { author_id: string; author: { name: string; slug: string } | null }
   const chipCountMap = new Map<string, { name: string; slug: string; count: number }>()
-  for (const t of (chipTextsRaw ?? []) as ChipTextRow[]) {
+  for (const t of (chipTextsRaw ?? []) as unknown as ChipTextRow[]) {
     if (!t.author?.slug) continue
     const entry = chipCountMap.get(t.author.slug)
     if (entry) { entry.count++ } else { chipCountMap.set(t.author.slug, { name: t.author.name, slug: t.author.slug, count: 1 }) }
@@ -244,17 +224,8 @@ export default async function Home() {
           A reading room for the works of the ages.
         </p>
 
-        {/* Subtitle in spaced small caps — above the search field */}
-        <p
-          style={{
-            fontSize: '0.6rem',
-            letterSpacing: '0.22em',
-            textTransform: 'uppercase',
-            color: 'var(--ink-faint)',
-            fontFamily: 'var(--serif)',
-            marginBottom: '1.25rem',
-          }}
-        >
+        {/* Subtitle — kicker style, above the search field */}
+        <p className="kicker" style={{ marginBottom: '1.25rem' }}>
           A library of public-domain Christian texts, edited for legibility
         </p>
 
@@ -263,20 +234,10 @@ export default async function Home() {
         {/* Author chips — top authors by text count */}
         {authorChips.length > 0 && (
           <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-2 mt-6">
-            <span
-              aria-hidden
-              style={{
-                fontSize: '0.8rem',
-                letterSpacing: '0.22em',
-                textTransform: 'uppercase',
-                color: 'var(--ink-faint)',
-                fontFamily: 'var(--serif)',
-                marginRight: '0.35rem',
-              }}
-            >
+            <span aria-hidden className="kicker" style={{ marginRight: '0.35rem' }}>
               Start with
             </span>
-            <span aria-hidden style={{ color: 'var(--gold)', fontSize: '0.8rem', userSelect: 'none' }}>—</span>
+            <span aria-hidden style={{ color: 'var(--gold)', fontSize: 'var(--text-sm)', userSelect: 'none' }}>—</span>
 
             {authorChips.map((author, i) => (
               <span key={author.slug} className="flex items-center">
@@ -286,7 +247,7 @@ export default async function Home() {
                     style={{
                       color: 'var(--gold-rule)',
                       margin: '0 0.4rem',
-                      fontSize: '0.8rem',
+                      fontSize: 'var(--text-sm)',
                       userSelect: 'none',
                     }}
                   >
@@ -298,7 +259,7 @@ export default async function Home() {
                   className="transition-opacity hover:opacity-70"
                   style={{
                     fontFamily: 'var(--serif-cormorant)',
-                    fontSize: '1.05rem',
+                    fontSize: 'var(--text-base)',
                     color: 'var(--ink-soft)',
                     textDecoration: 'none',
                   }}
@@ -340,9 +301,7 @@ export default async function Home() {
           />
 
           {/* ── Featured lead ── */}
-          {leadEntry && (
-            <FeedLead entry={leadEntry} />
-          )}
+          {leadEntry && <FeedLead entry={leadEntry} />}
 
           {/* ── Grid ── */}
           {gridEntries.length > 0 && (
@@ -363,7 +322,7 @@ export default async function Home() {
             <div key={cluster.cluster}>
               <p
                 className="font-serif mb-3"
-                style={{ color: 'var(--ink)', fontSize: '0.9rem' }}
+                style={{ color: 'var(--ink)', fontSize: 'var(--text-base)' }}
               >
                 {cluster.cluster}
               </p>
@@ -378,7 +337,7 @@ export default async function Home() {
                       border: '1px solid var(--rule)',
                       background: 'transparent',
                       fontFamily: 'var(--serif)',
-                      fontSize: '0.72rem',
+                      fontSize: 'var(--text-xs)',
                       letterSpacing: '0.1rem',
                       textTransform: 'uppercase',
                       padding: '3px 10px',
@@ -425,10 +384,10 @@ export default async function Home() {
 
           <div
             className="flex flex-col sm:flex-row justify-between gap-10 sm:gap-12"
-            style={{ fontFamily: 'var(--serif)', fontSize: '0.875rem', lineHeight: 1.85 }}
+            style={{ fontFamily: 'var(--serif)', fontSize: 'var(--text-label)', lineHeight: 1.85 }}
           >
             <div>
-              <div style={{ fontSize: '0.6rem', letterSpacing: '0.22em', textTransform: 'uppercase', color: 'var(--gold)', opacity: 0.8, marginBottom: 8, fontFamily: 'var(--serif)' }}>
+              <div style={{ fontSize: 'var(--text-micro)', letterSpacing: '0.22em', textTransform: 'uppercase', color: 'var(--gold)', opacity: 0.8, marginBottom: 8, fontFamily: 'var(--serif)' }}>
                 Stromata
               </div>
               {[{ label: 'About', href: '/about' }, { label: 'Authors', href: '/authors' }, { label: 'RSS feed', href: '/rss' }].map(({ label, href }) => (
@@ -438,7 +397,7 @@ export default async function Home() {
               ))}
             </div>
             <div>
-              <div style={{ fontSize: '0.6rem', letterSpacing: '0.22em', textTransform: 'uppercase', color: 'var(--gold)', opacity: 0.8, marginBottom: 8, fontFamily: 'var(--serif)' }}>
+              <div style={{ fontSize: 'var(--text-micro)', letterSpacing: '0.22em', textTransform: 'uppercase', color: 'var(--gold)', opacity: 0.8, marginBottom: 8, fontFamily: 'var(--serif)' }}>
                 Read
               </div>
               {[{ label: 'Library', href: '/texts' }, { label: 'Search', href: '/search' }].map(({ label, href }) => (
@@ -447,7 +406,7 @@ export default async function Home() {
                 </div>
               ))}
             </div>
-            <div style={{ fontStyle: 'italic', color: 'rgba(245,240,230,0.5)', maxWidth: '44ch', lineHeight: 1.65, fontSize: '0.875rem' }}>
+            <div style={{ fontStyle: 'italic', color: 'rgba(245,240,230,0.5)', maxWidth: '44ch', lineHeight: 1.65, fontSize: 'var(--text-label)' }}>
               Public-domain texts, edited for legibility. Stromata has no investors and no advertising. If the texts here have been useful to you,{' '}
               <a href="https://ko-fi.com/stromata" target="_blank" rel="noopener noreferrer" className="transition-opacity hover:opacity-70" style={{ color: 'rgba(201,148,58,0.85)', textDecoration: 'none' }} data-umami-event="ko-fi-click" data-umami-event-source="homepage">
                 a small contribution helps keep the lights on →
@@ -462,35 +421,22 @@ export default async function Home() {
 }
 
 // ── Feed sub-components ────────────────────────────────────────────────────
-// Extracted to keep the Home function readable. These are plain functions
-// (not async, no hooks) so they inline cleanly into the server component.
 
 function FeedLead({ entry }: { entry: FeedEntry }) {
-  if (entry.kind === 'collection') {
-    return <CollectionLead entry={entry} />
-  }
+  if (entry.kind === 'collection') return <CollectionLead entry={entry} />
   return <TextLead text={entry.text} />
 }
 
 function TextLead({ text }: { text: TextRow }) {
   const author = text.author
   const themes = text.text_themes.map(tt => tt.theme).filter(Boolean) as { name: string; slug: string }[]
-  // Always show a paragraph: summary → editorial intro → body excerpt fallback
   const editorialPara = text.summary ?? text.editorial_introduction ?? bodyExcerpt(text.body)
 
   return (
-    <div
-      className="flex flex-col sm:flex-row gap-8 mb-14 pb-12"
-      style={{ borderBottom: '1px solid var(--gold-rule)' }}
-    >
-      <div className="shrink-0" style={{ width: 'clamp(120px, 25vw, 200px)' }}>
-        <Link
-          href={`/texts/${text.slug}`}
-          className="block"
-          data-umami-event="text-open"
-          data-umami-event-from="featured-lead"
-          data-umami-event-text={text.title}
-        >
+    <div className="flex flex-col sm:flex-row gap-8 mb-14 pb-12" style={{ borderBottom: '1px solid var(--gold-rule)' }}>
+      {/* Book cover — w-2/3 centered on mobile (matches grid cards), ~one grid column on desktop */}
+      <div className="w-2/3 mx-auto sm:mx-0 sm:w-56 shrink-0">
+        <Link href={`/texts/${text.slug}`} className="block" data-umami-event="text-open" data-umami-event-from="featured-lead" data-umami-event-text={text.title}>
           <BookCover
             title={text.title}
             authorName={author?.name ?? null}
@@ -504,44 +450,25 @@ function TextLead({ text }: { text: TextRow }) {
 
       <div className="flex-1 flex flex-col justify-center">
         <LeadKicker>New addition</LeadKicker>
-
-        <Link
-          href={`/texts/${text.slug}`}
-          className="hover:opacity-70 transition-opacity"
-          style={{ textDecoration: 'none' }}
-          data-umami-event="text-open"
-          data-umami-event-from="featured-lead"
-          data-umami-event-text={text.title}
-        >
+        <Link href={`/texts/${text.slug}`} className="hover:opacity-70 transition-opacity" style={{ textDecoration: 'none' }} data-umami-event="text-open" data-umami-event-from="featured-lead" data-umami-event-text={text.title}>
           <LeadTitle>{text.title}</LeadTitle>
         </Link>
-
         <LeadByline author={author} hasContent />
-
         <LeadPara>
           {editorialPara.length > 280 ? editorialPara.slice(0, 280).trimEnd() + '…' : editorialPara}
         </LeadPara>
-
         <div className="flex flex-wrap items-center gap-3">
-          <Link
-            href={`/texts/${text.slug}`}
-            style={{ fontFamily: 'var(--serif)', fontSize: '0.85rem', color: 'var(--gold)', textDecoration: 'none', borderBottom: '1px solid var(--gold-rule)', paddingBottom: '1px' }}
-            className="hover:opacity-70 transition-opacity"
-            data-umami-event="text-open"
-            data-umami-event-from="featured-lead"
-            data-umami-event-text={text.title}
-          >
+          <Link href={`/texts/${text.slug}`} style={{ fontFamily: 'var(--serif)', fontSize: 'var(--text-label)', color: 'var(--gold)', textDecoration: 'none', borderBottom: '1px solid var(--gold-rule)', paddingBottom: '1px' }} className="hover:opacity-70 transition-opacity" data-umami-event="text-open" data-umami-event-from="featured-lead" data-umami-event-text={text.title}>
             Begin reading →
           </Link>
-          <span style={{ color: 'var(--ink-faint)', fontSize: '0.7rem', fontFamily: 'var(--serif)' }}>
+          <span style={{ color: 'var(--ink-faint)', fontSize: 'var(--text-xs)', fontFamily: 'var(--serif)' }}>
             ~ {readingTime(text.body)} min
           </span>
         </div>
-
         {themes.length > 0 && (
           <div className="flex flex-wrap gap-1.5 mt-4">
             {themes.map(t => (
-              <Link key={t.slug} href={`/themes/${t.slug}`} className="hover:opacity-70 transition-opacity" style={{ color: 'var(--ink-mute)', border: '1px solid var(--rule)', fontFamily: 'var(--serif)', fontSize: '0.6rem', letterSpacing: '0.1em', textTransform: 'uppercase', padding: '2px 8px', textDecoration: 'none' }} data-umami-event="theme-click" data-umami-event-theme={t.name} data-umami-event-source="featured-lead">
+              <Link key={t.slug} href={`/themes/${t.slug}`} className="hover:opacity-70 transition-opacity" style={{ color: 'var(--ink-mute)', border: '1px solid var(--rule)', fontFamily: 'var(--serif)', fontSize: 'var(--text-micro)', letterSpacing: '0.1em', textTransform: 'uppercase', padding: '2px 8px', textDecoration: 'none' }} data-umami-event="theme-click" data-umami-event-theme={t.name} data-umami-event-source="featured-lead">
                 {t.name}
               </Link>
             ))}
@@ -555,27 +482,14 @@ function TextLead({ text }: { text: TextRow }) {
 function CollectionLead({ entry }: { entry: Extract<FeedEntry, { kind: 'collection' }> }) {
   const { collection, representative, bookCount, accessionRange } = entry
   const author = representative.author
-  // Always show a paragraph: collection description → representative text excerpt
-  const editorialPara = collection.description
-    ?? bodyExcerpt(representative.body)
-  const accessionDisplay = accessionRange
-    ? `№ ${accessionRange.min}–${accessionRange.max}`
-    : null
+  const editorialPara = collection.description ?? bodyExcerpt(representative.body)
+  const accessionDisplay = accessionRange ? `№ ${accessionRange.min}–${accessionRange.max}` : null
 
   return (
-    <div
-      className="flex flex-col sm:flex-row gap-8 mb-14 pb-12"
-      style={{ borderBottom: '1px solid var(--gold-rule)' }}
-    >
-      {/* Cover with stacked spine affordance */}
-      <div className="shrink-0" style={{ width: 'clamp(120px, 25vw, 200px)' }}>
-        <Link
-          href={`/collections/${collection.slug}`}
-          className="block"
-          data-umami-event="text-open"
-          data-umami-event-from="featured-lead"
-          data-umami-event-text={collection.title}
-        >
+    <div className="flex flex-col sm:flex-row gap-8 mb-14 pb-12" style={{ borderBottom: '1px solid var(--gold-rule)' }}>
+      {/* Book cover — w-2/3 centered on mobile (matches grid cards), ~one grid column on desktop */}
+      <div className="w-2/3 mx-auto sm:mx-0 sm:w-56 shrink-0">
+        <Link href={`/collections/${collection.slug}`} className="block" data-umami-event="text-open" data-umami-event-from="featured-lead" data-umami-event-text={collection.title}>
           <StackedCover>
             <BookCover
               title={collection.title}
@@ -592,41 +506,63 @@ function CollectionLead({ entry }: { entry: Extract<FeedEntry, { kind: 'collecti
 
       <div className="flex-1 flex flex-col justify-center">
         <LeadKicker>New collection</LeadKicker>
-
-        <Link
-          href={`/collections/${collection.slug}`}
-          className="hover:opacity-70 transition-opacity"
-          style={{ textDecoration: 'none' }}
-          data-umami-event="text-open"
-          data-umami-event-from="featured-lead"
-          data-umami-event-text={collection.title}
-        >
+        <Link href={`/collections/${collection.slug}`} className="hover:opacity-70 transition-opacity" style={{ textDecoration: 'none' }} data-umami-event="text-open" data-umami-event-from="featured-lead" data-umami-event-text={collection.title}>
           <LeadTitle>{collection.title}</LeadTitle>
         </Link>
-
         <LeadByline author={author} hasContent />
-
         <LeadPara>
           {editorialPara.length > 280 ? editorialPara.slice(0, 280).trimEnd() + '…' : editorialPara}
         </LeadPara>
-
         <div className="flex flex-wrap items-center gap-3">
-          <Link
-            href={`/collections/${collection.slug}`}
-            style={{ fontFamily: 'var(--serif)', fontSize: '0.85rem', color: 'var(--gold)', textDecoration: 'none', borderBottom: '1px solid var(--gold-rule)', paddingBottom: '1px' }}
-            className="hover:opacity-70 transition-opacity"
-            data-umami-event="text-open"
-            data-umami-event-from="featured-lead"
-            data-umami-event-text={collection.title}
-          >
+          <Link href={`/collections/${collection.slug}`} style={{ fontFamily: 'var(--serif)', fontSize: 'var(--text-label)', color: 'var(--gold)', textDecoration: 'none', borderBottom: '1px solid var(--gold-rule)', paddingBottom: '1px' }} className="hover:opacity-70 transition-opacity" data-umami-event="text-open" data-umami-event-from="featured-lead" data-umami-event-text={collection.title}>
             Browse collection →
           </Link>
-          <span style={{ color: 'var(--ink-faint)', fontSize: '0.7rem', fontFamily: 'var(--serif)' }}>
+          <span style={{ color: 'var(--ink-faint)', fontSize: 'var(--text-xs)', fontFamily: 'var(--serif)' }}>
             {bookCount} {bookCount === 1 ? 'book' : 'books'}
           </span>
         </div>
       </div>
     </div>
+  )
+}
+
+// ── Lead shared primitives ─────────────────────────────────────────────────
+
+function LeadKicker({ children }: { children: React.ReactNode }) {
+  return <p className="kicker-gold" style={{ marginBottom: '0.75rem' }}>{children}</p>
+}
+
+function LeadTitle({ children }: { children: React.ReactNode }) {
+  return (
+    <h3 className="font-cormorant italic" style={{ fontSize: 'clamp(1.4rem, 3vw, 2rem)', fontWeight: 400, lineHeight: 1.2, color: 'var(--ink)', marginBottom: '0.5rem' }}>
+      {children}
+    </h3>
+  )
+}
+
+function LeadByline({ author, hasContent }: { author: AuthorRef | null; hasContent: boolean }) {
+  if (!author) return null
+  return (
+    <p className="font-serif" style={{ fontSize: 'var(--text-base)', color: 'var(--ink)', marginBottom: hasContent ? '1rem' : '1.25rem' }}>
+      {author.slug ? (
+        <Link href={`/authors/${author.slug}`} className="hover:opacity-70 transition-opacity" style={{ color: 'var(--ink)', textDecoration: 'none' }}>
+          {author.name}
+        </Link>
+      ) : author.name}
+      {author.death_year && (
+        <span style={{ color: 'var(--ink-mute)' }}>
+          {' '}· {author.death_year < 600 ? `c. ${author.death_year}` : `d. ${author.death_year}`}
+        </span>
+      )}
+    </p>
+  )
+}
+
+function LeadPara({ children }: { children: React.ReactNode }) {
+  return (
+    <p className="font-serif" style={{ fontSize: 'var(--text-base)', lineHeight: 1.65, color: 'var(--ink-soft)', maxWidth: '52ch', marginBottom: '1.25rem' }}>
+      {children}
+    </p>
   )
 }
 
@@ -658,9 +594,7 @@ function FeedGridCard({ entry, index }: { entry: FeedEntry; index: number }) {
           </StackedCover>
         </Link>
         <div className="px-0.5 mt-3">
-          <p style={{ color: 'var(--ink-mute)', fontFamily: 'var(--serif)', fontSize: '0.8rem', letterSpacing: '0.12em' }}>
-            {bookCount} {bookCount === 1 ? 'book' : 'books'}
-          </p>
+          <p className="caption">{bookCount} {bookCount === 1 ? 'book' : 'books'}</p>
         </div>
       </div>
     )
@@ -688,13 +622,11 @@ function FeedGridCard({ entry, index }: { entry: FeedEntry; index: number }) {
         />
       </Link>
       <div className="px-0.5 mt-3">
-        <p className="mb-2" style={{ color: 'var(--ink-mute)', fontFamily: 'var(--serif)', fontSize: '0.8rem', letterSpacing: '0.12em' }}>
-          ~ {readingTime(text.body)} min
-        </p>
+        <p className="caption mb-2">~ {readingTime(text.body)} min</p>
         {themes.length > 0 && (
           <div className="flex flex-wrap gap-1">
             {themes.map(t => (
-              <Link key={t.slug} href={`/themes/${t.slug}`} className="px-2 py-0.5 hover:opacity-70 transition-opacity" style={{ color: 'var(--ink-mute)', border: '1px solid var(--rule)', fontFamily: 'var(--serif)', fontSize: '0.625rem', letterSpacing: '0.1em', textTransform: 'uppercase', textDecoration: 'none' }} data-umami-event="theme-click" data-umami-event-theme={t.name} data-umami-event-source="homepage">
+              <Link key={t.slug} href={`/themes/${t.slug}`} className="px-2 py-0.5 hover:opacity-70 transition-opacity" style={{ color: 'var(--ink-mute)', border: '1px solid var(--rule)', fontFamily: 'var(--serif)', fontSize: 'var(--text-micro)', letterSpacing: '0.1em', textTransform: 'uppercase', textDecoration: 'none' }} data-umami-event="theme-click" data-umami-event-theme={t.name} data-umami-event-source="homepage">
                 {t.name}
               </Link>
             ))}
@@ -702,50 +634,6 @@ function FeedGridCard({ entry, index }: { entry: FeedEntry; index: number }) {
         )}
       </div>
     </div>
-  )
-}
-
-// ── Lead shared primitives ─────────────────────────────────────────────────
-
-function LeadKicker({ children }: { children: React.ReactNode }) {
-  return (
-    <p style={{ fontFamily: 'var(--serif)', fontSize: '0.8rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--gold)', marginBottom: '0.75rem' }}>
-      {children}
-    </p>
-  )
-}
-
-function LeadTitle({ children }: { children: React.ReactNode }) {
-  return (
-    <h3 style={{ fontFamily: 'var(--serif-cormorant)', fontStyle: 'italic', fontSize: 'clamp(1.4rem, 3vw, 2rem)', fontWeight: 400, lineHeight: 1.2, color: 'var(--ink)', marginBottom: '0.5rem' }}>
-      {children}
-    </h3>
-  )
-}
-
-function LeadByline({ author, hasContent }: { author: AuthorRef | null; hasContent: boolean }) {
-  if (!author) return null
-  return (
-    <p style={{ fontFamily: 'var(--serif)', fontSize: '0.9rem', color: 'var(--ink-mute)', marginBottom: hasContent ? '1rem' : '1.25rem', fontStyle: 'italic' }}>
-      {author.slug ? (
-        <Link href={`/authors/${author.slug}`} className="hover:opacity-70 transition-opacity" style={{ color: 'var(--ink-mute)', textDecoration: 'none' }}>
-          {author.name}
-        </Link>
-      ) : author.name}
-      {author.death_year && (
-        <span style={{ color: 'var(--ink-faint)' }}>
-          {' '}· {author.death_year < 600 ? `c. ${author.death_year}` : `d. ${author.death_year}`}
-        </span>
-      )}
-    </p>
-  )
-}
-
-function LeadPara({ children }: { children: React.ReactNode }) {
-  return (
-    <p style={{ fontFamily: 'var(--serif)', fontSize: '0.95rem', lineHeight: 1.65, color: 'var(--ink-soft)', maxWidth: '52ch', marginBottom: '1.25rem' }}>
-      {children}
-    </p>
   )
 }
 

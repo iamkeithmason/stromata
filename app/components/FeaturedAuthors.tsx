@@ -82,20 +82,13 @@ export async function FeaturedAuthors() {
           </h2>
           <Link
             href="/authors"
-            className="transition-opacity hover:opacity-70"
-            style={{
-              color: 'var(--ink-faint)',
-              fontSize: '0.8rem',
-              letterSpacing: '0.18em',
-              textTransform: 'uppercase',
-              fontFamily: 'var(--serif)',
-              textDecoration: 'none',
-            }}
+            className="kicker transition-opacity hover:opacity-70"
+            style={{ textDecoration: 'none' }}
           >
             All authors →
           </Link>
         </div>
-        <hr style={{ borderColor: 'var(--gold-rule)', borderTopWidth: '1px' }} />
+        <hr className="rule-gold" />
       </div>
 
       {/* Arch grid — 4 cols on sm+, 2 on mobile */}
@@ -129,7 +122,7 @@ export async function FeaturedAuthors() {
                 <p
                   style={{
                     fontFamily: 'var(--serif)',
-                    fontSize: '1rem',
+                    fontSize: 'var(--text-base)',
                     color: 'var(--ink)',
                     marginBottom: '0.2rem',
                     lineHeight: 1.25,
@@ -141,7 +134,7 @@ export async function FeaturedAuthors() {
                   <p
                     style={{
                       fontFamily: 'var(--serif)',
-                      fontSize: '1rem',
+                      fontSize: 'var(--text-base)',
                       color: 'var(--ink-mute)',
                       marginBottom: '0.25rem',
                       letterSpacing: '0.04em',
@@ -153,7 +146,7 @@ export async function FeaturedAuthors() {
                 {tradition && (
                   <p
                     style={{
-                      fontSize: '0.8rem',
+                      fontSize: 'var(--text-sm)',
                       letterSpacing: '0.15em',
                       textTransform: 'uppercase',
                       color: 'var(--gold)',

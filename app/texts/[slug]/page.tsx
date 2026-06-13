@@ -185,7 +185,7 @@ export default async function TextPage({ params }: Props) {
             className="mb-2"
             style={{
               fontFamily: 'var(--serif-display)',
-              fontSize: '3rem',
+              fontSize: 'var(--text-display)',
               lineHeight: 1.5,
               color: 'var(--ink)',
             }}
@@ -251,7 +251,7 @@ export default async function TextPage({ params }: Props) {
             </p>
             <p
               className="font-serif leading-relaxed"
-              style={{ color: 'var(--ink-soft)', fontSize: '1rem' }}
+              style={{ color: 'var(--ink-soft)', fontSize: 'var(--text-base)' }}
             >
               {summary}
             </p>

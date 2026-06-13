@@ -12,19 +12,9 @@ function SectionHeader({ title, aside }: { title: string; aside?: string }) {
         <h2 className="font-serif italic text-xl" style={{ color: 'var(--ink)' }}>
           {title}
         </h2>
-        {aside && (
-          <span style={{
-            color: 'var(--ink-faint)',
-            fontSize: '0.8rem',
-            letterSpacing: '0.18em',
-            textTransform: 'uppercase',
-            fontFamily: 'var(--serif)',
-          }}>
-            {aside}
-          </span>
-        )}
+        {aside && <span className="kicker">{aside}</span>}
       </div>
-      <hr style={{ borderColor: 'var(--gold-rule)', borderTopWidth: '1px' }} />
+      <hr className="rule-gold" />
     </div>
   )
 }
@@ -79,17 +69,11 @@ export function ReadingHistorySection() {
               </Link>
               <div className="px-0.5 mt-3">
                 {finished ? (
-                  <p style={{ color: 'var(--ink-mute)', fontFamily: 'var(--serif)', fontSize: '0.8rem', letterSpacing: '0.12em' }}>
-                    <span style={{ color: 'var(--gold)' }}>✓</span> Finished
-                  </p>
+                  <p className="caption"><span style={{ color: 'var(--gold)' }}>✓</span> Finished</p>
                 ) : label ? (
-                  <p style={{ color: 'var(--ink-mute)', fontFamily: 'var(--serif)', fontSize: '0.8rem', letterSpacing: '0.12em' }}>
-                    {label}
-                  </p>
+                  <p className="caption">{label}</p>
                 ) : entry.readingMinutes ? (
-                  <p style={{ color: 'var(--ink-mute)', fontFamily: 'var(--serif)', fontSize: '0.8rem', letterSpacing: '0.12em' }}>
-                    ~ {entry.readingMinutes} min
-                  </p>
+                  <p className="caption">~ {entry.readingMinutes} min</p>
                 ) : null}
               </div>
             </div>

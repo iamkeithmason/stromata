@@ -79,6 +79,17 @@
   --serif-display: "IM Fell English", "EB Garamond", Georgia, serif;
   --serif-cormorant: var(--font-cormorant, "EB Garamond"), "Garamond", Georgia, serif;
 
+  /* Type scale — use these instead of raw rem values in components */
+  --text-micro:   0.65rem;   /* chip/tag text, smallest labels */
+  --text-xs:      0.75rem;   /* secondary metadata, TOC, fine print */
+  --text-sm:      0.8rem;    /* kickers, captions, card metadata */
+  --text-label:   0.875rem;  /* footer links, CTA links, search input results */
+  --text-base:    1rem;      /* author names, dates, most UI text */
+  --text-body:    1.1rem;    /* comfortable paragraph text */
+  --text-prose:   1.25rem;   /* long-form reading body */
+  --text-xl:      1.5rem;    /* seasonal panel body, prominent links */
+  --text-display: 3rem;      /* text reader title heading */
+
   --ease:      cubic-bezier(.2,.6,.2,1);
   --dur-fast:  120ms;
   --dur:       200ms;
@@ -133,6 +144,46 @@ html {
 /* =============================================================
    Dropcap — first letter of the opening paragraph in text reader
    ============================================================= */
+
+/* =============================================================
+   Semantic utility classes
+   ============================================================= */
+
+@layer components {
+  /* kicker — small uppercase serif label, muted (section labels, nav chips) */
+  .kicker {
+    @apply font-serif uppercase;
+    font-size: var(--text-sm);
+    letter-spacing: 0.18em;
+    color: var(--ink-faint);
+  }
+
+  /* kicker-gold — same treatment, gold variant (editorial labels, READ FOR THE SEASON) */
+  .kicker-gold {
+    @apply font-serif uppercase;
+    font-size: var(--text-sm);
+    letter-spacing: 0.18em;
+    color: var(--gold);
+  }
+
+  /* caption — card metadata beneath book covers (reading time, book count, progress) */
+  .caption {
+    @apply font-serif;
+    font-size: var(--text-sm);
+    letter-spacing: 0.12em;
+    color: var(--ink-mute);
+  }
+
+  /* rule-gold — thin gold hairline divider */
+  .rule-gold {
+    border-top: 1px solid var(--gold-rule);
+  }
+
+  /* rule-muted — thin muted hairline divider */
+  .rule-muted {
+    border-top: 1px solid var(--rule);
+  }
+}
 
 article.prose-body div:first-child p::first-letter {
   font-family: var(--serif-display);

@@ -28,22 +28,11 @@ export function ChurchYearRow({ currentSeason }: Props) {
     <section className="max-w-5xl mx-auto px-6 pb-10">
       <div
         className="flex flex-wrap items-center justify-center gap-x-3 gap-y-2"
-        style={{ fontFamily: 'var(--serif)', fontSize: '1rem' }}
+        style={{ fontFamily: 'var(--serif)', fontSize: 'var(--text-base)' }}
       >
-        <span
-          style={{
-            fontSize: '0.8rem',
-            letterSpacing: '0.18em',
-            textTransform: 'uppercase',
-            color: 'var(--ink-faint)',
-            fontFamily: 'var(--serif)',
-            flexShrink: 0,
-          }}
-        >
-          Texts through the year
-        </span>
+        <span className="kicker shrink-0">Texts through the year</span>
 
-        <span aria-hidden style={{ color: 'var(--gold)', fontSize: '0.8rem', userSelect: 'none' }}>—</span>
+        <span aria-hidden style={{ color: 'var(--gold)', fontSize: 'var(--text-sm)', userSelect: 'none' }}>—</span>
 
         {SEASONS.map((season, i) => {
           const isActive = season.slug === currentSeason
