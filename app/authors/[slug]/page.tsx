@@ -5,6 +5,7 @@ import { notFound } from 'next/navigation'
 import { createServerClient } from '@/lib/supabase/server'
 import { readingTime } from '@/lib/reading-time'
 import MarkdownBody from '@/app/components/MarkdownBody'
+import { OG_IMAGE } from '@/lib/metadata'
 
 const SITE_URL = 'https://www.thestromata.com'
 
@@ -119,8 +120,9 @@ export async function generateMetadata({ params }: Props) {
       title,
       description,
       url: canonicalUrl,
+      images: [OG_IMAGE],
     },
-    twitter: { card: 'summary', title, description },
+    twitter: { card: 'summary_large_image', title, description, images: [OG_IMAGE.url] },
   }
 }
 

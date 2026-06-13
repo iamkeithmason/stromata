@@ -9,6 +9,7 @@ import { TrackPageEvent } from '@/app/components/TrackPageEvent'
 import TableOfContents from '@/app/components/TableOfContents'
 import { readingTime } from '@/lib/reading-time'
 import { extractHeadings } from '@/lib/headings'
+import { OG_IMAGE } from '@/lib/metadata'
 
 type Props = { params: Promise<{ slug: string }> }
 
@@ -39,8 +40,8 @@ export async function generateMetadata({ params }: Props) {
     title,
     ...(description && {
       description,
-      openGraph: { title, description },
-      twitter: { title, description },
+      openGraph: { title, description, images: [OG_IMAGE] },
+      twitter: { title, description, images: [OG_IMAGE.url] },
     }),
   }
 }

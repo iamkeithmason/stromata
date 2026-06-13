@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import Script from 'next/script'
 import { Cormorant_Garamond } from 'next/font/google'
 import { TrackWeeklyReader } from '@/app/components/TrackWeeklyReader'
+import { OG_IMAGE } from '@/lib/metadata'
 import './globals.css'
 
 const cormorant = Cormorant_Garamond({
@@ -13,6 +14,7 @@ const cormorant = Cormorant_Garamond({
 })
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://www.thestromata.com'),
   title: 'The Stromata',
   description:
     'A freely accessible library of out-of-print historical Christian texts, organised by author, tradition, era, theme, and genre.',
@@ -20,6 +22,15 @@ export const metadata: Metadata = {
     types: {
       'application/rss+xml': 'https://www.thestromata.com/rss',
     },
+  },
+  openGraph: {
+    type: 'website',
+    siteName: 'The Stromata',
+    images: [OG_IMAGE],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    images: [OG_IMAGE.url],
   },
 }
 
