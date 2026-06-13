@@ -85,7 +85,7 @@ export async function FeaturedAuthors() {
             className="transition-opacity hover:opacity-70"
             style={{
               color: 'var(--ink-faint)',
-              fontSize: '0.65rem',
+              fontSize: '0.8rem',
               letterSpacing: '0.18em',
               textTransform: 'uppercase',
               fontFamily: 'var(--serif)',
@@ -129,7 +129,6 @@ export async function FeaturedAuthors() {
                 <p
                   style={{
                     fontFamily: 'var(--serif)',
-                    fontStyle: 'italic',
                     fontSize: '1rem',
                     color: 'var(--ink)',
                     marginBottom: '0.2rem',
@@ -142,7 +141,7 @@ export async function FeaturedAuthors() {
                   <p
                     style={{
                       fontFamily: 'var(--serif)',
-                      fontSize: '0.7rem',
+                      fontSize: '1rem',
                       color: 'var(--ink-mute)',
                       marginBottom: '0.25rem',
                       letterSpacing: '0.04em',
@@ -154,7 +153,7 @@ export async function FeaturedAuthors() {
                 {tradition && (
                   <p
                     style={{
-                      fontSize: '0.6rem',
+                      fontSize: '0.8rem',
                       letterSpacing: '0.15em',
                       textTransform: 'uppercase',
                       color: 'var(--gold)',

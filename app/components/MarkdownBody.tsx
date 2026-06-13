@@ -62,7 +62,7 @@ export default function MarkdownBody({ content, numbered = true, size = 'default
                   style={{
                     left: '-2.5rem',
                     top: 0,
-                    fontSize: '0.65rem',
+                    fontSize: '0.8rem',
                     color: 'var(--ink-mute)',
                     fontFamily: '"EB Garamond", Georgia, serif',
                     lineHeight: '2.5rem',

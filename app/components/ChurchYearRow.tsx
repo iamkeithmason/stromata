@@ -32,7 +32,7 @@ export function ChurchYearRow({ currentSeason }: Props) {
       >
         <span
           style={{
-            fontSize: '0.65rem',
+            fontSize: '0.8rem',
             letterSpacing: '0.18em',
             textTransform: 'uppercase',
             color: 'var(--ink-faint)',

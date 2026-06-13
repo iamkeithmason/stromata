@@ -15,7 +15,7 @@ function SectionHeader({ title, aside }: { title: string; aside?: string }) {
         {aside && (
           <span style={{
             color: 'var(--ink-faint)',
-            fontSize: '0.65rem',
+            fontSize: '0.8rem',
             letterSpacing: '0.18em',
             textTransform: 'uppercase',
             fontFamily: 'var(--serif)',

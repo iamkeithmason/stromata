@@ -66,7 +66,7 @@ const R = {
 // Small-caps label style — reused for "THE CHRISTIAN YEAR" and "READ FOR THE SEASON"
 const LABEL_STYLE: React.CSSProperties = {
   fontFamily: 'var(--serif)',
-  fontSize: '0.65rem',
+  fontSize: '0.8rem',
   letterSpacing: '0.24em',
   textTransform: 'uppercase',
   color: R.gold,
@@ -243,7 +243,7 @@ export function SeasonalPanel() {
                     <p style={{ fontFamily: 'var(--serif)', fontStyle: 'italic', fontSize: '0.78rem', color: R.title, lineHeight: 1.3 }}>
                       {s.pick.title}
                     </p>
-                    <p style={{ fontFamily: 'var(--serif)', fontSize: '0.65rem', color: R.dim, marginTop: '0.2rem' }}>
+                    <p style={{ fontFamily: 'var(--serif)', fontSize: '0.8rem', color: R.dim, marginTop: '0.2rem' }}>
                       {s.pick.author}
                     </p>
                   </div>

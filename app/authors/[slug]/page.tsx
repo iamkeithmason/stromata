@@ -208,7 +208,7 @@ export default async function AuthorPage({ params }: Props) {
   // ── Section header shared style ──────────────────────────────────────────
   const sectionAside: React.CSSProperties = {
     color: 'var(--ink-faint)',
-    fontSize: '0.65rem',
+    fontSize: '0.8rem',
     letterSpacing: '0.18em',
     textTransform: 'uppercase',
     fontFamily: 'var(--serif)',

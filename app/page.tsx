@@ -74,16 +74,6 @@ export const metadata = {
   title: 'The Stromata — A reading room for the works of the ages',
 }
 
-// ── Curated author chips (validated against DB at render time) ─────────────
-// Keep this list honest: if a slug doesn't resolve to a published author,
-// it is silently omitted. Update when new canonical authors are added.
-const CURATED_CHIPS: { display: string; slug: string }[] = [
-  { display: 'Augustine',    slug: 'augustine-of-hippo' },
-  { display: 'Basil',        slug: 'basil-the-great' },
-  { display: 'Chrysostom',   slug: 'john-chrysostom' },
-  { display: 'Jeremy Taylor', slug: 'jeremy-taylor' },
-  { display: 'Anselm',       slug: 'anselm-of-canterbury' },
-]
 
 // ── Section header ─────────────────────────────────────────────────────────
 function SectionHeader({
@@ -108,7 +98,7 @@ function SectionHeader({
               className="transition-opacity hover:opacity-70"
               style={{
                 color: 'var(--ink-faint)',
-                fontSize: '0.65rem',
+                fontSize: '0.8rem',
                 letterSpacing: '0.18em',
                 textTransform: 'uppercase',
                 fontFamily: 'var(--serif)',
@@ -121,7 +111,7 @@ function SectionHeader({
             <span
               style={{
                 color: 'var(--ink-faint)',
-                fontSize: '0.65rem',
+                fontSize: '0.8rem',
                 letterSpacing: '0.18em',
                 textTransform: 'uppercase',
                 fontFamily: 'var(--serif)',
@@ -140,16 +130,23 @@ function SectionHeader({
 export default async function Home() {
   const supabase = createServerClient()
 
-  // ── Author chips — DB-validated ────────────────────────────────────────
-  const chipSlugs = CURATED_CHIPS.map(c => c.slug)
-  const { data: chipAuthorsRaw } = await supabase
-    .from('authors')
-    .select('name, slug')
-    .in('slug', chipSlugs)
-    .not('slug', 'is', null)
+  // ── Author chips — top 5 authors by published text count ─────────────
+  const { data: chipTextsRaw } = await supabase
+    .from('texts')
+    .select('author_id, author:authors(name, slug)')
+    .eq('published', true)
+    .not('author_id', 'is', null)
 
-  const existingSlugs = new Set((chipAuthorsRaw ?? []).map((a: { slug: string }) => a.slug))
-  const authorChips = CURATED_CHIPS.filter(c => existingSlugs.has(c.slug))
+  type ChipTextRow = { author_id: string; author: { name: string; slug: string } | null }
+  const chipCountMap = new Map<string, { name: string; slug: string; count: number }>()
+  for (const t of (chipTextsRaw ?? []) as ChipTextRow[]) {
+    if (!t.author?.slug) continue
+    const entry = chipCountMap.get(t.author.slug)
+    if (entry) { entry.count++ } else { chipCountMap.set(t.author.slug, { name: t.author.name, slug: t.author.slug, count: 1 }) }
+  }
+  const authorChips = Array.from(chipCountMap.values())
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 5)
 
   // ── Recently added — collection-collapsed ─────────────────────────────
   // Fetch a broad batch so collection grouping is accurate even for large
@@ -263,14 +260,13 @@ export default async function Home() {
 
         <SearchBar />
 
-        {/* Author chips — DB-validated, italic Cormorant with "Start with" label */}
+        {/* Author chips — top authors by text count */}
         {authorChips.length > 0 && (
-          <div className="flex flex-wrap items-center justify-center gap-x-1 gap-y-2 mt-6">
-            {/* "Start with" label */}
+          <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-2 mt-6">
             <span
               aria-hidden
               style={{
-                fontSize: '0.58rem',
+                fontSize: '0.8rem',
                 letterSpacing: '0.22em',
                 textTransform: 'uppercase',
                 color: 'var(--ink-faint)',
@@ -280,6 +276,7 @@ export default async function Home() {
             >
               Start with
             </span>
+            <span aria-hidden style={{ color: 'var(--gold)', fontSize: '0.8rem', userSelect: 'none' }}>—</span>
 
             {authorChips.map((author, i) => (
               <span key={author.slug} className="flex items-center">
@@ -301,16 +298,15 @@ export default async function Home() {
                   className="transition-opacity hover:opacity-70"
                   style={{
                     fontFamily: 'var(--serif-cormorant)',
-                    fontStyle: 'italic',
                     fontSize: '1.05rem',
                     color: 'var(--ink-soft)',
                     textDecoration: 'none',
                   }}
                   data-umami-event="author-open"
                   data-umami-event-from="search-chip"
-                  data-umami-event-author={author.display}
+                  data-umami-event-author={author.name}
                 >
-                  {author.display}
+                  {author.name}
                 </Link>
               </span>
             ))}
@@ -713,7 +709,7 @@ function FeedGridCard({ entry, index }: { entry: FeedEntry; index: number }) {
 
 function LeadKicker({ children }: { children: React.ReactNode }) {
   return (
-    <p style={{ fontFamily: 'var(--serif)', fontSize: '0.65rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--gold)', marginBottom: '0.75rem' }}>
+    <p style={{ fontFamily: 'var(--serif)', fontSize: '0.8rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--gold)', marginBottom: '0.75rem' }}>
       {children}
     </p>
   )
