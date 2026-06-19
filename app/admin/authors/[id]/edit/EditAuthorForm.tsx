@@ -44,6 +44,7 @@ export default function EditAuthorForm({
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [locationOptions, setLocationOptions] = useState<LocationOption[]>([])
+  const [locationId, setLocationId] = useState<string>(String(initialLocationId ?? ''))
 
   useEffect(() => {
     fetch('/api/admin/locations')
@@ -151,9 +152,9 @@ export default function EditAuthorForm({
         <div className="space-y-4">
           <div>
             <label className={label}>Country / region <span className="text-stone-400 font-normal">(optional)</span></label>
-            <select name="location_id" defaultValue={initialLocationId ?? ''} className={input}>
+            <select name="location_id" value={locationId} onChange={e => setLocationId(e.target.value)} className={input}>
               <option value="">— select location —</option>
-              {locationOptions.map(l => <option key={l.id} value={l.id}>{l.name}</option>)}
+              {locationOptions.map(l => <option key={l.id} value={String(l.id)}>{l.name}</option>)}
             </select>
           </div>
           <div>
