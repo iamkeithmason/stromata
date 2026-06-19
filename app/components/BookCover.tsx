@@ -9,7 +9,7 @@ const TRADITION_COLORS: Record<string, string> = {
   'radical-reformation': '#5A3A2A',
   'methodist':           '#2E3A4A',
   'ecumenical':          '#3D3D35',
-  'byzantine':           '#2C2E4A',
+  'imperial':            '#2C2E4A',
   'oriental-orthodox':   '#3A2E20',
 }
 const FALLBACK_COLOR = '#3D5167'

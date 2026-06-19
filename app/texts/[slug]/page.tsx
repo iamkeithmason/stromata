@@ -10,6 +10,7 @@ import TableOfContents from '@/app/components/TableOfContents'
 import { readingTime } from '@/lib/reading-time'
 import { extractHeadings } from '@/lib/headings'
 import { OG_IMAGE } from '@/lib/metadata'
+import { ThemeChip } from '@/app/components/ThemeChip'
 
 type Props = { params: Promise<{ slug: string }> }
 
@@ -196,24 +197,7 @@ export default async function TextPage({ params }: Props) {
           {themes.length > 0 && (
             <div className="flex flex-wrap gap-2 mb-2">
               {themes.map(theme => (
-                <Link
-                  key={theme.slug}
-                  href={`/themes/${theme.slug}`}
-                  className="inline-flex items-center text-xs px-2.5 py-1 hover:opacity-70 transition-opacity"
-                  style={{
-                    color: 'var(--ink-mute)',
-                    border: '1px solid var(--rule)',
-                    background: 'transparent',
-                    fontFamily: '"EB Garamond", Georgia, serif',
-                    letterSpacing: '0.1rem',
-                    textTransform: 'uppercase',
-                  }}
-                  data-umami-event="theme-click"
-                  data-umami-event-theme={theme.name}
-                  data-umami-event-source="text-page"
-                >
-                  {theme.name}
-                </Link>
+                <ThemeChip key={theme.slug} href={`/themes/${theme.slug}`} name={theme.name} source="text-page" />
               ))}
             </div>
           )}

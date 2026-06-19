@@ -80,12 +80,9 @@
   --serif-cormorant: var(--font-cormorant, "EB Garamond"), "Garamond", Georgia, serif;
 
   /* Type scale — use these instead of raw rem values in components */
-  --text-micro:   0.65rem;   /* chip/tag text, smallest labels */
-  --text-xs:      0.75rem;   /* secondary metadata, TOC, fine print */
-  --text-sm:      0.8rem;    /* kickers, captions, card metadata */
-  --text-label:   0.875rem;  /* footer links, CTA links, search input results */
-  --text-base:    1rem;      /* author names, dates, most UI text */
-  --text-body:    1.1rem;    /* comfortable paragraph text */
+  --text-sm:      0.8rem;    /* chip/tag text, smallest labels, captions, card metadata, TOC */
+  --text-label:   0.875rem;  /* footer links, CTA links, search results */
+  --text-base:    1rem;      /* author names, dates, body text, most UI text */
   --text-prose:   1.25rem;   /* long-form reading body */
   --text-xl:      1.5rem;    /* seasonal panel body, prominent links */
   --text-display: 3rem;      /* text reader title heading */

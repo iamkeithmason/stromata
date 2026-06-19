@@ -89,7 +89,7 @@ export default function SearchBar() {
           className="hidden sm:inline-flex items-center shrink-0 font-mono"
           style={{
             color: 'var(--ink-faint)',
-            fontSize: 'var(--text-xs)',
+            fontSize: 'var(--text-sm)',
             background: 'transparent',
             border: 'none',
             letterSpacing: '0.04em',

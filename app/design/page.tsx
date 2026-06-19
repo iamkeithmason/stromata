@@ -35,10 +35,10 @@ function SubSection({ title, children }: { title: string; children: React.ReactN
 function TokenRow({ name, value, children }: { name: string; value: string; children?: React.ReactNode }) {
   return (
     <div className="flex items-center gap-4 py-2" style={{ borderBottom: '1px solid var(--rule-soft)' }}>
-      <code className="font-mono shrink-0" style={{ fontSize: 'var(--text-xs)', color: 'var(--ink-mute)', width: '18rem' }}>
+      <code className="font-mono shrink-0" style={{ fontSize: 'var(--text-sm)', color: 'var(--ink-mute)', width: '18rem' }}>
         {name}
       </code>
-      <code className="font-mono shrink-0" style={{ fontSize: 'var(--text-xs)', color: 'var(--ink-faint)', width: '7rem' }}>
+      <code className="font-mono shrink-0" style={{ fontSize: 'var(--text-sm)', color: 'var(--ink-faint)', width: '7rem' }}>
         {value}
       </code>
       {children}
@@ -53,8 +53,8 @@ function ColourSwatch({ token, value, label }: { token: string; value: string; l
         className="w-full rounded-sm"
         style={{ height: 48, background: `var(${token})`, border: '1px solid rgba(0,0,0,0.07)' }}
       />
-      <code style={{ fontSize: 'var(--text-micro)', color: 'var(--ink-mute)', fontFamily: 'monospace' }}>{token}</code>
-      {label && <span style={{ fontSize: 'var(--text-micro)', color: 'var(--ink-faint)' }}>{label}</span>}
+      <code style={{ fontSize: 'var(--text-sm)', color: 'var(--ink-mute)', fontFamily: 'monospace' }}>{token}</code>
+      {label && <span style={{ fontSize: 'var(--text-sm)', color: 'var(--ink-faint)' }}>{label}</span>}
     </div>
   )
 }
@@ -127,12 +127,9 @@ export default function DesignPage() {
         <Section title="Type scale">
           <div className="mb-8">
             {[
-              { token: '--text-micro',   value: '0.65rem',  label: 'Chip/tag text, smallest labels' },
-              { token: '--text-xs',      value: '0.75rem',  label: 'Secondary metadata, TOC, fine print' },
-              { token: '--text-sm',      value: '0.8rem',   label: 'Kickers, captions, card metadata' },
+              { token: '--text-sm',      value: '0.8rem',   label: 'Chip/tag text, smallest labels, captions, card metadata, TOC' },
               { token: '--text-label',   value: '0.875rem', label: 'Footer links, CTA links, search results' },
-              { token: '--text-base',    value: '1rem',     label: 'Author names, dates, most UI text' },
-              { token: '--text-body',    value: '1.1rem',   label: 'Comfortable paragraph text' },
+              { token: '--text-base',    value: '1rem',     label: 'Author names, dates, body text, most UI text' },
               { token: '--text-prose',   value: '1.25rem',  label: 'Long-form reading body' },
               { token: '--text-xl',      value: '1.5rem',   label: 'Seasonal panel, prominent links' },
               { token: '--text-display', value: '3rem',     label: 'Text reader title heading' },
@@ -144,7 +141,7 @@ export default function DesignPage() {
                 >
                   The works of the ages
                 </span>
-                <span style={{ fontSize: 'var(--text-xs)', color: 'var(--ink-faint)', maxWidth: '20ch', textAlign: 'right' }}>
+                <span style={{ fontSize: 'var(--text-sm)', color: 'var(--ink-faint)', maxWidth: '20ch', textAlign: 'right' }}>
                   {label}
                 </span>
               </TokenRow>
@@ -160,8 +157,8 @@ export default function DesignPage() {
               ].map(({ label, value, style }) => (
                 <div key={label} className="py-2" style={{ borderBottom: '1px solid var(--rule-soft)' }}>
                   <div className="flex gap-4 mb-1 items-center">
-                    <code className="font-mono" style={{ fontSize: 'var(--text-xs)', color: 'var(--ink-mute)', minWidth: '14rem' }}>{label}</code>
-                    <code className="font-mono" style={{ fontSize: 'var(--text-xs)', color: 'var(--ink-faint)' }}>{value}</code>
+                    <code className="font-mono" style={{ fontSize: 'var(--text-sm)', color: 'var(--ink-mute)', minWidth: '14rem' }}>{label}</code>
+                    <code className="font-mono" style={{ fontSize: 'var(--text-sm)', color: 'var(--ink-faint)' }}>{value}</code>
                   </div>
                   <p style={style}>The Stromata</p>
                 </div>
@@ -179,13 +176,13 @@ export default function DesignPage() {
           ].map(({ token, family, role, sample }) => (
             <div key={token} className="py-5" style={{ borderBottom: '1px solid var(--rule-soft)' }}>
               <div className="flex gap-8 items-baseline mb-2 flex-wrap">
-                <code className="font-mono" style={{ fontSize: 'var(--text-xs)', color: 'var(--ink-mute)' }}>{token}</code>
+                <code className="font-mono" style={{ fontSize: 'var(--text-sm)', color: 'var(--ink-mute)' }}>{token}</code>
                 <span className="kicker">{family}</span>
               </div>
               <p style={{ fontFamily: `var(${token})`, fontSize: 'var(--text-xl)', color: 'var(--ink)', lineHeight: 1.3 }}>
                 {sample}
               </p>
-              <p style={{ fontSize: 'var(--text-xs)', color: 'var(--ink-faint)', marginTop: '0.4rem' }}>{role}</p>
+              <p style={{ fontSize: 'var(--text-sm)', color: 'var(--ink-faint)', marginTop: '0.4rem' }}>{role}</p>
             </div>
           ))}
         </Section>
@@ -196,23 +193,23 @@ export default function DesignPage() {
           <SubSection title="Kicker variants">
             <div className="space-y-4">
               <div className="py-3 flex items-center gap-8" style={{ borderBottom: '1px solid var(--rule-soft)' }}>
-                <code className="font-mono shrink-0" style={{ fontSize: 'var(--text-xs)', color: 'var(--ink-mute)', width: '10rem' }}>.kicker</code>
+                <code className="font-mono shrink-0" style={{ fontSize: 'var(--text-sm)', color: 'var(--ink-mute)', width: '10rem' }}>.kicker</code>
                 <span className="kicker">Featured authors</span>
-                <span style={{ fontSize: 'var(--text-xs)', color: 'var(--ink-faint)' }}>0.8rem · uppercase · 0.18em tracking · --ink-faint · Used for: section labels, nav chips, metadata</span>
+                <span style={{ fontSize: 'var(--text-sm)', color: 'var(--ink-faint)' }}>0.8rem · uppercase · 0.18em tracking · --ink-faint · Used for: section labels, nav chips, metadata</span>
               </div>
               <div className="py-3 flex items-center gap-8" style={{ borderBottom: '1px solid var(--rule-soft)' }}>
-                <code className="font-mono shrink-0" style={{ fontSize: 'var(--text-xs)', color: 'var(--ink-mute)', width: '10rem' }}>.kicker-gold</code>
+                <code className="font-mono shrink-0" style={{ fontSize: 'var(--text-sm)', color: 'var(--ink-mute)', width: '10rem' }}>.kicker-gold</code>
                 <span className="kicker-gold">New collection</span>
-                <span style={{ fontSize: 'var(--text-xs)', color: 'var(--ink-faint)' }}>Same as .kicker · --gold · Used for: editorial labels, seasonal panel labels</span>
+                <span style={{ fontSize: 'var(--text-sm)', color: 'var(--ink-faint)' }}>Same as .kicker · --gold · Used for: editorial labels, seasonal panel labels</span>
               </div>
             </div>
           </SubSection>
 
           <SubSection title="Caption">
             <div className="py-3 flex items-center gap-8" style={{ borderBottom: '1px solid var(--rule-soft)' }}>
-              <code className="font-mono shrink-0" style={{ fontSize: 'var(--text-xs)', color: 'var(--ink-mute)', width: '10rem' }}>.caption</code>
+              <code className="font-mono shrink-0" style={{ fontSize: 'var(--text-sm)', color: 'var(--ink-mute)', width: '10rem' }}>.caption</code>
               <span className="caption">~ 20 min · 6 books · Finished</span>
-              <span style={{ fontSize: 'var(--text-xs)', color: 'var(--ink-faint)' }}>0.8rem · 0.12em tracking · --ink-mute · Used for: card metadata, reading progress</span>
+              <span style={{ fontSize: 'var(--text-sm)', color: 'var(--ink-faint)' }}>0.8rem · 0.12em tracking · --ink-mute · Used for: card metadata, reading progress</span>
             </div>
           </SubSection>
 
@@ -220,15 +217,15 @@ export default function DesignPage() {
             <div className="space-y-6">
               <div>
                 <div className="flex items-center gap-4 mb-2">
-                  <code className="font-mono" style={{ fontSize: 'var(--text-xs)', color: 'var(--ink-mute)' }}>.rule-gold</code>
-                  <span style={{ fontSize: 'var(--text-xs)', color: 'var(--ink-faint)' }}>1px solid --gold-rule · Section dividers beneath headers</span>
+                  <code className="font-mono" style={{ fontSize: 'var(--text-sm)', color: 'var(--ink-mute)' }}>.rule-gold</code>
+                  <span style={{ fontSize: 'var(--text-sm)', color: 'var(--ink-faint)' }}>1px solid --gold-rule · Section dividers beneath headers</span>
                 </div>
                 <hr className="rule-gold" />
               </div>
               <div>
                 <div className="flex items-center gap-4 mb-2">
-                  <code className="font-mono" style={{ fontSize: 'var(--text-xs)', color: 'var(--ink-mute)' }}>.rule-muted</code>
-                  <span style={{ fontSize: 'var(--text-xs)', color: 'var(--ink-faint)' }}>1px solid --rule · General dividers</span>
+                  <code className="font-mono" style={{ fontSize: 'var(--text-sm)', color: 'var(--ink-mute)' }}>.rule-muted</code>
+                  <span style={{ fontSize: 'var(--text-sm)', color: 'var(--ink-faint)' }}>1px solid --rule · General dividers</span>
                 </div>
                 <hr className="rule-muted" />
               </div>
@@ -242,7 +239,7 @@ export default function DesignPage() {
                 <span className="kicker">All texts →</span>
               </div>
               <hr className="rule-gold" />
-              <p style={{ fontSize: 'var(--text-xs)', color: 'var(--ink-faint)', marginTop: '0.75rem' }}>
+              <p style={{ fontSize: 'var(--text-sm)', color: 'var(--ink-faint)', marginTop: '0.75rem' }}>
                 Composed from: font-serif italic text-xl · .kicker aside · .rule-gold
               </p>
             </div>
@@ -287,7 +284,7 @@ export default function DesignPage() {
                     color: 'var(--ink-mute)',
                     border: '1px solid var(--rule)',
                     fontFamily: 'var(--serif)',
-                    fontSize: 'var(--text-micro)',
+                    fontSize: 'var(--text-sm)',
                     letterSpacing: '0.1em',
                     textTransform: 'uppercase',
                     padding: '3px 10px',

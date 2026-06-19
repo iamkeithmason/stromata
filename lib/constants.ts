@@ -4,7 +4,7 @@ export const TRADITIONS = [
   // (bare tradition names attract liturgical calendar / community traffic).
   { slug: 'early-church',        name: 'Early Church (pre-Nicene)',  seoTitle: 'Early Church writings' },
   { slug: 'patristic',           name: 'Patristic',                  seoTitle: 'Patristic theology texts' },
-  { slug: 'byzantine',           name: 'Byzantine',                  seoTitle: 'Byzantine Christian writings' },
+  { slug: 'imperial',            name: 'Imperial',                   seoTitle: 'Imperial church writings' },
   { slug: 'oriental-orthodox',   name: 'Oriental Orthodox',          seoTitle: 'Oriental Orthodox Christian texts' },
   { slug: 'eastern-orthodox',    name: 'Eastern Orthodox',           seoTitle: 'Eastern Orthodox Christian writings' },
   { slug: 'roman-catholic',      name: 'Roman Catholic',             seoTitle: 'Medieval Catholic writings' },

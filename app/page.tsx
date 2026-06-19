@@ -9,6 +9,7 @@ import { FeaturedAuthors } from './components/FeaturedAuthors'
 import { SeasonalPanel } from './components/SeasonalPanel'
 import { ChurchYearRow } from './components/ChurchYearRow'
 import { readingTime } from '@/lib/reading-time'
+import { ThemeChip } from './components/ThemeChip'
 
 // ── Types ──────────────────────────────────────────────────────────────────
 
@@ -337,7 +338,7 @@ export default async function Home() {
                       border: '1px solid var(--rule)',
                       background: 'transparent',
                       fontFamily: 'var(--serif)',
-                      fontSize: 'var(--text-xs)',
+                      fontSize: 'var(--text-sm)',
                       letterSpacing: '0.1rem',
                       textTransform: 'uppercase',
                       padding: '3px 10px',
@@ -387,7 +388,7 @@ export default async function Home() {
             style={{ fontFamily: 'var(--serif)', fontSize: 'var(--text-label)', lineHeight: 1.85 }}
           >
             <div>
-              <div style={{ fontSize: 'var(--text-micro)', letterSpacing: '0.22em', textTransform: 'uppercase', color: 'var(--gold)', opacity: 0.8, marginBottom: 8, fontFamily: 'var(--serif)' }}>
+              <div style={{ fontSize: 'var(--text-sm)', letterSpacing: '0.22em', textTransform: 'uppercase', color: 'var(--gold)', opacity: 0.8, marginBottom: 8, fontFamily: 'var(--serif)' }}>
                 Stromata
               </div>
               {[{ label: 'About', href: '/about' }, { label: 'Authors', href: '/authors' }, { label: 'RSS feed', href: '/rss' }].map(({ label, href }) => (
@@ -397,7 +398,7 @@ export default async function Home() {
               ))}
             </div>
             <div>
-              <div style={{ fontSize: 'var(--text-micro)', letterSpacing: '0.22em', textTransform: 'uppercase', color: 'var(--gold)', opacity: 0.8, marginBottom: 8, fontFamily: 'var(--serif)' }}>
+              <div style={{ fontSize: 'var(--text-sm)', letterSpacing: '0.22em', textTransform: 'uppercase', color: 'var(--gold)', opacity: 0.8, marginBottom: 8, fontFamily: 'var(--serif)' }}>
                 Read
               </div>
               {[{ label: 'Library', href: '/texts' }, { label: 'Search', href: '/search' }].map(({ label, href }) => (
@@ -461,16 +462,14 @@ function TextLead({ text }: { text: TextRow }) {
           <Link href={`/texts/${text.slug}`} style={{ fontFamily: 'var(--serif)', fontSize: 'var(--text-label)', color: 'var(--gold)', textDecoration: 'none', borderBottom: '1px solid var(--gold-rule)', paddingBottom: '1px' }} className="hover:opacity-70 transition-opacity" data-umami-event="text-open" data-umami-event-from="featured-lead" data-umami-event-text={text.title}>
             Begin reading →
           </Link>
-          <span style={{ color: 'var(--ink-faint)', fontSize: 'var(--text-xs)', fontFamily: 'var(--serif)' }}>
+          <span style={{ color: 'var(--ink-faint)', fontSize: 'var(--text-sm)', fontFamily: 'var(--serif)' }}>
             ~ {readingTime(text.body)} min
           </span>
         </div>
         {themes.length > 0 && (
           <div className="flex flex-wrap gap-1.5 mt-4">
             {themes.map(t => (
-              <Link key={t.slug} href={`/themes/${t.slug}`} className="hover:opacity-70 transition-opacity" style={{ color: 'var(--ink-mute)', border: '1px solid var(--rule)', fontFamily: 'var(--serif)', fontSize: 'var(--text-micro)', letterSpacing: '0.1em', textTransform: 'uppercase', padding: '2px 8px', textDecoration: 'none' }} data-umami-event="theme-click" data-umami-event-theme={t.name} data-umami-event-source="featured-lead">
-                {t.name}
-              </Link>
+              <ThemeChip key={t.slug} href={`/themes/${t.slug}`} name={t.name} source="featured-lead" />
             ))}
           </div>
         )}
@@ -517,7 +516,7 @@ function CollectionLead({ entry }: { entry: Extract<FeedEntry, { kind: 'collecti
           <Link href={`/collections/${collection.slug}`} style={{ fontFamily: 'var(--serif)', fontSize: 'var(--text-label)', color: 'var(--gold)', textDecoration: 'none', borderBottom: '1px solid var(--gold-rule)', paddingBottom: '1px' }} className="hover:opacity-70 transition-opacity" data-umami-event="text-open" data-umami-event-from="featured-lead" data-umami-event-text={collection.title}>
             Browse collection →
           </Link>
-          <span style={{ color: 'var(--ink-faint)', fontSize: 'var(--text-xs)', fontFamily: 'var(--serif)' }}>
+          <span style={{ color: 'var(--ink-faint)', fontSize: 'var(--text-sm)', fontFamily: 'var(--serif)' }}>
             {bookCount} {bookCount === 1 ? 'book' : 'books'}
           </span>
         </div>
@@ -626,9 +625,7 @@ function FeedGridCard({ entry, index }: { entry: FeedEntry; index: number }) {
         {themes.length > 0 && (
           <div className="flex flex-wrap gap-1">
             {themes.map(t => (
-              <Link key={t.slug} href={`/themes/${t.slug}`} className="px-2 py-0.5 hover:opacity-70 transition-opacity" style={{ color: 'var(--ink-mute)', border: '1px solid var(--rule)', fontFamily: 'var(--serif)', fontSize: 'var(--text-micro)', letterSpacing: '0.1em', textTransform: 'uppercase', textDecoration: 'none' }} data-umami-event="theme-click" data-umami-event-theme={t.name} data-umami-event-source="homepage">
-                {t.name}
-              </Link>
+              <ThemeChip key={t.slug} href={`/themes/${t.slug}`} name={t.name} source="homepage" />
             ))}
           </div>
         )}

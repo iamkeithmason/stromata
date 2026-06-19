@@ -29,7 +29,7 @@ function suggestTradition(text: string): string {
   if (t.includes('eastern orthodox') || t.includes('greek orthodox') || t.includes('russian orthodox')) return 'eastern-orthodox'
   if (t.includes('roman catholic') || t.includes('jesuit') || t.includes('dominican') || t.includes('franciscan') || t.includes('benedictine')) return 'roman-catholic'
   if (t.includes('coptic') || t.includes('syriac') || t.includes('armenian church') || t.includes('ethiopian') || t.includes('oriental orthodox')) return 'oriental-orthodox'
-  if (t.includes('byzantine') || t.includes('carolingian') || t.includes('john of damascus') || t.includes('maximus the confessor')) return 'byzantine'
+  if (t.includes('byzantine') || t.includes('carolingian') || t.includes('john of damascus') || t.includes('maximus the confessor')) return 'imperial'
   if (
     t.includes('church father') || t.includes('patristic') ||
     t.includes('archbishop of constantinople') || t.includes('bishop of hippo') ||

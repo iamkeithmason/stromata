@@ -48,7 +48,9 @@
       "Bash(mkdir -p \"/Users/keithmason/Documents/projects/stromata/app/api/admin/texts/[id]/generate-summary\")",
       "Bash(node -e ' *)",
       "Bash(ls ~/Downloads/ | grep -i strom)",
-      "Bash(sort -t\"'\" -k2)"
+      "Bash(sort -t\"'\" -k2)",
+      "Bash(sed -i '' 's/var\\(--text-xs\\)/var\\(--text-sm\\)/g' /Users/keithmason/Documents/projects/stromata/app/page.tsx /Users/keithmason/Documents/projects/stromata/app/SearchBar.tsx /Users/keithmason/Documents/projects/stromata/app/components/TableOfContents.tsx /Users/keithmason/Documents/projects/stromata/app/design/page.tsx)",
+      "Bash(sed -i '' 's/var\\(--text-body\\)/var\\(--text-base\\)/g' /Users/keithmason/Documents/projects/stromata/app/design/page.tsx)"
     ]
   },
   "enableAllProjectMcpServers": true,
