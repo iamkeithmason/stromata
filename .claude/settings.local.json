@@ -50,7 +50,16 @@
       "Bash(ls ~/Downloads/ | grep -i strom)",
       "Bash(sort -t\"'\" -k2)",
       "Bash(sed -i '' 's/var\\(--text-xs\\)/var\\(--text-sm\\)/g' /Users/keithmason/Documents/projects/stromata/app/page.tsx /Users/keithmason/Documents/projects/stromata/app/SearchBar.tsx /Users/keithmason/Documents/projects/stromata/app/components/TableOfContents.tsx /Users/keithmason/Documents/projects/stromata/app/design/page.tsx)",
-      "Bash(sed -i '' 's/var\\(--text-body\\)/var\\(--text-base\\)/g' /Users/keithmason/Documents/projects/stromata/app/design/page.tsx)"
+      "Bash(sed -i '' 's/var\\(--text-body\\)/var\\(--text-base\\)/g' /Users/keithmason/Documents/projects/stromata/app/design/page.tsx)",
+      "mcp__plugin_figma_figma__whoami",
+      "mcp__plugin_figma_figma__create_new_file",
+      "mcp__plugin_figma_figma__search_design_system",
+      "mcp__plugin_figma_figma__use_figma",
+      "Bash(grep -n \"strokeTopWeight\\\\|strokeBottomWeight\\\\|individualStrokeWeights\" \"/Users/keithmason/.claude/plugins/cache/claude-plugins-official/figma/2.2.12/skills/figma-use/references/plugin-api-standalone.d.ts\" | head -20)",
+      "mcp__plugin_figma_figma__get_screenshot",
+      "mcp__plugin_figma_figma__get_metadata",
+      "Bash(python3 -c ' *)",
+      "Bash(npx eslint *)"
     ]
   },
   "enableAllProjectMcpServers": true,

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { revalidatePath } from 'next/cache'
 import { createServerClient } from '@/lib/supabase/server'
 
 type Params = { params: Promise<{ id: string }> }
@@ -98,6 +99,18 @@ export async function PATCH(request: NextRequest, { params }: Params) {
         .insert(themes.map((t: { id: number }) => ({ text_id: id, theme_id: t.id })))
     }
   }
+
+  const { data: author } = await supabase
+    .from('authors')
+    .select('slug')
+    .eq('id', author_id)
+    .single()
+
+  revalidatePath('/')
+  revalidatePath('/texts')
+  revalidatePath(`/texts/${slug}`)
+  if (author?.slug) revalidatePath(`/authors/${author.slug}`)
+  for (const themeSlug of theme_slugs ?? []) revalidatePath(`/themes/${themeSlug}`)
 
   return NextResponse.json({ ok: true })
 }
