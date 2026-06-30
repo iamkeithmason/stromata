@@ -1,0 +1,27 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(curl -sI *)",
+      "Bash(curl -sIL *)",
+      "Bash(curl -s https://archive.org/*)",
+      "Bash(curl -L https://archive.org/*)",
+      "mcp__supabase__list_tables",
+      "mcp__supabase__list_migrations",
+      "mcp__Claude_Preview__preview_screenshot",
+      "mcp__Claude_Preview__preview_console_logs",
+      "mcp__Claude_Preview__preview_snapshot",
+      "mcp__Claude_Preview__preview_logs",
+      "mcp__Claude_Preview__preview_list",
+      "mcp__Claude_Preview__preview_resize",
+      "mcp__Claude_Preview__preview_network",
+      "mcp__72305c5b-e674-4aef-be69-baa0db3a5bba__notion-fetch",
+      "mcp__72305c5b-e674-4aef-be69-baa0db3a5bba__notion-search",
+      "Write(scripts/ingestion/output/*)",
+      "Write(scripts/ingestion/run-log/*)",
+      "Write(scripts/ingestion/sources/*)",
+      "Edit(scripts/ingestion/prospect-queue.json)",
+      "Edit(scripts/ingestion/archive-ocr-config.mjs)",
+      "Edit(scripts/ingestion/config.js)"
+    ]
+  }
+}

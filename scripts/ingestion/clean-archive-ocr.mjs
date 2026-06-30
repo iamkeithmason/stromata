@@ -216,6 +216,10 @@ function cleanOcrText(text, config) {
   // Handle chapter headings with no summary line
   text = text.replace(/^CHAPTER\s+([IVXLCDM]+)\.\s*$/gm, '## Chapter $1');
 
+  // Format BOOK and PART headings (for multi-book works)
+  text = text.replace(/^BOOK\s+([IVXLCDM]+)\.?\s*$/gm, '## Book $1');
+  text = text.replace(/^PART\s+([IVXLCDM]+)\.?\s*$/gm, '## Part $1');
+
   // Format PREFACE
   text = text.replace(/^PREFACE\.\s*$/gm, '## Preface');
 
@@ -241,17 +245,18 @@ console.log('Cleaning OCR text...');
 const { text: cleaned, issues } = cleanOcrText(extracted, config);
 
 // ---------------------------------------------------------------------------
-// Build final output
+// Build frontmatter helper
 // ---------------------------------------------------------------------------
 
-const frontMatter = `---
-title: "${config.title}"
-slug: "${config.slug}"
+function buildFrontmatter({ title, slug, collection, collectionOrder }) {
+  return `---
+title: "${title}"
+slug: "${slug}"
 author: "${config.author}"
 genre: "${config.genre}"
 themes: []  # TODO — confirm from controlled vocabulary
-collection: ""
-collection_order:
+collection: "${collection || ''}"
+collection_order: ${collectionOrder != null ? collectionOrder : ''}
 source_attribution: "${config.sourceAttribution}"
 provenance_notes: "${config.provenanceNotes}"
 translation_notes: "${config.translationNotes || ''}"
@@ -263,8 +268,35 @@ copyright_safe: true
 <!-- EDITORIAL INTRO — write 2–4 sentences here explaining what this text is and why it matters. -->
 
 `;
+}
 
-const finalOutput = frontMatter + cleaned;
+// ---------------------------------------------------------------------------
+// Split into sections if config.splitBy is set ('book' or 'part')
+// ---------------------------------------------------------------------------
+
+function splitIntoSections(text, splitBy) {
+  const headingRe = splitBy === 'part'
+    ? /^## Part ([IVXLCDM]+)\s*$/gm
+    : /^## Book ([IVXLCDM]+)\s*$/gm;
+
+  const matches = [];
+  let m;
+  const re = new RegExp(headingRe.source, headingRe.flags);
+  while ((m = re.exec(text)) !== null) {
+    matches.push({ index: m.index, roman: m[1] });
+  }
+  if (matches.length === 0) return null;
+
+  const preamble = text.slice(0, matches[0].index).trim();
+
+  return matches.map((match, i) => {
+    const end = i + 1 < matches.length ? matches[i + 1].index : text.length;
+    let body = text.slice(match.index, end).trim();
+    if (i === 0 && preamble) body = preamble + '\n\n' + body;
+    const label = splitBy === 'part' ? 'Part' : 'Book';
+    return { roman: match.roman, label, body, order: i + 1 };
+  });
+}
 
 // ---------------------------------------------------------------------------
 // Write outputs
@@ -273,9 +305,34 @@ const finalOutput = frontMatter + cleaned;
 const outputDir = path.join(__dirname, 'output');
 if (!fs.existsSync(outputDir)) fs.mkdirSync(outputDir, { recursive: true });
 
-const outputPath = path.join(outputDir, `${config.slug}.md`);
-fs.writeFileSync(outputPath, finalOutput, 'utf8');
-console.log(`✓ Written: ${outputPath}`);
+const sections = config.splitBy ? splitIntoSections(cleaned, config.splitBy) : null;
+
+if (sections && sections.length > 1) {
+  // Multi-section: write each as a separate file in output/{slug}/
+  const sectionDir = path.join(outputDir, config.slug);
+  fs.mkdirSync(sectionDir, { recursive: true });
+
+  for (const section of sections) {
+    const sectionTitle = `${config.title} — ${section.label} ${section.roman}`;
+    const sectionSlug = `${config.slug}-${section.label.toLowerCase()}-${section.order}`;
+    const fm = buildFrontmatter({
+      title: sectionTitle,
+      slug: sectionSlug,
+      collection: config.slug,
+      collectionOrder: section.order,
+    });
+    const filePath = path.join(sectionDir, `${sectionSlug}.md`);
+    fs.writeFileSync(filePath, fm + section.body, 'utf8');
+    console.log(`  ✓ ${sectionTitle}`);
+  }
+  console.log(`✓ Written ${sections.length} sections → ${sectionDir}`);
+} else {
+  // Single file: write flat output/{slug}.md
+  const fm = buildFrontmatter({ title: config.title, slug: config.slug, collection: '', collectionOrder: null });
+  const outputPath = path.join(outputDir, `${config.slug}.md`);
+  fs.writeFileSync(outputPath, fm + cleaned, 'utf8');
+  console.log(`✓ Written: ${outputPath}`);
+}
 
 const warnings = issues.filter(i => i.startsWith('WARNING'));
 const corrections = issues.filter(i => !i.startsWith('WARNING'));
@@ -315,7 +372,11 @@ ${warnings.length > 0 ? warnings.map(w => `- ${w}`).join('\n') : '_None_'}
 ${config.editorialNotes || '_No notes provided in config._'}
 `;
 
-const reviewPath = path.join(outputDir, `${config.slug}-review-summary.md`);
+// Write review summary alongside the output (in section dir if split, otherwise root output dir)
+const reviewDir = (sections && sections.length > 1)
+  ? path.join(outputDir, config.slug)
+  : outputDir;
+const reviewPath = path.join(reviewDir, `${config.slug}-review-summary.md`);
 fs.writeFileSync(reviewPath, reviewSummary, 'utf8');
 console.log(`✓ Written: ${reviewPath}`);
 console.log('\nDone. Open the review summary before publishing.');

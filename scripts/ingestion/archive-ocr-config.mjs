@@ -115,8 +115,103 @@ const ANSELM_PROSLOGION = {
   keptHeadings: ['CHAPTER', 'PREFACE'],
 };
 
+const CHRYSOSTOM_ON_THE_PRIESTHOOD = {
+  sourceFile: 'scripts/ingestion/sources/on-the-priesthood-chrysostom-raw.txt',
+  startLandmark: 'TREATISE \n\nON THE PRIESTHOOD',
+  endLandmark: 'AN EXHORTATION TO THEODORE',
+  slug: 'on-the-priesthood-chrysostom',
+  title: 'On the Priesthood',
+  author: 'John Chrysostom',
+  genre: 'Dialogue',
+  sourceAttribution: 'Translated by W.R.W. Stephens (NPNF Series I, Vol. IX, Christian Literature Company, 1889).',
+  provenanceNotes: 'Text sourced from Archive.org scan of NPNF Series I, Vol. IX (identifier: OnThePriesthood.AsceticTreatises.SelectHomiliesAndLetters.HomiliesOn). Accessed June 2026.',
+  translationNotes: 'W.R.W. Stephens (1839–1902). Translation published 1889; copyright expired.',
+  editorialNotes: 'Six books in dialogue form between Chrysostom and his friend Basil. Books I–VI included. The work was written c. 386 AD.',
+  splitBy: 'book',
+  manualCorrections: {
+    'BOOKI': 'BOOK I',
+    'BOOKII': 'BOOK II',
+    'BOOKIII': 'BOOK III',
+    'BOOKIV': 'BOOK IV',
+    'BOOKV': 'BOOK V',
+    'BOOKVI': 'BOOK VI',
+  },
+  regexCorrections: [],
+  pageHeaderPatterns: [
+    '^\\d+\\s*$',
+    '^ON THE PRIESTHOOD\\.?\\s*\\d*\\s*$',
+    '^CHRYSOSTOM\\.?\\s*\\d*\\s*$',
+    '^[A-Z][A-Z\\s\\.]{0,40}\\s+\\d+\\s*$',
+  ],
+  keptHeadings: ['BOOK', 'CHAPTER', 'CONTENTS'],
+};
+
+const GREGORY_PASTORAL_RULE = {
+  sourceFile: 'scripts/ingestion/sources/pastoral-rule-gregory-raw.txt',
+  startLandmark: 'THE \n\nBOOK OF PASTORAL RULE',
+  endLandmark: 'REGISTER OF THE EPISTLES OF SAINT',
+  slug: 'pastoral-rule-gregory',
+  title: 'Book of Pastoral Rule',
+  author: 'Gregory the Great',
+  genre: 'Rule',
+  sourceAttribution: 'Translated by James Barmby (NPNF Series II, Vol. XII, Christian Literature Company, 1895).',
+  provenanceNotes: 'Text sourced from Archive.org scan of NPNF Series II, Vol. XII (identifier: LeoTheGreat.GregoryTheGreat). Accessed June 2026.',
+  translationNotes: 'James Barmby (1835–1887). Translation published 1895; copyright expired.',
+  editorialNotes: 'Four parts: Part I (on the qualifications of the pastor), Part II (on the life of the pastor), Part III (on pastoral instruction — the longest section), Part IV (on humility after good works). Written by Gregory c. 590 AD.',
+  splitBy: 'part',
+  manualCorrections: {
+    'PARTI': 'PART I',
+    'PARTII': 'PART II',
+    'PARTIII': 'PART III',
+    'PARTIV': 'PART IV',
+  },
+  regexCorrections: [],
+  pageHeaderPatterns: [
+    '^\\d+\\s*$',
+    '^BOOK OF PASTORAL RULE\\.?\\s*\\d*\\s*$',
+    '^GREGORY\\.?\\s*\\d*\\s*$',
+    '^[A-Z][A-Z\\s\\.]{0,40}\\s+\\d+\\s*$',
+  ],
+  keptHeadings: ['PART', 'CHAPTER', 'PREFACE', 'PROLOGUE'],
+};
+
+const JOHN_OF_DAMASCUS_EXPOSITION = {
+  sourceFile: 'scripts/ingestion/sources/exposition-orthodox-faith-raw.txt',
+  startLandmark: 'AN  EXACT  EXPOSITION',
+  endLandmark: null,
+  slug: 'exposition-orthodox-faith',
+  title: 'Exposition of the Orthodox Faith',
+  author: 'John of Damascus',
+  genre: 'Treatise',
+  sourceAttribution: 'Translated by S.D.F. Salmond (NPNF Series II, Vol. IX, Christian Literature Company, 1899).',
+  provenanceNotes: 'Text sourced from Archive.org scan (identifier: AnExactExpositionOfTheOrthodoxFaith). Accessed June 2026.',
+  translationNotes: 'S.D.F. Salmond (1838–1905). Translation published 1899; copyright expired.',
+  editorialNotes: 'Four books covering theology proper, cosmology, anthropology, and eschatology. Written by John of Damascus c. 730 AD as the third part of his Fount of Knowledge.',
+  splitBy: 'book',
+  manualCorrections: {
+    'Io  MAN  HATH  SEEN': 'No man hath seen',
+  },
+  regexCorrections: [
+    ['BOOK\\s+ONE', 'BOOK I', 'g'],
+    ['BOOK\\s+TWO', 'BOOK II', 'g'],
+    ['BOOK\\s+THREE', 'BOOK III', 'g'],
+    ['BOOK\\s+FOUR', 'BOOK IV', 'g'],
+  ],
+  pageHeaderPatterns: [
+    '^\\d+\\s*$',
+    '^EXPOSITION OF THE ORTHODOX FAITH\\.?\\s*\\d*\\s*$',
+    '^JOHN OF DAMASCUS\\.?\\s*\\d*\\s*$',
+    '^ORTHODOX\\s+(FAITH|TAITH)\\s*[:\\.]\\s*BOOK.+$',
+    '^[A-Z][A-Z\\s\\.]{0,40}\\s+\\d+\\s*$',
+  ],
+  keptHeadings: ['BOOK', 'CHAPTER'],
+};
+
 export default {
   'anselm-proslogion': ANSELM_PROSLOGION,
+  'chrysostom-on-the-priesthood': CHRYSOSTOM_ON_THE_PRIESTHOOD,
+  'gregory-pastoral-rule': GREGORY_PASTORAL_RULE,
+  'john-of-damascus-exposition': JOHN_OF_DAMASCUS_EXPOSITION,
 
   // Template for new entries:
   // 'new-text-key': {

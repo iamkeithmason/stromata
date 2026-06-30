@@ -38,6 +38,7 @@ export default async function AdminDashboard({ searchParams }: Props) {
     { count: locationCount },
     { count: eraCount },
     { count: traditionCount },
+    { count: draftCount },
   ] = await Promise.all([
     supabase
       .from('texts')
@@ -51,6 +52,7 @@ export default async function AdminDashboard({ searchParams }: Props) {
     supabase.from('locations').select('id', { count: 'exact', head: true }),
     supabase.from('eras').select('id', { count: 'exact', head: true }),
     supabase.from('traditions').select('id', { count: 'exact', head: true }),
+    supabase.from('texts').select('id', { count: 'exact', head: true }).eq('published', false),
   ])
 
   return (
@@ -71,6 +73,7 @@ export default async function AdminDashboard({ searchParams }: Props) {
         {/* Nav cards */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           {[
+            { label: 'Drafts', href: '/admin/drafts', count: draftCount ?? 0 },
             { label: 'Authors', href: '/admin/authors', count: authorCount ?? 0 },
             { label: 'Traditions', href: '/admin/traditions', count: traditionCount ?? 0 },
             { label: 'Eras', href: '/admin/eras', count: eraCount ?? 0 },

@@ -15,7 +15,7 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   const body = await request.json()
   const { name, slug, tradition_slug, birth_year, death_year, era_slug, bio, bio_source,
-    location_id, location } = body
+    location_id, location, draft } = body
 
   if (!name || !tradition_slug) {
     return NextResponse.json({ error: 'Name and tradition are required.' }, { status: 400 })
@@ -54,6 +54,7 @@ export async function POST(request: NextRequest) {
     bio_source: bio_source || null,
     location_id: location_id ?? null,
     location: location || null,
+    draft: draft ?? false,
   })
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })

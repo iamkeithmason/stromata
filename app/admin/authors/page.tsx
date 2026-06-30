@@ -2,7 +2,7 @@ import Link from 'next/link'
 import { createServerClient } from '@/lib/supabase/server'
 
 type AuthorRow = {
-  id: string; name: string; slug: string | null; bio: string | null
+  id: string; name: string; slug: string | null; bio: string | null; draft: boolean
   tradition: { name: string }[]
   era: { label: string }[]
 }
@@ -32,7 +32,8 @@ export default async function AdminAuthorsPage({ searchParams }: Props) {
   ] = await Promise.all([
     supabase
       .from('authors')
-      .select('id, name, slug, bio, tradition:traditions(name), era:eras(label)')
+      .select('id, name, slug, bio, draft, tradition:traditions(name), era:eras(label)')
+      .order('draft', { ascending: false })
       .order('name'),
     supabase
       .from('authors')
@@ -62,6 +63,10 @@ export default async function AdminAuthorsPage({ searchParams }: Props) {
               {authors && authors.length > 0 && authorsWithLocation !== null && (
                 <p className="text-xs text-stone-400 mt-0.5">
                   {authorsWithLocation} of {authors.length} have location data
+                  {(() => {
+                    const draftCount = (authors as unknown as AuthorRow[]).filter(a => a.draft).length
+                    return draftCount > 0 ? ` · ${draftCount} draft${draftCount === 1 ? '' : 's'} need review` : null
+                  })()}
                 </p>
               )}
             </div>
@@ -72,9 +77,14 @@ export default async function AdminAuthorsPage({ searchParams }: Props) {
           {authors && authors.length > 0 ? (
             <div className="border border-stone-200 rounded divide-y divide-stone-100">
               {(authors as unknown as AuthorRow[]).map((a: AuthorRow) => (
-                <div key={a.id} className="flex items-center justify-between px-4 py-3">
+                <div key={a.id} className={`flex items-center justify-between px-4 py-3 ${a.draft ? 'bg-amber-50' : ''}`}>
                   <div>
                     <span className="text-stone-800 text-sm font-medium">{a.name}</span>
+                    {a.draft && (
+                      <span className="ml-2 text-xs font-medium text-amber-700 bg-amber-100 border border-amber-200 rounded px-1.5 py-0.5">
+                        Draft
+                      </span>
+                    )}
                     <span className="text-stone-400 text-xs ml-3">
                       {a.tradition?.[0]?.name}
                       {a.era?.[0]?.label ? ` · ${a.era[0].label}` : ''}
@@ -84,7 +94,7 @@ export default async function AdminAuthorsPage({ searchParams }: Props) {
                   <div className="flex items-center gap-3">
                     <Dot filled={!!a.bio} emptyLabel="No bio" />
                     <Link href={`/admin/authors/${a.id}/edit`} className="text-xs text-stone-500 hover:text-stone-900">
-                      Edit
+                      {a.draft ? 'Review →' : 'Edit'}
                     </Link>
                   </div>
                 </div>

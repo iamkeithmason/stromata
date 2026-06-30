@@ -13,3 +13,6 @@ env.local.ts
 .vercel
 *.tsbuildinfo
 next-env.d.ts
+
+# Pipeline — raw source downloads (large binary/text files)
+scripts/ingestion/sources/

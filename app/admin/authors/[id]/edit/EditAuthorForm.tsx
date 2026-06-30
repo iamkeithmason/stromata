@@ -23,6 +23,7 @@ type Props = {
   initialLocation: string
   initialFeastDay: string
   initialFeastDayNote: string
+  initialDraft: boolean
 }
 
 export default function EditAuthorForm({
@@ -39,12 +40,14 @@ export default function EditAuthorForm({
   initialLocation,
   initialFeastDay,
   initialFeastDayNote,
+  initialDraft,
 }: Props) {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [locationOptions, setLocationOptions] = useState<LocationOption[]>([])
   const [locationId, setLocationId] = useState<string>(String(initialLocationId ?? ''))
+  const [draft, setDraft] = useState(initialDraft)
 
   useEffect(() => {
     fetch('/api/admin/locations')
@@ -70,6 +73,7 @@ export default function EditAuthorForm({
       location: (data.get('location') as string) || null,
       feast_day: (data.get('feast_day') as string) || null,
       feast_day_note: (data.get('feast_day_note') as string) || null,
+      draft,
     }
 
     setLoading(true)
@@ -191,6 +195,24 @@ export default function EditAuthorForm({
             />
           </div>
         </div>
+      </div>
+
+      {/* Draft status */}
+      <div className="pt-2 border-t border-stone-200">
+        <label className="flex items-center gap-3 cursor-pointer">
+          <input
+            type="checkbox"
+            checked={draft}
+            onChange={e => setDraft(e.target.checked)}
+            className="w-4 h-4 rounded border-stone-300 accent-amber-600"
+          />
+          <div>
+            <span className="text-sm font-medium text-stone-700">Draft — needs review</span>
+            <p className="text-xs text-stone-400 mt-0.5">
+              Draft authors are hidden from the public site. Uncheck when the bio is complete and the author is ready to publish.
+            </p>
+          </div>
+        </label>
       </div>
 
       {error && (

@@ -40,6 +40,7 @@ export default async function EditAuthorPage({ params }: Props) {
           initialLocation={author.location ?? ''}
           initialFeastDay={author.feast_day ?? ''}
           initialFeastDayNote={author.feast_day_note ?? ''}
+          initialDraft={author.draft ?? false}
         />
       </div>
     </main>

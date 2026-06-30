@@ -24,6 +24,7 @@ export default async function AuthorsPage() {
     .from('authors')
     .select('id, name, slug, birth_year, death_year, tradition:traditions(name, slug)')
     .not('slug', 'is', null)
+    .eq('draft', false)
     .order('name')
 
   const rows = (authors ?? []) as unknown as AuthorRow[]

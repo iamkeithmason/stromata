@@ -81,11 +81,11 @@ export async function generateMetadata({ params }: Props) {
 
   const { data: author } = await supabase
     .from('authors')
-    .select('id, name, bio, birth_year, death_year, tradition:traditions(name), era:eras(label)')
+    .select('id, name, bio, birth_year, death_year, draft, tradition:traditions(name), era:eras(label)')
     .eq('slug', slug)
     .single()
 
-  if (!author) return { title: 'Author — The Stromata' }
+  if (!author || author.draft) return { title: 'Author — The Stromata' }
 
   // Count published texts for this author
   const { count: textCount } = await supabase
@@ -138,7 +138,7 @@ export default async function AuthorPage({ params }: Props) {
     .eq('slug', slug)
     .single()
 
-  if (!author) notFound()
+  if (!author || author.draft) notFound()
 
   const { data: texts } = await supabase
     .from('texts')

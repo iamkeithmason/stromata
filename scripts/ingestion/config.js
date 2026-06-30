@@ -9,31 +9,25 @@
 
 export default {
   collection: {
-    name: "Proslogion",
-    slug: "proslogion",
-    author: "Anselm of Canterbury",
-    // TODO — write 2–4 sentence editorial intro for the collection page
+    name: "On the Priesthood",
+    slug: "on-the-priesthood-chrysostom",
+    author: "John Chrysostom",
     description: "",
   },
-
   urls: [
-    "https://archive.org/stream/stanselmeproslog00anseuoft/stanselmeproslog00anseuoft_djvu.txt",
+    "https://www.newadvent.org/fathers/21011.htm",
+    "https://www.newadvent.org/fathers/21012.htm",
+    "https://www.newadvent.org/fathers/21013.htm",
+    "https://www.newadvent.org/fathers/21014.htm",
+    "https://www.newadvent.org/fathers/21015.htm",
+    "https://www.newadvent.org/fathers/21016.htm",
   ],
-
-  source: "archive.org",
-
+  source: "newadvent",
   knownFields: {
-    genre: "Meditation",
-
-    sourceAttribution:
-      "Translated from the Latin by Sidney Norton Deane.",
-
-    provenanceNotes:
-      "Text sourced from Archive.org (archive.org). Original translation public domain (1903). Accessed April 2026.",
-
-    translationNotes:
-      "Sidney Norton Deane translation. Sidney Norton Deane (1878–1943) — translation public domain. No separate translation copyright applies.",
-
+    genre: "Dialogue",
+    sourceAttribution: "Translated by W.R.W. Stephens (NPNF Series I, Vol. IX).",
+    provenanceNotes: "Text sourced from New Advent (newadvent.org). Accessed June 2026.",
+    translationNotes: "W.R.W. Stephens (1839–1902). Translation published 1889; copyright expired.",
     copyrightSafe: true,
   },
 };
