@@ -46,9 +46,7 @@ const CURRENT_SEASON: SeasonConfig = {
   subtitle: 'The season after Pentecost · Green',
   colour: '#3F5A43',
   note: 'We are in the long green season after Pentecost — the weeks of ordinary time in which the Church tends its life in the world. A season for wisdom literature, for letters of counsel, for texts on the daily practice of virtue.',
-  pick: null,
-  // When a seasonal pick is ready, set e.g.:
-  // pick: { title: 'Revelations of Divine Love', author: 'Julian of Norwich', href: '/texts/revelations-of-divine-love' }
+  pick: { title: 'A Short Rule of Life', author: 'John Wycliffe', href: '/texts/a-short-rule-of-life' },
 }
 // ────────────────────────────────────────────────────────────────────────────
 

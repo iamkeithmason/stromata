@@ -15,7 +15,7 @@ const SEASONS = [
   { name: 'Advent',        slug: 'advent' },
   { name: 'Lent',          slug: 'lent' },
   { name: 'Eastertide',    slug: 'eastertide' },
-  { name: 'Ordinary time', slug: 'trinitytide' },
+  { name: 'Trinitytide',   slug: 'trinitytide' },
 ]
 
 type Props = {

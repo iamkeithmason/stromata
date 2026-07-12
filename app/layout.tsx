@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import Script from 'next/script'
 import { Cormorant_Garamond } from 'next/font/google'
 import { TrackWeeklyReader } from '@/app/components/TrackWeeklyReader'
+import { TrackReaderReturn } from '@/app/components/TrackReaderReturn'
 import { OG_IMAGE } from '@/lib/metadata'
 import './globals.css'
 
@@ -40,6 +41,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body>
         {children}
         <TrackWeeklyReader />
+        <TrackReaderReturn />
       </body>
       <Script
         defer

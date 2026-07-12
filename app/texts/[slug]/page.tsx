@@ -55,7 +55,7 @@ export default async function TextPage({ params }: Props) {
     .from('texts')
     .select(`
       *,
-      author:authors(name, slug, death_year, loc:locations(name, slug), tradition:traditions(slug, name), era:eras(label)),
+      author:authors(name, slug, death_year, loc:locations(name, slug), tradition:traditions(slug, name), era:eras(label, slug)),
       genre:genres(name),
       text_themes(theme:themes(name, slug)),
       collection:collections(id, title, slug)
@@ -67,7 +67,7 @@ export default async function TextPage({ params }: Props) {
   if (!text) notFound()
 
   // author and genre are many-to-one → plain objects
-  const author = text.author as { name: string; slug: string | null; death_year: number | null; loc: { name: string; slug: string } | null; tradition: { slug: string; name: string } | null; era: { label: string } | null } | null
+  const author = text.author as { name: string; slug: string | null; death_year: number | null; loc: { name: string; slug: string } | null; tradition: { slug: string; name: string } | null; era: { label: string; slug: string } | null } | null
   const genre = text.genre as { name: string } | null
   const collection = text.collection as { id: string; title: string; slug: string } | null
 
@@ -119,10 +119,20 @@ export default async function TextPage({ params }: Props) {
               : <span>{author.name}</span>
             }
             {author.tradition?.name && (
-              <span className="hidden sm:inline" style={{ color: 'var(--ink-faint)' }}> {author.tradition.name}</span>
+              <span className="hidden sm:inline" style={{ color: 'var(--ink-faint)' }}>
+                {' '}
+                <Link href={`/traditions/${author.tradition.slug}`} className="hover:opacity-70 transition-opacity">
+                  {author.tradition.name}
+                </Link>
+              </span>
             )}
-            {eraName && (
-              <span className="hidden sm:inline" style={{ color: 'var(--ink-faint)' }}> {eraName}</span>
+            {eraName && author.era?.slug && (
+              <span className="hidden sm:inline" style={{ color: 'var(--ink-faint)' }}>
+                {' '}
+                <Link href={`/eras/${author.era.slug}`} className="hover:opacity-70 transition-opacity">
+                  {eraName}
+                </Link>
+              </span>
             )}
           </>
         )
@@ -141,7 +151,7 @@ export default async function TextPage({ params }: Props) {
         <div className="mb-20">
           {/* Author left / Collection right */}
           <div
-            className="flex justify-between items-baseline mb-4 text-xs tracking-widest uppercase font-serif"
+            className="flex flex-wrap justify-between items-baseline gap-x-4 gap-y-1 mb-4 text-xs tracking-widest uppercase font-serif"
             style={{ color: 'var(--ink-mute)' }}
           >
             <div className="flex items-baseline gap-2">

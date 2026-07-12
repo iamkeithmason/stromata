@@ -4,6 +4,39 @@ The Stromata is a curated digital library of public-domain Christian theological
 
 ---
 
+## Notion access — this workspace is on the free tier
+
+Any time you use the Notion MCP tools against this workspace (not just for the content pipeline —
+this applies to the Feature Backlog, Growth Tracker, and any other Notion database too), the
+following tools are **plan-gated and will fail with a 400 "requires a Business plan" error**:
+
+- `notion-query-database-view` (view mode)
+- `notion-query-data-sources` in SQL mode against a single data source
+
+**Use instead:** `notion-search` (optionally scoped with `data_source_url` to search within one
+database) to find candidate pages, then `notion-fetch` each result by ID to read its full
+properties and content. This is slower and returns page-level results rather than a queryable
+table, but it's the only reliable path on this workspace's plan. Don't spend time retrying the
+gated tools with different parameters — they fail on plan, not on query shape.
+
+---
+
+## Admin UI access — you can't sign in, verify via Supabase instead
+
+`/admin` (including `/admin/drafts`, `/admin/texts/[id]/edit`, `/admin/authors/[id]/edit`) requires
+Keith's own login. Claude Code has no credentials for it and must never try to obtain or enter any —
+navigating there just redirects to a sign-in page. This means **you cannot visually confirm a
+pipeline import, a draft's contents, or an author-edit-form state by loading the admin UI.**
+
+**Verify the same facts directly against the database instead:** use the Supabase MCP tools
+(`list_tables`, `execute_sql`) to check that a text row exists with the right `slug`/`published`/
+`genre_id`/theme associations, that an author was created as `draft: true`, etc. This is not a
+fallback — for this project it's the *only* way to verify pipeline output end-to-end, so build it
+into the plan from the start rather than discovering the block after already trying to preview
+`/admin` in the browser.
+
+---
+
 ## Pipeline Purpose
 
 **Driver 3 — content breadth.** The pipeline finds, fetches, cleans, and stages new texts from public-domain sources. It does not discover authors or handle user-facing SEO — those are separate concerns.
@@ -80,7 +113,7 @@ Before each pipeline run, pull new candidates from the Notion Content Prospect L
 
 ### Steps
 
-1. **Search for ready prospects.** Use the Notion MCP `search` tool to find pages in the Content Prospect List with `Status = "Text available"`, sorted by Score descending. Since the SQL query tool requires a Business plan, use keyword search and then `fetch` each result page to read its properties.
+1. **Search for ready prospects.** Use the Notion MCP `search` tool to find pages in the Content Prospect List with `Status = "Text available"`, sorted by Score descending, then `fetch` each result page to read its properties (see "Notion access" note at the top of this file — the query/view tools are plan-gated on this workspace).
 
    Useful search queries to try in sequence:
    - `"Text available" site:notion.so stromata content`
@@ -343,6 +376,92 @@ Homily · Sermon · Letter · Treatise · Essay · Meditation · Rule · Prayer 
 
 ---
 
+## "Next Drive batch" — Keith's shorthand for working through the Google Drive backlog
+
+When Keith says "next Drive batch," "keep going on Drive," or similar, it means: continue working
+top-down by **Score** through the Content Prospect List items sourced from Keith's Google Drive
+`_READY TO PUBLISH` archive (already fully catalogued — see the 2026-07-12 CHANGELOG entries for
+how that catalogue was built). No further explanation needed; run this procedure:
+
+1. **Pick the next ~5-8 highest-scoring `Text available` items**, skipping `Rights unclear` /
+   `Needs investigation` (those need their own resolution pass first) and multi-file folder
+   collections (batch those separately — more effort per item).
+2. **Extract each** from the local synced Drive folder via the validated approach: Python stdlib
+   `zipfile` + `xml.etree` against `word/document.xml` (no new dependencies needed — script
+   pattern established 2026-07-12, ask Keith for the local Drive path if it's not already known).
+3. **Read enough of each to check translation provenance before trusting it** — this is the step
+   that actually matters, not a formality:
+   - Original English composition (author wrote in English) → safe, no translation-copyright risk
+     regardless of how modernized the spelling looks.
+   - Matches the exact NPNF/ANF citation-format fingerprint (e.g. inline `Ephesians 4:11`-style
+     verse links, the register of 19th-century Christian Literature Publishing Co. translations)
+     → safe, standard 19th-century public domain translation.
+   - Fluent, smooth **modern** prose on a work that had to be translated (not written in English
+     originally) → **hold**, don't guess. This exact pattern caught real, actively-copyrighted
+     modern editions twice on 2026-07-12 (a *Luther's Works* American Edition text, and a
+     Katherine Parr modernization from a specific small press) — being fast here has a real cost.
+   - **Register alone is not decisive — verify with a verbatim phrase match wherever possible.**
+     The 2026-07-13 resolution pass found this cuts both ways: some fluent-sounding texts turned
+     out to be genuinely old public-domain translations (Steinhaeuser's 1915-16 Luther, Vedder's
+     1905 Hubmaier), while some archaic-flavored ones turned out to be actively-copyrighted modern
+     modernizations (William Gross's 2011 Tyndale editions at onthewing.org). Pull a distinctive
+     sentence from the extracted text and web-search for it; a verbatim or near-verbatim hit
+     against a named, dated edition beats a prose-register guess every time.
+   - **`onthewing.org` (William Gross) is a known risk source**, not just a hypothetical one — it
+     hosts a large library of individually-copyrighted "modernized" Reformation and patristic
+     texts. If a prospect reads as smooth modernized-but-archaic-flavored English, check it against
+     onthewing.org by name before assuming it's a safe antiquarian modernization.
+   - **A held item isn't always unfixable.** Sometimes the disqualifying issue is narrow: one
+     modern editorial parenthetical spliced into an otherwise-clean PD scan (*The Examination of
+     William Thorpe*, 2026-07-13 — a Golden Legend/Longinus gloss mid-sentence), or a second copy
+     of the same underlying work sitting under a different title elsewhere in the same Drive folder
+     (*Temporal Authority* was held; *Secular Authority*, a different file for the same 1523 Luther
+     treatise, turned out to be the confirmed-PD Philadelphia Edition). Check for both before
+     concluding a work is unreachable.
+   - When holding: set Notion `Status` to `Rights unclear`, `Complexity` to 3, and record *why*
+     (which edition it's suspected to be, what would resolve the ambiguity) in Editorial notes. If
+     the specific in-copyright edition is identified with confidence (a named translator, a dated
+     published volume — not just "no PD source found"), say so explicitly; Keith uses this to move
+     the source `.docx` into his own `Copyright?` Drive folder.
+4. **Clean, tag, draft**: convert `[HeadingN]` markers to `##`, pick genre + up to 6 themes from
+   the controlled vocabularies below, write a note_draft per the museum-label register in
+   `scripts/lib/note-prompt.mjs`.
+5. **Write output + queue entry**: `scripts/ingestion/output/{slug}.md` with the standard
+   frontmatter (see any 2026-07-12 output file for the exact shape), `source_type: "gdrive_docx"`,
+   `status: "staged"` in `scripts/ingestion/prospect-queue.json`.
+6. **Run `node scripts/pipeline-import.mjs`**, then verify with a direct Supabase query
+   (`published: false`, theme count, author draft status) — don't trust the script's console
+   output alone as confirmation; it's fixed to fail loudly now (see the pipeline-import.mjs bugfix
+   backlog entry) but a DB check is still the actual proof.
+7. **Update Notion**: `Status` → `In progress` with a one-line Editorial note on what was verified,
+   for everything actually imported; `Rights unclear` with reasoning for everything held back.
+8. **Log to CHANGELOG.md** — what was processed, what was held and why, any new findings.
+
+### Running batches with parallel research agents
+
+Confirmed working 2026-07-13. Steps 2-3 (extract + verify provenance/identify author) are
+independent per item — no cross-item dependency — so they parallelize well via subagents. Steps
+5-8 (write the queue entry, run the import script, update Notion, log the changelog) all touch
+shared files (`prospect-queue.json`, Supabase via the import script, `CHANGELOG.md`) and must stay
+serial in the main thread — concurrent writers would race and clobber each other.
+
+**Pattern:** spawn one subagent per candidate (`Agent` tool, `general-purpose`, run in parallel in
+a single message) with the Drive file path and full context (the provenance-verification rules
+above, the controlled vocabularies, the exact structured report format to return — title, author,
+death year, tradition/era, translator + edition, source attribution string, SAFE/HOLD verdict with
+reasoning, suggested genre/themes, and a note_draft if SAFE). Each agent extracts its own file,
+does its own research, and returns a structured report — it does not touch the queue file, Notion,
+Supabase, or git. Once all reports are back, do steps 5-8 yourself, serially, exactly as in a
+normal batch.
+
+This is also the natural way to run the deferred **"Needs investigation" batch** (prospects where
+the filename alone doesn't give a confirmed author) — each item's identification-from-content is
+exactly the same kind of independent per-item lookup, and it caught two wrong author guesses on
+first use (a "Jerome (unconfirmed)" letter that was actually Gregory the Great; a
+"Cyprian (unconfirmed)" letter that was actually Augustine).
+
+---
+
 ## Existing Scripts — Do Not Duplicate Logic
 
 | Script | Purpose | When to call |
@@ -361,8 +480,8 @@ Homily · Sermon · Letter · Treatise · Essay · Meditation · Rule · Prayer 
 
 ## Notes on Sources
 
-- **New Advent** (`newadvent`): static HTML — fetch-texts.mjs handles it directly. Many works span multiple chapter pages; list all URLs in the `urls` array.
-- **CCEL** (`ccel`): dynamic rendering — cannot scrape directly. Use the Archive.org djvu.txt scan of the NPNF volumes instead (`archive_ocr`).
+- **New Advent** (`newadvent`): static HTML — fetch-texts.mjs handles it directly. Many works span multiple chapter pages; list all URLs in the `urls` array. **`/fathers/` URLs are confirmed broken as of June 2026** — they silently redirect to the homepage regardless of fetch method (verified via both `curl` and real browser navigation, 2026-07-12). This is server-side, not a client/fetch-method problem, so browser-based extraction does **not** route around it — use the Archive.org OCR scan of the same volume instead (`archive_ocr`).
+- **CCEL** (`ccel`): dynamic rendering — cannot scrape directly with a plain HTTP fetch (`fetch-texts.mjs` will not work). Two options: the Archive.org djvu.txt scan of the NPNF volumes (`archive_ocr`), or **browser-based extraction** (`ccel_browser`) — navigate to the work's page, click through to "Read Online" to reach the actual reading URL (pattern: `ccel.org/ccel/{author}/{work}/{work}.i_1.html`, found via the site's own internal links, not guessable), then extract with the browser's page-text tool. Confirmed working 2026-07-12 (Traherne, *Centuries of Meditations*). The extracted text needs the same manual structural cleanup as any other source (headings, stray pagination-artifact digits) — this is a real capability, not a magic fix, and produces the same quality of raw material as any other manual source, not a pre-cleaned one. Prefer this over `archive_ocr` for CCEL-sourced prospects specifically, since it skips OCR noise entirely.
 - **Project Gutenberg** (`gutenberg`): plain text — fetch-texts.mjs handles it. Use the plain text URL (not HTML).
 - **Wikisource** (`wikisource`): mediawiki HTML — fetch-texts.mjs handles it. Use the `/wiki/` URL.
 - **Archive.org** (`archive_online`): Use djvu.txt URL for OCR works; use direct HTML URLs for clean digitised editions.

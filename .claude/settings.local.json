@@ -106,7 +106,11 @@
       "Bash(ls -t ~/.claude/projects/ | head -5)",
       "mcp__72305c5b-e674-4aef-be69-baa0db3a5bba__notion-query-data-sources",
       "mcp__72305c5b-e674-4aef-be69-baa0db3a5bba__notion-create-pages",
-      "mcp__72305c5b-e674-4aef-be69-baa0db3a5bba__notion-update-page"
+      "mcp__72305c5b-e674-4aef-be69-baa0db3a5bba__notion-update-page",
+      "Bash(grep -rn \"Stromata\\\\`\" app lib --include=\"*.tsx\" --include=\"*.ts\")",
+      "Bash(grep -rnP '\"[^\"]*  [^\"]*\"|`[^`]*  [^`]*`' app/search/page.tsx)",
+      "mcp__claude-in-chrome__navigate",
+      "mcp__claude-in-chrome__computer"
     ]
   },
   "enableAllProjectMcpServers": true,

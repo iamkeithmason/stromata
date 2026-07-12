@@ -47,6 +47,14 @@ function bodyExcerpt(body: string, wordCount = 40): string {
   return parts.slice(0, wordCount).join(' ') + '…'
 }
 
+/** Truncate at the last whole word before `max` chars — never cuts mid-word. */
+function truncateAtWord(text: string, max: number): string {
+  if (text.length <= max) return text
+  const truncated = text.slice(0, max)
+  const lastSpace = truncated.lastIndexOf(' ')
+  return (lastSpace > 0 ? truncated.slice(0, lastSpace) : truncated).trimEnd() + '…'
+}
+
 type TextRow = {
   id: string
   title: string
@@ -456,7 +464,7 @@ function TextLead({ text }: { text: TextRow }) {
         </Link>
         <LeadByline author={author} hasContent />
         <LeadPara>
-          {editorialPara.length > 280 ? editorialPara.slice(0, 280).trimEnd() + '…' : editorialPara}
+          {truncateAtWord(editorialPara, 280)}
         </LeadPara>
         <div className="flex flex-wrap items-center gap-3">
           <Link href={`/texts/${text.slug}`} style={{ fontFamily: 'var(--serif)', fontSize: 'var(--text-label)', color: 'var(--gold)', textDecoration: 'none', borderBottom: '1px solid var(--gold-rule)', paddingBottom: '1px' }} className="hover:opacity-70 transition-opacity" data-umami-event="text-open" data-umami-event-from="featured-lead" data-umami-event-text={text.title}>
@@ -510,7 +518,7 @@ function CollectionLead({ entry }: { entry: Extract<FeedEntry, { kind: 'collecti
         </Link>
         <LeadByline author={author} hasContent />
         <LeadPara>
-          {editorialPara.length > 280 ? editorialPara.slice(0, 280).trimEnd() + '…' : editorialPara}
+          {truncateAtWord(editorialPara, 280)}
         </LeadPara>
         <div className="flex flex-wrap items-center gap-3">
           <Link href={`/collections/${collection.slug}`} style={{ fontFamily: 'var(--serif)', fontSize: 'var(--text-label)', color: 'var(--gold)', textDecoration: 'none', borderBottom: '1px solid var(--gold-rule)', paddingBottom: '1px' }} className="hover:opacity-70 transition-opacity" data-umami-event="text-open" data-umami-event-from="featured-lead" data-umami-event-text={collection.title}>

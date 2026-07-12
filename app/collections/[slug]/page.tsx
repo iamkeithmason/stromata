@@ -93,7 +93,9 @@ export default async function CollectionPage({ params }: Props) {
           <ol className="space-y-1">
             {texts.map((text, i) => {
               const genre = text.genre as unknown as { name: string } | null
-              const position = text.collection_order ?? i + 1
+              // Sequential display position among visible (published) texts — not the raw
+              // collection_order, which can start above 1 if earlier items are unpublished.
+              const position = i + 1
               return (
                 <li key={text.id}>
                   <Link

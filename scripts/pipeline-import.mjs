@@ -261,25 +261,30 @@ async function alreadyInDatabase(prospect) {
 // Per-text import
 // ---------------------------------------------------------------------------
 
+// Every skip carries a `reason` so the caller can tell a benign skip
+// (already_exists) apart from a real failure (everything else) — a prospect
+// must never be marked "imported" on the strength of benign skips alone.
 async function importTextFile(filePath, prospect, authorId, collectionId) {
   const raw = fs.readFileSync(filePath, 'utf8');
   const { data, body } = parseFrontmatter(raw);
 
   if (!data.title || !data.slug || !body) {
-    console.warn(`  ! ${path.basename(filePath)} missing title/slug/body — skipped`);
-    return { skipped: true };
+    const msg = `${path.basename(filePath)} missing title/slug/body`;
+    console.warn(`  ! ${msg} — skipped`);
+    return { skipped: true, reason: 'missing_fields', detail: msg };
   }
 
   const { data: existing } = await supabase.from('texts').select('id').eq('slug', data.slug).maybeSingle();
   if (existing) {
     console.log(`  · ${data.slug} already imported — skipped`);
-    return { skipped: true };
+    return { skipped: true, reason: 'already_exists' };
   }
 
   const genreId = await resolveGenreId(data.genre);
   if (!genreId) {
-    console.warn(`  ! genre "${data.genre}" not found for "${data.title}" — skipped`);
-    return { skipped: true };
+    const msg = `genre "${data.genre}" not found for "${data.title}"`;
+    console.warn(`  ! ${msg} — skipped`);
+    return { skipped: true, reason: 'genre_not_found', detail: msg };
   }
 
   const themeIds = await resolveThemeIds(data.themes);
@@ -305,8 +310,9 @@ async function importTextFile(filePath, prospect, authorId, collectionId) {
     .single();
 
   if (error) {
-    console.warn(`  ! insert failed for "${data.title}": ${error.message}`);
-    return { skipped: true };
+    const msg = `insert failed for "${data.title}": ${error.message}`;
+    console.warn(`  ! ${msg}`);
+    return { skipped: true, reason: 'insert_failed', detail: msg };
   }
 
   if (themeIds.length > 0) {
@@ -359,15 +365,40 @@ async function main() {
       const collectionId = files.length > 1 ? await resolveCollectionId(prospect) : null;
 
       let importedCount = 0;
+      const failures = [];
       for (const file of files) {
         const result = await importTextFile(file, prospect, authorId, collectionId);
-        if (!result.skipped) importedCount++;
+        if (!result.skipped) {
+          importedCount++;
+        } else if (result.reason !== 'already_exists') {
+          failures.push(result.detail || result.reason);
+        }
       }
 
-      prospect.status = 'imported';
-      prospect.stage_1_notes = prospect.stage_1_notes
-        ? `${prospect.stage_1_notes} Imported ${importedCount} text(s) on ${new Date().toISOString().split('T')[0]}.`
-        : `Imported ${importedCount} text(s) on ${new Date().toISOString().split('T')[0]}.`;
+      const today = new Date().toISOString().split('T')[0];
+
+      if (importedCount > 0) {
+        // Real progress was made. Still surface any partial failures rather
+        // than let them go unnoticed just because the prospect overall succeeded.
+        prospect.status = 'imported';
+        let note = `Imported ${importedCount} text(s) on ${today}.`;
+        if (failures.length > 0) {
+          note += ` ${failures.length} file(s) failed and were NOT imported: ${failures.join(' | ')}`;
+        }
+        prospect.stage_1_notes = prospect.stage_1_notes ? `${prospect.stage_1_notes} ${note}` : note;
+      } else if (failures.length > 0) {
+        // Nothing actually landed in the database — leave status as "staged"
+        // so the next run retries, instead of silently claiming success.
+        const note = `Import attempt on ${today} imported 0 text(s) — all ${failures.length} file(s) failed: ${failures.join(' | ')}. Status left as "staged" for retry.`;
+        prospect.stage_1_notes = prospect.stage_1_notes ? `${prospect.stage_1_notes} ${note}` : note;
+        console.warn(`  ! 0 imported, ${failures.length} failed — status left as "staged" for retry`);
+      } else {
+        // Every file was skipped for benign reasons (already_exists) — the
+        // prospect's content is already fully represented in the database.
+        prospect.status = 'imported';
+        const note = `All ${files.length} file(s) already existed in the database as of ${today} — marked imported without inserting anything new.`;
+        prospect.stage_1_notes = prospect.stage_1_notes ? `${prospect.stage_1_notes} ${note}` : note;
+      }
     } catch (err) {
       console.warn(`  ! ${err.message}`);
     }

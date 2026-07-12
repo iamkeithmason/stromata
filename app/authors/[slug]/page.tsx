@@ -158,6 +158,7 @@ export default async function AuthorPage({ params }: Props) {
     .eq('tradition_id', traditionId)
     .neq('id', author.id)
     .not('slug', 'is', null)
+    .eq('draft', false)
     .order('name')
     .limit(6) : { data: [] }
 

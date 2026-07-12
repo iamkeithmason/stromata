@@ -20,14 +20,22 @@ export const metadata = {
 export default async function AuthorsPage() {
   const supabase = createServerClient()
 
-  const { data: authors } = await supabase
-    .from('authors')
-    .select('id, name, slug, birth_year, death_year, tradition:traditions(name, slug)')
-    .not('slug', 'is', null)
-    .eq('draft', false)
-    .order('name')
+  const [{ data: authors }, { data: textAuthorRows }] = await Promise.all([
+    supabase
+      .from('authors')
+      .select('id, name, slug, birth_year, death_year, tradition:traditions(name, slug)')
+      .not('slug', 'is', null)
+      .eq('draft', false)
+      .order('name'),
+    supabase.from('texts').select('author_id').eq('published', true),
+  ])
 
   const rows = (authors ?? []) as unknown as AuthorRow[]
+
+  const textCounts = (textAuthorRows ?? []).reduce((acc: Record<string, number>, t: { author_id: string | null }) => {
+    if (t.author_id) acc[t.author_id] = (acc[t.author_id] ?? 0) + 1
+    return acc
+  }, {})
 
   return (
     <div style={{ background: 'var(--paper)', paddingTop: '4rem' }} className="min-h-screen">
@@ -49,7 +57,7 @@ export default async function AuthorsPage() {
             {rows.map(a => (
               <li key={a.id}>
                 {/* Stretched-link pattern: author row is the base, tradition link sits above */}
-                <div className="relative flex items-baseline justify-between py-4 group">
+                <div className="relative flex items-start justify-between py-4 group">
                   <div>
                     <span
                       className="font-serif group-hover:opacity-70 transition-opacity"
@@ -65,19 +73,24 @@ export default async function AuthorsPage() {
                           : ''}
                     </span>
                   </div>
-                  {a.tradition?.slug ? (
-                    <Link
-                      href={`/traditions/${a.tradition.slug}`}
-                      className="text-xs ml-4 shrink-0 relative hover:opacity-70 transition-opacity"
-                      style={{ color: '#6f6a60', zIndex: 2 }}
-                    >
-                      {a.tradition.name}
-                    </Link>
-                  ) : (
-                    <span className="text-xs ml-4 shrink-0" style={{ color: '#6f6a60' }}>
-                      {a.tradition?.name}
-                    </span>
-                  )}
+                  <div className="text-right ml-4 shrink-0">
+                    {a.tradition?.slug ? (
+                      <Link
+                        href={`/traditions/${a.tradition.slug}`}
+                        className="text-xs relative hover:opacity-70 transition-opacity"
+                        style={{ color: '#6f6a60', zIndex: 2 }}
+                      >
+                        {a.tradition.name}
+                      </Link>
+                    ) : (
+                      <span className="text-xs" style={{ color: '#6f6a60' }}>
+                        {a.tradition?.name}
+                      </span>
+                    )}
+                    <div className="text-xs mt-0.5" style={{ color: '#9c9589' }}>
+                      {textCounts[a.id] ?? 0} text{(textCounts[a.id] ?? 0) === 1 ? '' : 's'}
+                    </div>
+                  </div>
                   {/* Stretched link covers the row but sits below the tradition link */}
                   <Link href={`/authors/${a.slug}`} className="absolute inset-0" style={{ zIndex: 1 }} aria-label={a.name} />
                 </div>
