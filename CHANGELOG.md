@@ -7,6 +7,133 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-07-13 (later still) — Second round of collections: Luther and Browne
+
+Continued up the size-sorted collection list: *An Open Letter to the Christian Nobility of the
+German Nation* (Luther, 3 chapters), *Christian Morals* (Thomas Browne, 3 parts), and
+*Hydriotaphia, Urn Burial* (Thomas Browne, 5 chapters) — 11 files total, all verified in parallel.
+
+**An Open Letter to the Christian Nobility — finally a clean Luther result.** Given this session's
+run of Luther prospects turning out to match the copyrighted Luther's Works American Edition, each
+of the 3 chapters got the full verbatim-comparison treatment against Project Wittenberg's hosting
+of C. M. Jacobs' 1915 Philadelphia Edition translation. All 3 matched cleanly — this is a genuinely
+different, safe translation, not a near-miss. One structural quirk caught before staging: the
+"Chapter One" file's extraction actually ran Chapter I straight through Chapter II's content and
+ended with a bare, empty "Chapter III" heading — stripped that trailing stub; no actual duplicate
+content existed between the three chapter files once checked directly.
+
+**Christian Morals confirmed its own folder name.** All three parts of Browne's *Christian Morals*
+are missing the standard numbered section headers (Part I is missing sections 20-36 of 36; Part II
+all 13; Part III all 27) — exactly what "Needs Headers" in the folder name promised. Content itself
+is clean, unmodified 17th-century Browne with no translation risk (he wrote in English). Imported
+as-is with the defect flagged in each chapter's `translation_notes`, rather than attempting to
+reconstruct the numbering myself — that's a slower, more error-prone task better suited to a
+dedicated manual pass later.
+
+**Hydriotaphia** — straightforward, all 5 chapters clean 1658 Browne prose, no issues.
+
+All 3 collections confirmed in Supabase via a `collections` → `texts` count query (3/3/5 chapters
+respectively), `published: false` throughout. Draft author stubs: Thomas Browne (new); Luther's
+existing stub reused.
+
+Running total: 5 multi-file collections imported today (Consolation of Philosophy, Canons of
+Ælfric, Open Letter to the Christian Nobility, Christian Morals, Hydriotaphia), covering 16
+chapters across 5 distinct works. Next up by size: Apostolic Constitutions (6 files), then On the
+Miraculous Images (8 files).
+
+---
+
+## 2026-07-13 (later still) — First multi-file collections
+
+Moved from single-file candidates to the ~18 multi-file collection subfolders in `_READY TO
+PUBLISH`, per "start with the smallest and work your way up." Sorted all subfolders by recursive
+file count first; the two smallest (2 files each) went first as a way to validate the mechanics
+before tackling anything bigger:
+
+- **The Consolation of Philosophy** (King Alfred's Old English version of Boethius) — 2 chapters:
+  the prose Consolation and the versified "Lays." Both are Walter John Sedgefield's 1900 Oxford
+  translation, confirmed via verbatim phrase match against Wikisource. Worth flagging: Sedgefield
+  died in 1945, after CLAUDE.md's usual "translator died before 1928" shorthand — but the
+  translation was *published* in 1900, and under actual US copyright law that's what matters for
+  pre-1978 works (publication before 1929 = unconditionally PD, regardless of the translator's
+  later death date). Documented this distinction explicitly in CLAUDE.md so it doesn't read as an
+  error next time a similarly-dated translator turns up.
+- **The Canons and Pastoral Epistle of Ælfric** — 2 chapters, both Benjamin Thorpe's 1840
+  translation (Ancient Laws and Institutes of England), confirmed via an archive.org URL embedded
+  directly in the extracted text. The Drive folder was labeled "(Puttoc)," which turned out to be
+  a factual error, not just a stylistic choice — Puttoc (Wulfstan II) became Archbishop of York
+  only after Ælfric's own death; the real correspondent, confirmed from the letter's own content,
+  was Wulfstan I. Corrected in the imported text and title.
+
+Both collections imported via the directory-based multi-chapter path in `pipeline-import.mjs`
+(`scripts/ingestion/output/{collection_slug}/`, one `.md` per chapter with `collection_order`) —
+confirmed via a `collections` → `texts` join query, not just a flat `texts` check, since a
+collection's existence is a separate fact from its chapters existing. Author stub created for
+"Boethius (adapted into Old English by Alfred the Great)"; Ælfric already existed.
+
+Documented the full collection procedure in CLAUDE.md under "Next Drive batch" so this doesn't
+need re-deriving next time: output-directory convention, one-queue-entry-per-collection, smallest-
+first ordering, folder-name-as-claim-not-fact, and the publication-date-vs-translator-death-year
+distinction.
+
+---
+
+## 2026-07-13 (later still) — Eighth batch: the last of the untouched single-file candidates
+
+Ran a full inventory cross-check first: 77 single-file .docx candidates sit at the root of the
+Drive `_READY TO PUBLISH` folder (separate from 18 multi-file collection subfolders, 31
+already-live texts in a `_ Live on Stromata 2026` subfolder, and ~21 already-flagged-copyright
+texts in a `Copyright_` subfolder). Of those 77, only 11 had never been looked at. Ran all 11
+through the parallel-research-agent pattern in one go.
+
+**Staged and imported (7):**
+- *A Learned Discourse of Justification* — actually Richard Hooker's 1586 Temple Church sermon
+  (filename gave no author). Checked against a known 2022 copyrighted Davenant Institute
+  modernization of the same sermon and confirmed distinct wording.
+- *An Address to Demetrianus* (Cyprian) — standard Wallis/ANF translation.
+- *Directions for the Right Singing of Scripture Psalms* — Francis Roberts (1675), from his
+  *Clavis Bibliorum*.
+- *A Homily of Mar Jacob of Serugh on the Reception of the Holy Mysteries* — Dom Hugh Connolly's
+  1908 translation, confirmed PD via a verbatim opening-line match.
+- *The Reduction of Episcopacy* — James Ussher; the Drive filename ("Reducation of the
+  Episcopacy") was a double error, both misspelling "Reduction" and omitting the author.
+- *The Christian Alphabet: A Dialogue Between Giulia Gonzaga and Juan de Valdés* — a second,
+  distinct excerpt from Valdés's Alfabeto Christiano (the first excerpt was imported in an earlier
+  batch today); confirmed no content overlap before staging both.
+- *A Call to the Unconverted to Turn and Live: Sermon I* — actually Richard Baxter (1658), not
+  the earlier "John Wesley (unconfirmed)" guess.
+
+**Held (2):**
+- *The Seventh Sermon: Office of the Magistrate* — identified as Bullinger's Decades II.7; title
+  and numbering are an exact match to William Gross's onthewing.org modernization (the same risk
+  source caught earlier today on Tyndale's *Obedience*). A genuinely PD alternative exists (Parker
+  Society, 1849) but this file isn't confirmed to be it.
+- *Alfred's Preface to the Pastoral Care* — Alfred the Great himself is safely PD, but the specific
+  English translation in this file has no credited translator and doesn't verbatim-match any of
+  three known PD candidates checked (Sweet 1871, Warner 1917, Marlowe). The hosting page carries a
+  non-commercial license. A safe substitute is known and named (Sweet's 1871 EETS translation) if
+  Keith wants this text later.
+
+**Duplicates caught before staging (2, no action needed):** *Of Patience* (Tertullian) and *Of
+the Good Marriage* (Augustine) turned out to already be live on the site under different filenames
+- caught via a Supabase slug check before any output file was built. Their Notion pages already
+carried "confirmed duplicate" notes from an earlier pass, so no new edits were needed there.
+
+All 7 imported texts confirmed in Supabase as `published: false`. Draft author stubs created for
+Hooker, Roberts, Jacob of Serugh, Ussher, and Baxter; Cyprian and Valdés already existed.
+
+**This closes out the single-file `_READY TO PUBLISH` root folder as a category** — every
+candidate that was going to be looked at as an individual file now has been (imported, held, or
+confirmed a pre-existing duplicate). What's left in that folder specifically: 3 confirmed-copyright
+files awaiting Keith moving them to `Copyright?`, roughly a dozen genuinely unresolved holds (some
+now with a named, safe alternative edition to pursue), 8 pre-session not-PD rejects, one item
+pending Ollie's permission, and the 4-file Religio Medici (Browne) set, which behaves like a
+mini-collection and is better handled with the multi-file-collection procedure next. Beyond that
+folder, 18 multi-file collections in their own subfolders remain completely untouched - the
+natural next phase of this project.
+
+---
+
 ## 2026-07-13 (later still) — Seventh batch (Needs investigation), parallel-agent method
 
 First attempt at delegating research to parallel subagents rather than doing it serially myself,

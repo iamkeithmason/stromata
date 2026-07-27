@@ -460,6 +460,44 @@ exactly the same kind of independent per-item lookup, and it caught two wrong au
 first use (a "Jerome (unconfirmed)" letter that was actually Gregory the Great; a
 "Cyprian (unconfirmed)" letter that was actually Augustine).
 
+### Multi-file collections
+
+The single-file root of `_READY TO PUBLISH` is a finite, now-exhausted category (confirmed
+2026-07-13 — every root-level `.docx` has been imported, held, or identified as a pre-existing
+duplicate). What's left are ~18 subfolders, each a multi-chapter work. These need a different
+mechanical shape, not a different research process — steps 2-3 above (extract + verify provenance)
+still apply per-file, still parallelize the same way. What changes is Stage 2/5a:
+
+1. **Output goes in a directory, not a flat file**: `scripts/ingestion/output/{collection_slug}/`,
+   one `.md` file per chapter, each with its own unique `slug` and a `collection_order` integer in
+   its frontmatter. `pipeline-import.mjs`'s `findOutputFiles()` checks for this directory *before*
+   falling back to a flat `{collection_slug}.md` — the directory takes priority automatically.
+2. **One queue entry per collection**, not per chapter — `collection_slug` on that single entry is
+   what ties everything together; the import script creates the `collections` row (using that
+   entry's `title` and resolved `author_id`) the first time it sees more than one output file for
+   that slug, and links every chapter's `texts` row to it via `collection_id` +
+   `collection_order`. Verify with a query joining `collections` → `texts`, not just a `texts`
+   check.
+3. **Work smallest-to-largest.** Sort subfolders by file count first — a 2-file collection is a
+   good way to validate the pattern before tackling a 30+ file one. First run (2026-07-13) did
+   *The Consolation of Philosophy* (Alfred's Old English Boethius, 2 chapters: prose + verse) and
+   *Canons of Ælfric* (2 chapters), both cleanly.
+4. **A folder name can be wrong** — treat it as a claim to verify, not a given. The *Canons of
+   Ælfric* folder was labeled "(Puttoc)," which turned out to name the *wrong* Archbishop of York
+   (Wulfstan II, "Puttoc," became archbishop only after Ælfric's death; the real correspondent was
+   Wulfstan I). Caught by simply reading the letter's content against known history — worth doing
+   for any folder/file name that makes a specific factual claim.
+5. **The publication-date-vs-translator-death-year distinction gets more important here.** Older
+   Anglo-Saxon/medieval works are often only available in English via a small number of named,
+   dated 19th/early-20th-century scholarly editions (Sedgefield 1900, Thorpe 1840, Sweet 1871,
+   etc.) whose translators sometimes died well after 1928 (Sedgefield died 1945). CLAUDE.md's
+   "translator died before 1928" is a simplified proxy for the real rule — under actual US
+   copyright law, a translation *published* before 1929 is unconditionally public domain
+   regardless of when the translator later died. When a named, dated pre-1929 edition is
+   confirmed via verbatim phrase match, publication date wins over the simplified heuristic — note
+   this explicitly in `translation_notes` and `stage_1_notes` when it applies, since it's a
+   deliberate deviation from the shorthand rule, not an error.
+
 ---
 
 ## Existing Scripts — Do Not Duplicate Logic
