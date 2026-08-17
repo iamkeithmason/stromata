@@ -3,13 +3,20 @@ import { promises as fs } from 'fs'
 import path from 'path'
 import { readQueue } from '@/lib/pipeline/queue'
 import { availableActions } from '@/lib/pipeline/runner'
+import { hasOutput } from '@/lib/pipeline/outputs'
 import PipelineClient from './PipelineClient'
 
 export const dynamic = 'force-dynamic'
 
 export default async function PipelinePage() {
   const queue = await readQueue()
-  const prospects = queue.prospects.map(p => ({ ...p, _actions: availableActions(p) }))
+  const prospects = await Promise.all(
+    queue.prospects.map(async p => ({
+      ...p,
+      _actions: availableActions(p),
+      _hasOutput: await hasOutput(p.collection_slug || p.id),
+    }))
+  )
 
   // Recent run-log filenames, newest first.
   let runLogs: string[] = []

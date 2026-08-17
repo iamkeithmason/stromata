@@ -1,7 +1,25 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { spawn } from 'child_process'
-import { readQueue } from '@/lib/pipeline/queue'
+import { readQueue, writeQueue } from '@/lib/pipeline/queue'
 import { buildCommand, type RunAction } from '@/lib/pipeline/runner'
+
+// After a successful fetch/extract, nudge the prospect one step down the chain
+// so it becomes reviewable, but never downgrade something already further along.
+const ADVANCEABLE_FROM = new Set(['pending', 'stage-1-done'])
+async function advanceAfterStage2(prospectId: string): Promise<string | null> {
+  try {
+    const queue = await readQueue()
+    const p = queue.prospects.find(x => x.id === prospectId)
+    if (!p || !ADVANCEABLE_FROM.has(p.status)) return null
+    await writeQueue({
+      ...queue,
+      prospects: queue.prospects.map(x => (x.id === prospectId ? { ...x, status: 'stage-2-done' } : x)),
+    })
+    return 'stage-2-done'
+  } catch {
+    return null
+  }
+}
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
@@ -62,8 +80,14 @@ export async function POST(request: NextRequest) {
         controller.enqueue(encoder.encode(`\n[spawn error] ${err.message}\n`))
         controller.close()
       })
-      child.on('close', code => {
+      child.on('close', async code => {
         controller.enqueue(encoder.encode(`\n[process exited with code ${code}]\n`))
+        // On a clean fetch/extract, advance the prospect so it shows up as
+        // ready to review (fetch-texts.mjs itself doesn't touch the queue).
+        if (code === 0 && (action === 'fetch' || action === 'extract') && body.prospectId) {
+          const advanced = await advanceAfterStage2(body.prospectId)
+          if (advanced) controller.enqueue(encoder.encode(`[status → ${advanced}: review themes, then "Mark staged", then Run import]\n`))
+        }
         controller.close()
       })
 

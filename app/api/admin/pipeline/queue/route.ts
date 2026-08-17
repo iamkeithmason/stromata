@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { readQueue, writeQueue, upsertProspect, rejectProspect, type Prospect } from '@/lib/pipeline/queue'
 import { availableActions } from '@/lib/pipeline/runner'
+import { hasOutput } from '@/lib/pipeline/outputs'
 import { TRADITIONS, ERAS, GENRES, ALL_THEMES, MAX_THEMES, SOURCE_TYPES } from '@/lib/pipeline/vocab'
 
 export const runtime = 'nodejs'
@@ -25,8 +26,14 @@ function validate(p: Prospect): string | null {
 export async function GET() {
   try {
     const queue = await readQueue()
-    // Decorate each prospect with the one-click actions it supports.
-    const prospects = queue.prospects.map(p => ({ ...p, _actions: availableActions(p) }))
+    // Decorate each prospect with its one-click actions and whether output exists.
+    const prospects = await Promise.all(
+      queue.prospects.map(async p => ({
+        ...p,
+        _actions: availableActions(p),
+        _hasOutput: await hasOutput(p.collection_slug || p.id),
+      }))
+    )
     return NextResponse.json({ prospects })
   } catch (err) {
     return NextResponse.json({ error: err instanceof Error ? err.message : 'Failed to read queue' }, { status: 500 })

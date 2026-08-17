@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { promises as fs } from 'fs'
 import path from 'path'
-import { TRADITIONS, ERAS, GENRES, ALL_THEMES, MAX_THEMES } from '@/lib/pipeline/vocab'
+import { GENRES, ALL_THEMES, MAX_THEMES } from '@/lib/pipeline/vocab'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
@@ -94,19 +94,19 @@ function setThemes(lines: string[], end: number, themes: string[]): number {
 
 export async function PATCH(request: NextRequest) {
   try {
+    // title, genre and themes are the frontmatter fields pipeline-import.mjs
+    // reads per-text. (tradition/era are author-level and come from the
+    // prospect, not the file — so they aren't edited here.)
     const body = (await request.json()) as {
       file: string
+      title?: string
       genre?: string
-      tradition?: string
-      era?: string
       themes?: string[]
     }
     if (!body.file) return NextResponse.json({ error: 'file required' }, { status: 400 })
 
     // Validate against controlled vocabularies before touching the file.
     if (body.genre && !GENRES.includes(body.genre as (typeof GENRES)[number])) return NextResponse.json({ error: `Unknown genre "${body.genre}".` }, { status: 400 })
-    if (body.tradition && !TRADITIONS.some(t => t.slug === body.tradition)) return NextResponse.json({ error: `Unknown tradition "${body.tradition}".` }, { status: 400 })
-    if (body.era && !ERAS.some(e => e.slug === body.era)) return NextResponse.json({ error: `Unknown era "${body.era}".` }, { status: 400 })
     if (body.themes) {
       if (body.themes.length > MAX_THEMES) return NextResponse.json({ error: `At most ${MAX_THEMES} themes.` }, { status: 400 })
       const bad = body.themes.find(t => !ALL_THEMES.includes(t))
@@ -120,9 +120,8 @@ export async function PATCH(request: NextRequest) {
     if (!bounds) return NextResponse.json({ error: 'No frontmatter block found in file.' }, { status: 422 })
 
     let end = bounds.end
+    if (body.title !== undefined) setScalar(lines, end, 'title', body.title)
     if (body.genre !== undefined) setScalar(lines, end, 'genre', body.genre)
-    if (body.tradition !== undefined) setScalar(lines, end, 'tradition', body.tradition)
-    if (body.era !== undefined) setScalar(lines, end, 'era', body.era)
     // recompute end in case scalars were inserted
     const b2 = frontmatterBounds(lines)
     end = b2 ? b2.end : end
