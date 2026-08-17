@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { createServerClient } from '@/lib/supabase/server'
+import { readQueue } from '@/lib/pipeline/queue'
 
 type TextRow = {
   id: string; title: string; slug: string; published: boolean; editorial_introduction: string | null
@@ -55,6 +56,15 @@ export default async function AdminDashboard({ searchParams }: Props) {
     supabase.from('texts').select('id', { count: 'exact', head: true }).eq('published', false),
   ])
 
+  // Count pending pipeline prospects for the Pipeline nav card.
+  let pendingCount = 0
+  try {
+    const queue = await readQueue()
+    pendingCount = queue.prospects.filter(p => p.status === 'pending').length
+  } catch {
+    /* queue file unreadable — show 0 */
+  }
+
   return (
     <main>
       <div className="space-y-12">
@@ -73,6 +83,7 @@ export default async function AdminDashboard({ searchParams }: Props) {
         {/* Nav cards */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           {[
+            { label: 'Pipeline', href: '/admin/pipeline', count: pendingCount ?? 0 },
             { label: 'Drafts', href: '/admin/drafts', count: draftCount ?? 0 },
             { label: 'Authors', href: '/admin/authors', count: authorCount ?? 0 },
             { label: 'Traditions', href: '/admin/traditions', count: traditionCount ?? 0 },
