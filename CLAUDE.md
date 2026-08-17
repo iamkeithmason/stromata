@@ -37,6 +37,47 @@ into the plan from the start rather than discovering the block after already try
 
 ---
 
+## Pipeline GUI — `/admin/pipeline` (local operator UI, for Keith not Claude)
+
+There is a browser GUI for the whole pipeline, living inside the existing admin app at
+**`/admin/pipeline`** (linked from the admin dashboard's "Pipeline" nav card). It's an
+alternative to hand-editing JSON and typing `node scripts/...`, built for Keith to drive locally.
+It does **not** replace the agent-judgment stages (copyright/provenance verification, theme
+choices, note_draft authoring) — those still need a Claude Code run. It makes the mechanical parts
+pleasant: queue management, one-click stage runs, and staged-output review.
+
+What it exposes:
+
+- **Prospect queue** — view/filter by status, add/edit/reject prospects via a form whose
+  tradition / era / genre / source_type / theme inputs are dropdowns bound to the controlled
+  vocabularies below. The queue API (`/api/admin/pipeline/queue`) re-validates against those
+  vocabularies and caps themes at 6, so HARD CONSTRAINTS 4 & 5 can't be violated through the UI.
+  Writes go to `prospect-queue.json` atomically (temp-file + rename).
+- **One-click runners** (`/api/admin/pipeline/run`, **dev-only — returns 403 when
+  `NODE_ENV === 'production'`**): per-prospect **Fetch** (generates `scripts/ingestion/config.js`
+  from the prospect, then runs `fetch-texts.mjs`) and **Extract** (`extract-docx.mjs --slug=…`,
+  needs the prospect's `docx_path` field); a toolbar **Run import** runs `pipeline-import.mjs` over
+  all `staged` prospects. Script stdout/stderr streams live into a log pane. The runner is a fixed
+  3-script whitelist — the action is an enum and args come from the queue, never free text.
+- **Staged-output review** (`/api/admin/pipeline/output`) — renders the output markdown
+  (single-file or multi-chapter dir) and edits genre/tradition/era/themes in the frontmatter before
+  import.
+
+Constraints preserved: import still flows through `pipeline-import.mjs` unchanged (`published:
+false`, never `editorial_introduction`, draft authors only). The GUI adds no write that could
+publish a text or promote an author. Publish stays manual in the text edit form (Stage 5b).
+
+Relevant files: `app/admin/pipeline/{page.tsx,PipelineClient.tsx}`,
+`app/api/admin/pipeline/{queue,run,output}/route.ts`, and `lib/pipeline/{vocab,queue,runner}.ts`.
+`lib/pipeline/vocab.ts` mirrors the controlled-vocabulary tables at the bottom of this file — keep
+the two in sync if either changes.
+
+**Claude can't verify the rendered GUI** — same reason as the Admin UI note above: `/admin` needs
+Keith's login. Verify GUI changes via `tsc --noEmit`, `next build`, middleware probes, and direct
+checks against `prospect-queue.json` / Supabase; leave the visual eyeballing to Keith.
+
+---
+
 ## Analytics — Umami event conventions and the verification rule
 
 The site uses Umami (`cloud.umami.is`, script in `app/layout.tsx`). Most events are declarative
