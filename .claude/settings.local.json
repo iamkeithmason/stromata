@@ -110,7 +110,10 @@
       "Bash(grep -rn \"Stromata\\\\`\" app lib --include=\"*.tsx\" --include=\"*.ts\")",
       "Bash(grep -rnP '\"[^\"]*  [^\"]*\"|`[^`]*  [^`]*`' app/search/page.tsx)",
       "mcp__claude-in-chrome__navigate",
-      "mcp__claude-in-chrome__computer"
+      "mcp__claude-in-chrome__computer",
+      "Bash(grep -vE '^\\\\s+-\\\\s*$')",
+      "Bash(perl -i -pe \"s/^const MASK_OPEN = .*/const MASK_OPEN = '\\\\\\\\\\\\\\\\uE000';/ if \\\\$. == 24; s/^const MASK_CLOSE = .*/const MASK_CLOSE = '\\\\\\\\\\\\\\\\uE001';/ if \\\\$. == 25\" scripts/ingestion/footnote-strip.mjs)",
+      "Bash(git check-ignore *)"
     ]
   },
   "enableAllProjectMcpServers": true,

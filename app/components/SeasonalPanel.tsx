@@ -15,7 +15,12 @@
  * Update the config object to change season. Out of scope: curated seasonal
  * collections, church-year row destinations, feast-day variant.
  *
- * Analytics: text-open on the pick link, from="seasonal-panel".
+ * The whole panel is a single click target (one <Link> wraps everything),
+ * so the CTA text and arch emblem below are plain visual affordances, not
+ * separate interactive elements — this avoids nesting <a> inside <a> and
+ * keeps it to exactly one text-open event per click.
+ *
+ * Analytics: text-open on the panel link, from="seasonal-panel".
  */
 
 import Link from 'next/link'
@@ -45,7 +50,7 @@ const CURRENT_SEASON: SeasonConfig = {
   name: 'Trinitytide',
   subtitle: 'The season after Pentecost · Green',
   colour: '#3F5A43',
-  note: 'We are in the long green season after Pentecost — the weeks of ordinary time in which the Church tends its life in the world. A season for wisdom literature, for letters of counsel, for texts on the daily practice of virtue.',
+  note: 'We are in the long green season after Pentecost — the weeks after Trinity in which the Church tends its life in the world. A season for wisdom literature, for letters of counsel, for texts on the daily practice of virtue.',
   pick: { title: 'A Short Rule of Life', author: 'John Wycliffe', href: '/texts/a-short-rule-of-life' },
 }
 // ────────────────────────────────────────────────────────────────────────────
@@ -77,6 +82,20 @@ export function SeasonalPanel() {
   const s = CURRENT_SEASON
   const hasNoPick = s.pick === null
 
+  // Slug for analytics — derived from the href rather than hardcoded, so it
+  // stays correct if CURRENT_SEASON.pick.href ever changes.
+  const pickSlug = s.pick ? s.pick.href.split('/').filter(Boolean).pop() : undefined
+
+  const panelHref = s.pick ? s.pick.href : '/texts'
+  const panelUmamiProps = s.pick
+    ? {
+        'data-umami-event': 'text-open',
+        'data-umami-event-from': 'seasonal-panel',
+        'data-umami-event-text': pickSlug,
+        'data-umami-event-author': s.pick.author,
+      }
+    : {}
+
   // CSS radial-gradient technique for concave (inverted) corner cuts.
   // Four gradients, one per corner, each covering a 51%×51% quadrant.
   // Transparent at the corner, panel colour at radius CORNER_R — creates
@@ -101,10 +120,12 @@ export function SeasonalPanel() {
           filter: 'drop-shadow(0px 2px 0px rgba(30,30,25,0.05)) drop-shadow(0px 22px 40px rgba(30,30,25,0.35))',
         }}
       >
-        {/* ── Inset gold keyline border ── */}
-        <div
+        {/* ── Inset gold keyline border — the whole panel's click target ── */}
+        <Link
+          href={panelHref}
+          {...panelUmamiProps}
+          className="block no-underline border border-[rgba(201,148,58,0.32)] transition-[border-color,transform,box-shadow] duration-200 ease-out hover:border-[rgba(201,148,58,0.6)] hover:-translate-y-0.5 focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#C9943A] focus-visible:border-[rgba(201,148,58,0.6)]"
           style={{
-            border: '1px solid rgba(201,148,58,0.32)',
             padding: '1.75rem 2rem',
             boxShadow: 'rgba(30,30,25,0.05) 0px 2px 0px, rgba(30,30,25,0.45) 0px 22px 50px -28px',
           }}
@@ -173,14 +194,14 @@ export function SeasonalPanel() {
                 {s.note}
               </p>
 
-              {/* "Read for the season" + CTA */}
+              {/* "Read for the season" + CTA (visual affordance only — the
+                  whole panel is the click target, see the wrapping Link above) */}
               <div style={{ marginTop: '1.5rem' }}>
                 <p style={{ ...LABEL_STYLE, marginBottom: '0.4rem' }}>
                   Read for the season
                 </p>
                 {s.pick ? (
-                  <Link
-                    href={s.pick.href}
+                  <span
                     style={{
                       fontFamily: 'var(--serif)',
                       fontSize: 'var(--text-xl)',
@@ -189,16 +210,11 @@ export function SeasonalPanel() {
                       textUnderlineOffset: '3px',
                       textDecorationColor: R.goldFaint,
                     }}
-                    className="hover:opacity-80 transition-opacity"
-                    data-umami-event="text-open"
-                    data-umami-event-from="seasonal-panel"
-                    data-umami-event-text={s.pick.title}
                   >
                     {s.pick.title} →
-                  </Link>
+                  </span>
                 ) : (
-                  <Link
-                    href="/texts"
+                  <span
                     style={{
                       fontFamily: 'var(--serif)',
                       fontStyle: 'italic',
@@ -208,15 +224,14 @@ export function SeasonalPanel() {
                       textUnderlineOffset: '3px',
                       textDecorationColor: R.goldFaint,
                     }}
-                    className="hover:opacity-80 transition-opacity"
                   >
                     Browse the library →
-                  </Link>
+                  </span>
                 )}
               </div>
             </div>
 
-            {/* ── Right: arch emblem ──────────────────────────────── */}
+            {/* ── Right: arch emblem (visual only — see wrapping Link above) ── */}
             <div
               className="shrink-0 mx-auto sm:mx-0"
               style={{
@@ -225,14 +240,7 @@ export function SeasonalPanel() {
               }}
             >
               {s.pick ? (
-                <Link
-                  href={s.pick.href}
-                  style={{ display: 'block', textDecoration: 'none' }}
-                  className="opacity-90 hover:opacity-100 transition-opacity"
-                  data-umami-event="text-open"
-                  data-umami-event-from="seasonal-panel"
-                  data-umami-event-text={s.pick.title}
-                >
+                <div className="opacity-90">
                   <LancetArch
                     initial={s.pick.author.charAt(0)}
                     label={`${s.pick.title} by ${s.pick.author}`}
@@ -245,7 +253,7 @@ export function SeasonalPanel() {
                       {s.pick.author}
                     </p>
                   </div>
-                </Link>
+                </div>
               ) : (
                 /* No pick — § emblem, deliberate and present */
                 <div style={{ opacity: 0.72 }}>
@@ -255,7 +263,7 @@ export function SeasonalPanel() {
             </div>
 
           </div>
-        </div>
+        </Link>
       </div>
     </section>
   )

@@ -45,8 +45,10 @@ export function ReadingHistorySection() {
           const finished = p >= PROGRESS_FINISHED
           const inProgress = p >= PROGRESS_NOT_STARTED && !finished
           const label = progressLabel(entry)
+          // `state` is conditional, but `from` must always be sent — otherwise
+          // only in-progress reads were attributable to this surface.
           const umamiProps = inProgress
-            ? { 'data-umami-event-state': 'in-progress', 'data-umami-event-from': 'reading-history' }
+            ? { 'data-umami-event-state': 'in-progress' }
             : {}
 
           return (
@@ -55,6 +57,7 @@ export function ReadingHistorySection() {
                 href={`/texts/${entry.slug}`}
                 className="group block"
                 data-umami-event="text-open"
+                data-umami-event-from="reading-history"
                 data-umami-event-text={entry.slug}
                 {...umamiProps}
               >

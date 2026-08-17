@@ -37,6 +37,91 @@ into the plan from the start rather than discovering the block after already try
 
 ---
 
+## Analytics — Umami event conventions and the verification rule
+
+The site uses Umami (`cloud.umami.is`, script in `app/layout.tsx`). Most events are declarative
+`data-umami-event*` attributes on links; a few are programmatic `window.umami?.track(...)`.
+The canonical list lives in Notion: **The Stromata: Growth Tracker → Events Register**. Add a row
+there whenever you add an event or a new property *value* — the register is the only place the
+full property vocabulary is written down, and a value that isn't recorded there is effectively
+undiscoverable later.
+
+### The verification rule — this is the one that matters
+
+**An analytics change is not done when the attribute is in the JSX. It is done when you have
+observed the outgoing request carrying the expected payload.**
+
+This is not pedantry. The seasonal panel shipped 2026-07-12 for a 4-week engagement test with the
+event name present but no `from` property; nobody checked the wire, and the test produced four
+weeks of unusable data. Adding an attribute and reasoning that it "should" fire is exactly the
+failure mode.
+
+To verify, intercept the beacon rather than trusting the dashboard:
+
+```js
+// paste in the browser console, then click the thing
+sessionStorage.removeItem('__cap')
+const rec = (u, b) => { if (!String(u).includes('umami')) return
+  const p = JSON.parse(sessionStorage.getItem('__cap') || '[]'); p.push(String(b))
+  sessionStorage.setItem('__cap', JSON.stringify(p)) }
+const of_ = window.fetch
+window.fetch = function (...a) { rec(typeof a[0] === 'string' ? a[0] : a[0]?.url || '', a[1]?.body); return of_.apply(this, a) }
+const os = navigator.sendBeacon.bind(navigator)
+navigator.sendBeacon = (u, d) => { rec(u, d); return os(u, d) }
+// after the click (sessionStorage survives the navigation):
+JSON.parse(sessionStorage.getItem('__cap')).map(b => JSON.parse(b).payload)
+```
+
+Two traps worth knowing:
+
+- **Umami is blocked by common ad/tracking blockers** — including in Keith's own Chrome, where
+  `window.umami` is `undefined` and the script request fails outright. So "no event appeared" is
+  ambiguous: it may mean the code is broken *or* that the script never loaded. Always check
+  `typeof window.umami` before concluding anything from an absence.
+- **Synthetic key and pointer events are unreliable** in both the Browser pane and the
+  claude-in-chrome extension — a dispatched `Tab` often won't move focus and `:hover` may not
+  render, even though `element.matches(':hover')` returns true. `getComputedStyle` can also return
+  stale values over CDP. For focus/hover states, verify by **screenshot comparison** of the same
+  zoomed region, or by rewriting `:hover`/`:focus-visible` to another pseudo-class in the live
+  stylesheet (preserves specificity and source order) and reading the result. Don't trust a single
+  computed-style read.
+
+### Property vocabulary
+
+| Property | Meaning | Value form |
+|---|---|---|
+| `from` | the surface the click originated on | kebab-case surface name (`seasonal-panel`, `featured-lead`, `homepage-grid`, `author-page`, `reading-history`, `search-chip`, `featured-band`, `locations-index`, `text-reader`, `location-page`) |
+| `text` | which text was opened | **slug**, never the title |
+| `collection` | which collection was opened | **slug** |
+| `author` | which author | display name (matches `authors.name`) |
+| `country` | which location | display name |
+| `state`, `direction` | qualifiers | short enum-ish string |
+
+Rules:
+
+1. **`from` is mandatory on every navigational event.** Without it a click is indistinguishable
+   from search and direct arrivals, which is precisely what made the panel test worthless.
+2. **Identifiers are slugs, not titles.** Slugs are stable, match the URL, and join cleanly to
+   Supabase; titles get edited and then silently split one series into two in Umami.
+3. **One event name per user-meaningful action.** `text-open` is for texts only; collections fire
+   `collection-open`. Don't overload one name across two content types — it can't be un-merged
+   after the fact.
+4. **Make `from` unconditional.** Attach qualifiers like `state` conditionally if you must, but
+   never gate `from` behind a condition — `ReadingHistorySection` did exactly that and only
+   in-progress reads were attributable.
+
+### Known legacy exceptions (deliberate, for data continuity)
+
+- `theme-click` and `ko-fi-click` use **`source`** rather than `from` for the same concept, and
+  `theme-click` sends the theme's **display name** rather than its slug. Left as-is on purpose:
+  renaming would fork those series mid-dataset for little analytical gain. Use `from` + slugs for
+  anything new; only revisit these if you're already accepting a break on them.
+- On **2026-08-06** the `text-open` property values changed from titles to slugs, and collection
+  clicks moved from `text-open` to `collection-open`. Data before and after that date is not
+  directly comparable for those properties — Umami stores what was sent and cannot be backfilled.
+
+---
+
 ## Pipeline Purpose
 
 **Driver 3 — content breadth.** The pipeline finds, fetches, cleans, and stages new texts from public-domain sources. It does not discover authors or handle user-facing SEO — those are separate concerns.
@@ -386,9 +471,14 @@ how that catalogue was built). No further explanation needed; run this procedure
 1. **Pick the next ~5-8 highest-scoring `Text available` items**, skipping `Rights unclear` /
    `Needs investigation` (those need their own resolution pass first) and multi-file folder
    collections (batch those separately — more effort per item).
-2. **Extract each** from the local synced Drive folder via the validated approach: Python stdlib
-   `zipfile` + `xml.etree` against `word/document.xml` (no new dependencies needed — script
-   pattern established 2026-07-12, ask Keith for the local Drive path if it's not already known).
+2. **Extract each** with `node scripts/ingestion/extract-docx.mjs <file.docx> --slug=<slug>`
+   (ask Keith for the local Drive path if it's not already known). This is the committed form of
+   the previously-manual `zipfile`/`xml.etree` approach: it reads `word/document.xml` with Node
+   built-ins, turns Heading styles into `##`, preserves bold/italic, writes a frontmatter stub to
+   `output/<slug>.md`, and — because each Word paragraph lands as one line — runs
+   `normalise-markdown.mjs` over its own output as the final step, inserting paragraph blanks and
+   flagging any verse. There is no separate `[HeadingN]`→`##` or "hit Enter between paragraphs"
+   pass to do afterwards.
 3. **Read enough of each to check translation provenance before trusting it** — this is the step
    that actually matters, not a formality:
    - Original English composition (author wrote in English) → safe, no translation-copyright risk
@@ -423,7 +513,8 @@ how that catalogue was built). No further explanation needed; run this procedure
      the specific in-copyright edition is identified with confidence (a named translator, a dated
      published volume — not just "no PD source found"), say so explicitly; Keith uses this to move
      the source `.docx` into his own `Copyright?` Drive folder.
-4. **Clean, tag, draft**: convert `[HeadingN]` markers to `##`, pick genre + up to 6 themes from
+4. **Clean, tag, draft**: headings and paragraph spacing are already handled by the extractor
+   (step 2) — review any **verse runs it flagged**, then pick genre + up to 6 themes from
    the controlled vocabularies below, write a note_draft per the museum-label register in
    `scripts/lib/note-prompt.mjs`.
 5. **Write output + queue entry**: `scripts/ingestion/output/{slug}.md` with the standard
@@ -505,6 +596,8 @@ still apply per-file, still parallelize the same way. What changes is Stage 2/5a
 | Script | Purpose | When to call |
 |--------|---------|--------------|
 | `scripts/ingestion/fetch-texts.mjs` | Fetch & clean digital sources; generate note_draft inline | Stage 2, digital |
+| `scripts/ingestion/extract-docx.mjs` | Extract a Google Drive `.docx` → staged markdown; normalises paragraphs & flags verse | Stage 2, `gdrive_docx` |
+| `scripts/normalise-markdown.mjs` | Insert paragraph block boundaries / flag verse (dry-run default, `--write` to apply) | Auto via extract-docx; manual cleanup; flag-only in Stage 5a |
 | `scripts/ingestion/clean-archive-ocr.mjs` | Clean Archive.org djvu.txt OCR | Stage 2, archive_ocr |
 | `scripts/ingestion/config.js` | Config for fetch-texts.mjs — overwrite per prospect | Stage 2, digital |
 | `scripts/ingestion/archive-ocr-config.mjs` | Config for clean-archive-ocr.mjs — append per prospect | Stage 2, archive_ocr |

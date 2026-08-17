@@ -338,6 +338,7 @@ export default async function AuthorPage({ params }: Props) {
                       className="flex items-start justify-between py-4 group"
                       data-umami-event="text-open"
                       data-umami-event-from="author-page"
+                      data-umami-event-text={t.slug}
                       data-umami-event-author={author.name}
                     >
                       <div>

@@ -445,7 +445,7 @@ function TextLead({ text }: { text: TextRow }) {
     <div className="flex flex-col sm:flex-row gap-8 mb-14 pb-12" style={{ borderBottom: '1px solid var(--gold-rule)' }}>
       {/* Book cover — w-2/3 centered on mobile (matches grid cards), ~one grid column on desktop */}
       <div className="w-2/3 mx-auto sm:mx-0 sm:w-56 shrink-0">
-        <Link href={`/texts/${text.slug}`} className="block" data-umami-event="text-open" data-umami-event-from="featured-lead" data-umami-event-text={text.title}>
+        <Link href={`/texts/${text.slug}`} className="block" data-umami-event="text-open" data-umami-event-from="featured-lead" data-umami-event-text={text.slug}>
           <BookCover
             title={text.title}
             authorName={author?.name ?? null}
@@ -459,7 +459,7 @@ function TextLead({ text }: { text: TextRow }) {
 
       <div className="flex-1 flex flex-col justify-center">
         <LeadKicker>New addition</LeadKicker>
-        <Link href={`/texts/${text.slug}`} className="hover:opacity-70 transition-opacity" style={{ textDecoration: 'none' }} data-umami-event="text-open" data-umami-event-from="featured-lead" data-umami-event-text={text.title}>
+        <Link href={`/texts/${text.slug}`} className="hover:opacity-70 transition-opacity" style={{ textDecoration: 'none' }} data-umami-event="text-open" data-umami-event-from="featured-lead" data-umami-event-text={text.slug}>
           <LeadTitle>{text.title}</LeadTitle>
         </Link>
         <LeadByline author={author} hasContent />
@@ -467,7 +467,7 @@ function TextLead({ text }: { text: TextRow }) {
           {truncateAtWord(editorialPara, 280)}
         </LeadPara>
         <div className="flex flex-wrap items-center gap-3">
-          <Link href={`/texts/${text.slug}`} style={{ fontFamily: 'var(--serif)', fontSize: 'var(--text-label)', color: 'var(--gold)', textDecoration: 'none', borderBottom: '1px solid var(--gold-rule)', paddingBottom: '1px' }} className="hover:opacity-70 transition-opacity" data-umami-event="text-open" data-umami-event-from="featured-lead" data-umami-event-text={text.title}>
+          <Link href={`/texts/${text.slug}`} style={{ fontFamily: 'var(--serif)', fontSize: 'var(--text-label)', color: 'var(--gold)', textDecoration: 'none', borderBottom: '1px solid var(--gold-rule)', paddingBottom: '1px' }} className="hover:opacity-70 transition-opacity" data-umami-event="text-open" data-umami-event-from="featured-lead" data-umami-event-text={text.slug}>
             Begin reading →
           </Link>
           <span style={{ color: 'var(--ink-faint)', fontSize: 'var(--text-sm)', fontFamily: 'var(--serif)' }}>
@@ -496,7 +496,7 @@ function CollectionLead({ entry }: { entry: Extract<FeedEntry, { kind: 'collecti
     <div className="flex flex-col sm:flex-row gap-8 mb-14 pb-12" style={{ borderBottom: '1px solid var(--gold-rule)' }}>
       {/* Book cover — w-2/3 centered on mobile (matches grid cards), ~one grid column on desktop */}
       <div className="w-2/3 mx-auto sm:mx-0 sm:w-56 shrink-0">
-        <Link href={`/collections/${collection.slug}`} className="block" data-umami-event="text-open" data-umami-event-from="featured-lead" data-umami-event-text={collection.title}>
+        <Link href={`/collections/${collection.slug}`} className="block" data-umami-event="collection-open" data-umami-event-from="featured-lead" data-umami-event-collection={collection.slug}>
           <StackedCover>
             <BookCover
               title={collection.title}
@@ -513,7 +513,7 @@ function CollectionLead({ entry }: { entry: Extract<FeedEntry, { kind: 'collecti
 
       <div className="flex-1 flex flex-col justify-center">
         <LeadKicker>New collection</LeadKicker>
-        <Link href={`/collections/${collection.slug}`} className="hover:opacity-70 transition-opacity" style={{ textDecoration: 'none' }} data-umami-event="text-open" data-umami-event-from="featured-lead" data-umami-event-text={collection.title}>
+        <Link href={`/collections/${collection.slug}`} className="hover:opacity-70 transition-opacity" style={{ textDecoration: 'none' }} data-umami-event="collection-open" data-umami-event-from="featured-lead" data-umami-event-collection={collection.slug}>
           <LeadTitle>{collection.title}</LeadTitle>
         </Link>
         <LeadByline author={author} hasContent />
@@ -521,7 +521,7 @@ function CollectionLead({ entry }: { entry: Extract<FeedEntry, { kind: 'collecti
           {truncateAtWord(editorialPara, 280)}
         </LeadPara>
         <div className="flex flex-wrap items-center gap-3">
-          <Link href={`/collections/${collection.slug}`} style={{ fontFamily: 'var(--serif)', fontSize: 'var(--text-label)', color: 'var(--gold)', textDecoration: 'none', borderBottom: '1px solid var(--gold-rule)', paddingBottom: '1px' }} className="hover:opacity-70 transition-opacity" data-umami-event="text-open" data-umami-event-from="featured-lead" data-umami-event-text={collection.title}>
+          <Link href={`/collections/${collection.slug}`} style={{ fontFamily: 'var(--serif)', fontSize: 'var(--text-label)', color: 'var(--gold)', textDecoration: 'none', borderBottom: '1px solid var(--gold-rule)', paddingBottom: '1px' }} className="hover:opacity-70 transition-opacity" data-umami-event="collection-open" data-umami-event-from="featured-lead" data-umami-event-collection={collection.slug}>
             Browse collection →
           </Link>
           <span style={{ color: 'var(--ink-faint)', fontSize: 'var(--text-sm)', fontFamily: 'var(--serif)' }}>
@@ -585,8 +585,9 @@ function FeedGridCard({ entry, index }: { entry: FeedEntry; index: number }) {
         <Link
           href={`/collections/${collection.slug}`}
           className="group block"
-          data-umami-event="text-open"
-          data-umami-event-text={collection.slug}
+          data-umami-event="collection-open"
+          data-umami-event-from="homepage-grid"
+          data-umami-event-collection={collection.slug}
         >
           <StackedCover>
             <BookCover
@@ -617,6 +618,7 @@ function FeedGridCard({ entry, index }: { entry: FeedEntry; index: number }) {
         href={`/texts/${text.slug}`}
         className="group block"
         data-umami-event="text-open"
+        data-umami-event-from="homepage-grid"
         data-umami-event-text={text.slug}
       >
         <BookCover

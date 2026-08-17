@@ -23,6 +23,8 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { createClient } from '@supabase/supabase-js';
 import dotenv from 'dotenv';
+import { normaliseMarkdown, overrideForFile } from './normalise-markdown.mjs';
+import { detectScannos, loadCorpus, loadAllowlist } from './detect-scannos.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 dotenv.config({ path: path.join(__dirname, '..', '.env.local') });
@@ -34,6 +36,12 @@ const supabase = createClient(
 
 const QUEUE_PATH = path.join(__dirname, 'ingestion', 'prospect-queue.json');
 const OUTPUT_DIR = path.join(__dirname, 'ingestion', 'output');
+
+// Scanno detection is flag-only at import time. Load the corpus index and
+// allowlist once; if the index hasn't been built, detection is skipped silently
+// (run scripts/build-corpus-index.mjs to enable it).
+const scannoCorpus = loadCorpus();
+const scannoAllowlist = loadAllowlist();
 
 // ---------------------------------------------------------------------------
 // Frontmatter parsing — the pipeline's frontmatter is flat key: value YAML,
@@ -289,6 +297,30 @@ async function importTextFile(filePath, prospect, authorId, collectionId) {
 
   const themeIds = await resolveThemeIds(data.themes);
 
+  // Verse check (flag-only — never rewrites the body). A stanza silently split
+  // into paragraphs is the one failure mode that ships wrong output, so surface
+  // it at import time rather than let it be discovered after publication.
+  const warnings = [];
+  const { report: normReport } = normaliseMarkdown(body, { override: overrideForFile(filePath) });
+  if (normReport.verseFlags.length > 0) {
+    const ranges = normReport.verseFlags.map(f => `${f.startLine}-${f.endLine}`).join(', ');
+    const warning = `${data.slug}: ${normReport.verseFlags.length} verse run(s) flagged, review before publish (body lines ${ranges})`;
+    warnings.push(warning);
+    console.warn(`  ⚠ ${normReport.verseFlags.length} verse run(s) flagged in ${data.slug} — review before publish`);
+  }
+
+  // Scanno check (flag-only — never auto-corrects). Surface the Tier-1 count so
+  // near-certain OCR errors are reviewed before publish. Skipped if the corpus
+  // index isn't built yet.
+  if (scannoCorpus) {
+    const tier1 = detectScannos(body, { corpus: scannoCorpus, allowlist: scannoAllowlist, slug: data.slug })
+      .filter(f => f.tier === 1).length;
+    if (tier1 > 0) {
+      warnings.push(`${data.slug}: ${tier1} Tier-1 scanno(s) flagged, review before publish`);
+      console.warn(`  ⚠ ${tier1} Tier-1 scanno(s) flagged in ${data.slug} — run detect-scannos.mjs before publish`);
+    }
+  }
+
   const { data: text, error } = await supabase
     .from('texts')
     .insert({
@@ -320,7 +352,7 @@ async function importTextFile(filePath, prospect, authorId, collectionId) {
   }
 
   console.log(`  + imported: ${data.title}`);
-  return { skipped: false };
+  return { skipped: false, warnings };
 }
 
 // ---------------------------------------------------------------------------
@@ -366,10 +398,12 @@ async function main() {
 
       let importedCount = 0;
       const failures = [];
+      const reviewWarnings = [];
       for (const file of files) {
         const result = await importTextFile(file, prospect, authorId, collectionId);
         if (!result.skipped) {
           importedCount++;
+          if (result.warnings) reviewWarnings.push(...result.warnings);
         } else if (result.reason !== 'already_exists') {
           failures.push(result.detail || result.reason);
         }
@@ -384,6 +418,9 @@ async function main() {
         let note = `Imported ${importedCount} text(s) on ${today}.`;
         if (failures.length > 0) {
           note += ` ${failures.length} file(s) failed and were NOT imported: ${failures.join(' | ')}`;
+        }
+        if (reviewWarnings.length > 0) {
+          note += ` REVIEW NEEDED before publish: ${reviewWarnings.join(' | ')}`;
         }
         prospect.stage_1_notes = prospect.stage_1_notes ? `${prospect.stage_1_notes} ${note}` : note;
       } else if (failures.length > 0) {

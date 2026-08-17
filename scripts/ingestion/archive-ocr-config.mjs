@@ -3,6 +3,17 @@
  * Configuration for clean-archive-ocr.mjs.
  */
 
+// ---------------------------------------------------------------------------
+// Footnote-marker stripping (see footnote-strip.mjs)
+//
+// The canonical marker set and the global on/off toggle live here. Any per-
+// source config below may override them with its own `footnoteMarkers` array
+// or `stripFootnoteMarkers: false`, exactly like the other per-source rules.
+// ---------------------------------------------------------------------------
+
+export const DEFAULT_FOOTNOTE_MARKERS = ['^', '*', '†', '‡', '§', '¶'];
+export const STRIP_FOOTNOTE_MARKERS = true;
+
 const ANSELM_PROSLOGION = {
   sourceFile: 'scripts/ingestion/sources/anselm-proslogium-1903.md',
   startLandmark: "ANSELM'S  PROSLOGIUM",

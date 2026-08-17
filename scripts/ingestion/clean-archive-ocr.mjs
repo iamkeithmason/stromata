@@ -14,6 +14,7 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { stripFootnoteMarkers } from './footnote-strip.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -232,17 +233,24 @@ function cleanOcrText(text, config) {
   text = text.replace(/^ANSELM'S\s+PROSLOGIUM\s*$/m, '# Proslogion');
   text = text.replace(/^OR\s+DISCOURSE\s+ON\s+THE\s+EXISTENCE\s+OF\s+GOD\s*$/m, '*Or, Discourse on the Existence of God*');
 
+  // 9.5 Strip orphaned footnote markers left behind by OCR (deterministic,
+  //     silent — see footnote-strip.mjs). Runs before final whitespace cleanup
+  //     so any double spaces left by an isolated marker get collapsed below.
+  const footnotes = stripFootnoteMarkers(text, config);
+  text = footnotes.text;
+
   // 10. Final cleanup
   text = text.replace(/ {2,}/g, ' ');
   text = text.split('\n').map(l => l.trimEnd()).join('\n');
   text = text.replace(/\n{3,}/g, '\n\n');
   text = text.trim();
 
-  return { text, issues };
+  return { text, issues, footnotesStripped: footnotes.count };
 }
 
 console.log('Cleaning OCR text...');
-const { text: cleaned, issues } = cleanOcrText(extracted, config);
+const { text: cleaned, issues, footnotesStripped } = cleanOcrText(extracted, config);
+console.log(`  footnote markers stripped: ${footnotesStripped}`);
 
 // ---------------------------------------------------------------------------
 // Build frontmatter helper
@@ -342,6 +350,7 @@ const reviewSummary = `# Review Summary: ${config.title}
 **Generated:** ${new Date().toISOString().split('T')[0]}
 **Source:** ${config.sourceFile}
 **Config key:** ${configKey}
+**Footnote markers stripped:** ${footnotesStripped} _(orphaned markers removed silently; see footnote-strip.mjs)_
 
 ---
 

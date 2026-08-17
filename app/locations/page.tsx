@@ -45,6 +45,7 @@ export default async function LocationsPage() {
                   href={`/locations/${loc.slug}`}
                   className="flex items-baseline justify-between py-4 group"
                   data-umami-event="location-country-click"
+                  data-umami-event-from="locations-index"
                   data-umami-event-country={loc.name}
                 >
                   <span className="font-serif group-hover:opacity-70 transition-opacity" style={{ color: '#1b1b1b' }}>

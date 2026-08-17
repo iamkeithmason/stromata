@@ -16,3 +16,6 @@ next-env.d.ts
 
 # Pipeline — raw source downloads (large binary/text files)
 scripts/ingestion/sources/
+
+# Pipeline — corpus word-frequency index (build artefact, rebuilt from the DB)
+data/corpus-frequency.json

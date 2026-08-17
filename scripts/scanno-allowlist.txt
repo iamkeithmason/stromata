@@ -1,0 +1,38 @@
+# scanno-allowlist.txt — words confirmed correct, never to be flagged again.
+#
+# One word per line. Comparison is case-insensitive. Lines starting with # are
+# comments. Every word the editor confirms via `detect-scannos.mjs
+# --apply-reviewed` (marked "allow") is appended here automatically. This is
+# what makes the noise floor fall with each text processed instead of staying
+# constant — archaic orthography is correct in this corpus and belongs here, not
+# in an error report.
+
+# Archaic spellings and forms (correct as printed)
+shew
+shewed
+shewn
+sinne
+sinnes
+doth
+dost
+doeth
+hath
+hast
+saith
+thee
+thou
+thy
+thine
+ye
+unto
+whereof
+wherefore
+thereunto
+phantasie
+Sathan
+wast
+wert
+spake
+brake
+holpen
+builded
