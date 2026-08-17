@@ -29,6 +29,8 @@ type Prospect = {
   notes?: string
   _actions?: RunAction[]
   _hasOutput?: boolean
+  _verdict?: string
+  _reasoning?: string
 }
 
 const STATUS_COLOR: Record<string, string> = {
@@ -70,6 +72,7 @@ export default function PipelineClient({
   const abortRef = useRef<AbortController | null>(null)
 
   const [output, setOutput] = useState<{ slug: string; files: { name: string; content: string }[] } | null>(null)
+  const [researchOpen, setResearchOpen] = useState(false)
 
   const counts = useMemo(() => {
     const c: Record<string, number> = {}
@@ -94,8 +97,11 @@ export default function PipelineClient({
     if (!form) return
     setSaving(true)
     setError(null)
+    // Strip UI-only, underscore-prefixed fields (_actions, _hasOutput, _verdict…)
+    // so they never get written into prospect-queue.json.
+    const clean = Object.fromEntries(Object.entries(form).filter(([k]) => !k.startsWith('_')))
     const res = await fetch('/api/admin/pipeline/queue', {
-      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(form),
+      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(clean),
     })
     setSaving(false)
     if (!res.ok) { setError((await res.json()).error ?? 'Save failed'); return }
@@ -195,6 +201,12 @@ export default function PipelineClient({
             </button>
           )}
           <button
+            onClick={() => { setResearchOpen(true); setError(null) }}
+            className="text-sm px-3 py-1.5 rounded border border-stone-300 text-stone-700 hover:border-stone-500"
+          >
+            Research from URL
+          </button>
+          <button
             onClick={() => { setForm({ ...EMPTY }); setError(null) }}
             className="text-sm px-3 py-1.5 rounded border border-stone-300 text-stone-700 hover:border-stone-500"
           >
@@ -263,6 +275,15 @@ export default function PipelineClient({
         <ProspectForm form={form} setForm={setForm as (p: Prospect) => void} onSave={saveProspect} onCancel={() => { setForm(null); setError(null) }} saving={saving} />
       )}
       {output && <OutputPanel output={output} onClose={() => setOutput(null)} onSaved={c => setOutput(c)} onError={setError} />}
+      {researchOpen && (
+        <ResearchModal
+          onClose={() => setResearchOpen(false)}
+          onResult={(prospect, verdict, reasoning) => {
+            setResearchOpen(false)
+            setForm({ ...EMPTY, ...prospect, _verdict: verdict, _reasoning: reasoning })
+          }}
+        />
+      )}
     </div>
   )
 }
@@ -393,6 +414,12 @@ function ProspectForm({
     <div className="fixed inset-0 bg-black/30 flex items-start justify-center overflow-auto z-20 p-6" onClick={onCancel}>
       <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl p-6 my-4" onClick={e => e.stopPropagation()}>
         <h3 className="text-base font-semibold text-stone-800 mb-4">{form.id ? 'Edit prospect' : 'New prospect'}</h3>
+        {form._verdict && (
+          <div className={`text-xs rounded border px-3 py-2 mb-4 ${form._verdict === 'SAFE' ? 'bg-green-50 border-green-200 text-green-800' : 'bg-amber-50 border-amber-200 text-amber-800'}`}>
+            <span className="font-semibold">{form._verdict === 'SAFE' ? '✓ SAFE' : '⚠ HOLD'}</span> — {form._reasoning}
+            <div className="text-stone-400 mt-1">Auto-researched — verify before staging. You still own the copyright call.</div>
+          </div>
+        )}
         <div className="grid grid-cols-2 gap-3">
           <Field label="id (kebab-case slug)"><input className={inputCls} value={form.id} onChange={e => set({ id: e.target.value })} placeholder="small-catechism-luther" /></Field>
           <Field label="collection_slug"><input className={inputCls} value={form.collection_slug ?? ''} onChange={e => set({ collection_slug: e.target.value })} /></Field>
@@ -542,6 +569,62 @@ function OutputPanel({
         )}
 
         <pre className="text-xs text-stone-700 bg-stone-50 border border-stone-100 rounded p-3 overflow-auto max-h-96 whitespace-pre-wrap">{file.content}</pre>
+      </div>
+    </div>
+  )
+}
+
+function ResearchModal({
+  onClose, onResult,
+}: {
+  onClose: () => void
+  onResult: (prospect: Prospect, verdict: string, reasoning: string) => void
+}) {
+  const [url, setUrl] = useState('')
+  const [busy, setBusy] = useState(false)
+  const [err, setErr] = useState<string | null>(null)
+
+  async function research() {
+    if (!url.trim()) return
+    setBusy(true)
+    setErr(null)
+    try {
+      const res = await fetch('/api/admin/pipeline/research', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ url: url.trim() }),
+      })
+      const json = await res.json()
+      if (!res.ok) { setErr(json.error ?? 'Research failed'); return }
+      onResult(json.prospect, json.verdict, json.reasoning)
+    } catch (e) {
+      setErr((e as Error).message)
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  return (
+    <div className="fixed inset-0 bg-black/30 flex items-start justify-center overflow-auto z-20 p-6" onClick={onClose}>
+      <div className="bg-white rounded-lg shadow-xl w-full max-w-lg p-6 my-4" onClick={e => e.stopPropagation()}>
+        <h3 className="text-base font-semibold text-stone-800 mb-1">Research from URL</h3>
+        <p className="text-xs text-stone-400 mb-4">
+          Paste a source URL. Claude reads the page, fills in what it can, and gives a copyright verdict for you to
+          confirm. It never imports on its own.
+        </p>
+        {err && <p className="text-sm text-red-700 bg-red-50 border border-red-200 rounded px-3 py-2 mb-3">{err}</p>}
+        <input
+          className={inputCls}
+          value={url}
+          onChange={e => setUrl(e.target.value)}
+          onKeyDown={e => { if (e.key === 'Enter' && !busy) research() }}
+          placeholder="https://en.wikisource.org/wiki/…"
+          autoFocus
+        />
+        <div className="flex justify-end gap-3 mt-4">
+          <button onClick={onClose} className="text-sm text-stone-500 hover:text-stone-800">Cancel</button>
+          <button onClick={research} disabled={busy || !url.trim()} className="text-sm px-3 py-1.5 rounded bg-stone-800 text-white hover:bg-stone-700 disabled:opacity-40">
+            {busy ? 'Researching…' : 'Research'}
+          </button>
+        </div>
       </div>
     </div>
   )
