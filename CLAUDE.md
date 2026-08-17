@@ -53,24 +53,39 @@ What it exposes:
   vocabularies below. The queue API (`/api/admin/pipeline/queue`) re-validates against those
   vocabularies and caps themes at 6, so HARD CONSTRAINTS 4 & 5 can't be violated through the UI.
   Writes go to `prospect-queue.json` atomically (temp-file + rename).
+- **The visible ladder** — the UI models the real chain: **Fetch/Extract → Review → Mark staged →
+  Run import → Drafts → publish**. `fetch-texts.mjs`/`extract-docx.mjs` don't touch the queue, so
+  the run route advances a prospect to `stage-2-done` itself on a clean exit; the operator then
+  reviews and clicks **Mark staged** (sets `staged`) before import. The default filter is "Active"
+  (hides `imported`/`rejected`). Rows detect existing output on disk (`_hasOutput`) so a prospect
+  fetched in a prior session still offers Review/Stage instead of only Fetch. **Fetch is only Stage
+  2 — it puts nothing on the site; import lands texts in Drafts as `published:false`.**
 - **One-click runners** (`/api/admin/pipeline/run`, **dev-only — returns 403 when
   `NODE_ENV === 'production'`**): per-prospect **Fetch** (generates `scripts/ingestion/config.js`
   from the prospect, then runs `fetch-texts.mjs`) and **Extract** (`extract-docx.mjs --slug=…`,
   needs the prospect's `docx_path` field); a toolbar **Run import** runs `pipeline-import.mjs` over
-  all `staged` prospects. Script stdout/stderr streams live into a log pane. The runner is a fixed
-  3-script whitelist — the action is an enum and args come from the queue, never free text.
+  all `staged` prospects. `archive_ocr` prospects get no one-click button (they need manual
+  landmarks) — the row shows an "OCR · manual" tag. Script stdout/stderr streams live into a log
+  pane. The runner is a fixed 3-script whitelist — the action is an enum and args come from the
+  queue, never free text.
 - **Staged-output review** (`/api/admin/pipeline/output`) — renders the output markdown
-  (single-file or multi-chapter dir) and edits genre/tradition/era/themes in the frontmatter before
-  import.
+  (single-file or multi-chapter dir) and edits **title / genre / themes** in the frontmatter before
+  import. (Those are the per-text fields `pipeline-import.mjs` reads from frontmatter; tradition/era
+  are author-level and come from the prospect, so they're edited on the prospect, not here.)
+- **Research from URL** (`/api/admin/pipeline/research`) — paste a source URL; the route fetches the
+  page, has Claude (`claude-opus-4-7`) extract metadata and return a **SAFE/HOLD copyright verdict**,
+  then pre-fills the New Prospect form for the operator to confirm. It never imports and the verdict
+  is advisory — HARD CONSTRAINT 3 stays a human call. Basic SSRF guard (public http(s) only).
 
 Constraints preserved: import still flows through `pipeline-import.mjs` unchanged (`published:
 false`, never `editorial_introduction`, draft authors only). The GUI adds no write that could
-publish a text or promote an author. Publish stays manual in the text edit form (Stage 5b).
+publish a text or promote an author, and strips UI-only `_`-prefixed fields before writing the
+queue. Publish stays manual in the text edit form (Stage 5b).
 
 Relevant files: `app/admin/pipeline/{page.tsx,PipelineClient.tsx}`,
-`app/api/admin/pipeline/{queue,run,output}/route.ts`, and `lib/pipeline/{vocab,queue,runner}.ts`.
-`lib/pipeline/vocab.ts` mirrors the controlled-vocabulary tables at the bottom of this file — keep
-the two in sync if either changes.
+`app/api/admin/pipeline/{queue,run,output,research}/route.ts`, and
+`lib/pipeline/{vocab,queue,runner,outputs}.ts`. `lib/pipeline/vocab.ts` mirrors the
+controlled-vocabulary tables at the bottom of this file — keep the two in sync if either changes.
 
 **Claude can't verify the rendered GUI** — same reason as the Admin UI note above: `/admin` needs
 Keith's login. Verify GUI changes via `tsc --noEmit`, `next build`, middleware probes, and direct
