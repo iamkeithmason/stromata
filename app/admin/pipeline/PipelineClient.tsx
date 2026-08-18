@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo, useRef, useCallback } from 'react'
+import { useState, useMemo, useRef, useCallback, useEffect } from 'react'
 import { TRADITIONS, ERAS, GENRES, THEME_CLUSTERS, ALL_THEMES, MAX_THEMES, SOURCE_TYPES, STATUSES } from '@/lib/pipeline/vocab'
 
 type RunAction = 'fetch' | 'extract' | 'import'
@@ -73,6 +73,7 @@ export default function PipelineClient({
 
   const [output, setOutput] = useState<{ slug: string; files: { name: string; content: string }[] } | null>(null)
   const [researchOpen, setResearchOpen] = useState(false)
+  const [splitProspect, setSplitProspect] = useState<Prospect | null>(null)
 
   const counts = useMemo(() => {
     const c: Record<string, number> = {}
@@ -243,6 +244,7 @@ export default function PipelineClient({
                 onExtract={() => run('extract', p.id)}
                 onReview={() => viewOutput(p)}
                 onStage={() => patchStatus(p, { status: 'staged' })}
+                onSplit={() => { setSplitProspect(p); setError(null) }}
               />
               <button onClick={() => { setForm({ ...EMPTY, ...p }); setError(null) }} className="text-stone-500 hover:text-stone-900">Edit</button>
               {!DONE_STATUSES.has(p.status) && (
@@ -284,21 +286,32 @@ export default function PipelineClient({
           }}
         />
       )}
+      {splitProspect && (
+        <SplitModal
+          prospect={splitProspect}
+          onClose={() => setSplitProspect(null)}
+          onDone={() => { setSplitProspect(null); refreshQueue() }}
+          onError={setError}
+        />
+      )}
     </div>
   )
 }
 
 // Contextual next-step action(s) for a row, driven by its status.
 function RowActions({
-  p, isDev, running, onFetch, onExtract, onReview, onStage,
+  p, isDev, running, onFetch, onExtract, onReview, onStage, onSplit,
 }: {
   p: Prospect; isDev: boolean; running: string | null
-  onFetch: () => void; onExtract: () => void; onReview: () => void; onStage: () => void
+  onFetch: () => void; onExtract: () => void; onReview: () => void; onStage: () => void; onSplit: () => void
 }) {
   const busy = !!running
   const canFetch = p._actions?.includes('fetch')
   const canExtract = p._actions?.includes('extract')
   const isOcr = p.source_type === 'archive_ocr'
+  const splitBtn = isDev ? (
+    <button onClick={onSplit} className="px-2 py-0.5 rounded border border-stone-300 text-stone-700 hover:border-stone-500" title="Split this long text into per-chapter entries">Split</button>
+  ) : null
 
   // Not yet advanced past fetch.
   if (p.status === 'pending' || p.status === 'stage-1-done') {
@@ -309,6 +322,7 @@ function RowActions({
         <>
           <button onClick={onReview} className="px-2 py-0.5 rounded border border-stone-300 text-stone-700 hover:border-stone-500">Review</button>
           <button onClick={onStage} className="px-2 py-0.5 rounded border border-amber-300 text-amber-700 hover:border-amber-500" title="Mark ready for import">Mark staged</button>
+          {splitBtn}
           {isDev && canFetch && <ActionBtn label="Re-fetch" busy={running === `fetch:${p.id}`} disabled={busy} onClick={onFetch} />}
         </>
       )
@@ -325,6 +339,7 @@ function RowActions({
       <>
         <button onClick={onReview} className="px-2 py-0.5 rounded border border-stone-300 text-stone-700 hover:border-stone-500">Review</button>
         <button onClick={onStage} className="px-2 py-0.5 rounded border border-amber-300 text-amber-700 hover:border-amber-500" title="Mark ready for import">Mark staged</button>
+        {splitBtn}
       </>
     )
   }
@@ -334,6 +349,7 @@ function RowActions({
     return (
       <>
         <button onClick={onReview} className="px-2 py-0.5 rounded border border-stone-300 text-stone-700 hover:border-stone-500">Review</button>
+        {splitBtn}
         <span className="text-amber-600" title="Included in Run import">● ready</span>
       </>
     )
@@ -625,6 +641,96 @@ function ResearchModal({
             {busy ? 'Researching…' : 'Research'}
           </button>
         </div>
+      </div>
+    </div>
+  )
+}
+
+type SplitChapter = { order: number; number: string; title: string; hadTitle?: boolean; words: number; notes: number }
+
+function SplitModal({
+  prospect, onClose, onDone, onError,
+}: {
+  prospect: Prospect
+  onClose: () => void
+  onDone: () => void
+  onError: (e: string) => void
+}) {
+  const [loading, setLoading] = useState(true)
+  const [chapters, setChapters] = useState<SplitChapter[]>([])
+  const [warnings, setWarnings] = useState<string[]>([])
+  const [writing, setWriting] = useState(false)
+  const [err, setErr] = useState<string | null>(null)
+
+  // Load the preview on open.
+  useEffect(() => {
+    let live = true
+    fetch('/api/admin/pipeline/split', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ prospectId: prospect.id }),
+    })
+      .then(async res => {
+        const json = await res.json()
+        if (!live) return
+        if (!res.ok) { setErr(json.error ?? 'Preview failed'); return }
+        setChapters(json.chapters ?? [])
+        setWarnings(json.warnings ?? [])
+      })
+      .catch(e => live && setErr(e.message))
+      .finally(() => live && setLoading(false))
+    return () => { live = false }
+  }, [prospect.id])
+
+  async function write() {
+    setWriting(true)
+    const res = await fetch('/api/admin/pipeline/split', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ prospectId: prospect.id, write: true }),
+    })
+    setWriting(false)
+    const json = await res.json()
+    if (!res.ok) { onError(json.error ?? 'Split failed'); return }
+    onDone()
+  }
+
+  return (
+    <div className="fixed inset-0 bg-black/30 flex items-start justify-center overflow-auto z-20 p-6" onClick={onClose}>
+      <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl p-6 my-4" onClick={e => e.stopPropagation()}>
+        <div className="flex items-center justify-between mb-1">
+          <h3 className="text-base font-semibold text-stone-800">Split into chapters · {prospect.title || prospect.id}</h3>
+          <button onClick={onClose} className="text-sm text-stone-400 hover:text-stone-800">Close</button>
+        </div>
+        <p className="text-xs text-stone-400 mb-4">
+          Detected chapter boundaries. Writing replaces the single staged text with one entry per chapter (a collection);
+          import it from the queue afterwards.
+        </p>
+
+        {err && <p className="text-sm text-red-700 bg-red-50 border border-red-200 rounded px-3 py-2 mb-3">{err}</p>}
+        {loading && <p className="text-sm text-stone-400">Detecting chapters…</p>}
+
+        {!loading && !err && (
+          <>
+            {warnings.length > 0 && (
+              <div className="text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded px-3 py-2 mb-3">
+                {warnings.map((w, i) => <div key={i}>⚠ {w}</div>)}
+              </div>
+            )}
+            <div className="border border-stone-200 rounded divide-y divide-stone-100 max-h-80 overflow-auto mb-4">
+              {chapters.map(c => (
+                <div key={c.order} className="px-3 py-1.5 flex items-baseline gap-3 text-sm">
+                  <span className="text-stone-400 w-6 text-right">{c.order}</span>
+                  <span className="text-stone-400 w-12">{c.number}</span>
+                  <span className="text-stone-800 flex-1 truncate">{c.title}{c.hadTitle === false && <span className="text-amber-600"> (no title)</span>}</span>
+                  <span className="text-stone-400 text-xs shrink-0">{c.words}w{c.notes ? ` · ${c.notes} notes` : ''}</span>
+                </div>
+              ))}
+            </div>
+            <div className="flex justify-end gap-3">
+              <button onClick={onClose} className="text-sm text-stone-500 hover:text-stone-800">Cancel</button>
+              <button onClick={write} disabled={writing || chapters.length < 2} className="text-sm px-3 py-1.5 rounded bg-stone-800 text-white hover:bg-stone-700 disabled:opacity-40">
+                {writing ? 'Writing…' : `Write ${chapters.length} chapter files`}
+              </button>
+            </div>
+          </>
+        )}
       </div>
     </div>
   )
