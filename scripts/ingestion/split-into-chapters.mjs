@@ -23,6 +23,7 @@
 import fs from 'fs'
 import path from 'path'
 import { fileURLToPath } from 'url'
+import { deinterleaveFootnotes, stripInlineMarkers } from './footnote-deinterleave.mjs'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const OUTPUT_DIR = path.join(__dirname, 'output')
@@ -149,23 +150,31 @@ export function detectChapters(raw, opts = {}) {
   return { chapters, frontMatterLines: chapMarkers[0].line, backMatterFrom, kind, warnings }
 }
 
-// Reflow OCR/hard-wrapped body into paragraphs + light hygiene. Mirrors the
-// approach proven in clean-archive-ocr.mjs.
-export function cleanBody(raw) {
-  let text = raw.replace(/\r\n?/g, '\n')
-  text = text.replace(/(\w)-\s*\n\s*(\w)/g, '$1$2') // rejoin hyphenated line breaks
+// Clean an OCR/hard-wrapped chapter body: lift page-bottom footnotes out of the
+// prose, rejoin words split across page breaks, drop inline markers, reflow into
+// paragraphs. Returns the clean body plus the extracted notes (in order).
+export function cleanBody(raw, opts = {}) {
+  // 1. Pull page-bottom footnotes (and page-number/running-head chrome) out.
+  const { text: deinterleaved, notes } = deinterleaveFootnotes(raw)
+
+  // 2. Rejoin words hyphen-split across the removed page break ("to-\n\ngether").
+  let text = deinterleaved.replace(/(\w)-\s*\n(?:\s*\n)*\s*(\w)/g, '$1$2')
+  // 3. Rejoin ordinary hyphenated line-wraps too.
+  text = text.replace(/(\w)-\s*\n\s*(\w)/g, '$1$2')
   text = text.split('\n').map(l => l.replace(/\s{2,}/g, ' ').trim()).join('\n')
+  // 4. Drop inline footnote reference markers ("pilgrim1", "mother.2").
+  text = stripInlineMarkers(text)
 
   const kept = []
   for (const line of text.split('\n')) {
     const t = line.trim()
     if (!t) { kept.push(''); continue }
-    if (/^\d{1,4}$/.test(t)) continue // standalone page number
-    if (looksLikeTitleLine(t) && t.length < 45) continue // running head (all-caps)
+    if (/^\d{1,4}$/.test(t)) continue // any stray standalone page number
+    if (looksLikeTitleLine(t) && t.length < 45) continue // stray running head
     kept.push(t)
   }
 
-  // Accumulate lines into paragraphs; blank line = break.
+  // 5. Accumulate lines into paragraphs; blank line = break.
   const paras = []
   let buf = []
   for (const line of kept) {
@@ -174,7 +183,20 @@ export function cleanBody(raw) {
   }
   if (buf.length) paras.push(buf.join(' '))
 
-  return paras.join('\n\n').replace(/\n{3,}/g, '\n\n').trim()
+  const body = paras.join('\n\n').replace(/\n{3,}/g, '\n\n').trim()
+  // Clean each note: drop its leading page-local number, and strip running-head
+  // fragments (runs of 2+ all-caps words, e.g. "THE UNITY OF THE CHURCH") that
+  // OCR folded into the note when a footnote block spanned a page.
+  const cleanNotes = notes
+    .map(n =>
+      n
+        .replace(/^\s*[1-9]\d?\s+/, '')
+        .replace(/\s*\b[A-Z]{2,}(?:\s+[A-Z]{2,})+\b\s*/g, ' ')
+        .replace(/\s{2,}/g, ' ')
+        .trim()
+    )
+    .filter(Boolean)
+  return { body, notes: cleanNotes }
 }
 
 function buildFrontmatter(cfg, ch) {
@@ -214,8 +236,15 @@ export function splitToFiles(raw, cfg, opts = {}) {
     const numSlug = String(ch.order).padStart(2, '0')
     const titleSlug = ch.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 40)
     ch.slug = `${cfg.slug}-${numSlug}-${titleSlug}`
-    ch.cleanBody = cleanBody(ch.rawBody)
-    ch.words = ch.cleanBody.split(/\s+/).filter(Boolean).length
+    const { body, notes } = cleanBody(ch.rawBody, opts)
+    ch.words = body.split(/\s+/).filter(Boolean).length
+    ch.noteCount = notes.length
+    // Footnotes preserved as sequential endnotes by default (out of the prose,
+    // nothing lost); pass footnotes:'drop' to omit them.
+    ch.cleanBody =
+      notes.length && opts.footnotes !== 'drop'
+        ? `${body}\n\n---\n\n### Notes\n\n${notes.map((n, i) => `${i + 1}. ${n}`).join('\n')}`
+        : body
     return ch
   })
 
@@ -275,7 +304,7 @@ if (isMain) {
 
   console.log(`\nDetected ${res.chapters.length} ${res.kind || 'chapter'}(s); front matter = ${res.frontMatterLines} lines${res.backMatterFrom ? `; back matter from line ${res.backMatterFrom}` : ''}`)
   for (const ch of res.chapters) {
-    console.log(`  ${String(ch.order).padStart(2)}. ${ch.number.padEnd(6)} ${ch.title}${ch.words ? `  (${ch.words} words)` : ''}${ch.hadTitle ? '' : '  [no title found]'}`)
+    console.log(`  ${String(ch.order).padStart(2)}. ${ch.number.padEnd(6)} ${ch.title}${ch.words ? `  (${ch.words} words${ch.noteCount ? `, ${ch.noteCount} notes` : ''})` : ''}${ch.hadTitle ? '' : '  [no title found]'}`)
   }
   if (res.warnings.length) console.log('\nWarnings:\n' + res.warnings.map(w => '  ⚠ ' + w).join('\n'))
   if (res.skipped) console.log('\nSkipped (below min-chapters).')
