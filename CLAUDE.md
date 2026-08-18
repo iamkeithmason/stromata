@@ -655,6 +655,7 @@ still apply per-file, still parallelize the same way. What changes is Stage 2/5a
 | `scripts/ingestion/extract-docx.mjs` | Extract a Google Drive `.docx` → staged markdown; normalises paragraphs & flags verse | Stage 2, `gdrive_docx` |
 | `scripts/normalise-markdown.mjs` | Insert paragraph block boundaries / flag verse (dry-run default, `--write` to apply) | Auto via extract-docx; manual cleanup; flag-only in Stage 5a |
 | `scripts/ingestion/clean-archive-ocr.mjs` | Clean Archive.org djvu.txt OCR | Stage 2, archive_ocr |
+| `scripts/ingestion/split-into-chapters.mjs` | Split one long text (OCR/markdown) into a per-chapter collection: detects `CHAPTER N`/`BOOK N`/etc. boundaries, extracts titles from the body, reflows each chapter, writes the `output/{slug}/` multi-file layout. `--dry` previews boundaries; exports `detectChapters()` for a GUI preview. | Long multi-chapter works |
 | `scripts/ingestion/config.js` | Config for fetch-texts.mjs — overwrite per prospect | Stage 2, digital |
 | `scripts/ingestion/archive-ocr-config.mjs` | Config for clean-archive-ocr.mjs — append per prospect | Stage 2, archive_ocr |
 | `scripts/lib/note-prompt.mjs` | Shared NOTE_PROMPT constant | Stage 4 fallback |
