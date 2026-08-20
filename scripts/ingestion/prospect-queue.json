@@ -128,7 +128,7 @@
     },
     {
       "id": "luther-small-catechism",
-      "status": "pending",
+      "status": "imported",
       "added": "2026-06-30",
       "author": "Martin Luther",
       "death_year": 1546,
@@ -142,7 +142,7 @@
       "translation_copyright_clear": false,
       "translator": "",
       "translator_death_year": null,
-      "stage_1_notes": "",
+      "stage_1_notes": "Imported 1 text(s) on 2026-08-17. 1 file(s) failed and were NOT imported: _review-summary.md missing title/slug/body",
       "stage_2_output": "",
       "stage_3_themes": [],
       "rejection_reason": "",
@@ -150,7 +150,7 @@
     },
     {
       "id": "keble-national-apostasy",
-      "status": "pending",
+      "status": "imported",
       "added": "2026-06-30",
       "author": "John Keble",
       "death_year": 1866,
@@ -164,7 +164,7 @@
       "translation_copyright_clear": true,
       "translator": "",
       "translator_death_year": null,
-      "stage_1_notes": "",
+      "stage_1_notes": "Imported 1 text(s) on 2026-08-17. 1 file(s) failed and were NOT imported: _review-summary.md missing title/slug/body",
       "stage_2_output": "",
       "stage_3_themes": [],
       "rejection_reason": "",
@@ -234,7 +234,8 @@
       "stage_2_output": "",
       "stage_3_themes": [],
       "rejection_reason": "",
-      "notes": "ANF Vol. 1, Dods & Reith translation 1885 (Marcus Dods d. 1909, George Reith d. 1916). New Advent broken. Long work — 138 chapters likely best imported as collection split by section. Notion backlog flags this as 'READY in Drive' meaning prep work may already be done — check with Keith whether a pre-processed version exists before running full OCR pipeline."
+      "notes": "ANF Vol. 1, Dods & Reith translation 1885 (Marcus Dods d. 1909, George Reith d. 1916). New Advent broken. Long work — 138 chapters likely best imported as collection split by section. Notion backlog flags this as 'READY in Drive' meaning prep work may already be done — check with Keith whether a pre-processed version exists before running full OCR pipeline.",
+      "docx_path": ""
     },
     {
       "id": "rutherford-letters-selection",
@@ -1630,6 +1631,43 @@
         "providence"
       ],
       "rejection_reason": ""
+    },
+    {
+      "id": "the-pilgrims-progress-every-bunyan",
+      "status": "staged",
+      "author": "John Bunyan",
+      "title": "The Pilgrim's Progress (Every Child Can Read edition)",
+      "source_type": "gutenberg",
+      "tradition": "reformed",
+      "era": "post-reformation",
+      "genre": "Treatise",
+      "source_url": "https://www.gutenberg.org/files/39452/39452-h/39452-h.htm",
+      "collection_slug": "the-pilgrims-progress-every-bunyan",
+      "translator": "",
+      "docx_path": "",
+      "notes": "",
+      "translation_copyright_clear": false,
+      "death_year": 1688,
+      "translator_death_year": null
+    },
+    {
+      "id": "de-ecclesia-the-church-hus",
+      "status": "imported",
+      "author": "Jan Hus",
+      "title": "De Ecclesia (The Church)",
+      "source_type": "archive_ocr",
+      "tradition": "reformed",
+      "era": "late-medieval",
+      "genre": "Treatise",
+      "source_url": "https://archive.org/download/deecclesiachurch00husjuoft/deecclesiachurch00husjuoft_djvu.txt",
+      "collection_slug": "de-ecclesia-the-church-hus",
+      "translator": "David S. Schaff",
+      "docx_path": "",
+      "notes": "Translation year (per source): 1915.",
+      "translation_copyright_clear": true,
+      "death_year": 1415,
+      "translator_death_year": 1941,
+      "stage_1_notes": "Re-sourced from djvu.txt OCR (details-page fetch was wrong). Split into 23 chapters via split-into-chapters.mjs. Schaff 1915 translation, PD (pre-1929). Imported 23 text(s) on 2026-08-18."
     }
   ]
 }

@@ -1,0 +1,41 @@
+---
+title: "Christ the Head of the Elect"
+slug: "de-ecclesia-the-church-hus-06-christ-the-head-of-the-elect"
+author: "Jan Hus"
+genre: "Treatise"
+themes: []  # TODO — choose 2–6 theme slugs from the controlled vocabulary
+collection: "de-ecclesia-the-church-hus"
+collection_order: 6
+source_attribution: "Translated by David S. Schaff (New York: Scribner, 1915). Sourced from the Internet Archive."
+provenance_notes: "Text sourced from the Internet Archive OCR. Accessed August 2026."
+translation_notes: "David S. Schaff (1852–1941). Translation published 1915; public domain (pre-1929)."
+ocr_quality: "medium"
+published: false
+copyright_safe: true
+note_draft: ""
+---
+
+<!-- EDITORIAL INTRO — 2–4 sentences on what this chapter covers. -->
+
+Treatment having been made of the holy catholic church, which is Christ's mystical body and of which Christ is the head, a statement must also be made of the church of the wicked — malignantium — which is the body of the devil, he being its head. For St. Gregory says, Moralia, 4 : 9 [Migne, 75 : 647]: "As our Redeemer is one person with the assembly of the good (for He is the head of the body and we the body of that head), so is the old enemy one person with all the company of the reprobate, for he as their head presides over them unto iniquity. Hence it is evident that all the reprobate constitute one body. For Christ said to the Jews, the high priests and Pharisees, who were called the chiefs — capitales — of the church: 'Ye are of your father, the devil, and the lusts of your father ye will do/" John 8 : 44. This shows that there must be one generation — brood — which was bad in the case of the common people, worse in the case of secular rulers, but worst of all in the case of the prelates, just as the generation of the righteous has three opposite classes, corresponding grade for grade to these three classes. If, therefore, the generation of the perverse is one, it is fitting that there should be one evil man [being] with parts, who are the members of the devil. And as there cannot be a head or a member except as these are related to the entire body, it is plain that there is one body of the devil.
+
+When, however, the body of Christ is called the mystical body on account of the mystery of the heavenly marriage between Christ and the church, the body of the devil is not likewise mystical but dark, because to be joined with the devil as one of his members does not express itself directly in mystery but in the scourge. Thus the body of the devil has something natural about it, because, as Augustine says, de natura Boni, all evil must root itself in the good, so all evil in morals is founded in what is good by nature. And besides having that which is natural, the body of the devil has the essence of vice, just as the mystical body of Christ has the essence of virtue. Hence St. Augustine denies, de doct. Christi, III [Nic. Fathers, 2 : 569], that the body and members of Christ are one in the same sense as the members of the devil are one.
+
+Now, if it be asked what is the form in which the members of the devil are united in that body, the answer is that there is an outer form and an inner deformity. The outer form is God's eternal foreknowledge which knows and ordains all the foreknown members of that diabolical body to be bound to perpetual punishment. But the inner deformity is the final disobedience or pride, which the saints call the guilt of final impenitence or the sin against the Holy Spirit. And so the same sin both continues on and disjoins. For it holds on in the members of the devil, binding them together in their wickedness for Tartarus and separating them from the companionship of the blessed, just as heat, first dissolving a mixture, gathers together the homogeneous parts, making each element of the dissolved mixture to seek its own place. But it separates the heterogeneous constituents, when it dissolves what seems on the surface to be harmonious by resolving the parts of the mixture, each into its original, separate element. For in the day of judgment, by the contrary principles, the coldness of the devil's body and the heat of the love of Christ's body, the bipartite body must be dissolved according to the
+
+law of the final form, when the light parts will hasten upward with their head, who is a consuming fire, to their appropriate mansions among the saints, but the parts terrestrial, weighted, as of lead, will go down to hell, even as John said, 21 : 13: "In a moment they went down into hell" [sheol].
+
+But the objection is drawn from St. Thomas [Summa, III, q. 8 : 3-7, Migne], 3 : 100 sqq., when he says: "Christ is the head of all men, both the faithful who are united unto himself in deed through grace, and also the unbelieving who are his members only potentially" — in potentia. And later on, he makes a division according to the predestinate and reprobate who, passing away from this world, cease wholly to be members of Christ. This he thus explains: As for this statement of St. Thomas, it seems to me he speaks ambiguously, saying truly that in virtue of his deity, Christ is the outward head of the whole human race which, taken as an aggregate, may be termed one natural body on which Christ confers benefits as he does on the whole world. In virtue of his humanity a secondary perfection was won by the merit of Christ's passion for the whole world, and so in virtue of his humanity he does good to the whole human race — when he punishes all the damned, whether they are damned (1) because of unbelief, like those who did not believe in the Lord Jesus Christ, or (2) because of despair which they ought to have put aside, aspiring to heavenly things, or (3) because of a rash and foolish judgment, which they ought to have put aside, and finally accepted the Lord Jesus Christ in love.
+
+Thus it appears how Christ is head of all men and how he is also head of the predestinate; and how it is not contradictory to speak of the body of the devil (which is the synagogue of Satan) and at the same time to speak of the church of Christ on the ground of creation, beneficence, and preservation, but not on the ground of a union based on love, on which ground it is called Christ's church which he loved, that he might present it as his bride without spot and to be cherished
+
+forever. But what the church of Christ or the synagogue of Satan are or will be — whether in the case of men or — more numerously — in the case of the angels — we shall fully know after Christ the Lord has pronounced the final judgment. For he himself says: "Enter ye in at the strait gate, for wide is the gate and broad is the way which leadeth unto perdition and many there are who go in thereat, for strait is the gate and narrow is the way which leadeth unto life and few there are who find it." Matt. 7 : 13. On this passage Chrysostom says, Homil. 18 [Nic. Fathers 10 : 163]: "The way of Christ is said to be strait and narrow, because Christ received to himself only those who divested themselves of all sins, laid down all the care of this world and were made refined and spiritual — subtiles et spirUuales."
+
+Almighty Lord, who art the way, the truth, and the life, Thou knowest how few in this present time walk in Thee, how few imitate Thee as their head, in humility, poverty, chastity, diligence, and patience. Open is the way of Satan; many walk therein. Help Thy weak flock, that it may not forsake Thee, but follow Thee unto the end in the narrow way.
+
+---
+
+### Notes
+
+1. In his Super IV. Sent., 36, 733, Huss also calls the kingdom of Satan ecclesia malignancium, or civilas diaboli. " This is the congregation of all the damned, as the holy church is the congregation of all the faithful — those who are to be saved. In the present time this church of the wicked is dispensing its evil odor and infection and the virus of false doctrine."
+2. In his Super IV. Sent., 36, 733, Huss also calls the kingdom of Satan ecclesia malignancium, or civilas diaboli. " This is the congregation of all the damned, as the holy church is the congregation of all the faithful — those who are to be saved. In the present time this church of the wicked is dispensing its evil odor and infection and the virus of false doctrine." 52
