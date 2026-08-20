@@ -79,6 +79,11 @@ const td = new TurndownService({
   codeBlockStyle: "fenced",
 });
 
+// Drop non-content tags entirely so their contents never leak into the body.
+// MediaWiki injects <style> TemplateStyles blocks inside the article; without
+// this they flatten into the markdown as raw CSS (.mw-parser-output {…}).
+td.remove(["style", "script", "link", "noscript", "head"]);
+
 // Keep italics and bold; strip footnote back-links (↩ etc.)
 td.addRule("stripFootnoteBacklinks", {
   filter: (node) =>
@@ -164,7 +169,11 @@ const SOURCE_SELECTORS = {
 
   wikisource: {
     extractFn: ($) => {
-      $(".ws-noexport, .navigation-template, nav, .mw-editsection").remove();
+      $(
+        "style, script, link, .ws-noexport, .navigation-template, nav, .mw-editsection, " +
+          ".noprint, .wst-header, .wst-pagebreak, .mw-references-wrap, .reflist, sup.reference"
+      ).remove();
+      $("[style]").removeAttr("style"); // drop inline style attrs (mw layout hints)
       return $("#mw-content-text").html() || $("body").html() || "";
     },
   },
@@ -221,18 +230,28 @@ function extractTitle(markdown, url) {
   return path.basename(url, path.extname(url));
 }
 
-function generateFrontmatter(title, index, cfg, noteDraft = "") {
+function generateFrontmatter(title, index, cfg, noteDraft = "", suggestedThemes = []) {
   const slug = slugify(title);
   const themeList = ALL_THEMES.join(", ");
   const genreList = ALL_GENRES.join(", ");
   const escapedDraft = noteDraft.replace(/\\/g, "\\\\").replace(/"/g, '\\"').replace(/\n/g, " ");
+
+  // Map suggested theme names → controlled-vocab slugs, keep only valid ones (cap 6),
+  // so import gets a real starting set instead of an empty list to fill by hand.
+  const validThemeSlugs = new Set(ALL_THEMES.map(slugify));
+  const themeSlugs = [...new Set(suggestedThemes.map(slugify))]
+    .filter((s) => validThemeSlugs.has(s))
+    .slice(0, 6);
+  const themesLine = themeSlugs.length
+    ? `themes: [${themeSlugs.join(", ")}]`
+    : `themes: []  # TODO — choose from: ${themeList}`;
 
   return `---
 title: "${title}"
 slug: "${slug}"
 author: "${cfg.collection.author}"
 genre: "${cfg.knownFields.genre || "# TODO — choose from: " + genreList}"
-themes: []  # TODO — choose from: ${themeList}
+${themesLine}
 collection: "${cfg.collection.slug}"
 collection_order: ${index + 1}
 source_attribution: "${cfg.knownFields.sourceAttribution || "# TODO"}"
@@ -329,12 +348,18 @@ async function fetchAndProcess(url, index, cfg) {
   }
 
   const markdown = td.turndown(contentHtml || "");
-  const title = extractTitle(markdown, url);
+  // Prefer the prospect's clean title for single-text fetches; fall back to the
+  // scraped page title for multi-chapter works, where each page has its own.
+  const title =
+    cfg.urls.length === 1 && cfg.collection.name
+      ? cfg.collection.name
+      : extractTitle(markdown, url);
   const slug = slugify(title);
 
   const noteDraft = await generateNoteDraft(title, cfg.collection.author, markdown);
 
-  const frontmatter = generateFrontmatter(title, index, cfg, noteDraft);
+  const suggestedThemes = suggestThemes(markdown);
+  const frontmatter = generateFrontmatter(title, index, cfg, noteDraft, suggestedThemes);
   const fullContent = frontmatter + markdown;
 
   console.log(`  ✓ "${title}" (${markdown.length} chars)`);
