@@ -7,6 +7,64 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-08-20 — Pipeline operator GUI, chapter splitter, footnote handling (PR #19)
+
+A multi-session arc (Aug 17–20) landed as one branch/PR: the content pipeline grew a browser GUI,
+a long-text chapter splitter, and OCR footnote de-interleaving. All of it is dev-facing tooling and
+staging logic — nothing here publishes texts or promotes authors; the hard constraints are intact.
+
+**The pipeline GUI (`/admin/pipeline`).** An operator UI over the whole pipeline, so the mechanical
+parts no longer mean hand-editing `prospect-queue.json` and typing `node scripts/...`. It exposes:
+the prospect queue (add/edit/reject via a form whose tradition/era/genre/source_type/theme inputs
+are dropdowns bound to the controlled vocabularies, re-validated server-side); the visible
+**Fetch/Extract → Review → Mark staged → Run import → Drafts → publish** ladder; dev-only one-click
+runners that stream script output live (Fetch = generate config + `fetch-texts.mjs`, Extract =
+`extract-docx.mjs`, a toolbar Run import over all `staged`); staged-output review that edits
+title/genre/themes in the frontmatter; and **Research from URL** — paste a source URL, a route
+fetches the page and has Claude extract metadata + a SAFE/HOLD copyright verdict, then pre-fills the
+New Prospect form (advisory only; HARD CONSTRAINT 3 stays a human call). All runners 403 in
+production. Files: `app/admin/pipeline/*`, `app/api/admin/pipeline/{queue,run,output,research,split}`,
+`lib/pipeline/{vocab,queue,runner,outputs}.ts`.
+
+**A gap the GUI surfaced, and fetch-quality fixes.** Using it revealed that Fetch is only Stage 2 —
+it produced output but left the prospect where it was, so fetched texts were stranded, and import
+lands in Drafts (not the live list). Fixed the ladder to auto-advance. Also fixed real fetch-quality
+bugs found on the Small Catechism (Wikisource) and National Apostasy (Keble): MediaWiki TemplateStyles
+CSS was dumping into the body, titles came from the scraped page (`Small_Catechism`, `keble1`) instead
+of the prospect, themes were hardcoded empty, and source/translation notes were left as `# TODO`.
+Fixed forward in `fetch-texts.mjs`/`runner.ts` and retroactively in Supabase for the two imported drafts.
+
+**Chapter splitter (`split-into-chapters.mjs`).** Splits one long OCR/markdown work into a per-chapter
+collection (the pattern already used for Hydriotaphia etc.). Heuristics-first and deterministic:
+detect `CHAPTER N`/`BOOK N`/etc. markers, keep the dominant kind, **enforce ascending numbering** (so
+an inline "as in Chapter XVIII" cross-reference OCR left on its own line doesn't create a false
+boundary), pull titles from the all-caps line(s) after each marker, clip front/back matter (starts at
+the first marker, stops at INDEX/APPENDIX), reflow each chapter. A "Split into chapters" GUI action
+previews the detected boundaries before writing.
+
+**Footnote de-interleaving (`footnote-deinterleave.mjs`).** The hard part: djvu.txt drops each page's
+footnotes into the text stream at the page break, splitting sentences and even words ("held to-" +
+[footnotes] + "gether"). It anchors on page-break chrome (a standalone page number *or* a running head,
+which OCR often merges: "CHRIST THE ONLY HEAD OF THE CHURCH 33"), scans up to note 1 to find the
+footnote stack (also catching a chapter's final-page notes), rejoins the split word, and drops inline
+markers.
+
+**De Ecclesia (Jan Hus, Schaff 1915) — the proving case.** First found it hadn't really imported: the
+prospect (from Research-from-URL) had grabbed the archive.org `/details/` landing page, not the book.
+Re-sourced from the djvu.txt OCR, split into **23 chapters** (all titles correct, one stray
+cross-reference dropped), imported as a `published:false` collection with a Jan Hus draft-author stub,
+and themes assigned per chapter from the controlled vocabulary.
+
+**Footnote policy reversal — drop by default.** After living with the endnotes for a few days, the
+retention overhead (and the reading-experience cost of an apparatus section per chapter) wasn't worth
+it for reading editions. Stripped the notes from all 23 De Ecclesia chapters (recoverable anytime from
+`sources/de-ecclesia-the-church-hus-raw.txt` via the splitter's endnotes mode) and **flipped the
+splitter default to drop footnotes**, with an opt-in `--footnotes=endnotes` / GUI "Keep footnotes as
+endnotes" toggle for the occasional text that wants them. Clean core text is now the zero-effort path;
+retention is a deliberate choice.
+
+---
+
 ## 2026-07-13 (later still) — Second round of collections: Luther and Browne
 
 Continued up the size-sorted collection list: *An Open Letter to the Christian Nobility of the
