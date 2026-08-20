@@ -62,7 +62,7 @@ export async function POST(request: NextRequest) {
   if (process.env.NODE_ENV === 'production') {
     return NextResponse.json({ error: 'Splitting is disabled in production; run locally with `npm run dev`.' }, { status: 403 })
   }
-  const body = (await request.json()) as { prospectId?: string; write?: boolean }
+  const body = (await request.json()) as { prospectId?: string; write?: boolean; keepNotes?: boolean }
   if (!body.prospectId) return NextResponse.json({ error: 'prospectId required' }, { status: 400 })
 
   const queue = await readQueue()
@@ -84,7 +84,8 @@ export async function POST(request: NextRequest) {
   }
 
   // Write: split into per-chapter files, then remove the old single file(s).
-  const res = splitToFiles(src.raw, cfgFromProspect(prospect), {})
+  // Footnotes are dropped by default; keepNotes appends them as endnotes.
+  const res = splitToFiles(src.raw, cfgFromProspect(prospect), { footnotes: body.keepNotes ? 'endnotes' : 'drop' })
   if (res.skipped) return NextResponse.json({ error: res.warnings.join(' ') }, { status: 422 })
   for (const f of src.cleanup) {
     try { await fs.unlink(f) } catch { /* already gone */ }

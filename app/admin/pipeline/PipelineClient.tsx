@@ -660,7 +660,9 @@ function SplitModal({
   const [chapters, setChapters] = useState<SplitChapter[]>([])
   const [warnings, setWarnings] = useState<string[]>([])
   const [writing, setWriting] = useState(false)
+  const [keepNotes, setKeepNotes] = useState(false)
   const [err, setErr] = useState<string | null>(null)
+  const totalNotes = chapters.reduce((s, c) => s + (c.notes || 0), 0)
 
   // Load the preview on open.
   useEffect(() => {
@@ -683,7 +685,7 @@ function SplitModal({
   async function write() {
     setWriting(true)
     const res = await fetch('/api/admin/pipeline/split', {
-      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ prospectId: prospect.id, write: true }),
+      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ prospectId: prospect.id, write: true, keepNotes }),
     })
     setWriting(false)
     const json = await res.json()
@@ -723,11 +725,17 @@ function SplitModal({
                 </div>
               ))}
             </div>
-            <div className="flex justify-end gap-3">
-              <button onClick={onClose} className="text-sm text-stone-500 hover:text-stone-800">Cancel</button>
-              <button onClick={write} disabled={writing || chapters.length < 2} className="text-sm px-3 py-1.5 rounded bg-stone-800 text-white hover:bg-stone-700 disabled:opacity-40">
-                {writing ? 'Writing…' : `Write ${chapters.length} chapter files`}
-              </button>
+            <div className="flex items-center justify-between gap-3">
+              <label className="flex items-center gap-2 text-xs text-stone-500" title="Off = clean reading text; on = append footnotes as a Notes section per chapter">
+                <input type="checkbox" checked={keepNotes} onChange={e => setKeepNotes(e.target.checked)} />
+                Keep footnotes as endnotes{totalNotes ? ` (${totalNotes})` : ''}
+              </label>
+              <div className="flex gap-3">
+                <button onClick={onClose} className="text-sm text-stone-500 hover:text-stone-800">Cancel</button>
+                <button onClick={write} disabled={writing || chapters.length < 2} className="text-sm px-3 py-1.5 rounded bg-stone-800 text-white hover:bg-stone-700 disabled:opacity-40">
+                  {writing ? 'Writing…' : `Write ${chapters.length} chapter files`}
+                </button>
+              </div>
             </div>
           </>
         )}

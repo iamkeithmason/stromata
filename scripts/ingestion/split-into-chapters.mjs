@@ -239,10 +239,11 @@ export function splitToFiles(raw, cfg, opts = {}) {
     const { body, notes } = cleanBody(ch.rawBody, opts)
     ch.words = body.split(/\s+/).filter(Boolean).length
     ch.noteCount = notes.length
-    // Footnotes preserved as sequential endnotes by default (out of the prose,
-    // nothing lost); pass footnotes:'drop' to omit them.
+    // Footnotes are DROPPED by default — these are reading editions, and the
+    // apparatus is regenerable from the raw OCR. Pass footnotes:'endnotes' to
+    // keep them appended as a sequential Notes section per chapter.
     ch.cleanBody =
-      notes.length && opts.footnotes !== 'drop'
+      notes.length && opts.footnotes === 'endnotes'
         ? `${body}\n\n---\n\n### Notes\n\n${notes.map((n, i) => `${i + 1}. ${n}`).join('\n')}`
         : body
     return ch
@@ -284,7 +285,7 @@ if (isMain) {
   const { opts, positional } = parseArgs(process.argv.slice(2))
   const input = positional[0]
   if (!input || !opts.slug) {
-    console.error('Usage: node split-into-chapters.mjs <input.txt> --slug=<slug> --title="…" --author="…" --genre="…" [--min-chapters=3] [--dry]')
+    console.error('Usage: node split-into-chapters.mjs <input.txt> --slug=<slug> --title="…" --author="…" --genre="…" [--min-chapters=3] [--footnotes=endnotes] [--dry]')
     process.exit(1)
   }
   const raw = fs.readFileSync(input, 'utf8')
@@ -300,6 +301,8 @@ if (isMain) {
   const res = splitToFiles(raw, cfg, {
     dry: !!opts.dry,
     minChapters: opts['min-chapters'] ? Number(opts['min-chapters']) : 3,
+    // Footnotes dropped by default; --footnotes=endnotes (or --keep-footnotes) keeps them.
+    footnotes: opts.footnotes === 'endnotes' || opts['keep-footnotes'] ? 'endnotes' : 'drop',
   })
 
   console.log(`\nDetected ${res.chapters.length} ${res.kind || 'chapter'}(s); front matter = ${res.frontMatterLines} lines${res.backMatterFrom ? `; back matter from line ${res.backMatterFrom}` : ''}`)
