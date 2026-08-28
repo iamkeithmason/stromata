@@ -35,7 +35,7 @@ import {
   fetchSchema,
   assertToken,
 } from './notion';
-import { scoreProposal } from './scoring';
+import { processProposal } from './scoring';
 import {
   PROPOSE_TOOL,
   createEnforcementHook,
@@ -157,30 +157,32 @@ async function main() {
     'propose_prospect',
     'Propose ONE provisional gap-filling text as a Content Prospect List row. ' +
       'Status is stamped provisional automatically; you cannot publish or approve. ' +
-      'Provide ALL fields in this single call — candidateSources is required, so ' +
-      'include at least one source URL hint here rather than resubmitting.',
+      'Emit ONLY the three score integers value/complexity/effort (1–3) — do NOT ' +
+      'compute any aggregate; a Notion formula owns Score. Do NOT set Era (it is ' +
+      'derived from the death year). Provide ALL fields in this single call, ' +
+      'including at least one candidate source URL.',
     {
       title: z.string().describe('Display title, "Author — Work".'),
       author: z.string(),
       work: z.string().describe('The work title on its own.'),
-      tradition: z.string().describe(`One of: ${NOTION_TRADITIONS.join(', ')}`),
-      era: z.string().describe(`One of: ${NOTION_ERAS.join(', ')}`),
+      tradition: z.string().optional().describe(`Proposed tradition (validated in code). One of: ${NOTION_TRADITIONS.join(', ')}`),
       genre: z.string().optional().describe(`Optional, one of: ${NOTION_GENRES.join(', ')}`),
-      deathYear: z.number().nullable().optional().describe("Author's death year if known."),
-      impact: z.number().describe('1–5, editorial priority × search gravity.'),
-      confidence: z.number().describe('1–5, sureness a PD sourceable form exists.'),
-      ease: z.number().describe('1–5, clean source availability / length / low translation risk.'),
+      birthYear: z.number().nullable().optional().describe("Author's birth year if known."),
+      deathYear: z.number().nullable().optional().describe("Author's death year (drives Era, tradition validation, copyright gate)."),
+      floruitYear: z.number().nullable().optional().describe('Author floruit year, if birth/death unknown.'),
+      value: z.number().int().describe('1–3, editorial priority × search gravity (higher is better).'),
+      complexity: z.number().int().describe('1–3, copyright + source availability (higher is WORSE).'),
+      effort: z.number().int().describe('1–3, length + processing work (higher is WORSE).'),
       tier1: z.boolean().describe('Is the author a recognisable named search-driver?'),
       rationale: z.string().describe('One line: which gap this fills and why now.'),
       discoveryNote: z.string().describe('One line: is the author a Tier-1 search-driver?'),
       candidateSources: z.array(z.string()).describe('Unverified URL hint(s) where the text might be sourced.'),
-      copyrightFlag: z.enum(['likely-clear', 'needs-check', 'trap-adjacent']),
-      copyrightReason: z.string().describe('One line justifying the copyright flag.'),
+      translationNotes: z.string().describe('Copyright / translation / source reasoning (also encoded by the Complexity score).'),
     },
     async (rawArgs) => {
-      // Only apply-mode, gate-passed calls arrive here. Re-derive the scored
+      // Only apply-mode, gate-passed calls arrive here. Re-derive the processed
       // proposal deterministically (identical to the hook's) and write it.
-      const scored = scoreProposal(toProposalInput(rawArgs));
+      const scored = processProposal(toProposalInput(rawArgs));
       try {
         const { url } = await createProspect(scored, runDate);
         state.written.push({ scored, url });

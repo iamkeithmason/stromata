@@ -1,4 +1,4 @@
-# Scout — corpus gap analysis agent (v0)
+# Scout — corpus gap analysis agent (v0.1)
 
 The Scout is a scheduled [Agent SDK](https://code.claude.com/docs/en/agent-sdk/typescript)
 script that performs **corpus gap analysis** for The Stromata and proposes new
@@ -47,40 +47,65 @@ Required env (see `.env.example`): `ANTHROPIC_API_KEY`, `NOTION_TOKEN`,
    build published-text counts per tradition × era, plus the covered-authors and
    covered-works dedupe sets.
 2. **Reconcile-first** (`notion.ts`) — the live Content Prospect List schema is
-   fetched before writing. The DB scores on **Value / Complexity / Effort**
-   (each 1–3) + a read-only **Score** formula, not Impact/Confidence/Ease, so the
-   Scout computes ICE internally and *projects* it onto those native axes
-   (`scoring.ts`). Agent rows then sort under the same Score formula as
-   hand-entered rows.
+   fetched before writing.
 3. **The agent** (`scout.ts`, Sonnet 5) is handed the coverage snapshot, the
-   priority model, the controlled vocabulary, and the existing prospects, then
+   priority guidance, the controlled vocabulary, and the existing prospects, then
    proposes candidates best-first via a single tool, `propose_prospect`.
-4. **The contract hook** (`hook.ts` + `contract.ts`) gates every proposal:
-   required fields, controlled values, provisional Status, copyright triage,
+4. **Deterministic processing** (`scoring.ts` + `taxonomy.ts`) — for every
+   proposal the code computes the Score, derives the Era from the author's dates,
+   and validates/repairs the tradition. The agent's numbers are never trusted for
+   anything a formula or the dates already settle.
+5. **The contract hook** (`hook.ts` + `contract.ts`) gates every proposal:
+   required fields, controlled values, provisional Status, the copyright gate,
    dedupe, threshold, and the per-run cap — each a discriminated, logged
    decision. No silent drops. In dry-run it records what *would* be written and
    denies the write.
 
-### Scoring — ICE, author-anchored
+### Scoring — Value / Complexity / Effort
 
-The agent supplies `impact` / `confidence` / `ease` (1–5), `tier1`, and a
-copyright flag. The **priority model** — tradition weight and the medieval bonus
-(`config.ts`) — is applied in code, never left to the agent:
+The Content Prospect List scores on three integers (each **1–3**) with a
+read-only Notion **Score** formula. The agent emits **only** those three
+integers — nothing derived, no ICE:
 
-- **Impact → Value.** Highest for a recognisable Tier-1 search-driver filling an
-  under-filled high-priority cell. Concept-only / tradition-only draws score low.
-- **Confidence + copyright flag → Complexity.** A named pre-1900 work with a
-  known digital home is low-complexity; a trap-adjacent modern edition is high.
-- **Ease → Effort.** Length and processing burden; tangled translation lineage
-  or heavy polytonic Greek lowers ease.
+- **Value** (higher is better): editorial priority × search gravity. Weight
+  Tier-1 named authors, under-filled high-priority cells, and medieval works up.
+- **Complexity** (higher is **worse** — a cost): copyright + source availability.
+  1 = clean public-domain translation, easily sourced; 3 = rights unclear or only
+  poor OCR. Copyright reasoning goes in `translationNotes`; there is no separate
+  copyright-flag field.
+- **Effort** (higher is **worse** — a cost): length + processing work.
 
-Only candidates with `ICE ≥ threshold` (config) and within the cap are written.
+**`Score = Value / (Complexity + Effort)`** is the single source of truth for
+ranking and the below-threshold cut, ported faithfully from the Notion formula as
+`computeScore` (`scoring.ts`) and pinned to real row values in `scoring.test.ts`.
+It is a read-only formula — the Scout **never writes Score**.
+
+### Era is derived; Tradition is guarded (`taxonomy.ts`)
+
+- **Era** is fully determined by the author's death year (fallback floruit/birth),
+  so the agent never proposes it. Missing dates → Era left blank + `needs-editorial`.
+- **Tradition** the agent may propose, but code validates it against the death
+  year. It **auto-reassigns** only among the three date-settled traditions (Early
+  Church ≤325, Patristic 325–600, Byzantine 600–1054) — e.g. a Greek-East author
+  mislabelled "Patristic" is corrected to Byzantine. Everything else (post-1054
+  East/West, a Reformation confession, a boundary figure, or missing dates) is
+  **flagged** `needs-editorial` with the field cleared, rather than guessed. The
+  correction/flag is recorded in Editorial notes (`↻` / `⚑`) and the row still
+  lands as `Proposed — agent`.
+
+### Copyright gate
+
+Propose only authors who died **before 1900** (or whose death year is genuinely
+unknown); a death year ≥ 1900 is a `rights-excluded` skip. Translation copyright
+is never auto-cleared — that stays a human gate, expressed as a high Complexity
+score plus a `translationNotes` caveat, flagged against the known traps.
 
 ### Discriminated skip reasons
 
 Every non-written candidate is logged with exactly one reason: `already-published`,
-`already-proposed`, `copyright-excluded`, `below-threshold`, `duplicate-in-batch`,
-`over-cap`, or `contract-violation`.
+`already-proposed`, `rights-excluded`, `below-threshold`, `duplicate-in-batch`, or
+`over-cap`. A malformed proposal (contract violation) is denied and **retried** by
+the agent — counted separately, not as a dropped candidate.
 
 ### Idempotency
 
@@ -95,16 +120,20 @@ Logical field → live property (reconciled 2026-08-28):
 |---|---|
 | Title ("Author — Work") | `Title` |
 | Author | `Author` |
-| Tradition / Era / Genre | `Tradition` / `Era` / `Genre` (controlled selects) |
+| Value / Complexity / Effort (1–3) | `Value` / `Complexity` / `Effort` |
+| computed score | `Score` (read-only formula — **never written**) |
+| Tradition | `Tradition` (valid option, or blank + `needs-editorial` flag) |
+| Era (derived) | `Era` (valid option, or blank + `needs-editorial` flag) |
+| Genre | `Genre` (when confident; else blank) |
 | Status (provisional) | `Status = "Proposed — agent"` (auto-created option) |
-| Impact / Confidence / Ease | `Value` / `Complexity` / `Effort` (+ raw ICE in notes) |
-| computed score | `Score` (formula, auto) |
-| Rationale · Discovery note · Generated-by · Dedupe key · Provenance caveat | `Editorial notes` + page-body callout |
-| Copyright flag + reason | `Translation notes` |
-| Candidate source(s) | `Reference URL` (primary) + `Editorial notes` |
+| Candidate source | `Reference URL` |
+| Copyright reasoning + provenance caveat | `Translation notes` |
+| Rationale · Discovery · Generated-by · Dedupe key · `↻`/`⚑` markers | `Editorial notes` + page-body callout |
 
-Fields with no dedicated property are folded into the notes / page body rather
-than failing the run.
+The hook blocks the write unless Title and Author are present, V/C/E are each
+integers 1–3, Status is exactly `Proposed — agent`, Reference URL is valid,
+Translation notes carries the caveat, **Score is absent from the payload**, and
+Tradition/Era are each a valid option or blank-with-a-`needs-editorial`-flag.
 
 ## Sealed tool surface
 

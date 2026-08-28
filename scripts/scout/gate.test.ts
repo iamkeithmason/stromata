@@ -1,7 +1,8 @@
 /**
- * Tests for the deterministic core: scoring projection + the enforcement gate's
- * discriminated skip reasons. These run without the Agent SDK, Supabase, Notion,
- * or an API key — they exercise exactly the contract logic that must not drift.
+ * Tests for the enforcement gate: discriminated skip reasons, the copyright
+ * hard gate, dedupe, threshold, cap, and that a needs-editorial taxonomy flag
+ * does not block the write. Runs without the Agent SDK, Supabase, Notion, or an
+ * API key.
  *
  * Run: npx tsx --test scripts/scout/gate.test.ts
  */
@@ -10,7 +11,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 
 import { dedupeKey } from './contract';
-import { scoreProposal } from './scoring';
+import { computeScore } from './scoring';
 import { createRunState, gateProposal } from './hook';
 import type { CoverageMap, ExistingProspect, ProposalInput } from './types';
 
@@ -25,25 +26,25 @@ function coverage(overrides: Partial<CoverageMap> = {}): CoverageMap {
   };
 }
 
-/** A strong, contract-valid, above-threshold proposal. */
+/** A strong, contract-valid, above-threshold proposal (Score 1.5). */
 function strong(over: Partial<ProposalInput> = {}): ProposalInput {
   return {
     title: 'Athanasius — On the Incarnation',
     author: 'Athanasius',
     work: 'On the Incarnation',
-    tradition: 'Patristic', // HIGH band
-    era: 'Nicene & Post-Nicene',
+    tradition: 'Patristic',
     genre: 'Treatise',
+    birthYear: 296,
     deathYear: 373,
-    impact: 5,
-    confidence: 5,
-    ease: 5,
+    floruitYear: null,
+    value: 3,
+    complexity: 1,
+    effort: 1,
     tier1: true,
     rationale: 'Fills a thin Patristic cell with a Tier-1 author.',
     discoveryNote: 'Athanasius is a recognisable search-driver.',
     candidateSources: ['https://www.newadvent.org/fathers/2802.htm'],
-    copyrightFlag: 'likely-clear',
-    copyrightReason: 'd.373; NPNF translation public domain.',
+    translationNotes: 'd.373; NPNF translation, public domain.',
     ...over,
   };
 }
@@ -52,32 +53,13 @@ function raw(p: ProposalInput): Record<string, unknown> {
   return { ...p } as Record<string, unknown>;
 }
 
-test('dedupeKey normalises punctuation, diacritics, case, and whitespace', () => {
+test('dedupeKey normalises punctuation, diacritics, case, whitespace; keeps distinct works apart', () => {
   assert.equal(
     dedupeKey('Athanasius', 'On the Incarnation'),
     dedupeKey('  ATHANASIUS ', 'On  the   Incarnation!'),
   );
   assert.equal(dedupeKey('Grégoire', 'De Anima'), dedupeKey('Gregoire', 'De Anima'));
-  // Conservative: distinct works must NOT collapse together.
   assert.notEqual(dedupeKey('Athanasius', 'On the Incarnation'), dedupeKey('Athanasius', 'Incarnation'));
-});
-
-test('scoreProposal applies tradition weight, medieval bonus, tier1, and 1–3 projection', () => {
-  const s = scoreProposal(strong());
-  assert.equal(s.traditionWeight, 1.0); // Patristic = HIGH
-  assert.equal(s.medievalBonus, 0);
-  // weightedImpact = 5 * 1.0 * 1.25 = 6.25 → Value 3
-  assert.equal(s.value, 3);
-  assert.equal(s.complexity, 1); // confidence 5 + likely-clear floor
-  assert.equal(s.effort, 1); // ease 5
-  assert.ok(s.iceScore >= 28);
-
-  const med = scoreProposal(strong({ era: 'High Medieval' }));
-  assert.equal(med.medievalBonus, 1.0);
-  assert.ok(med.iceScore > s.iceScore); // bonus lifts a medieval candidate
-
-  const low = scoreProposal(strong({ tradition: 'Ecumenical', tier1: false }));
-  assert.equal(low.traditionWeight, 0.33); // LOW band
 });
 
 test('gate accepts a strong candidate (dry-run records it, denies the write)', () => {
@@ -85,7 +67,9 @@ test('gate accepts a strong candidate (dry-run records it, denies the write)', (
   const out = gateProposal(state, raw(strong()));
   assert.equal(state.accepted.length, 1);
   assert.equal(state.skips.length, 0);
-  // dry-run never writes: even an accepted proposal is denied at the tool.
+  assert.equal(state.accepted[0].score, computeScore(3, 1, 1));
+  assert.equal(state.accepted[0].era, 'Nicene & Post-Nicene');
+  assert.equal(state.accepted[0].resolvedTradition, 'Patristic');
   assert.equal(out.hookSpecificOutput.permissionDecision, 'deny');
 });
 
@@ -96,28 +80,48 @@ test('gate allows the write in apply mode for a strong candidate', () => {
   assert.equal(state.accepted.length, 1);
 });
 
-test('contract-violation is recorded as malformed (retryable), not a dropped skip', () => {
+test('contract-violation (value out of 1–3) is malformed, not a skip', () => {
   const state = createRunState({ dryRun: true, maxProposals: 10, coverage: coverage(), existing: [] });
-  const out = gateProposal(state, raw(strong({ tradition: 'Zoroastrian' })));
+  const out = gateProposal(state, raw(strong({ value: 4 })));
   assert.equal(state.malformed.length, 1);
   assert.equal(state.skips.length, 0);
   assert.equal(state.accepted.length, 0);
   assert.equal(out.hookSpecificOutput.permissionDecision, 'deny');
 });
 
-test('a candidate malformed once then corrected is accepted, with no lingering skip', () => {
-  const state = createRunState({ dryRun: false, maxProposals: 10, coverage: coverage(), existing: [] });
-  gateProposal(state, raw(strong({ candidateSources: [] }))); // missing sources → malformed
-  gateProposal(state, raw(strong())); // resubmitted correctly → accepted
+test('contract-violation (no candidate source URL) is malformed', () => {
+  const state = createRunState({ dryRun: true, maxProposals: 10, coverage: coverage(), existing: [] });
+  gateProposal(state, raw(strong({ candidateSources: [] })));
   assert.equal(state.malformed.length, 1);
-  assert.equal(state.accepted.length, 1);
-  assert.equal(state.skips.length, 0);
 });
 
-test('skip: copyright-excluded for a post-1899 trap-adjacent author', () => {
+test('placeholder/probe proposals are rejected (bad Title form + example.com source)', () => {
   const state = createRunState({ dryRun: true, maxProposals: 10, coverage: coverage(), existing: [] });
-  gateProposal(state, raw(strong({ deathYear: 1971, copyrightFlag: 'trap-adjacent' })));
-  assert.equal(state.skips[0]?.reason, 'copyright-excluded');
+  gateProposal(state, {
+    title: 'test', author: 'test', work: 'test',
+    value: 1, complexity: 1, effort: 1, tier1: false,
+    rationale: 'x', discoveryNote: 'x', translationNotes: 'x',
+    candidateSources: ['https://example.com'],
+  });
+  assert.equal(state.accepted.length, 0);
+  assert.equal(state.malformed.length, 1);
+  assert.match(state.malformed[0].detail, /Author — Work|Reference URL/);
+});
+
+test('skip: rights-excluded for a death year at/after the 1900 cutoff', () => {
+  const state = createRunState({ dryRun: true, maxProposals: 10, coverage: coverage(), existing: [] });
+  gateProposal(state, raw(strong({ author: 'C. S. Lewis', work: 'Mere Christianity', tradition: 'Anglican', deathYear: 1963, birthYear: 1898 })));
+  assert.equal(state.skips[0]?.reason, 'rights-excluded');
+});
+
+test('a needs-editorial taxonomy flag does NOT block the write (tradition cleared, still accepted)', () => {
+  // Anselm d.1109 proposed Anglican → tradition cleared + flagged, but valid to write.
+  const state = createRunState({ dryRun: false, maxProposals: 10, coverage: coverage(), existing: [] });
+  gateProposal(state, raw(strong({ title: 'Anselm — Monologion', author: 'Anselm of Canterbury', work: 'Monologion', tradition: 'Anglican', birthYear: 1033, deathYear: 1109 })));
+  assert.equal(state.accepted.length, 1);
+  assert.equal(state.accepted[0].resolvedTradition, null);
+  assert.equal(state.accepted[0].needsEditorial, true);
+  assert.equal(state.accepted[0].era, 'High Medieval');
 });
 
 test('skip: already-published when the work is in the corpus', () => {
@@ -144,28 +148,22 @@ test('skip: duplicate-in-batch on the second identical proposal', () => {
   assert.equal(state.skips.at(-1)?.reason, 'duplicate-in-batch');
 });
 
-test('skip: below-threshold for a weak candidate', () => {
+test('skip: below-threshold when Score < 0.5', () => {
   const state = createRunState({ dryRun: true, maxProposals: 10, coverage: coverage(), existing: [] });
-  gateProposal(
-    state,
-    raw(strong({
-      title: 'Obscure — Minor Tract', author: 'Obscure', work: 'Minor Tract',
-      tradition: 'Ecumenical', impact: 1, confidence: 1, ease: 1, tier1: false,
-    })),
-  );
+  // Value 1 / (Complexity 3 + Effort 3) = 0.167.
+  gateProposal(state, raw(strong({ title: 'Obscure — Minor Tract', author: 'Obscure', work: 'Minor Tract', value: 1, complexity: 3, effort: 3 })));
   assert.equal(state.skips[0]?.reason, 'below-threshold');
 });
 
 test('skip: over-cap once the run cap is reached', () => {
   const state = createRunState({ dryRun: true, maxProposals: 1, coverage: coverage(), existing: [] });
   gateProposal(state, raw(strong()));
-  gateProposal(state, raw(strong({ title: 'Basil — On the Holy Spirit', author: 'Basil', work: 'On the Holy Spirit' })));
+  gateProposal(state, raw(strong({ title: 'Basil — On the Holy Spirit', author: 'Basil', work: 'On the Holy Spirit', deathYear: 379 })));
   assert.equal(state.accepted.length, 1);
   assert.equal(state.skips.at(-1)?.reason, 'over-cap');
 });
 
 test('re-run convergence: a proposal already on the list is skipped, not re-accepted', () => {
-  // Simulate a second run: the first run's accepted rows now exist as prospects.
   const first = createRunState({ dryRun: false, maxProposals: 10, coverage: coverage(), existing: [] });
   gateProposal(first, raw(strong()));
   const asExisting: ExistingProspect[] = first.accepted.map((s) => ({

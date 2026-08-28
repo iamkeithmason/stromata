@@ -4,6 +4,11 @@
  * The Scout is read-only against the corpus and Notion; its only write is
  * creating provisional proposal rows in the Content Prospect List, and only
  * through the contract-enforcing PreToolUse hook. See scout.ts for the flow.
+ *
+ * Scoring model (v0.1): the Content Prospect List scores on Value / Complexity /
+ * Effort — each an integer 1–3 — with a read-only Notion Score formula
+ * (Value ÷ (Complexity + Effort)). The agent emits ONLY those three integers;
+ * every aggregate is derived deterministically (scoring.ts). There is no ICE.
  */
 
 /** A cell of the coverage map: one tradition × era intersection. */
@@ -35,13 +40,11 @@ export interface ExistingProspect {
   dedupeKey: string; // normalised author + work
 }
 
-/** Copyright triage hint — a hint for the editor, never a clearance decision. */
-export type CopyrightFlag = 'likely-clear' | 'needs-check' | 'trap-adjacent';
-
 /**
- * The raw proposal the agent emits via the `propose_prospect` tool. These are
- * the logical contract fields; contract.ts validates them and notion.ts maps
- * them onto the live Content Prospect List property schema.
+ * The raw proposal the agent emits via the `propose_prospect` tool. The agent's
+ * job is the 1–3 judgement on Value / Complexity / Effort plus the author's
+ * dates and a proposed tradition; Era is derived (never proposed) and the
+ * tradition is validated in code. Nothing here is an aggregate.
  */
 export interface ProposalInput {
   /** Display title, "Author — Work". */
@@ -49,19 +52,19 @@ export interface ProposalInput {
   author: string;
   /** Work title on its own (used for the dedupe key). */
   work: string;
-  /** Canonical tradition name — must resolve to a Notion Tradition option. */
-  tradition: string;
-  /** Canonical era name — must resolve to a Notion Era option. */
-  era: string;
+  /** Proposed tradition — validated/possibly cleared by the tradition guard. */
+  tradition?: string;
   /** Optional genre — must resolve to a Notion Genre option if present. */
   genre?: string;
-  /** Author death year, for the copyright triage. */
+  /** Author dates. Death year drives Era, the tradition guard, and the copyright gate. */
+  birthYear?: number | null;
   deathYear?: number | null;
-  /** Judgment inputs, each 1–5 (see scoring.ts for how they combine). */
-  impact: number;
-  confidence: number;
-  ease: number;
-  /** Is the author a Tier-1 search-driver (a recognisable named entity)? */
+  floruitYear?: number | null;
+  /** The three score inputs, each an integer 1–3. */
+  value: number; // editorial priority × search gravity — higher is better
+  complexity: number; // copyright + source availability — higher is WORSE
+  effort: number; // length + processing work — higher is WORSE
+  /** Is the author a Tier-1 search-driver? Informs the discovery note, not the score. */
   tier1: boolean;
   /** One line: which gap this fills and why it matters now. */
   rationale: string;
@@ -69,44 +72,40 @@ export interface ProposalInput {
   discoveryNote: string;
   /** Unverified URL hint(s) where the text might be sourced. */
   candidateSources: string[];
-  /** Copyright triage hint + one-line reason. */
-  copyrightFlag: CopyrightFlag;
-  copyrightReason: string;
+  /** Copyright / translation / source reasoning — encoded also by the Complexity score. */
+  translationNotes: string;
 }
 
-/** The computed score bundle attached to a proposal after scoring. */
+/** Which taxonomy correction happened to a proposal, for the notes + report. */
+export type TaxonomyFlag = 'auto' | 'needs-editorial';
+
+/** The processed proposal: derived Era, resolved tradition, score, dedupe key. */
 export interface ScoredProposal extends ProposalInput {
   dedupeKey: string;
-  /** Deterministic ICE score used for threshold + ranking. */
-  iceScore: number;
-  traditionWeight: number;
-  medievalBonus: number;
-  /** Projection onto the live Notion 1–3 axes. */
-  value: number;
-  complexity: number;
-  effort: number;
+  /** Canonical Score = Value / (Complexity + Effort). The single ranking number. */
+  score: number;
+  /** Derived from the death year (fallback floruit/birth); null if dates unknown. */
+  era: string | null;
+  /** Final tradition after the guard: a valid option, or null (cleared → needs-editorial). */
+  resolvedTradition: string | null;
+  /** True when the tradition or era was cleared and needs an editorial decision. */
+  needsEditorial: boolean;
+  /** ↻ / ⚑ marker lines recorded in Editorial notes. */
+  taxonomyNotes: string[];
 }
 
 /** Discriminated skip reasons — no candidate is ever dropped silently. */
 export type SkipReason =
   | 'already-published'
   | 'already-proposed'
-  | 'copyright-excluded'
+  | 'rights-excluded'
   | 'below-threshold'
   | 'duplicate-in-batch'
-  | 'over-cap'
-  | 'contract-violation';
+  | 'over-cap';
 
 export interface SkipRecord {
   title: string;
   author: string;
   reason: SkipReason;
   detail: string;
-}
-
-/** What the contract hook decides for a single proposed write. */
-export interface ContractDecision {
-  allow: boolean;
-  reason?: SkipReason;
-  detail?: string;
 }
