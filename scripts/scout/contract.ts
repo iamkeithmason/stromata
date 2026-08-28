@@ -46,9 +46,24 @@ function isInt1to3(n: unknown): boolean {
   return typeof n === 'number' && Number.isInteger(n) && n >= 1 && n <= 3;
 }
 
-function firstHttpUrl(urls: string[] | undefined): string | null {
+/** Obvious placeholder hosts — a proposal sourced only from these is junk. */
+const PLACEHOLDER_HOSTS = ['example.com', 'example.org', 'example.net', 'localhost', '127.0.0.1'];
+
+function isRealSourceUrl(u: string): boolean {
+  const s = String(u).trim();
+  if (!/^https?:\/\//i.test(s)) return false;
+  let host = '';
+  try {
+    host = new URL(s).hostname.toLowerCase();
+  } catch {
+    return false;
+  }
+  return !PLACEHOLDER_HOSTS.some((h) => host === h || host.endsWith(`.${h}`));
+}
+
+export function firstHttpUrl(urls: string[] | undefined): string | null {
   if (!Array.isArray(urls)) return null;
-  const u = urls.find((x) => /^https?:\/\//i.test(String(x).trim()));
+  const u = urls.find((x) => isRealSourceUrl(x));
   return u ? String(u).trim() : null;
 }
 
@@ -76,6 +91,12 @@ export function validateContract(p: ScoredProposal): string[] {
   requireStr('title', 'Title');
   requireStr('author', 'Author');
   requireStr('work', 'work');
+
+  // Title must be in "Author — Work" form (an em dash). This is the mandated
+  // shape and it rejects placeholder/probe calls (e.g. a bare "test").
+  if (typeof p.title === 'string' && p.title.trim() !== '' && !p.title.includes('—')) {
+    v.push('Title must be in "Author — Work" form (missing "—")');
+  }
   requireStr('rationale', 'Rationale');
   requireStr('discoveryNote', 'Discovery note');
   requireStr('translationNotes', 'Translation notes reasoning');

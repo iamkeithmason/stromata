@@ -121,5 +121,8 @@ known) years, the three integers value/complexity/effort, a one-line rationale
 Tier-1 search-driver?), one or more candidate source URL hints (unverified), and
 translationNotes with your copyright/source reasoning.
 
+Never make a test or placeholder call — every \`propose_prospect\` call must be a
+real candidate with a real "Author — Work" title and a real source URL.
+
 When you have proposed your candidates, stop. Do not write any prose summary.`;
 }

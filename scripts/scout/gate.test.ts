@@ -95,6 +95,19 @@ test('contract-violation (no candidate source URL) is malformed', () => {
   assert.equal(state.malformed.length, 1);
 });
 
+test('placeholder/probe proposals are rejected (bad Title form + example.com source)', () => {
+  const state = createRunState({ dryRun: true, maxProposals: 10, coverage: coverage(), existing: [] });
+  gateProposal(state, {
+    title: 'test', author: 'test', work: 'test',
+    value: 1, complexity: 1, effort: 1, tier1: false,
+    rationale: 'x', discoveryNote: 'x', translationNotes: 'x',
+    candidateSources: ['https://example.com'],
+  });
+  assert.equal(state.accepted.length, 0);
+  assert.equal(state.malformed.length, 1);
+  assert.match(state.malformed[0].detail, /Author — Work|Reference URL/);
+});
+
 test('skip: rights-excluded for a death year at/after the 1900 cutoff', () => {
   const state = createRunState({ dryRun: true, maxProposals: 10, coverage: coverage(), existing: [] });
   gateProposal(state, raw(strong({ author: 'C. S. Lewis', work: 'Mere Christianity', tradition: 'Anglican', deathYear: 1963, birthYear: 1898 })));
