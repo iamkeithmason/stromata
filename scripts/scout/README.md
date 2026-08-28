@@ -37,7 +37,9 @@ Required env (see `.env.example`): `ANTHROPIC_API_KEY`, `NOTION_TOKEN`,
 > (the script warns when it sees this) and gap analysis runs blind. The code
 > only ever `SELECT`s, so service_role stays read-only in practice; a dedicated
 > read-only role that reads past RLS works too. The URL is the project API URL
-> (`https://<ref>.supabase.co`).
+> (`https://<ref>.supabase.co`). If the coverage map reads empty the run
+> **aborts** (non-zero exit) rather than proposing blind — set
+> `SCOUT_ALLOW_EMPTY_CORPUS=1` only for a genuinely empty day-one corpus.
 
 ## How it works
 

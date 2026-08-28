@@ -120,12 +120,23 @@ async function main() {
       `${coverage.coveredAuthors.size} authors · ${coverage.gaps.length} priority gaps`,
   );
   if (coverage.coveredAuthors.size === 0 || coverage.totalPublished === 0) {
-    console.warn(
-      '  ! Coverage map is EMPTY (0 authors / 0 published texts). The read likely ' +
-        "can't see the tables — Row-Level Security usually blocks the anon key. Set " +
-        'SCOUT_SUPABASE_KEY to the service_role key so the Scout can read the corpus ' +
-        '(it only ever issues SELECTs). Without this, gap analysis and corpus dedupe are blind.',
-    );
+    // An empty corpus almost always means the read can't see the data (RLS
+    // blocks the anon key), not that the library is empty. Proposing against an
+    // empty coverage map is BLIND — it can't dedupe against what's published —
+    // so refuse before spending the agent call, and fail loudly (exit non-zero)
+    // rather than write blind proposals on the --apply schedule.
+    const msg =
+      'Coverage map is EMPTY (0 authors / 0 published texts). A service_role key ' +
+      'bypasses RLS, so zero rows means the credentials are not reaching the corpus: ' +
+      'set SCOUT_SUPABASE_KEY to the project service_role key, and confirm ' +
+      'SCOUT_SUPABASE_URL points at the project that holds the data. Refusing to run ' +
+      'the agent against an empty corpus (proposals would be blind to what is already ' +
+      'published). Set SCOUT_ALLOW_EMPTY_CORPUS=1 to override for a genuinely empty corpus.';
+    if (process.env.SCOUT_ALLOW_EMPTY_CORPUS === '1') {
+      console.warn(`  ! ${msg}`);
+    } else {
+      throw new Error(msg);
+    }
   }
 
   console.log('Fetching existing prospects for dedupe…');
