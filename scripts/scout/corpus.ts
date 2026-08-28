@@ -10,7 +10,7 @@
  */
 
 import { createClient } from '@supabase/supabase-js';
-import { BAND_WEIGHT, ERAS, TRADITIONS } from './config';
+import { ERAS, TRADITIONS } from './config';
 import type { CoverageMap, CoverageCell } from './types';
 import { dedupeKey } from './contract';
 
@@ -44,9 +44,13 @@ function canonicalEra(label: string | null | undefined): string | null {
   return e ? e.canonical : label;
 }
 
+const BAND_GAP_WEIGHT = { high: 1.0, medium: 0.66, low: 0.33 } as const;
+/** Medieval eras get a small gap bonus (prompt-ordering only; not part of scoring). */
+const MEDIEVAL_ERAS = new Set(['High Medieval', 'Late Medieval']);
+
 function traditionBandWeight(canonical: string): number {
   const t = TRADITIONS.find((x) => x.canonical === canonical);
-  return t ? BAND_WEIGHT[t.band] : BAND_WEIGHT.low;
+  return t ? BAND_GAP_WEIGHT[t.band] : BAND_GAP_WEIGHT.low;
 }
 
 interface AuthorRow {
@@ -145,7 +149,7 @@ export async function buildCoverageMap(): Promise<CoverageMap> {
       const count = cells[key]?.publishedTexts ?? 0;
       if (count >= 2) continue;
       const weight =
-        traditionBandWeight(t.canonical) + (e.medievalBonus ? 0.5 : 0) - count * 0.15;
+        traditionBandWeight(t.canonical) + (MEDIEVAL_ERAS.has(e.canonical) ? 0.5 : 0) - count * 0.15;
       gaps.push({ tradition: t.canonical, era: e.canonical, publishedTexts: count, weight });
     }
   }

@@ -3,18 +3,17 @@
  * for dedupe) and exactly ONE write (create a provisional proposal row). No
  * update, no delete. The single create is what the PreToolUse hook gates.
  *
- * Talks to the Notion REST API directly rather than via a broad MCP server, so
- * the write surface is exactly one function and nothing wider can be inherited.
- * Uses the 2025-09-03 data-source API that this workspace exposes.
+ * Uses the 2025-09-03 data-source API this workspace exposes. The Score property
+ * is a read-only formula (Value ÷ (Complexity + Effort)) and is NEVER written.
  */
 
 import {
   GENERATED_BY,
   NOTION,
-  PROVENANCE_CAVEAT,
   PROVISIONAL_STATUS,
+  PROVENANCE_CAVEAT,
 } from './config';
-import { dedupeKey } from './contract';
+import { dedupeKey, translationNotesWithCaveat } from './contract';
 import type { ExistingProspect, ScoredProposal } from './types';
 
 const TOKEN = process.env.NOTION_TOKEN || process.env.SCOUT_NOTION_TOKEN || '';
@@ -39,9 +38,7 @@ async function notionFetch(path: string, init: RequestInit, attempt = 0): Promis
 }
 
 export function assertToken(): void {
-  if (!TOKEN) {
-    throw new Error('NOTION_TOKEN (or SCOUT_NOTION_TOKEN) is not set.');
-  }
+  if (!TOKEN) throw new Error('NOTION_TOKEN (or SCOUT_NOTION_TOKEN) is not set.');
 }
 
 // ---------------------------------------------------------------------------
@@ -56,12 +53,6 @@ export interface SchemaSnapshot {
   propertyNames: string[];
 }
 
-/**
- * Fetch the live data-source schema so the run reconciles against reality
- * before writing. Surfaces mismatches (a renamed property, a provisional Status
- * option that doesn't exist yet) rather than blindly POSTing.
- */
-/** The subset of a Notion property value's shape this client reads. */
 interface NotionProp {
   type?: string;
   title?: Array<{ plain_text: string }>;
@@ -71,9 +62,7 @@ interface NotionProp {
 
 export async function fetchSchema(): Promise<SchemaSnapshot> {
   const res = await notionFetch(`/data_sources/${NOTION.dataSourceId}`, { method: 'GET' });
-  if (!res.ok) {
-    throw new Error(`Notion schema fetch failed (${res.status}): ${await res.text()}`);
-  }
+  if (!res.ok) throw new Error(`Notion schema fetch failed (${res.status}): ${await res.text()}`);
   const json = (await res.json()) as { properties?: Record<string, NotionProp> };
   const props = json.properties ?? {};
   const opts = (name: string): string[] =>
@@ -96,7 +85,6 @@ function plainText(prop: NotionProp | undefined): string {
   return '';
 }
 
-/** Read every existing prospect row (paginated) for dedupe. */
 export async function fetchExistingProspects(): Promise<ExistingProspect[]> {
   const out: ExistingProspect[] = [];
   let cursor: string | undefined;
@@ -108,9 +96,7 @@ export async function fetchExistingProspects(): Promise<ExistingProspect[]> {
       method: 'POST',
       body: JSON.stringify(body),
     });
-    if (!res.ok) {
-      throw new Error(`Notion query failed (${res.status}): ${await res.text()}`);
-    }
+    if (!res.ok) throw new Error(`Notion query failed (${res.status}): ${await res.text()}`);
     const json = (await res.json()) as {
       results: Array<{ properties: Record<string, NotionProp> }>;
       has_more: boolean;
@@ -122,7 +108,6 @@ export async function fetchExistingProspects(): Promise<ExistingProspect[]> {
       const title = plainText(p[NOTION.props.title]);
       const author = plainText(p[NOTION.props.author]);
       const status = plainText(p[NOTION.props.status]);
-      // Derive the work from the "Author — Work" title when possible.
       const work = title.includes('—') ? title.split('—').slice(1).join('—').trim() : title;
       out.push({ title, author, status, dedupeKey: dedupeKey(author || title, work) });
     }
@@ -137,7 +122,6 @@ export async function fetchExistingProspects(): Promise<ExistingProspect[]> {
 // Write: the single create
 // ---------------------------------------------------------------------------
 
-/** Split a long string into ≤1900-char rich_text chunks (Notion caps at 2000). */
 function richText(str: string): Array<{ text: { content: string } }> {
   const chunks: Array<{ text: { content: string } }> = [];
   let s = str;
@@ -149,22 +133,17 @@ function richText(str: string): Array<{ text: { content: string } }> {
   return chunks;
 }
 
-function editorialNotes(p: ScoredProposal, runDate: string): string {
-  return [
+/** Editorial notes: rationale, discovery, the score line, taxonomy markers, dedupe key, provenance stamp. */
+export function editorialNotes(p: ScoredProposal, runDate: string): string {
+  const lines = [
     `Rationale: ${p.rationale}`,
-    `Discovery: ${p.discoveryNote}`,
-    `ICE (agent, 1–5): impact ${p.impact} · confidence ${p.confidence} · ease ${p.ease} · tier1 ${p.tier1}`,
-    `Scored: Value ${p.value} · Complexity ${p.complexity} · Effort ${p.effort} ` +
-      `[tradition weight ${p.traditionWeight}, medieval bonus ${p.medievalBonus}, ICE ${p.iceScore}]`,
-    `Candidate sources: ${p.candidateSources.join(' | ')}`,
+    `Discovery: ${p.discoveryNote}${p.tier1 ? ' (Tier-1 search-driver)' : ''}`,
+    `Scored: Value ${p.value} · Complexity ${p.complexity} · Effort ${p.effort} · Score ${p.score.toFixed(3)}`,
+    ...p.taxonomyNotes,
     `Dedupe key: ${p.dedupeKey}`,
-    PROVENANCE_CAVEAT,
     `Generated by ${GENERATED_BY} · ${runDate}`,
-  ].join('\n');
-}
-
-function translationNotes(p: ScoredProposal): string {
-  return `Copyright flag: ${p.copyrightFlag} — ${p.copyrightReason}. Triage hint only; not clearance.`;
+  ];
+  return lines.join('\n');
 }
 
 function firstHttpUrl(urls: string[]): string | null {
@@ -172,59 +151,59 @@ function firstHttpUrl(urls: string[]): string | null {
   return u ? u.trim() : null;
 }
 
-export interface CreateResult {
-  id: string;
-  url: string;
-}
-
 /**
- * Create ONE provisional proposal row. Status is always stamped
- * PROVISIONAL_STATUS here — the agent cannot set it — and Notion auto-creates
- * that select option on first use, keeping agent rows filterable.
+ * Build the create payload's `properties`. Exported and pure so a test can
+ * assert the read-only Score property is never present. Tradition/Era are
+ * written only when resolved to a value; otherwise the field is left blank and
+ * the needs-editorial reason lives in Editorial notes.
  */
-export async function createProspect(p: ScoredProposal, runDate: string): Promise<CreateResult> {
-  assertToken();
-
+export function buildProperties(p: ScoredProposal, runDate: string): Record<string, unknown> {
   const props: Record<string, unknown> = {
     [NOTION.props.title]: { title: richText(p.title) },
     [NOTION.props.author]: { rich_text: richText(p.author) },
-    [NOTION.props.tradition]: { select: { name: p.tradition } },
-    [NOTION.props.era]: { select: { name: p.era } },
     [NOTION.props.status]: { select: { name: PROVISIONAL_STATUS } },
     [NOTION.props.value]: { number: p.value },
     [NOTION.props.complexity]: { number: p.complexity },
     [NOTION.props.effort]: { number: p.effort },
     [NOTION.props.editorialNotes]: { rich_text: richText(editorialNotes(p, runDate)) },
-    [NOTION.props.translationNotes]: { rich_text: richText(translationNotes(p)) },
+    [NOTION.props.translationNotes]: { rich_text: richText(translationNotesWithCaveat(p.translationNotes)) },
   };
 
+  if (p.resolvedTradition) props[NOTION.props.tradition] = { select: { name: p.resolvedTradition } };
+  if (p.era) props[NOTION.props.era] = { select: { name: p.era } };
   if (p.genre) props[NOTION.props.genre] = { select: { name: p.genre } };
   const url = firstHttpUrl(p.candidateSources);
   if (url) props[NOTION.props.referenceUrl] = { url };
 
+  return props;
+}
+
+export interface CreateResult {
+  id: string;
+  url: string;
+}
+
+/** Create ONE provisional proposal row. */
+export async function createProspect(p: ScoredProposal, runDate: string): Promise<CreateResult> {
+  assertToken();
+
   const body = {
     parent: { type: 'data_source_id', data_source_id: NOTION.dataSourceId },
-    properties: props,
-    // A visible caveat block on the page body, so opening the row shows it is
-    // an unverified agent proposal even before the notes are read.
+    properties: buildProperties(p, runDate),
     children: [
       {
         object: 'block',
         type: 'callout',
         callout: {
           icon: { type: 'emoji', emoji: '🔎' },
-          rich_text: richText(
-            `${PROVENANCE_CAVEAT} — ${GENERATED_BY}, ${runDate}.`,
-          ),
+          rich_text: richText(`${PROVENANCE_CAVEAT} — ${GENERATED_BY}, ${runDate}.`),
         },
       },
     ],
   };
 
   const res = await notionFetch('/pages', { method: 'POST', body: JSON.stringify(body) });
-  if (!res.ok) {
-    throw new Error(`Notion create failed (${res.status}): ${await res.text()}`);
-  }
+  if (!res.ok) throw new Error(`Notion create failed (${res.status}): ${await res.text()}`);
   const json = (await res.json()) as { id: string; url: string };
   return { id: json.id, url: json.url };
 }

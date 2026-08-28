@@ -1,7 +1,10 @@
 /**
  * Reporting — the proposed-batch markdown table + the full discriminated skip
  * log. Printed to stdout, written to a dated run log, and (in CI) appended to
- * the GitHub Actions step summary so Keith gets a glance without opening Notion.
+ * the GitHub Actions step summary.
+ *
+ * The batch table shows Value / Complexity / Effort / Score — never an "ICE"
+ * column. Score is the canonical Value ÷ (Complexity + Effort).
  */
 
 import fs from 'fs';
@@ -17,31 +20,34 @@ const RUN_LOG_DIR = path.join(__dirname, 'run-log');
 const SKIP_ORDER: SkipReason[] = [
   'already-published',
   'already-proposed',
-  'copyright-excluded',
+  'rights-excluded',
   'below-threshold',
   'duplicate-in-batch',
   'over-cap',
 ];
 
+function flagOf(p: ScoredProposal): string {
+  if (p.needsEditorial) return '⚑';
+  if (p.taxonomyNotes.some((n) => n.startsWith('↻'))) return '↻';
+  return '';
+}
+
 function proposedTable(rows: ScoredProposal[]): string {
   if (rows.length === 0) return '_No proposals cleared the gate._';
   const header =
-    '| Title | Tradition | Era | V | C | E | ICE | Tier1 | Copyright | Source |\n' +
-    '|---|---|---|--:|--:|--:|--:|:-:|---|---|';
+    '| Title | Tradition | Era | V | C | E | Score | Flag | Source |\n' +
+    '|---|---|---|--:|--:|--:|--:|:-:|---|';
   const body = rows
     .map((r) => {
       const src = r.candidateSources[0] ?? '';
-      return `| ${r.title} | ${r.tradition} | ${r.era} | ${r.value} | ${r.complexity} | ${r.effort} | ${r.iceScore} | ${r.tier1 ? '✓' : ''} | ${r.copyrightFlag} | ${src} |`;
+      const tradition = r.resolvedTradition ?? '⚑ needs-editorial';
+      const era = r.era ?? '⚑ —';
+      return `| ${r.title} | ${tradition} | ${era} | ${r.value} | ${r.complexity} | ${r.effort} | ${r.score.toFixed(3)} | ${flagOf(r)} | ${src} |`;
     })
     .join('\n');
   return `${header}\n${body}`;
 }
 
-/**
- * Genuine skips only, deduped and cleaned: a candidate the agent proposed more
- * than once yields one line per reason, and any candidate that was ultimately
- * accepted is removed (it can appear here only via a superseded earlier call).
- */
 function cleanSkips(skips: SkipRecord[], acceptedTitles: Set<string>): SkipRecord[] {
   const seen = new Set<string>();
   const out: SkipRecord[] = [];
@@ -59,15 +65,11 @@ function skipLog(skips: SkipRecord[]): string {
   if (skips.length === 0) return '_No candidates skipped._';
   const counts: Record<string, number> = {};
   for (const s of skips) counts[s.reason] = (counts[s.reason] ?? 0) + 1;
-  const summary = SKIP_ORDER.filter((r) => counts[r])
-    .map((r) => `${r}: ${counts[r]}`)
-    .join(' · ');
-
+  const summary = SKIP_ORDER.filter((r) => counts[r]).map((r) => `${r}: ${counts[r]}`).join(' · ');
   const lines = [...skips]
     .sort((a, b) => SKIP_ORDER.indexOf(a.reason) - SKIP_ORDER.indexOf(b.reason))
     .map((s) => `- \`${s.reason}\` — ${s.author} — ${s.title}: ${s.detail}`)
     .join('\n');
-
   return `**${skips.length} skipped** (${summary})\n\n${lines}`;
 }
 
@@ -86,12 +88,14 @@ export function renderReport(state: RunState): string {
 
   const acceptedTitles = new Set(state.accepted.map((a) => a.title));
   const skips = cleanSkips(state.skips, acceptedTitles);
+  const flaggedCount = state.accepted.filter((a) => a.needsEditorial).length;
 
-  // Malformed attempts are retried by the agent, not dropped candidates — count
-  // distinct ones so the log stays honest without hiding that they happened.
   const malformedDistinct = new Set(state.malformed.map((m) => `${m.author}|${m.title}`)).size;
   const malformedNote = malformedDistinct
     ? `\n\n_${malformedDistinct} candidate(s) were denied for a contract violation and resubmitted by the agent (not dropped)._`
+    : '';
+  const flaggedNote = flaggedCount
+    ? `\n\n_${flaggedCount} proposal(s) carry a ⚑ needs-editorial taxonomy flag (tradition/era left blank for review)._`
     : '';
 
   return `# Scout run — ${runDate}
@@ -103,7 +107,7 @@ Proposals cleared: ${state.accepted.length}${writtenNote}
 ${proposedTable(proposed)}
 
 ## Skip log
-${skipLog(skips)}${malformedNote}
+${skipLog(skips)}${malformedNote}${flaggedNote}
 `;
 }
 

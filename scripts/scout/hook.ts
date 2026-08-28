@@ -3,19 +3,18 @@
  *
  * Every proposed write passes through here before it can reach Notion. The hook
  * (a) seals the tool surface: anything other than the one create tool is denied;
- * (b) validates the write contract (required fields, controlled values,
- * provisional Status); (c) applies copyright triage, dedupe, threshold and cap
- * as discriminated, logged decisions — never silent drops; (d) in dry-run,
+ * (b) processes the proposal (Score, derived Era, tradition guard) and validates
+ * the write contract; (c) applies the copyright hard gate, dedupe, threshold and
+ * cap as discriminated, logged decisions — never silent drops; (d) in dry-run,
  * records what WOULD be written and denies the actual write.
  *
- * Because the gate lives here and not in the prompt, it cannot drift no matter
- * what the model decides to attempt.
+ * Because the gate lives here and not in the prompt, it cannot drift.
  */
 
 import type { HookCallback, HookInput, PreToolUseHookInput } from '@anthropic-ai/claude-agent-sdk';
-import { DEFAULT_MAX_PROPOSALS } from './config';
+import { COPYRIGHT_CUTOFF_YEAR, DEFAULT_MAX_PROPOSALS } from './config';
 import { validateContract } from './contract';
-import { isAboveThreshold, scoreProposal } from './scoring';
+import { isAboveThreshold, processProposal } from './scoring';
 import type {
   CoverageMap,
   ExistingProspect,
@@ -31,22 +30,12 @@ export interface RunState {
   maxProposals: number;
   coverage: CoverageMap;
   existingKeys: Set<string>;
-  /** Dedupe keys accepted so far this run. */
   batchKeys: Set<string>;
-  /** Rows that passed the gate (dry-run: would-write; apply: to be written). */
   accepted: ScoredProposal[];
-  /** Rows actually written to Notion (apply mode only). */
   written: Array<{ scored: ScoredProposal; url: string }>;
-  /** Every rejected candidate, with a discriminated reason. */
   skips: SkipRecord[];
-  /**
-   * Malformed proposal attempts (contract violations). These are denied so the
-   * agent fixes and resubmits — they are NOT dropped candidates, so they are
-   * kept apart from the skip log to avoid a retried-then-accepted candidate
-   * masquerading as a skip.
-   */
+  /** Malformed (contract-violating) attempts — denied so the agent resubmits. */
   malformed: Array<{ title: string; author: string; detail: string }>;
-  /** Write failures surfaced by the tool handler (apply mode). */
   writeErrors: Array<{ title: string; detail: string }>;
 }
 
@@ -70,6 +59,12 @@ export function createRunState(opts: {
   };
 }
 
+function num(v: unknown): number | null {
+  if (v == null || v === '') return null;
+  const n = Number(v);
+  return Number.isFinite(n) ? n : null;
+}
+
 /** Coerce raw tool input into a ProposalInput (SDK already shape-validates). */
 export function toProposalInput(raw: Record<string, unknown>): ProposalInput {
   const arr = (v: unknown): string[] =>
@@ -78,19 +73,19 @@ export function toProposalInput(raw: Record<string, unknown>): ProposalInput {
     title: String(raw.title ?? ''),
     author: String(raw.author ?? ''),
     work: String(raw.work ?? ''),
-    tradition: String(raw.tradition ?? ''),
-    era: String(raw.era ?? ''),
+    tradition: raw.tradition ? String(raw.tradition) : undefined,
     genre: raw.genre ? String(raw.genre) : undefined,
-    deathYear: raw.deathYear == null ? null : Number(raw.deathYear),
-    impact: Number(raw.impact),
-    confidence: Number(raw.confidence),
-    ease: Number(raw.ease),
+    birthYear: num(raw.birthYear),
+    deathYear: num(raw.deathYear),
+    floruitYear: num(raw.floruitYear),
+    value: Number(raw.value),
+    complexity: Number(raw.complexity),
+    effort: Number(raw.effort),
     tier1: Boolean(raw.tier1),
     rationale: String(raw.rationale ?? ''),
     discoveryNote: String(raw.discoveryNote ?? ''),
     candidateSources: arr(raw.candidateSources),
-    copyrightFlag: raw.copyrightFlag as ProposalInput['copyrightFlag'],
-    copyrightReason: String(raw.copyrightReason ?? ''),
+    translationNotes: String(raw.translationNotes ?? ''),
   };
 }
 
@@ -103,7 +98,6 @@ function deny(reason: string) {
     },
   };
 }
-
 function allow() {
   return {
     hookSpecificOutput: {
@@ -115,33 +109,31 @@ function allow() {
 
 /**
  * Pure gate decision, factored out so it is unit-testable without the SDK.
- * Mutates run state (records skip / acceptance) and returns the hook payload.
+ * Mutates run state (records skip / malformed / acceptance) and returns the hook
+ * payload.
  */
 export function gateProposal(state: RunState, raw: Record<string, unknown>) {
   const input = toProposalInput(raw);
-  const label = { title: input.title || '(untitled)', author: input.author || '(unknown)' };
+  const scored = processProposal(input);
+  const label = { title: scored.title || '(untitled)', author: scored.author || '(unknown)' };
 
   const record = (reason: SkipRecord['reason'], detail: string) => {
     state.skips.push({ ...label, reason, detail });
     return deny(`${reason}: ${detail}`);
   };
 
-  // 1. Contract — required fields + controlled values. A violation is a
-  //    malformed CALL, not a dropped candidate: deny so the agent fixes and
-  //    resubmits, and keep it out of the skip log.
-  const violations = validateContract(input);
+  // 1. Contract — required fields, controlled values (a violation is a malformed
+  //    call, not a dropped candidate: deny so the agent fixes and resubmits).
+  const violations = validateContract(scored);
   if (violations.length > 0) {
     state.malformed.push({ ...label, detail: violations.join('; ') });
     return deny(`contract-violation: ${violations.join('; ')} — fix and resubmit this candidate.`);
   }
 
-  const scored = scoreProposal(input);
-
-  // 2. Copyright triage exclusion — only the clearest traps (a known post-1899
-  //    author the agent itself flagged trap-adjacent). Pre-1900 is safe harbour;
-  //    everything else stays a flagged proposal for the editor to judge.
-  if (scored.deathYear != null && scored.deathYear >= 1900 && scored.copyrightFlag === 'trap-adjacent') {
-    return record('copyright-excluded', `author d.${scored.deathYear}, flagged trap-adjacent`);
+  // 2. Copyright hard gate — a known death year at or after the cutoff is out of
+  //    the safe harbour. Unknown death year is allowed through (flagged elsewhere).
+  if (scored.deathYear != null && scored.deathYear >= COPYRIGHT_CUTOFF_YEAR) {
+    return record('rights-excluded', `author d.${scored.deathYear} ≥ ${COPYRIGHT_CUTOFF_YEAR} cutoff`);
   }
 
   // 3. Dedupe — corpus, then existing prospects, then this batch.
@@ -155,9 +147,9 @@ export function gateProposal(state: RunState, raw: Record<string, unknown>) {
     return record('duplicate-in-batch', `proposed twice this run (${scored.dedupeKey})`);
   }
 
-  // 4. Threshold.
+  // 4. Threshold (on the canonical Score).
   if (!isAboveThreshold(scored)) {
-    return record('below-threshold', `ICE ${scored.iceScore} < threshold`);
+    return record('below-threshold', `Score ${scored.score.toFixed(3)} < threshold`);
   }
 
   // 5. Cap.
@@ -170,17 +162,12 @@ export function gateProposal(state: RunState, raw: Record<string, unknown>) {
   state.accepted.push(scored);
 
   if (state.dryRun) {
-    // Nothing is written in dry-run; deny the actual tool call but tell the
-    // model this was recorded so it keeps proposing the next candidate.
     return deny(`dry-run: recorded proposal "${scored.title}" (not written). Continue.`);
   }
   return allow();
 }
 
-/**
- * Build the PreToolUse hook callback. Seals the surface (only the create tool
- * is ever permitted) and delegates conforming proposals to `gateProposal`.
- */
+/** Build the PreToolUse hook callback. Seals the surface and gates proposals. */
 export function createEnforcementHook(state: RunState): HookCallback {
   return async (input: HookInput) => {
     if (input.hook_event_name !== 'PreToolUse') return {};

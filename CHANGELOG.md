@@ -7,6 +7,51 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-08-28 — Scout agent v0.1: real V/C/E scoring, derived Era, tradition guard
+
+The first live Scout run surfaced two classes of error, and reading the live Content Prospect List
+schema confirmed the v0 prompt's scoring model was simply wrong. This patch corrects both against
+the real database — no migration needed (the Byzantine / Oriental Orthodox tradition options were
+already live, so the 2026-08-28 misclassifications were genuine agent errors, not a vocab gap).
+
+**Scoring was fabricated; now it's the real formula.** v0 invented an ICE (Impact/Confidence/Ease)
+model and emitted a made-up aggregate number (`181.3`, `156.3`, …) that had no relationship to
+anything in Notion. The database actually scores on **Value / Complexity / Effort** — each an
+integer 1–3, where Complexity and Effort are *cost* axes (higher = worse) — plus a read-only Score
+formula. The Score formula is literally `Value ÷ (Complexity + Effort)` (read from the Notion
+property editor). So: the agent now emits *only* the three integers; every fabricated aggregate and
+the "ICE" column are deleted; `computeScore` ports the real formula and is pinned to seven real
+`(V,C,E)→Score` rows in `scoring.test.ts` as a drift guard; ranking and the below-threshold cut use
+that Score; and the Scout **never writes** the read-only Score property.
+
+**Era is computed, never proposed.** Era is fully determined by the author's death year, so
+`taxonomy.ts` derives it (fallback floruit/birth) and the agent no longer sets it. Missing dates →
+Era blank + a `needs-editorial` flag. (The Apostolic bound is 110, not a hard 100, so the Apostolic
+Fathers who died just after 100 — Ignatius d. c.108 — land in Apostolic per the regression target.)
+
+**Tradition is guarded deterministically.** The load-bearing fix. The agent may propose a tradition,
+but code validates it against the death year before any write. It **auto-reassigns** only among the
+three date-settled traditions (Early Church ≤325 / Patristic 325–600 / Byzantine 600–1054) — so a
+Greek-East author mislabelled "Patristic" becomes Byzantine — and otherwise **flags**
+`needs-editorial` with the field cleared rather than guessing (post-1054 East/West, a Reformation
+confession, a boundary figure like Wycliffe, or missing dates). Oriental Orthodox / Ecumenical are
+never flagged on date alone. Corrections/flags are recorded in Editorial notes (`↻` / `⚑`) and the
+row still lands `Proposed — agent`. `taxonomy.test.ts` pins the exact 2026-08-28 regression target
+(John of Damascus/Climacus/Symeon → Byzantine auto; Anselm/Julian/Palamas → cleared + flag).
+
+**Write contract remapped to the real schema.** No invented fields: copyright is encoded by the
+Complexity score + a `Translation notes` caveat (there is no separate copyright-flag field); the
+provenance caveat lives in Translation notes; rationale/discovery/generated-by/dedupe-key/taxonomy
+markers live in Editorial notes; Score is never in the payload. The hook now blocks unless V/C/E are
+each integers 1–3, Reference URL is valid, the caveat is present, Status is exactly `Proposed —
+agent`, and Tradition/Era are each a valid option or blank-with-a-`needs-editorial`-flag. The
+copyright hard gate stays: death ≥ 1900 → `rights-excluded`. Skip reasons: `copyright-excluded`
+renamed to `rights-excluded`; `contract-violation` is now a retryable *malformed* attempt, not a
+skip. 26 unit tests (formula fixtures + taxonomy regression + gate) all pass; tsc + lint clean.
+`GENERATED_BY` bumped to `scout-agent v0.1`. Docs in `scripts/scout/README.md`.
+
+---
+
 ## 2026-08-28 — Scout agent v0: corpus gap analysis → Notion proposals
 
 A new scheduled Agent SDK script, the **Scout** (`scripts/scout/`), does corpus gap analysis and
