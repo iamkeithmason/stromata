@@ -14,12 +14,21 @@ import { BAND_WEIGHT, ERAS, TRADITIONS } from './config';
 import type { CoverageMap, CoverageCell } from './types';
 import { dedupeKey } from './contract';
 
-const SUPABASE_URL = process.env.SCOUT_SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL || '';
-const SUPABASE_KEY =
+// Normalise the URL defensively: a pasted secret often carries a trailing
+// slash or newline, and either turns the REST path into "//rest/v1/…", which
+// Supabase rejects with "Invalid path specified in request URL". Trim
+// whitespace, and strip any trailing slash or an accidentally-included
+// /rest/v1 suffix so createClient builds a clean base.
+const SUPABASE_URL = (process.env.SCOUT_SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL || '')
+  .trim()
+  .replace(/\/+$/, '')
+  .replace(/\/rest\/v1$/, '');
+const SUPABASE_KEY = (
   process.env.SCOUT_SUPABASE_KEY ||
   process.env.SUPABASE_SERVICE_ROLE_KEY ||
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
-  '';
+  ''
+).trim();
 
 /** Canonicalise a Supabase tradition name to the Notion vocabulary. */
 function canonicalTradition(name: string | null | undefined): string | null {
@@ -44,20 +53,14 @@ interface AuthorRow {
   id: string;
   name: string;
   death_year: number | null;
-  tradition: { name: string } | { name: string }[] | null;
-  era: { label: string } | { label: string }[] | null;
+  tradition_id: number | null;
+  era_id: number | null;
 }
 
 interface TextRow {
   title: string;
   published: boolean;
   author_id: string;
-}
-
-/** Supabase embeds can type as object or single-element array; normalise. */
-function one<T>(rel: T | T[] | null): T | null {
-  if (Array.isArray(rel)) return rel[0] ?? null;
-  return rel ?? null;
 }
 
 export async function buildCoverageMap(): Promise<CoverageMap> {
@@ -72,18 +75,35 @@ export async function buildCoverageMap(): Promise<CoverageMap> {
     auth: { persistSession: false },
   });
 
-  const { data: authorsRaw, error: authorsErr } = await supabase
-    .from('authors')
-    .select('id, name, death_year, tradition:traditions(name), era:eras(label)');
-  if (authorsErr) throw new Error(`Supabase authors read failed: ${authorsErr.message}`);
+  // Plain reads joined in JS — no PostgREST relationship embeds, so the query
+  // can't fail on FK-relationship resolution and stays robust to schema tweaks.
+  const [traditionsRes, erasRes, authorsRes, textsRes] = await Promise.all([
+    supabase.from('traditions').select('id, name'),
+    supabase.from('eras').select('id, label'),
+    supabase.from('authors').select('id, name, death_year, tradition_id, era_id'),
+    supabase.from('texts').select('title, published, author_id'),
+  ]);
 
-  const { data: textsRaw, error: textsErr } = await supabase
-    .from('texts')
-    .select('title, published, author_id');
-  if (textsErr) throw new Error(`Supabase texts read failed: ${textsErr.message}`);
+  for (const [label, res] of [
+    ['traditions', traditionsRes],
+    ['eras', erasRes],
+    ['authors', authorsRes],
+    ['texts', textsRes],
+  ] as const) {
+    if (res.error) throw new Error(`Supabase ${label} read failed: ${res.error.message}`);
+  }
 
-  const authors = (authorsRaw ?? []) as AuthorRow[];
-  const texts = (textsRaw ?? []) as TextRow[];
+  const traditionNameById = new Map<number, string>();
+  for (const t of (traditionsRes.data ?? []) as Array<{ id: number; name: string }>) {
+    traditionNameById.set(t.id, t.name);
+  }
+  const eraLabelById = new Map<number, string>();
+  for (const e of (erasRes.data ?? []) as Array<{ id: number; label: string }>) {
+    eraLabelById.set(e.id, e.label);
+  }
+
+  const authors = (authorsRes.data ?? []) as AuthorRow[];
+  const texts = (textsRes.data ?? []) as TextRow[];
 
   const authorById = new Map<string, AuthorRow>();
   const coveredAuthors = new Set<string>();
@@ -104,8 +124,10 @@ export async function buildCoverageMap(): Promise<CoverageMap> {
     if (!text.published) continue;
     totalPublished += 1;
 
-    const tradition = canonicalTradition(one(author?.tradition ?? null)?.name);
-    const era = canonicalEra(one(author?.era ?? null)?.label);
+    const tradition = canonicalTradition(
+      author?.tradition_id != null ? traditionNameById.get(author.tradition_id) : null,
+    );
+    const era = canonicalEra(author?.era_id != null ? eraLabelById.get(author.era_id) : null);
     if (!tradition || !era) continue;
 
     const key = `${tradition} :: ${era}`;
