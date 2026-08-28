@@ -119,6 +119,14 @@ async function main() {
     `  ${coverage.totalPublished} published texts · ` +
       `${coverage.coveredAuthors.size} authors · ${coverage.gaps.length} priority gaps`,
   );
+  if (coverage.coveredAuthors.size === 0 || coverage.totalPublished === 0) {
+    console.warn(
+      '  ! Coverage map is EMPTY (0 authors / 0 published texts). The read likely ' +
+        "can't see the tables — Row-Level Security usually blocks the anon key. Set " +
+        'SCOUT_SUPABASE_KEY to the service_role key so the Scout can read the corpus ' +
+        '(it only ever issues SELECTs). Without this, gap analysis and corpus dedupe are blind.',
+    );
+  }
 
   console.log('Fetching existing prospects for dedupe…');
   const existing = await fetchExistingProspects();
@@ -137,7 +145,9 @@ async function main() {
   const proposeTool = tool(
     'propose_prospect',
     'Propose ONE provisional gap-filling text as a Content Prospect List row. ' +
-      'Status is stamped provisional automatically; you cannot publish or approve.',
+      'Status is stamped provisional automatically; you cannot publish or approve. ' +
+      'Provide ALL fields in this single call — candidateSources is required, so ' +
+      'include at least one source URL hint here rather than resubmitting.',
     {
       title: z.string().describe('Display title, "Author — Work".'),
       author: z.string(),

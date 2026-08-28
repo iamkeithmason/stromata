@@ -39,6 +39,13 @@ export interface RunState {
   written: Array<{ scored: ScoredProposal; url: string }>;
   /** Every rejected candidate, with a discriminated reason. */
   skips: SkipRecord[];
+  /**
+   * Malformed proposal attempts (contract violations). These are denied so the
+   * agent fixes and resubmits — they are NOT dropped candidates, so they are
+   * kept apart from the skip log to avoid a retried-then-accepted candidate
+   * masquerading as a skip.
+   */
+  malformed: Array<{ title: string; author: string; detail: string }>;
   /** Write failures surfaced by the tool handler (apply mode). */
   writeErrors: Array<{ title: string; detail: string }>;
 }
@@ -58,6 +65,7 @@ export function createRunState(opts: {
     accepted: [],
     written: [],
     skips: [],
+    malformed: [],
     writeErrors: [],
   };
 }
@@ -118,10 +126,13 @@ export function gateProposal(state: RunState, raw: Record<string, unknown>) {
     return deny(`${reason}: ${detail}`);
   };
 
-  // 1. Contract — required fields + controlled values.
+  // 1. Contract — required fields + controlled values. A violation is a
+  //    malformed CALL, not a dropped candidate: deny so the agent fixes and
+  //    resubmits, and keep it out of the skip log.
   const violations = validateContract(input);
   if (violations.length > 0) {
-    return record('contract-violation', violations.join('; '));
+    state.malformed.push({ ...label, detail: violations.join('; ') });
+    return deny(`contract-violation: ${violations.join('; ')} — fix and resubmit this candidate.`);
   }
 
   const scored = scoreProposal(input);

@@ -96,11 +96,22 @@ test('gate allows the write in apply mode for a strong candidate', () => {
   assert.equal(state.accepted.length, 1);
 });
 
-test('skip: contract-violation on invalid tradition', () => {
+test('contract-violation is recorded as malformed (retryable), not a dropped skip', () => {
   const state = createRunState({ dryRun: true, maxProposals: 10, coverage: coverage(), existing: [] });
-  gateProposal(state, raw(strong({ tradition: 'Zoroastrian' })));
-  assert.equal(state.skips[0]?.reason, 'contract-violation');
+  const out = gateProposal(state, raw(strong({ tradition: 'Zoroastrian' })));
+  assert.equal(state.malformed.length, 1);
+  assert.equal(state.skips.length, 0);
   assert.equal(state.accepted.length, 0);
+  assert.equal(out.hookSpecificOutput.permissionDecision, 'deny');
+});
+
+test('a candidate malformed once then corrected is accepted, with no lingering skip', () => {
+  const state = createRunState({ dryRun: false, maxProposals: 10, coverage: coverage(), existing: [] });
+  gateProposal(state, raw(strong({ candidateSources: [] }))); // missing sources → malformed
+  gateProposal(state, raw(strong())); // resubmitted correctly → accepted
+  assert.equal(state.malformed.length, 1);
+  assert.equal(state.accepted.length, 1);
+  assert.equal(state.skips.length, 0);
 });
 
 test('skip: copyright-excluded for a post-1899 trap-adjacent author', () => {

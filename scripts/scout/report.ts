@@ -21,7 +21,6 @@ const SKIP_ORDER: SkipReason[] = [
   'below-threshold',
   'duplicate-in-batch',
   'over-cap',
-  'contract-violation',
 ];
 
 function proposedTable(rows: ScoredProposal[]): string {
@@ -36,6 +35,24 @@ function proposedTable(rows: ScoredProposal[]): string {
     })
     .join('\n');
   return `${header}\n${body}`;
+}
+
+/**
+ * Genuine skips only, deduped and cleaned: a candidate the agent proposed more
+ * than once yields one line per reason, and any candidate that was ultimately
+ * accepted is removed (it can appear here only via a superseded earlier call).
+ */
+function cleanSkips(skips: SkipRecord[], acceptedTitles: Set<string>): SkipRecord[] {
+  const seen = new Set<string>();
+  const out: SkipRecord[] = [];
+  for (const s of skips) {
+    if (acceptedTitles.has(s.title)) continue;
+    const key = `${s.author}|${s.title}|${s.reason}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    out.push(s);
+  }
+  return out;
 }
 
 function skipLog(skips: SkipRecord[]): string {
@@ -67,6 +84,16 @@ export function renderReport(state: RunState): string {
           state.writeErrors.map((e) => `- ${e.title}: ${e.detail}`).join('\n')
         : '');
 
+  const acceptedTitles = new Set(state.accepted.map((a) => a.title));
+  const skips = cleanSkips(state.skips, acceptedTitles);
+
+  // Malformed attempts are retried by the agent, not dropped candidates — count
+  // distinct ones so the log stays honest without hiding that they happened.
+  const malformedDistinct = new Set(state.malformed.map((m) => `${m.author}|${m.title}`)).size;
+  const malformedNote = malformedDistinct
+    ? `\n\n_${malformedDistinct} candidate(s) were denied for a contract violation and resubmitted by the agent (not dropped)._`
+    : '';
+
   return `# Scout run — ${runDate}
 Mode: **${mode}** · ${GENERATED_BY}
 Corpus: ${state.coverage.totalPublished} published texts · cap ${state.maxProposals}
@@ -76,7 +103,7 @@ Proposals cleared: ${state.accepted.length}${writtenNote}
 ${proposedTable(proposed)}
 
 ## Skip log
-${skipLog(state.skips)}
+${skipLog(skips)}${malformedNote}
 `;
 }
 

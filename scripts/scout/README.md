@@ -30,7 +30,14 @@ npm run test:scout
 Flags: `--dry-run` (default) · `--apply` · `--max N` (default 10).
 
 Required env (see `.env.example`): `ANTHROPIC_API_KEY`, `NOTION_TOKEN`,
-`SCOUT_SUPABASE_URL` + `SCOUT_SUPABASE_KEY` (read-only).
+`SCOUT_SUPABASE_URL` + `SCOUT_SUPABASE_KEY`.
+
+> **Supabase key:** use the **service_role** key. RLS blocks the anon key from
+> reading `authors`/`texts`, so with anon the coverage map comes back empty
+> (the script warns when it sees this) and gap analysis runs blind. The code
+> only ever `SELECT`s, so service_role stays read-only in practice; a dedicated
+> read-only role that reads past RLS works too. The URL is the project API URL
+> (`https://<ref>.supabase.co`).
 
 ## How it works
 
