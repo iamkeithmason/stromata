@@ -7,6 +7,56 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-08-28 — Scout agent v0: corpus gap analysis → Notion proposals
+
+A new scheduled Agent SDK script, the **Scout** (`scripts/scout/`), does corpus gap analysis and
+proposes new Content Prospect List entries into Notion for editorial review. It is a separate concern
+from the ingestion pipeline (which fetches/cleans/stages texts): the Scout only fills the *desk*. It
+is read-only against the corpus and Notion; its one and only write is creating provisional proposal
+rows, and only through a contract-enforcing `PreToolUse` hook. Single agent, no subagents in v0.
+
+**What it does.** Reads `authors` + `texts` from Supabase (SELECT only) to build a published-text
+coverage map per tradition × era plus the covered-author/covered-work dedupe sets; reads the live
+Content Prospect List for dedupe; then a single Sonnet-5 agent proposes gap-filling authors/works
+best-first via one tool, `propose_prospect`. Everything else is deterministic TypeScript.
+
+**Reconcile-first, and the scoring surprise.** The live Notion DB does not score on
+Impact/Confidence/Ease — it uses **Value / Complexity / Effort** (each 1–3) plus a read-only **Score**
+formula, and Status has no "Proposed" option. So the Scout computes ICE internally (for the threshold
+and ranking) and *projects* it onto those native 1–3 axes, so agent rows sort under the same Score
+formula as Keith's hand-entered rows. The **priority model** — tradition weight (High/Medium/Low) and
+the High/Late-Medieval bonus — is applied in code (`config.ts`/`scoring.ts`), never left to the
+agent. Impact→Value, Confidence+copyright-flag→Complexity, Ease→Effort. Status is stamped
+`"Proposed — agent"` (Notion auto-creates the select option on first write); it is deliberately
+distinct from every human status so agent proposals stay filterable, and the hook refuses anything
+that reads as decided.
+
+**The contract lives in the hook, not the prompt.** `hook.ts` + `contract.ts` gate every proposal:
+required fields, controlled tradition/era/genre values, provisional Status, copyright triage
+exclusion, dedupe (corpus → existing prospects → in-batch), ICE threshold, and the per-run cap —
+each a discriminated, logged decision (`already-published` / `already-proposed` / `copyright-excluded`
+/ `below-threshold` / `duplicate-in-batch` / `over-cap` / `contract-violation`). No silent drops, same
+discriminated-reason discipline as the `pipeline-import.mjs` fix. The agent's tool surface is sealed
+(`settingSources: []`, built-ins disallowed, `allowedTools` = the one create tool, catch-all deny
+hook) — no bash, no filesystem, no web, no Supabase/Notion write beyond the single gated create.
+
+**Dry-run by default, idempotent.** `--dry-run` (default) writes nothing and prints the proposed
+batch as a markdown table plus the full skip log; `--apply` creates the rows; `--max N` caps them
+(default 10). Dedupe against corpus + prospect list means re-runs converge — a second `--apply`
+proposes nothing new unless coverage or thresholds changed. The Scout stays firmly on the pipeline's
+safe side: no copyright clearance (triage only), no sourcing/fetching/OCR, no Supabase or Feature
+Backlog writes, and nothing published.
+
+**Cron wrapper.** `.github/workflows/scout.yml` runs fortnightly (06:00 UTC, 1st & 15th) with
+`--apply --max 10`, plus `workflow_dispatch` (defaults to dry-run); the batch + skip log post to the
+run summary. Secrets: `ANTHROPIC_API_KEY`, `NOTION_TOKEN`, `SCOUT_SUPABASE_URL`, `SCOUT_SUPABASE_KEY`
+(read-only). The enforcement gate has a framework test (`npm run test:scout`, 12 cases) that runs with
+no API key or network — every skip reason, accept, projection, and re-run convergence. Deps added:
+`@anthropic-ai/claude-agent-sdk`, `zod`, `tsx` (dev). Full notes in `scripts/scout/README.md`. The
+Davenant-syllabus seed list (`SEED_PRIORITIES`) is a config hook left empty for v0 — nothing scraped.
+
+---
+
 ## 2026-08-20 — Pipeline operator GUI, chapter splitter, footnote handling (PR #19)
 
 A multi-session arc (Aug 17–20) landed as one branch/PR: the content pipeline grew a browser GUI,
