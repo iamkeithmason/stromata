@@ -24,10 +24,21 @@ on:
         description: 'Max proposals this run'
         type: string
         default: '10'
+  # Validate the Scout on PRs that touch it — always a dry-run (writes nothing),
+  # so every push gets a green/red signal without a manual dispatch. Scoped to
+  # the Scout's own files so unrelated PRs don't trigger a paid agent run.
+  pull_request:
+    paths:
+      - 'scripts/scout/**'
+      - '.github/workflows/scout.yml'
+      - 'package.json'
+      - 'package-lock.json'
 
 concurrency:
-  group: scout
-  cancel-in-progress: false
+  # Per-workflow, per-ref: a new push to a PR supersedes its in-flight dry-run,
+  # while scheduled runs (a different ref) stay isolated.
+  group: scout-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 permissions:
   contents: read
@@ -36,6 +47,11 @@ jobs:
   scout:
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    # Fork PRs don't receive secrets, so a dry-run there can only fail — skip
+    # them. Same-repo branch PRs (and schedule / dispatch) run normally.
+    if: >-
+      github.event_name != 'pull_request' ||
+      github.event.pull_request.head.repo.full_name == github.repository
     steps:
       - uses: actions/checkout@v4
 
@@ -55,6 +71,9 @@ jobs:
         run: |
           if [ "${{ github.event_name }}" = "schedule" ]; then
             echo "args=--apply --max 10" >> "$GITHUB_OUTPUT"
+          elif [ "${{ github.event_name }}" = "pull_request" ]; then
+            # PR validation is always a dry-run — never writes to Notion.
+            echo "args=--dry-run --max 10" >> "$GITHUB_OUTPUT"
           elif [ "${{ github.event.inputs.mode }}" = "apply" ]; then
             echo "args=--apply --max ${{ github.event.inputs.max }}" >> "$GITHUB_OUTPUT"
           else
