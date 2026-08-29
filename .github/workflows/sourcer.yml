@@ -29,6 +29,7 @@ on:
   pull_request:
     paths:
       - 'scripts/sourcer/**'
+      - 'scripts/research/**'
       - '.github/workflows/sourcer.yml'
       - 'package.json'
       - 'package-lock.json'
@@ -62,6 +63,9 @@ jobs:
 
       - name: Test the entry gate + enforcement hook
         run: npm run test:sourcer
+
+      - name: Test the provenance assistant
+        run: npm run test:research
 
       - name: Resolve run flags
         id: flags
