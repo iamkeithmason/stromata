@@ -1,0 +1,91 @@
+/**
+ * Tests for the structural contract: the source allowlist + fetch-URL resolution
+ * (the copyright boundary by construction), djvu preference, staging-path
+ * confinement, slug/dedupe, and clearance-record extraction. No network.
+ *
+ * Run: npx tsx --test scripts/sourcer/contract.test.ts
+ */
+
+import { test } from 'node:test';
+import assert from 'node:assert/strict';
+
+import {
+  allowlistedDomain,
+  dedupeKey,
+  extractClearanceRecord,
+  isAllowlistedHost,
+  isWithinStaging,
+  preferDjvuTxt,
+  resolveAllowlistedFetchUrl,
+  slugFor,
+} from './contract';
+import type { ClearedProspect } from './types';
+
+function prospect(over: Partial<ClearedProspect> = {}): ClearedProspect {
+  return {
+    id: 'p1', pageUrl: '', title: 'Gregory the Great — Book of Pastoral Rule', author: 'Gregory the Great',
+    work: 'Book of Pastoral Rule', slug: 'book-of-pastoral-rule-great', tradition: null, era: null, genre: null,
+    status: 'Text available', clearedEditionUrl: 'https://archive.org/details/pastoralrule', rightsCleared: true,
+    translationNotes: 'Translated by James Barmby (NPNF II.12); published 1895, public domain.', referenceUrl: null,
+    ...over,
+  };
+}
+
+test('allowlist accepts the five sanctioned hosts and their subdomains', () => {
+  for (const h of ['archive.org', 'anglicanhistory.org', 'sacred-texts.com', 'en.wikisource.org', 'www.newadvent.org']) {
+    assert.equal(isAllowlistedHost(h), true, h);
+  }
+});
+
+test('allowlist rejects everything else (incl. known risk sources)', () => {
+  for (const h of ['onthewing.org', 'ccel.org', 'example.com', 'localhost', '169.254.169.254', 'archive.org.evil.com']) {
+    assert.equal(isAllowlistedHost(h), false, h);
+  }
+});
+
+test('allowlistedDomain maps a subdomain back to its registrable domain', () => {
+  assert.equal(allowlistedDomain('en.wikisource.org'), 'wikisource.org');
+  assert.equal(allowlistedDomain('archive.org'), 'archive.org');
+});
+
+test('preferDjvuTxt rewrites an Archive.org details/stream URL to _djvu.txt (idempotent)', () => {
+  const out = preferDjvuTxt('https://archive.org/details/pastoralrule00greg');
+  assert.equal(out, 'https://archive.org/stream/pastoralrule00greg/pastoralrule00greg_djvu.txt');
+  assert.equal(preferDjvuTxt(out), out); // idempotent
+  // Non-archive URLs pass through untouched.
+  assert.equal(preferDjvuTxt('https://en.wikisource.org/wiki/Foo'), 'https://en.wikisource.org/wiki/Foo');
+});
+
+test('resolveAllowlistedFetchUrl returns the pinned edition ONLY, or null off-allowlist', () => {
+  assert.ok(resolveAllowlistedFetchUrl(prospect())?.endsWith('_djvu.txt'));
+  assert.equal(resolveAllowlistedFetchUrl(prospect({ clearedEditionUrl: 'https://onthewing.org/x' })), null);
+  assert.equal(resolveAllowlistedFetchUrl(prospect({ clearedEditionUrl: '' })), null);
+  assert.equal(resolveAllowlistedFetchUrl(prospect({ clearedEditionUrl: 'not a url' })), null);
+});
+
+test('staging confinement: only paths at/under content/staging/ are allowed', () => {
+  const root = '/repo';
+  assert.equal(isWithinStaging(root, 'content/staging/foo/body.md'), true);
+  assert.equal(isWithinStaging(root, '/repo/content/staging/foo/raw.txt'), true);
+  assert.equal(isWithinStaging(root, 'content/staging'), true);
+  assert.equal(isWithinStaging(root, 'app/page.tsx'), false);
+  assert.equal(isWithinStaging(root, 'content/published/foo.md'), false);
+  assert.equal(isWithinStaging(root, 'content/staging/../../etc/passwd'), false);
+  assert.equal(isWithinStaging(root, '/etc/passwd'), false);
+});
+
+test('slugFor + dedupeKey are stable and conservative', () => {
+  assert.equal(slugFor('Gregory the Great — Book of Pastoral Rule', 'Gregory the Great'), 'book-of-pastoral-rule-great');
+  assert.equal(dedupeKey('Grégoire', 'De Anima'), dedupeKey('Gregoire', 'De  Anima!'));
+  assert.notEqual(dedupeKey('X', 'On the Incarnation'), dedupeKey('X', 'Incarnation'));
+});
+
+test('extractClearanceRecord copies the basis verbatim and best-effort parses years/translator', () => {
+  const rec = extractClearanceRecord(prospect(), 'archive.org');
+  assert.ok(rec);
+  assert.equal(rec!.pdBasis, 'Translated by James Barmby (NPNF II.12); published 1895, public domain.');
+  assert.equal(rec!.translator, 'James Barmby');
+  assert.equal(rec!.publicationYear, 1895);
+  assert.equal(rec!.ocrSource, 'archive.org');
+  assert.equal(extractClearanceRecord(prospect({ translationNotes: '' }), 'archive.org'), null);
+});

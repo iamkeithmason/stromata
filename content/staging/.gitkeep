@@ -1,0 +1,5 @@
+# The Sourcer stages reviewable draft bundles here, one directory per prospect:
+#   content/staging/<slug>/{raw.txt,body.md,provenance.yml,metadata.yml,ocr-report.md,SOURCER.md}
+# These are DRAFTS — nothing here is published or in the database. In CI the
+# Sourcer opens a draft PR containing the bundle; locally it leaves the bundle as
+# working-tree changes for review. Keep this file so the directory always exists.

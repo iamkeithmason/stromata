@@ -1,0 +1,112 @@
+name: Sourcer — acquire & stage cleared prospects
+
+# The Sourcer acquires the ONE edition the editor pinned and rights-cleared,
+# cleans it deterministically, DETECTS (never corrects) the risky OCR problems,
+# and stages a reviewable draft bundle under content/staging/. Scheduled runs
+# open a DRAFT pull request with the bundle for editorial review; nothing is ever
+# published and the live database is never written. Cadence is slower than the
+# Scout (monthly) because sourcing is heavy.
+
+on:
+  schedule:
+    # 07:00 UTC on the 1st of each month.
+    - cron: '0 7 1 * *'
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 'Run mode'
+        type: choice
+        default: 'dry-run'
+        options:
+          - dry-run
+          - apply
+      max:
+        description: 'Max prospects this run'
+        type: string
+        default: '3'
+  # Validate the Sourcer on PRs that touch it — always a dry-run (fetches
+  # nothing, writes nothing). Scoped to the Sourcer's own files.
+  pull_request:
+    paths:
+      - 'scripts/sourcer/**'
+      - '.github/workflows/sourcer.yml'
+      - 'package.json'
+      - 'package-lock.json'
+
+concurrency:
+  group: sourcer-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  sourcer:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    # Fork PRs don't receive secrets, so a dry-run there can only fail — skip them.
+    if: >-
+      github.event_name != 'pull_request' ||
+      github.event.pull_request.head.repo.full_name == github.repository
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Test the entry gate + enforcement hook
+        run: npm run test:sourcer
+
+      - name: Resolve run flags
+        id: flags
+        run: |
+          if [ "${{ github.event_name }}" = "schedule" ]; then
+            echo "args=--apply --max 3" >> "$GITHUB_OUTPUT"
+          elif [ "${{ github.event_name }}" = "pull_request" ]; then
+            # PR validation is always a dry-run — never fetches or writes.
+            echo "args=--dry-run --max 3" >> "$GITHUB_OUTPUT"
+          elif [ "${{ github.event.inputs.mode }}" = "apply" ]; then
+            echo "args=--apply --max ${{ github.event.inputs.max }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "args=--dry-run --max ${{ github.event.inputs.max }}" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Run Sourcer
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+          # Supabase READ-ONLY credentials — grant the key a SELECT-only role.
+          SOURCER_SUPABASE_URL: ${{ secrets.SOURCER_SUPABASE_URL }}
+          SOURCER_SUPABASE_KEY: ${{ secrets.SOURCER_SUPABASE_KEY }}
+        run: npx tsx scripts/sourcer/sourcer.ts ${{ steps.flags.outputs.args }}
+
+      # Open a DRAFT PR with any staged bundle. Never on PR validation runs (those
+      # are dry-runs and stage nothing). The action no-ops when there are no
+      # changes under content/staging/.
+      - name: Open draft PR with the staged bundle
+        if: github.event_name != 'pull_request'
+        uses: peter-evans/create-pull-request@v6
+        with:
+          branch: sourcer/staged-${{ github.run_id }}
+          add-paths: content/staging
+          draft: true
+          commit-message: 'Sourcer: staged draft bundle(s) for review'
+          title: 'Sourcer — staged draft bundle(s) (run ${{ github.run_id }})'
+          body: |
+            Automated draft from the **Sourcer**. Each `content/staging/<slug>/` bundle is a
+            **reviewable draft** — nothing here is published or in the database.
+
+            Per bundle: `raw.txt` (immutable capture) · `body.md` (deterministic clean only) ·
+            `provenance.yml` (clearance record, verbatim) · `metadata.yml` (proposed, confirm before import) ·
+            `ocr-report.md` (detected-not-corrected; feeds `detect-scannos --apply-reviewed`) · `SOURCER.md`.
+
+            Review `body.md`, edit `ocr-report.md` and run the correction-apply pass, confirm
+            `metadata.yml`, then move the text through the normal import path and publish from the admin UI.
+
+            🤖 Generated with [Claude Code](https://claude.com/claude-code)
