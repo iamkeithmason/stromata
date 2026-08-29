@@ -26,6 +26,7 @@ function prospect(over: Partial<ClearedProspect> = {}): ClearedProspect {
     genre: 'Treatise',
     status: 'Text available',
     clearedEditionUrl: 'https://archive.org/details/onincarnation00atha',
+    additionalEditionUrls: [],
     rightsCleared: true,
     translationNotes: 'Trans. Robertson; published 1892, public domain.',
     referenceUrl: null,
@@ -92,6 +93,16 @@ test('fetch: a URL supplied in the tool input CANNOT override the pinned edition
     url: 'https://archive.org/details/legit',
   });
   assert.equal(d.allow, false);
+});
+
+test('fetch: allowed for a multi-part edition when every part is allowlisted', () => {
+  const p = prospect({ additionalEditionUrls: ['https://en.wikisource.org/wiki/Book_2'] });
+  assert.equal(gateToolCall(state([p]), TOOL.fetch, { prospectId: 'p1' }).allow, true);
+});
+
+test('fetch: denied when any additional part is off the allowlist', () => {
+  const p = prospect({ additionalEditionUrls: ['https://onthewing.org/book2'] });
+  assert.equal(gateToolCall(state([p]), TOOL.fetch, { prospectId: 'p1' }).allow, false);
 });
 
 test('run_pipeline_script: clean and detect are allowed', () => {

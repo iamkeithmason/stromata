@@ -22,7 +22,8 @@ export interface StageInput {
   prospect: ClearedProspect;
   clearanceRecord: ClearanceRecord;
   fetchedAt: string;
-  resolvedUrl: string;
+  /** Every fetched part URL, in order (part 1 first). */
+  resolvedUrls: string[];
   meta: ProposedMetadata;
   detection: DetectionSummary | null;
 }
@@ -35,7 +36,11 @@ function renderSourcerMd(input: StageInput, present: string[]): string {
   l.push(`- **Author:** ${prospect.author}`);
   l.push(`- **Slug:** \`${prospect.slug}\``);
   l.push(`- **Pinned edition:** ${input.clearanceRecord.clearedEditionUrl}`);
-  l.push(`- **Fetched:** ${input.resolvedUrl} (${input.fetchedAt})`);
+  l.push(
+    `- **Fetched:** ${input.resolvedUrls[0] ?? '—'}` +
+      (input.resolvedUrls.length > 1 ? ` (+${input.resolvedUrls.length - 1} more part(s))` : '') +
+      ` (${input.fetchedAt})`,
+  );
   l.push(`- **Prospect:** ${prospect.pageUrl}`);
   l.push(`- **Staged by:** ${SOURCER_VERSION}`);
   l.push('');
@@ -104,7 +109,7 @@ export function stageDraft(repoRoot: string, input: StageInput): StagedBundle {
     bundlePath(repoRoot, prospect.slug, BUNDLE_FILES.provenance),
     renderProvenanceYaml(input.clearanceRecord, {
       fetchedAt: input.fetchedAt,
-      clearedEditionUrlResolved: input.resolvedUrl,
+      fetchedUrls: input.resolvedUrls,
     }),
   );
 

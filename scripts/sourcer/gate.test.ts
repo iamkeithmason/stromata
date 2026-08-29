@@ -43,6 +43,7 @@ function prospect(over: Partial<ClearedProspect> = {}): ClearedProspect {
     genre: 'Treatise',
     status: 'Text available',
     clearedEditionUrl: 'https://archive.org/details/onincarnation00atha',
+    additionalEditionUrls: [],
     rightsCleared: true,
     translationNotes: 'Trans. Robertson (NPNF II.4); published 1892, public domain.',
     referenceUrl: null,
@@ -73,6 +74,22 @@ test('no-cleared-edition when the pinned URL is empty (but rights checked)', () 
 test('source-not-allowlisted for a pinned edition off the allowlist', () => {
   const r = runGate([prospect({ clearedEditionUrl: 'https://onthewing.org/luther.htm' })], corpusWithAthanasius(), OPTS);
   assert.equal(r.skips[0].reason, 'source-not-allowlisted');
+});
+
+test('a multi-part edition with every part allowlisted PASSES', () => {
+  const p = prospect({
+    additionalEditionUrls: ['https://en.wikisource.org/wiki/Book_2', 'https://newadvent.org/x'],
+  });
+  const r = runGate([p], corpusWithAthanasius(), OPTS);
+  assert.equal(r.accepted.length, 1);
+  assert.equal(r.accepted[0].outcome, 'pass');
+});
+
+test('source-not-allowlisted when an ADDITIONAL part is off the allowlist', () => {
+  const p = prospect({ additionalEditionUrls: ['https://onthewing.org/book2'] });
+  const r = runGate([p], corpusWithAthanasius(), OPTS);
+  assert.equal(r.skips[0].reason, 'source-not-allowlisted');
+  assert.match(r.skips[0].detail, /onthewing\.org/);
 });
 
 test('no-provenance-basis when Translation notes is empty', () => {

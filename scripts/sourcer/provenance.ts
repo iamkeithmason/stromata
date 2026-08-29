@@ -7,12 +7,12 @@
  */
 
 import { PROVENANCE_STAMP, SOURCER_VERSION } from './config';
-import { yamlEntry } from './yaml';
+import { yamlEntry, yamlList } from './yaml';
 import type { ClearanceRecord } from './types';
 
 export interface ProvenanceContext {
   fetchedAt: string; // ISO timestamp
-  clearedEditionUrlResolved: string; // the actual URL fetched (djvu-preferred)
+  fetchedUrls: string[]; // every actual URL fetched, in order (djvu-preferred)
 }
 
 /** Render provenance.yml from a clearance record. Values are the editor's, verbatim. */
@@ -22,7 +22,8 @@ export function renderProvenanceYaml(record: ClearanceRecord, ctx: ProvenanceCon
     `# ${PROVENANCE_STAMP}`,
     '',
     yamlEntry('cleared_edition_url', record.clearedEditionUrl),
-    yamlEntry('fetched_url', ctx.clearedEditionUrlResolved),
+    yamlEntry('fetched_url', ctx.fetchedUrls[0] ?? ''),
+    ...(ctx.fetchedUrls.length > 1 ? [yamlList('fetched_parts', ctx.fetchedUrls)] : []),
     yamlEntry('translator', record.translator),
     yamlEntry('edition_year', record.editionYear),
     yamlEntry('publication_year', record.publicationYear),

@@ -15,8 +15,10 @@ import {
   extractClearanceRecord,
   isAllowlistedHost,
   isWithinStaging,
+  pinnedUrls,
   preferDjvuTxt,
   resolveAllowlistedFetchUrl,
+  resolveAllowlistedFetchUrls,
   slugFor,
 } from './contract';
 import type { ClearedProspect } from './types';
@@ -25,7 +27,7 @@ function prospect(over: Partial<ClearedProspect> = {}): ClearedProspect {
   return {
     id: 'p1', pageUrl: '', title: 'Gregory the Great — Book of Pastoral Rule', author: 'Gregory the Great',
     work: 'Book of Pastoral Rule', slug: 'book-of-pastoral-rule-great', tradition: null, era: null, genre: null,
-    status: 'Text available', clearedEditionUrl: 'https://archive.org/details/pastoralrule', rightsCleared: true,
+    status: 'Text available', clearedEditionUrl: 'https://archive.org/details/pastoralrule', additionalEditionUrls: [], rightsCleared: true,
     translationNotes: 'Translated by James Barmby (NPNF II.12); published 1895, public domain.', referenceUrl: null,
     ...over,
   };
@@ -61,6 +63,35 @@ test('resolveAllowlistedFetchUrl returns the pinned edition ONLY, or null off-al
   assert.equal(resolveAllowlistedFetchUrl(prospect({ clearedEditionUrl: 'https://onthewing.org/x' })), null);
   assert.equal(resolveAllowlistedFetchUrl(prospect({ clearedEditionUrl: '' })), null);
   assert.equal(resolveAllowlistedFetchUrl(prospect({ clearedEditionUrl: 'not a url' })), null);
+});
+
+test('pinnedUrls returns primary + additional in order, de-duped', () => {
+  const p = prospect({
+    clearedEditionUrl: 'https://archive.org/details/a',
+    additionalEditionUrls: ['https://archive.org/details/b', 'https://archive.org/details/a'],
+  });
+  assert.deepEqual(pinnedUrls(p), ['https://archive.org/details/a', 'https://archive.org/details/b']);
+});
+
+test('resolveAllowlistedFetchUrls resolves ALL parts (djvu-preferred), in order', () => {
+  const p = prospect({
+    clearedEditionUrl: 'https://archive.org/details/book1',
+    additionalEditionUrls: ['https://en.wikisource.org/wiki/Book_2'],
+  });
+  const out = resolveAllowlistedFetchUrls(p);
+  assert.ok(out);
+  assert.equal(out!.length, 2);
+  assert.ok(out![0].endsWith('_djvu.txt'));
+  assert.equal(out![1], 'https://en.wikisource.org/wiki/Book_2');
+});
+
+test('resolveAllowlistedFetchUrls is all-or-nothing: one off-allowlist part → null', () => {
+  const p = prospect({
+    clearedEditionUrl: 'https://archive.org/details/book1',
+    additionalEditionUrls: ['https://onthewing.org/book2'],
+  });
+  assert.equal(resolveAllowlistedFetchUrls(p), null);
+  assert.equal(resolveAllowlistedFetchUrls(prospect({ clearedEditionUrl: '', additionalEditionUrls: [] })), null);
 });
 
 test('staging confinement: only paths at/under content/staging/ are allowed', () => {

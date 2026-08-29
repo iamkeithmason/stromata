@@ -16,8 +16,9 @@ import {
   authorKey,
   dedupeKey,
   hasProvenanceBasis,
-  isAllowlistedHost,
-  resolveAllowlistedFetchUrl,
+  isAllowlistedUrl,
+  pinnedUrls,
+  resolveAllowlistedFetchUrls,
 } from './contract';
 import type {
   ClearedProspect,
@@ -81,29 +82,24 @@ export function gateOne(
     return decision(prospect, 'refused', 'rights-not-cleared', 'Rights cleared checkbox is not set by a human');
   }
 
-  // 2. Cleared edition URL present + on the source allowlist.
-  const pinned = (prospect.clearedEditionUrl || '').trim();
-  if (!pinned) {
+  // 2. Cleared edition URL(s) present + every part on the source allowlist.
+  const pinned = pinnedUrls(prospect);
+  if (pinned.length === 0) {
     return decision(prospect, 'refused', 'no-cleared-edition', 'no Cleared edition URL pinned');
   }
-  const resolved = resolveAllowlistedFetchUrl(prospect);
+  const resolved = resolveAllowlistedFetchUrls(prospect);
   if (!resolved) {
-    // The URL is present but not allowlisted (or malformed). Distinguish the two.
-    let host: string | null = null;
-    try {
-      host = new URL(pinned).hostname.toLowerCase();
-    } catch {
-      host = null;
-    }
-    if (!isAllowlistedHost(host)) {
+    // A part is present but off the allowlist (or malformed). Name the offender.
+    const offending = pinned.find((u) => !isAllowlistedUrl(u));
+    if (offending) {
       return decision(
         prospect,
         'refused',
         'source-not-allowlisted',
-        `pinned edition host "${host ?? pinned}" is not on the source allowlist`,
+        `pinned edition part "${offending}" is not on the source allowlist`,
       );
     }
-    return decision(prospect, 'refused', 'no-cleared-edition', `pinned edition URL is malformed: ${pinned}`);
+    return decision(prospect, 'refused', 'no-cleared-edition', `a pinned edition URL is malformed: ${pinned.join(', ')}`);
   }
 
   // 3. Provenance basis present (Translation notes non-empty).

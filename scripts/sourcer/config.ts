@@ -109,7 +109,8 @@ export const NOTION = {
     translationNotes: 'Translation notes',
     // The two human-owned gate fields. If either is absent from the live schema,
     // reconcile() warns and the gate refuses every prospect (nothing is cleared).
-    clearedEditionUrl: 'Cleared edition URL', // url — the pinned source
+    clearedEditionUrl: 'Cleared edition URL', // url — the pinned source (part 1)
+    additionalEditionUrls: 'Additional edition URLs', // rich_text — extra ordered parts, one URL per line
     rightsCleared: 'Rights cleared', // checkbox — a HUMAN sets this true
   },
   /** Status the Sourcer bumps a prospect to once staged — only when explicitly enabled. */

@@ -113,6 +113,11 @@ export function isAllowlistedHost(host: string | null): boolean {
   return SOURCE_ALLOWLIST.some((d) => host === d || host.endsWith(`.${d}`));
 }
 
+/** True iff a URL string parses to an allowlisted host. */
+export function isAllowlistedUrl(u: string): boolean {
+  return isAllowlistedHost(hostOf(u));
+}
+
 /** The registrable-ish allowlisted domain the host matches (for the provenance ocr_source). */
 export function allowlistedDomain(host: string | null): string | null {
   if (!host) return null;
@@ -144,9 +149,22 @@ export function preferDjvuTxt(rawUrl: string): string {
 }
 
 /**
- * Resolve the SINGLE fetch URL from a prospect's clearance record. This is the
- * only place a fetch URL comes from — always the editor's pinned
- * `Cleared edition URL`, never anything the agent supplies.
+ * The full ordered list of URLs the editor pinned for this one edition — the
+ * primary `Cleared edition URL` followed by any `Additional edition URLs`. These
+ * are the ONLY URLs that can ever be fetched; nothing the agent supplies is
+ * considered. Empty entries are dropped, order preserved, duplicates removed.
+ */
+export function pinnedUrls(prospect: ClearedProspect): string[] {
+  const all = [prospect.clearedEditionUrl, ...(prospect.additionalEditionUrls || [])]
+    .map((u) => (u || '').trim())
+    .filter(Boolean);
+  return Array.from(new Set(all));
+}
+
+/**
+ * Resolve the SINGLE primary fetch URL (part 1) from a prospect's clearance
+ * record — always the editor's pinned `Cleared edition URL`, never anything the
+ * agent supplies. Used for provenance display and the single-part common case.
  *
  * @returns the resolved (allowlisted, djvu-preferred) URL, or null when the
  * pinned edition is missing, malformed, or off the allowlist.
@@ -157,6 +175,23 @@ export function resolveAllowlistedFetchUrl(prospect: ClearedProspect): string | 
   const host = hostOf(pinned);
   if (!isAllowlistedHost(host)) return null;
   return preferDjvuTxt(pinned);
+}
+
+/**
+ * Resolve ALL pinned parts of the one edition. All-or-nothing: if ANY pinned URL
+ * is missing, malformed, or off the allowlist, returns null (the whole prospect
+ * is refused — a part is never silently dropped). Otherwise returns the resolved
+ * (allowlisted, djvu-preferred) URLs in order.
+ */
+export function resolveAllowlistedFetchUrls(prospect: ClearedProspect): string[] | null {
+  const pinned = pinnedUrls(prospect);
+  if (pinned.length === 0) return null;
+  const resolved: string[] = [];
+  for (const u of pinned) {
+    if (!isAllowlistedHost(hostOf(u))) return null;
+    resolved.push(preferDjvuTxt(u));
+  }
+  return resolved;
 }
 
 // ---------------------------------------------------------------------------

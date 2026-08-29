@@ -18,7 +18,7 @@ import type { HookCallback, HookInput, PreToolUseHookInput } from '@anthropic-ai
 import {
   hasProvenanceBasis,
   isWithinStaging,
-  resolveAllowlistedFetchUrl,
+  resolveAllowlistedFetchUrls,
 } from './contract';
 import { FORBIDDEN_RUNNER_ACTIONS, isRunnerAction } from './runner';
 import type { ClearanceRecord, ClearedProspect, GateDecision } from './types';
@@ -83,12 +83,13 @@ export function gateToolCall(
 
   if (toolName === TOOL.fetch) {
     if (!known) return deny(`fetch: unknown or un-gated prospectId "${prospectId}".`);
-    // The URL is derived from the pinned edition — an off-allowlist / missing
-    // pinned edition is unfetchable, and any `url` field in the input is ignored.
-    const resolved = resolveAllowlistedFetchUrl(known.prospect);
+    // URLs are derived from the pinned edition — any off-allowlist / missing part
+    // makes the whole prospect unfetchable, and any `url` field in the input is
+    // ignored (all-or-nothing across every pinned part).
+    const resolved = resolveAllowlistedFetchUrls(known.prospect);
     if (!resolved) {
       return deny(
-        `fetch: prospect "${known.prospect.slug}" has no allowlisted pinned edition — ` +
+        `fetch: prospect "${known.prospect.slug}" has a missing or off-allowlist pinned edition part — ` +
           'the Sourcer cannot choose a source.',
       );
     }

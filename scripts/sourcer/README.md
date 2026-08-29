@@ -40,9 +40,12 @@ script — no model.
 The entry gate is machine-checkable and human-set. The list needs two properties,
 set by a human and only a human:
 
-- **`Cleared edition URL`** (url) — the exact source the editor pinned.
+- **`Cleared edition URL`** (url) — the exact source the editor pinned (part 1).
 - **`Rights cleared`** (checkbox) — set true once author copyright *and*
   translation provenance have both been verified.
+- **`Additional edition URLs`** (text, optional) — extra ordered parts of the
+  *same* pinned edition when a work is split across several allowlisted pages,
+  one URL per line. See "Multi-part works" below.
 
 `Translation notes` stays where the editor records the *basis* (translator,
 edition year, publication year, why it is public domain). The Sourcer copies that
@@ -92,6 +95,36 @@ unable to choose a source**.
 - Archive.org scans are pulled as `_djvu.txt`. The untouched response is written to
   `raw.txt` and **never edited again**; a re-run that finds an existing `raw.txt`
   is a no-op.
+
+## Multi-part works (collections split across pages)
+
+A work with named or numbered internal divisions (e.g. the four books of John of
+Damascus's *Exact Exposition*) is recovered by pinning a source that contains the
+whole work:
+
+- **Preferred — one whole-work URL.** Pin the Archive.org `djvu.txt` of the whole
+  volume (the public-domain mirror of the CCEL/NPNF text). One fetch captures
+  every book. This is why large patristic works are easier via Archive than via
+  New Advent's per-book pages or a live CCEL scrape.
+- **When no single URL holds the whole work** — the parts live on separate
+  allowlisted pages — list the extra parts in `Additional edition URLs` (one per
+  line). All parts (primary + additional) are validated against the allowlist
+  (**all-or-nothing** — one off-allowlist part refuses the whole prospect),
+  fetched **in order** with a rate-limit between them, and concatenated into the
+  one immutable `raw.txt` with a `<!-- SOURCER PART n/N · url -->` marker per
+  part. `provenance.yml` records every fetched part.
+
+This preserves the copyright boundary: *every* URL is still human-pinned and
+allow-listed — the Sourcer concatenates, it never discovers or follows links to
+find the rest of a work. The raw stays whole; the actual split into a
+`collections` row + ordered chapters happens downstream (`split-into-chapters.mjs`
++ `pipeline-import.mjs`), guided by the collection-structure proposal in
+`metadata.yml`.
+
+> CCEL and New Advent are **not** lost: CCEL renders dynamically so it is taken
+> via its Archive.org `djvu.txt` mirror, and New Advent's `/fathers/` URLs are
+> broken upstream (June 2026) so those works also route through Archive. Both are
+> the project's pre-existing standard, not a new Sourcer restriction.
 
 ## Detect, do not correct (the separation principle)
 

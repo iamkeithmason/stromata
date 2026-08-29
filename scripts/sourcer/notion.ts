@@ -101,6 +101,14 @@ function urlValue(prop: NotionProp | undefined): string {
   return prop?.type === 'url' ? (prop.url ?? '') : '';
 }
 
+/** Split a free-text list of URLs (one per line, or comma/space separated). */
+function splitUrlList(text: string): string[] {
+  return (text || '')
+    .split(/[\s,]+/)
+    .map((u) => u.trim())
+    .filter(Boolean);
+}
+
 function toProspect(id: string, pageUrl: string, p: Record<string, NotionProp>): ClearedProspect {
   const title = plainText(p[NOTION.props.title]);
   const author = plainText(p[NOTION.props.author]);
@@ -117,6 +125,7 @@ function toProspect(id: string, pageUrl: string, p: Record<string, NotionProp>):
     genre: selectName(p[NOTION.props.genre]),
     status: plainText(p[NOTION.props.status]),
     clearedEditionUrl: urlValue(p[NOTION.props.clearedEditionUrl]).trim(),
+    additionalEditionUrls: splitUrlList(plainText(p[NOTION.props.additionalEditionUrls])),
     rightsCleared: checkbox(p[NOTION.props.rightsCleared]),
     translationNotes: plainText(p[NOTION.props.translationNotes]),
     referenceUrl: urlValue(p[NOTION.props.referenceUrl]).trim() || null,

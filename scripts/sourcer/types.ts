@@ -32,8 +32,15 @@ export interface ClearedProspect {
   era: string | null;
   genre: string | null;
   status: string;
-  /** The editor's pinned source. Empty → `no-cleared-edition`. */
+  /** The editor's pinned source (part 1). Empty → `no-cleared-edition`. */
   clearedEditionUrl: string;
+  /**
+   * Extra ordered parts of the SAME pinned edition, for a work split across
+   * several allowlisted pages (from the "Additional edition URLs" field, one per
+   * line). Each is human-pinned and allowlist-checked like the primary — this is
+   * not source discovery, just the rest of the one edition.
+   */
+  additionalEditionUrls: string[];
   /** The human rights-cleared checkbox. False → `rights-not-cleared`. */
   rightsCleared: boolean;
   /** Free-text provenance basis (translator, edition/publication year, why PD). Copied verbatim. */

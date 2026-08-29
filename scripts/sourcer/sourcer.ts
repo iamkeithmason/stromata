@@ -190,7 +190,7 @@ async function main() {
   };
 
   // Per-prospect progress (fetch → detect), keyed by prospectId. Filled by handlers.
-  const progress = new Map<string, { resolvedUrl: string; fetchedAt: string; detection?: DetectionSummary }>();
+  const progress = new Map<string, { resolvedUrls: string[]; fetchedAt: string; detection?: DetectionSummary }>();
 
   // Corpus-frequency index + allowlist for the detection pass (may be absent).
   let corpusIndex: CorpusIndex | null = null;
@@ -260,7 +260,7 @@ async function main() {
         if (fetchCount > 0) await politenessDelay();
         fetchCount++;
         const res = await fetchPinnedSource(entry.prospect, REPO_ROOT);
-        progress.set(entry.prospect.id, { resolvedUrl: res.url, fetchedAt: new Date().toISOString() });
+        progress.set(entry.prospect.id, { resolvedUrls: res.urls, fetchedAt: new Date().toISOString() });
         return {
           content: [
             {
@@ -268,6 +268,7 @@ async function main() {
               text: JSON.stringify({
                 slug: res.slug,
                 fetched: res.url,
+                parts: res.parts,
                 bytes: res.bytes,
                 alreadyPresent: res.alreadyPresent,
                 preview: res.preview,
@@ -295,7 +296,7 @@ async function main() {
         const outcome = await runPipelineAction(String(a.action), entry.prospect.slug, runnerCtx);
         if (outcome.action === 'detect') {
           const d = outcome as DetectOutcome;
-          const prev = progress.get(entry.prospect.id) ?? { resolvedUrl: '', fetchedAt: new Date().toISOString() };
+          const prev = progress.get(entry.prospect.id) ?? { resolvedUrls: [], fetchedAt: new Date().toISOString() };
           prev.detection = {
             ocrQuality: d.ocrQuality,
             scannoCount: d.scannoCount,
@@ -334,7 +335,7 @@ async function main() {
       const entry = byId.get(String(a.prospectId));
       if (!entry) return errorResult(`unknown prospectId ${String(a.prospectId)}`);
       const prog = progress.get(entry.prospect.id);
-      if (!prog || !prog.resolvedUrl) return errorResult(`stage_draft: fetch "${entry.prospect.slug}" before staging`);
+      if (!prog || prog.resolvedUrls.length === 0) return errorResult(`stage_draft: fetch "${entry.prospect.slug}" before staging`);
       try {
         const proposal: AgentMetadataProposal = {
           genre: typeof a.genre === 'string' ? a.genre : null,
@@ -352,7 +353,7 @@ async function main() {
           prospect: entry.prospect,
           clearanceRecord: entry.clearanceRecord,
           fetchedAt: prog.fetchedAt,
-          resolvedUrl: prog.resolvedUrl,
+          resolvedUrls: prog.resolvedUrls,
           meta,
           detection: prog.detection ?? null,
         });
