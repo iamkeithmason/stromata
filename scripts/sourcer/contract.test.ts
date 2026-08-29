@@ -16,6 +16,7 @@ import {
   isAllowlistedHost,
   isWithinStaging,
   pinnedUrls,
+  preferCcelCacheTxt,
   preferDjvuTxt,
   resolveAllowlistedFetchUrl,
   resolveAllowlistedFetchUrls,
@@ -33,14 +34,14 @@ function prospect(over: Partial<ClearedProspect> = {}): ClearedProspect {
   };
 }
 
-test('allowlist accepts the five sanctioned hosts and their subdomains', () => {
-  for (const h of ['archive.org', 'anglicanhistory.org', 'sacred-texts.com', 'en.wikisource.org', 'www.newadvent.org']) {
+test('allowlist accepts the sanctioned hosts and their subdomains', () => {
+  for (const h of ['archive.org', 'anglicanhistory.org', 'sacred-texts.com', 'en.wikisource.org', 'www.newadvent.org', 'ccel.org']) {
     assert.equal(isAllowlistedHost(h), true, h);
   }
 });
 
 test('allowlist rejects everything else (incl. known risk sources)', () => {
-  for (const h of ['onthewing.org', 'ccel.org', 'example.com', 'localhost', '169.254.169.254', 'archive.org.evil.com']) {
+  for (const h of ['onthewing.org', 'biblehub.com', 'example.com', 'localhost', '169.254.169.254', 'archive.org.evil.com']) {
     assert.equal(isAllowlistedHost(h), false, h);
   }
 });
@@ -56,6 +57,21 @@ test('preferDjvuTxt rewrites an Archive.org details/stream URL to _djvu.txt (ide
   assert.equal(preferDjvuTxt(out), out); // idempotent
   // Non-archive URLs pass through untouched.
   assert.equal(preferDjvuTxt('https://en.wikisource.org/wiki/Foo'), 'https://en.wikisource.org/wiki/Foo');
+});
+
+test('preferCcelCacheTxt rewrites a CCEL work URL to its cache .txt (idempotent)', () => {
+  const out = preferCcelCacheTxt('https://ccel.org/ccel/a/anselm/basic_works/basic_works.i.html');
+  assert.equal(out, 'https://ccel.org/ccel/a/anselm/basic_works/cache/basic_works.txt');
+  // A bare work path resolves to the same cache .txt.
+  assert.equal(preferCcelCacheTxt('https://ccel.org/ccel/a/anselm/basic_works/'), out);
+  // Already a .txt (and non-CCEL) pass through untouched.
+  assert.equal(preferCcelCacheTxt(out), out);
+  assert.equal(preferCcelCacheTxt('https://archive.org/details/x'), 'https://archive.org/details/x');
+});
+
+test('a pinned CCEL work URL resolves to the fetchable cache .txt', () => {
+  const p = prospect({ clearedEditionUrl: 'https://ccel.org/ccel/a/anselm/basic_works/basic_works.i.html' });
+  assert.equal(resolveAllowlistedFetchUrl(p), 'https://ccel.org/ccel/a/anselm/basic_works/cache/basic_works.txt');
 });
 
 test('resolveAllowlistedFetchUrl returns the pinned edition ONLY, or null off-allowlist', () => {

@@ -23,9 +23,10 @@
 // nor reach a host the editor's pinned edition doesn't already live on.
 //
 // Matching is on the registrable-ish suffix: host === domain OR host ends with
-// ".<domain>". CCEL renders dynamically and is deliberately absent — CCEL texts
-// are taken via their Archive.org djvu.txt mirror (archive.org), never a live
-// CCEL scrape.
+// ".<domain>". CCEL's reading pages render dynamically, but its plain-text export
+// (`/ccel/{letter}/{author}/{work}/cache/{work}.txt`) is directly fetchable, so
+// ccel.org is allowlisted and the fetch tool rewrites a CCEL work URL to that
+// cache .txt form (see contract.preferCcelCacheTxt).
 // ---------------------------------------------------------------------------
 
 export const SOURCE_ALLOWLIST = [
@@ -34,6 +35,7 @@ export const SOURCE_ALLOWLIST = [
   'sacred-texts.com',
   'wikisource.org', // the editor pins en.wikisource.org; the suffix covers it
   'newadvent.org',
+  'ccel.org', // pin the /cache/<work>.txt plain-text export
 ] as const;
 
 /** Obvious placeholder / private hosts — never a real cleared edition. */

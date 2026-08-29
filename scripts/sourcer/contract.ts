@@ -149,6 +149,36 @@ export function preferDjvuTxt(rawUrl: string): string {
 }
 
 /**
+ * Turn a CCEL work URL into its plain-text Unicode export — the directly
+ * fetchable `/ccel/{letter}/{author}/{work}/cache/{work}.txt` form (the reading
+ * `.html` renders dynamically and can't be plain-fetched). Idempotent for a URL
+ * already ending in `.txt`; non-CCEL or unrecognised URLs pass through unchanged.
+ */
+export function preferCcelCacheTxt(rawUrl: string): string {
+  const host = hostOf(rawUrl);
+  if (!host || !(host === 'ccel.org' || host.endsWith('.ccel.org'))) return rawUrl;
+  let u: URL;
+  try {
+    u = new URL(rawUrl);
+  } catch {
+    return rawUrl;
+  }
+  if (/\.txt$/i.test(u.pathname)) return u.toString();
+  // /ccel/{letter}/{author}/{work}[/...] → /ccel/{letter}/{author}/{work}/cache/{work}.txt
+  const m = u.pathname.match(/^\/ccel\/([^/]+)\/([^/]+)\/([^/]+)/);
+  if (m) {
+    const [, letter, author, work] = m;
+    return `https://ccel.org/ccel/${letter}/${author}/${work}/cache/${work}.txt`;
+  }
+  return rawUrl;
+}
+
+/** Prefer the plain-text form of a source URL (Archive djvu.txt / CCEL cache txt). */
+export function preferPlainText(rawUrl: string): string {
+  return preferCcelCacheTxt(preferDjvuTxt(rawUrl));
+}
+
+/**
  * The full ordered list of URLs the editor pinned for this one edition — the
  * primary `Cleared edition URL` followed by any `Additional edition URLs`. These
  * are the ONLY URLs that can ever be fetched; nothing the agent supplies is
@@ -174,7 +204,7 @@ export function resolveAllowlistedFetchUrl(prospect: ClearedProspect): string | 
   if (!pinned) return null;
   const host = hostOf(pinned);
   if (!isAllowlistedHost(host)) return null;
-  return preferDjvuTxt(pinned);
+  return preferPlainText(pinned);
 }
 
 /**
@@ -189,7 +219,7 @@ export function resolveAllowlistedFetchUrls(prospect: ClearedProspect): string[]
   const resolved: string[] = [];
   for (const u of pinned) {
     if (!isAllowlistedHost(hostOf(u))) return null;
-    resolved.push(preferDjvuTxt(u));
+    resolved.push(preferPlainText(u));
   }
   return resolved;
 }

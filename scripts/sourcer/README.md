@@ -73,9 +73,12 @@ the editor creates the author record before import. The Sourcer never invents an
 author.
 
 **Source allowlist:** `archive.org`, `anglicanhistory.org`, `sacred-texts.com`,
-`en.wikisource.org` (the `wikisource.org` suffix), `newadvent.org`. Anything else →
-`source-not-allowlisted`. CCEL renders dynamically, so CCEL texts are taken via
-their Archive.org `djvu.txt` mirror, not a live scrape.
+`en.wikisource.org` (the `wikisource.org` suffix), `newadvent.org`, `ccel.org`.
+Anything else → `source-not-allowlisted`. The fetch tool rewrites URLs to their
+plain-text form where one exists: Archive.org → `_djvu.txt`, and CCEL work URLs →
+their `/cache/<work>.txt` Unicode export (CCEL's reading `.html` renders
+dynamically, but that cache `.txt` is directly fetchable — no Archive detour, no
+browser).
 
 The candidate intake is every row the editor has *begun* clearing (`Rights
 cleared` checked **or** a `Cleared edition URL` present). Rows the editor hasn't
@@ -121,10 +124,11 @@ find the rest of a work. The raw stays whole; the actual split into a
 + `pipeline-import.mjs`), guided by the collection-structure proposal in
 `metadata.yml`.
 
-> CCEL and New Advent are **not** lost: CCEL renders dynamically so it is taken
-> via its Archive.org `djvu.txt` mirror, and New Advent's `/fathers/` URLs are
-> broken upstream (June 2026) so those works also route through Archive. Both are
-> the project's pre-existing standard, not a new Sourcer restriction.
+> CCEL and New Advent are both directly usable: pin a CCEL work's
+> `/cache/<work>.txt` export (the fetch tool derives it), and New Advent's
+> `/fathers/` chapter pages (whose June-2026 breakage was resolved by 2026-08-29)
+> pin as multi-part Book pages. Archive.org `djvu.txt` remains the route for
+> whole-volume scans.
 
 ## Detect, do not correct (the separation principle)
 
