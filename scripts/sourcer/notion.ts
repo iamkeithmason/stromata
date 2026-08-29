@@ -12,12 +12,18 @@ import { NOTION } from './config';
 import { slugFor, workFromTitle } from './contract';
 import type { ClearedProspect } from './types';
 
-const TOKEN = process.env.NOTION_TOKEN || process.env.SOURCER_NOTION_TOKEN || '';
 const BASE = 'https://api.notion.com/v1';
+
+// Read the token LAZILY (not into a module-level const at import time): the CLI
+// loads .env.local via dotenv AFTER these modules are imported, so an
+// import-time capture would be empty for local runs even when the token is set.
+function notionToken(): string {
+  return process.env.NOTION_TOKEN || process.env.SOURCER_NOTION_TOKEN || '';
+}
 
 function headers(): Record<string, string> {
   return {
-    Authorization: `Bearer ${TOKEN}`,
+    Authorization: `Bearer ${notionToken()}`,
     'Notion-Version': NOTION.apiVersion,
     'Content-Type': 'application/json',
   };
@@ -34,7 +40,7 @@ async function notionFetch(path: string, init: RequestInit, attempt = 0): Promis
 }
 
 export function assertToken(): void {
-  if (!TOKEN) throw new Error('NOTION_TOKEN (or SOURCER_NOTION_TOKEN) is not set.');
+  if (!notionToken()) throw new Error('NOTION_TOKEN (or SOURCER_NOTION_TOKEN) is not set.');
 }
 
 // ---------------------------------------------------------------------------

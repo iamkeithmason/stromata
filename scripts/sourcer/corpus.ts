@@ -13,15 +13,18 @@ import { createClient } from '@supabase/supabase-js';
 import { authorKey, dedupeKey } from './contract';
 import type { CorpusAuthor, CorpusView } from './types';
 
-const SUPABASE_URL = (process.env.SOURCER_SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL || '')
-  .trim()
-  .replace(/\/+$/, '')
-  .replace(/\/rest\/v1$/, '');
-const SUPABASE_KEY = (
-  process.env.SOURCER_SUPABASE_KEY ||
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
-  ''
-).trim();
+// Read credentials LAZILY (not into module-level consts at import time): the CLI
+// loads .env.local via dotenv AFTER this module is imported, so an import-time
+// capture would be empty for local runs even when the creds are set.
+function supabaseUrl(): string {
+  return (process.env.SOURCER_SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL || '')
+    .trim()
+    .replace(/\/+$/, '')
+    .replace(/\/rest\/v1$/, '');
+}
+function supabaseKey(): string {
+  return (process.env.SOURCER_SUPABASE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '').trim();
+}
 
 interface AuthorRow {
   id: string;
@@ -38,7 +41,7 @@ interface CollectionRow {
 }
 
 export function hasCredentials(): boolean {
-  return Boolean(SUPABASE_URL && SUPABASE_KEY);
+  return Boolean(supabaseUrl() && supabaseKey());
 }
 
 /**
@@ -54,7 +57,7 @@ export async function buildCorpusView(): Promise<CorpusView> {
     );
   }
 
-  const supabase = createClient(SUPABASE_URL, SUPABASE_KEY, {
+  const supabase = createClient(supabaseUrl(), supabaseKey(), {
     auth: { persistSession: false },
   });
 
