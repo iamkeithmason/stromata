@@ -59,18 +59,34 @@ test('preferDjvuTxt rewrites an Archive.org details/stream URL to _djvu.txt (ide
   assert.equal(preferDjvuTxt('https://en.wikisource.org/wiki/Foo'), 'https://en.wikisource.org/wiki/Foo');
 });
 
-test('preferCcelCacheTxt rewrites a CCEL work URL to its cache .txt (idempotent)', () => {
+test('preferCcelCacheTxt handles the no-letter reading form (letter derived from author)', () => {
+  // The natural CCEL reading URLs have NO letter segment — the letter is the
+  // author's first character. (Real examples.)
+  assert.equal(
+    preferCcelCacheTxt('https://ccel.org/ccel/anselm/basic_works/basic_works'),
+    'https://ccel.org/ccel/a/anselm/basic_works/cache/basic_works.txt',
+  );
+  assert.equal(
+    preferCcelCacheTxt('https://ccel.org/ccel/ignatius/exercises/exercises'),
+    'https://ccel.org/ccel/i/ignatius/exercises/cache/exercises.txt',
+  );
+  assert.equal(
+    preferCcelCacheTxt('https://ccel.org/ccel/benedict/rule/rule'),
+    'https://ccel.org/ccel/b/benedict/rule/cache/rule.txt',
+  );
+});
+
+test('preferCcelCacheTxt also handles the storage form (letter present) + is idempotent', () => {
   const out = preferCcelCacheTxt('https://ccel.org/ccel/a/anselm/basic_works/basic_works.i.html');
   assert.equal(out, 'https://ccel.org/ccel/a/anselm/basic_works/cache/basic_works.txt');
-  // A bare work path resolves to the same cache .txt.
   assert.equal(preferCcelCacheTxt('https://ccel.org/ccel/a/anselm/basic_works/'), out);
   // Already a .txt (and non-CCEL) pass through untouched.
   assert.equal(preferCcelCacheTxt(out), out);
   assert.equal(preferCcelCacheTxt('https://archive.org/details/x'), 'https://archive.org/details/x');
 });
 
-test('a pinned CCEL work URL resolves to the fetchable cache .txt', () => {
-  const p = prospect({ clearedEditionUrl: 'https://ccel.org/ccel/a/anselm/basic_works/basic_works.i.html' });
+test('a pinned CCEL reading URL resolves to the fetchable cache .txt', () => {
+  const p = prospect({ clearedEditionUrl: 'https://ccel.org/ccel/anselm/basic_works/basic_works' });
   assert.equal(resolveAllowlistedFetchUrl(p), 'https://ccel.org/ccel/a/anselm/basic_works/cache/basic_works.txt');
 });
 

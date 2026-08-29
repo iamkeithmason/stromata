@@ -151,8 +151,11 @@ export function preferDjvuTxt(rawUrl: string): string {
 /**
  * Turn a CCEL work URL into its plain-text Unicode export — the directly
  * fetchable `/ccel/{letter}/{author}/{work}/cache/{work}.txt` form (the reading
- * `.html` renders dynamically and can't be plain-fetched). Idempotent for a URL
- * already ending in `.txt`; non-CCEL or unrecognised URLs pass through unchanged.
+ * `.html` renders dynamically and can't be plain-fetched). Handles BOTH CCEL URL
+ * shapes: the reading form `/ccel/{author}/{work}/…` (no letter — the letter is
+ * derived from the author's first character) and the storage form
+ * `/ccel/{letter}/{author}/{work}/…` (letter already present). Idempotent for a
+ * URL already ending in `.txt`; non-CCEL or unrecognised URLs pass through.
  */
 export function preferCcelCacheTxt(rawUrl: string): string {
   const host = hostOf(rawUrl);
@@ -164,13 +167,25 @@ export function preferCcelCacheTxt(rawUrl: string): string {
     return rawUrl;
   }
   if (/\.txt$/i.test(u.pathname)) return u.toString();
-  // /ccel/{letter}/{author}/{work}[/...] → /ccel/{letter}/{author}/{work}/cache/{work}.txt
-  const m = u.pathname.match(/^\/ccel\/([^/]+)\/([^/]+)\/([^/]+)/);
-  if (m) {
-    const [, letter, author, work] = m;
-    return `https://ccel.org/ccel/${letter}/${author}/${work}/cache/${work}.txt`;
+
+  const segs = u.pathname.split('/').filter(Boolean);
+  if (segs[0] !== 'ccel') return rawUrl;
+  const rest = segs.slice(1);
+
+  let letter: string, author: string, work: string;
+  if (rest.length >= 3 && rest[0].length === 1) {
+    // storage form: /ccel/{letter}/{author}/{work}/…
+    [letter, author, work] = [rest[0], rest[1], rest[2]];
+  } else if (rest.length >= 2) {
+    // reading form: /ccel/{author}/{work}[/…] — derive the letter from the author
+    author = rest[0];
+    work = rest[1];
+    letter = author[0].toLowerCase();
+  } else {
+    return rawUrl; // can't derive a work path
   }
-  return rawUrl;
+  if (!letter || !author || !work) return rawUrl;
+  return `https://ccel.org/ccel/${letter}/${author}/${work}/cache/${work}.txt`;
 }
 
 /** Prefer the plain-text form of a source URL (Archive djvu.txt / CCEL cache txt). */

@@ -75,10 +75,11 @@ author.
 **Source allowlist:** `archive.org`, `anglicanhistory.org`, `sacred-texts.com`,
 `en.wikisource.org` (the `wikisource.org` suffix), `newadvent.org`, `ccel.org`.
 Anything else → `source-not-allowlisted`. The fetch tool rewrites URLs to their
-plain-text form where one exists: Archive.org → `_djvu.txt`, and CCEL work URLs →
-their `/cache/<work>.txt` Unicode export (CCEL's reading `.html` renders
-dynamically, but that cache `.txt` is directly fetchable — no Archive detour, no
-browser).
+plain-text form where one exists: Archive.org → `_djvu.txt`, and a CCEL work URL
+(the natural reading form `/ccel/{author}/{work}/…` or the storage form
+`/ccel/{letter}/{author}/{work}/…`) → its `/cache/<work>.txt` Unicode export
+(CCEL's reading `.html` renders dynamically, but that cache `.txt` is directly
+fetchable — no Archive detour, no browser).
 
 The candidate intake is every row the editor has *begun* clearing (`Rights
 cleared` checked **or** a `Cleared edition URL` present). Rows the editor hasn't
