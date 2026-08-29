@@ -14,21 +14,29 @@ import { ERAS, TRADITIONS } from './config';
 import type { CoverageMap, CoverageCell } from './types';
 import { dedupeKey } from './contract';
 
+// Read credentials LAZILY (not into module-level consts at import time): the CLI
+// loads .env.local via dotenv AFTER this module is imported, so an import-time
+// capture would be empty for local runs even when the creds are set.
+//
 // Normalise the URL defensively: a pasted secret often carries a trailing
 // slash or newline, and either turns the REST path into "//rest/v1/…", which
 // Supabase rejects with "Invalid path specified in request URL". Trim
 // whitespace, and strip any trailing slash or an accidentally-included
 // /rest/v1 suffix so createClient builds a clean base.
-const SUPABASE_URL = (process.env.SCOUT_SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL || '')
-  .trim()
-  .replace(/\/+$/, '')
-  .replace(/\/rest\/v1$/, '');
-const SUPABASE_KEY = (
-  process.env.SCOUT_SUPABASE_KEY ||
-  process.env.SUPABASE_SERVICE_ROLE_KEY ||
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
-  ''
-).trim();
+function supabaseUrl(): string {
+  return (process.env.SCOUT_SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL || '')
+    .trim()
+    .replace(/\/+$/, '')
+    .replace(/\/rest\/v1$/, '');
+}
+function supabaseKey(): string {
+  return (
+    process.env.SCOUT_SUPABASE_KEY ||
+    process.env.SUPABASE_SERVICE_ROLE_KEY ||
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
+    ''
+  ).trim();
+}
 
 /** Canonicalise a Supabase tradition name to the Notion vocabulary. */
 function canonicalTradition(name: string | null | undefined): string | null {
@@ -68,14 +76,16 @@ interface TextRow {
 }
 
 export async function buildCoverageMap(): Promise<CoverageMap> {
-  if (!SUPABASE_URL || !SUPABASE_KEY) {
+  const url = supabaseUrl();
+  const key = supabaseKey();
+  if (!url || !key) {
     throw new Error(
       'Supabase credentials missing. Set SCOUT_SUPABASE_URL + SCOUT_SUPABASE_KEY ' +
         '(or NEXT_PUBLIC_SUPABASE_URL + a read key).',
     );
   }
 
-  const supabase = createClient(SUPABASE_URL, SUPABASE_KEY, {
+  const supabase = createClient(url, key, {
     auth: { persistSession: false },
   });
 

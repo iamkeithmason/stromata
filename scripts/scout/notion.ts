@@ -16,12 +16,18 @@ import {
 import { dedupeKey, firstHttpUrl, translationNotesWithCaveat } from './contract';
 import type { ExistingProspect, ScoredProposal } from './types';
 
-const TOKEN = process.env.NOTION_TOKEN || process.env.SCOUT_NOTION_TOKEN || '';
 const BASE = 'https://api.notion.com/v1';
+
+// Read the token LAZILY (not into a module-level const at import time): the CLI
+// loads .env.local via dotenv AFTER this module is imported, so an import-time
+// capture would be empty for local runs even when the token is set.
+function scoutToken(): string {
+  return process.env.NOTION_TOKEN || process.env.SCOUT_NOTION_TOKEN || '';
+}
 
 function headers(): Record<string, string> {
   return {
-    Authorization: `Bearer ${TOKEN}`,
+    Authorization: `Bearer ${scoutToken()}`,
     'Notion-Version': NOTION.apiVersion,
     'Content-Type': 'application/json',
   };
@@ -38,7 +44,7 @@ async function notionFetch(path: string, init: RequestInit, attempt = 0): Promis
 }
 
 export function assertToken(): void {
-  if (!TOKEN) throw new Error('NOTION_TOKEN (or SCOUT_NOTION_TOKEN) is not set.');
+  if (!scoutToken()) throw new Error('NOTION_TOKEN (or SCOUT_NOTION_TOKEN) is not set.');
 }
 
 // ---------------------------------------------------------------------------
