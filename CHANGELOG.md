@@ -7,6 +7,57 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-08-30 — Dead-link sweep: phantom collections, draft-author 404s, admin alert
+
+Started from a reported 404 — the homepage linked John Keble's *National Apostasy* to
+`/collections/national-apostasy-keble`, which didn't exist — and it opened into a whole class of
+dead links. Two independent root causes, plus a data cleanup and a guard so it doesn't recur.
+
+**Phantom single-text collections.** `pipeline-import.mjs`'s `findOutputFiles()` excluded the
+review-summary meta file with `!f.endsWith('-review-summary.md')` — which matches
+`clean-archive-ocr.mjs`'s `{slug}-review-summary.md` but **not** `fetch-texts.mjs`'s
+`_review-summary.md` (underscore prefix). So every *digital single-text* import counted two files,
+tripped the `files.length > 1` branch, and created a bogus `collections` row (unpublished) with the
+one text linked to it. The published text then rendered as a collection card linking to a slug the
+collection page 404s. Fixed by matching the shared `review-summary.md` suffix (same one-liner in
+`detect-scannos.mjs`). Defensive half: the homepage, text-reader, and theme pages joined/linked
+collections without a `published` filter — now they ignore unpublished collections and fall back to
+a standalone text entry. DB cleanup removed the three phantom rows (National Apostasy, Small
+Catechism, the staged Pilgrim's Progress) and unlinked their texts.
+
+**Draft-author 404s.** Author pages 404 for `draft: true` authors (intentional — unreviewed stubs),
+but the text-reader byline links to `/authors/<slug>` unconditionally. 17 authors had published
+texts while still draft stubs (Luther with 6 texts, Jerome, Keble, Tyndale, Hooker, Baxter, …), so
+every one of those bylines was a dead link. Fixed in code without touching the draft flag (HARD
+CONSTRAINT 6 keeps promotion manual): a draft author *with published texts* now renders a minimal
+page (name, dates, tradition, their texts) with the unreviewed bio suppressed everywhere (body,
+JSON-LD, meta description) until Keith promotes them; a draft author with no published texts still
+404s.
+
+**Admin integrity alert.** `/admin` now shows a "Needs attention" panel listing exactly these two
+hazards on live data — a published text with a draft author, or a published text pointing at a draft
+collection — each with a deep link to promote the author / edit the collection. Computed from the
+dashboard's existing text query (added `draft` / `published` to the author and collection joins).
+
+**Duplicate removed.** Found two copies of Chrysostom's *On the Priesthood*: a live New-Advent set
+(`on-the-priesthood`, 2026-05-21) and a redundant OCR re-import (`on-the-priesthood-chrysostom`,
+2026-06-30, done during the June New-Advent `/fathers/` outage). Deleted the 6 draft texts + draft
+collection; marked the queue prospect `rejected` with the reason so it can't re-import.
+
+**New tool.** `scripts/audit-dead-links.mjs` — read-only, runs the same three checks (live text →
+draft collection, live text → draft author, thin/≤1-text collections) against Supabase and exits
+non-zero on any live dead link. Safe to run after any batch or in CI.
+
+**Open thread — the Stromata staged books.** Only Book I of Clement's *Stromata* is in the DB,
+though Books I–VIII sit staged under `output/stromata/`. Re-read them: the translation (ANF, PD) is
+clean and complete — good condition — but each file still carries New Advent nav/footer boilerplate
+(the `A B C … Z` bar, the logo, the `Home > Fathers of the Church >` breadcrumb, and a
+`CONTACT US | ADVERTISE WITH NEW ADVENT` footer), has no `note_draft`, and has empty `themes`. Not
+import-ready as-is, but the substantive content is done — worth a cleanup + tag + note-draft pass
+rather than leaving it. (Books II–VII of *The Stromata* also still need Keith's manual text tidy-up.)
+
+---
+
 ## 2026-08-28 — Scout agent v0.1: real V/C/E scoring, derived Era, tradition guard
 
 The first live Scout run surfaced two classes of error, and reading the live Content Prospect List

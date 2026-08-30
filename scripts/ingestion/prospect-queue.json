@@ -2,7 +2,7 @@
   "prospects": [
     {
       "id": "chrysostom-on-the-priesthood",
-      "status": "imported",
+      "status": "rejected",
       "added": "2026-06-30",
       "author": "John Chrysostom",
       "death_year": 407,
@@ -25,7 +25,7 @@
         "humility",
         "spiritual-warfare"
       ],
-      "rejection_reason": ""
+      "rejection_reason": "Duplicate of live collection on-the-priesthood (imported 2026-05-21 from New Advent). This OCR re-import (2026-06-30, during the New Advent /fathers/ outage) was redundant; its 6 draft texts + draft collection were removed from Supabase on 2026-08-30."
     },
     {
       "id": "gregory-pastoral-rule",
