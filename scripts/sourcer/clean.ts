@@ -70,6 +70,45 @@ export function htmlToText(html: string): string {
   return s;
 }
 
+/**
+ * New Advent page chrome, line-anchored. Every pattern is unmistakably New Advent
+ * (nav, the $19.99 support banner, the About/Source/Contact/Copyright/advertise
+ * footer), so running this on non-New-Advent text is a no-op. The `# … (Book N)`
+ * and `## Chapter N.` headings are deliberately NOT matched — they are the book /
+ * chapter dividers the downstream split needs.
+ */
+const NEWADVENT_CHROME: RegExp[] = [
+  /^CHURCH FATHERS:/,
+  /^\s*Search:\s*$/,
+  /^\s*Submit Search\s*$/,
+  /^\s*Home\s+Encyclopedia\s+Summa\s+Fathers\s+Bible\s+Library\s*$/,
+  /^\s*(?:[A-Z]\s+){12,}[A-Z]\s*$/, // the A B C … Z alphabet nav
+  /^\s*Home\s*>\s*Fathers of the Church\s*>/, // breadcrumb
+  /^Please help support the mission of New Advent/, // support banner
+  /^##\s+About this page\s*$/,
+  /Revised and edited for New Advent by/, // the Source. line
+  /^\s*Contact information\.\s+The editor of New Advent is/,
+  /^Copyright\b.*New Advent LLC/,
+  /^\s*CONTACT US\s*\|\s*ADVERTISE WITH NEW ADVENT\s*$/,
+];
+
+/**
+ * Strip New Advent's per-page boilerplate (repeated once per concatenated Book
+ * page). Deterministic and line-anchored; leaves the translated body + the book
+ * and chapter headings intact. Returns the cleaned text and how many lines went.
+ */
+export function stripNewAdventChrome(text: string): { text: string; removed: number } {
+  let removed = 0;
+  const kept = text.split('\n').filter((line) => {
+    if (NEWADVENT_CHROME.some((re) => re.test(line))) {
+      removed++;
+      return false;
+    }
+    return true;
+  });
+  return { text: kept.join('\n').replace(/\n{3,}/g, '\n\n'), removed };
+}
+
 /** Deterministic character-level OCR/print fixes. Same input → same output. */
 export function normalizeChars(text: string): string {
   let s = text;
@@ -87,6 +126,8 @@ export interface CleanResult {
   body: string;
   wasHtml: boolean;
   footnoteMarkersStripped: number;
+  /** New Advent boilerplate lines removed (nav / support banner / footer). */
+  chromeStripped: number;
   blanksInserted: number;
   verseRuns: number;
   changed: boolean;
@@ -103,7 +144,8 @@ export async function deterministicClean(
 ): Promise<CleanResult> {
   const wasHtml = looksLikeHtml(raw, opts.contentType ?? '');
   let text = wasHtml ? htmlToText(raw) : raw;
-  text = normalizeChars(text);
+  const chrome = stripNewAdventChrome(text);
+  text = normalizeChars(chrome.text);
 
   const footnote = await stripFootnoteMarkers(text, {});
   const { output, report } = await normaliseMarkdown(footnote.text, {});
@@ -112,8 +154,9 @@ export async function deterministicClean(
     body: output.endsWith('\n') ? output : output + '\n',
     wasHtml,
     footnoteMarkersStripped: footnote.count,
+    chromeStripped: chrome.removed,
     blanksInserted: report.blanksInserted,
     verseRuns: report.verseFlags.length,
-    changed: report.changed || footnote.count > 0 || wasHtml,
+    changed: report.changed || footnote.count > 0 || chrome.removed > 0 || wasHtml,
   };
 }
