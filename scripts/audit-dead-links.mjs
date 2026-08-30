@@ -1,17 +1,19 @@
 /**
- * audit-dead-links.mjs — read-only integrity audit for public dead links
+ * audit-dead-links.mjs — read-only integrity audit for half-published content
  *
- * Finds published content that links to something the public pages hide, which
- * produces a 404 a visitor can actually hit:
+ * Finds published content whose author or collection is still hidden. The
+ * public pages now degrade gracefully (the author page renders bio-less, the
+ * collection link falls back to a standalone text), so these are no longer hard
+ * 404s — but they're almost always an oversight worth finishing:
  *
- *   1. Published text  → unpublished collection   (/collections/<slug> 404s)
- *   2. Published text  → draft author             (/authors/<slug> byline 404s)
+ *   1. Published text  → unpublished collection   (collection hidden from the site)
+ *   2. Published text  → draft author             (author has no public bio / index entry)
  *   3. Thin / phantom collections (<= 1 text)      (informational — often a
  *      single text wrongly wrapped in a collection by an import miscount)
  *
  * Read-only: it never writes to the database. Safe to run after any pipeline
- * batch, or in CI. Exits non-zero if any live dead link (checks 1–2) is found,
- * so it can gate a deploy; check 3 is advisory and never fails the run.
+ * batch, or in CI. Exits non-zero if any issue (checks 1–2) is found, so it can
+ * gate a deploy; check 3 is advisory and never fails the run.
  *
  * Usage:
  *   node scripts/audit-dead-links.mjs
@@ -110,9 +112,9 @@ async function main() {
     }
   }
 
-  const liveDeadLinks = deadCollectionLinks.length + deadAuthorLinks.length;
-  console.log(heading(`Result: ${liveDeadLinks} live dead link(s)`));
-  process.exit(liveDeadLinks > 0 ? 1 : 0);
+  const issues = deadCollectionLinks.length + deadAuthorLinks.length;
+  console.log(heading(`Result: ${issues} integrity issue(s)`));
+  process.exit(issues > 0 ? 1 : 0);
 }
 
 main().catch(err => { console.error('✗ audit failed:', err); process.exit(2); });

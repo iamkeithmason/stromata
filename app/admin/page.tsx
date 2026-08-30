@@ -66,10 +66,13 @@ export default async function AdminDashboard({ searchParams }: Props) {
   }
 
   // ── Integrity alerts ──────────────────────────────────────────────────────
-  // A published text linking to something the public pages hide produces a dead
-  // link a visitor can hit. Surface those here so they don't ship silently.
-  //  • draft author  → the /authors/<slug> byline 404s until the author is promoted
-  //  • draft (unpublished) collection → the /collections/<slug> link 404s
+  // A published text whose author or collection is still hidden is a
+  // half-published state. The public pages now degrade gracefully (the author
+  // page renders bio-less, the collection link falls back to a standalone text
+  // — see app/authors and app/page/texts/themes), so it's no longer a hard 404,
+  // but it's almost always an oversight worth finishing. Surface it here.
+  //  • draft author  → author has live works but no public bio / not in the index
+  //  • draft (unpublished) collection → collection hidden; text shows on its own
   const allTexts = (texts ?? []) as unknown as TextRow[]
   const liveTextDraftAuthor = allTexts.filter(t => t.published && t.author?.[0]?.draft)
   const liveTextDraftCollection = allTexts.filter(t => t.published && t.collection && t.collection.published === false)
@@ -100,8 +103,8 @@ export default async function AdminDashboard({ searchParams }: Props) {
             {liveTextDraftAuthor.length > 0 && (
               <div className="mb-3 last:mb-0">
                 <p className="text-xs text-amber-800 mb-1.5">
-                  Published {liveTextDraftAuthor.length === 1 ? 'text has' : 'texts have'} a draft author — the
-                  byline links to an author page that 404s until the author is promoted:
+                  Published {liveTextDraftAuthor.length === 1 ? 'text has' : 'texts have'} an author still marked
+                  draft — the author page shows no bio and is hidden from the Authors index until you promote them:
                 </p>
                 <ul className="space-y-1">
                   {liveTextDraftAuthor.map(t => {
@@ -124,8 +127,8 @@ export default async function AdminDashboard({ searchParams }: Props) {
             {liveTextDraftCollection.length > 0 && (
               <div className="mb-3 last:mb-0">
                 <p className="text-xs text-amber-800 mb-1.5">
-                  Published {liveTextDraftCollection.length === 1 ? 'text points' : 'texts point'} at a draft
-                  collection — the collection link 404s until the collection is published (or unlinked):
+                  Published {liveTextDraftCollection.length === 1 ? 'text is' : 'texts are'} in a collection still
+                  marked draft — the collection is hidden from the site; publish it, or the text stands on its own:
                 </p>
                 <ul className="space-y-1">
                   {liveTextDraftCollection.map(t => (
