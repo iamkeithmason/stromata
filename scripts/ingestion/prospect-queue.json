@@ -1685,7 +1685,7 @@
       "translation_copyright_clear": true,
       "translator": "Roberts-Donaldson (ANF)",
       "translator_death_year": 1915,
-      "stage_1_notes": "Book I already live (imported 2026-05-21). Staging Books II, IV, V, VI, VII (New Advent / Roberts-Donaldson ANF 1885, public domain). Book III held (ANF left it untranslated in Latin); Book VIII held (fragmentary appendix; collection titled I–VII). Clement d. 215 (<1900); ANF published 1885.",
+      "stage_1_notes": "Book I already live (imported 2026-05-21). Staging Books II, III, IV, V, VI, VII (New Advent / Roberts-Donaldson ANF 1885, public domain). Book III is Latin — the ANF editors left it untranslated; included with an editorial note and a cure->cum scanno fix (Latin review advisable). Book VIII held (fragmentary appendix; collection titled I–VII). Clement d. 215 (<1900); ANF published 1885.",
       "stage_2_output": "scripts/ingestion/output/the-stromata/",
       "stage_3_themes": [
         "scripture",
@@ -1696,7 +1696,7 @@
         "providence"
       ],
       "rejection_reason": "",
-      "notes": "Completes the existing the-stromata collection; import extends it (Book I skipped by slug). Book III needs a PD English translation; Book VIII is a scope decision."
+      "notes": "Completes the existing the-stromata collection; import extends it (Book I skipped by slug). Book III included in Latin (no PD English exists); Book VIII is a scope decision."
     }
   ]
 }

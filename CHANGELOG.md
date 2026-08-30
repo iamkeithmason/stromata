@@ -55,10 +55,13 @@ nav/footer boilerplate, no `note_draft`, and empty `themes`. Cleaned Books **II,
 (stripped the nav header + `CONTACT US | ADVERTISE WITH NEW ADVENT` footer, dropped the duplicate
 `# The Stromata (Book N)` title line, normalised `## Chapter` → `# Chapter` to match the live Book
 I, wrote full frontmatter with themes + a museum-label `note_draft`) into `output/the-stromata/`,
-and added a `the-stromata-clement` queue entry (`status: staged`). **Held** in
-`output/the-stromata/_held/`: Book III (the ANF editors left it untranslated in **Latin** — it
-needs a different PD English translation) and Book VIII (the fragmentary appendix; the collection is
-titled "I–VII", so including it is a scope call). Book I's stale staged copy is kept there too.
+and added a `the-stromata-clement` queue entry (`status: staged`). **Book III** is included too, but
+in **Latin**: the ANF editors left it untranslated out of Victorian reticence, and no public-domain
+English version exists (the only complete one, Oulton & Chadwick 1954, is in copyright). It carries a
+`note_draft` explaining this, and a systematic transcription scanno was corrected (`cure` → `cum`,
+56 instances) — a Latin-literate review is still advisable before publishing. **Held** in
+`output/the-stromata/_held/`: only Book VIII (the fragmentary appendix; the collection is titled
+"I–VII", so including it is a scope call). Book I's stale staged copy is kept there too.
 
 This surfaced a real limitation in `pipeline-import.mjs`: its `alreadyInDatabase()` pre-flight
 skipped a whole prospect if a collection with that slug already existed, so it could never **add**
@@ -67,9 +70,9 @@ chapters to an existing collection. Removed that coarse check — per-text slug 
 idempotency, and now a prospect can complete a multi-book work whose first book landed earlier. The
 actual DB insert still has to run where Supabase creds live (`node scripts/pipeline-import.mjs`);
 this session has none, and hand-transcribing ~150k words of patristic text through SQL would risk
-corrupting it, so the run is left for a credentialed environment. That run will import the five
-staged Stromata books (Book I skipped by slug) into the existing `the-stromata` collection, plus the
-already-staged *Pilgrim's Progress*.
+corrupting it, so the run is left for a credentialed environment. That run will import the six
+staged Stromata books — II, III (Latin), IV, V, VI, VII — (Book I skipped by slug) into the existing
+`the-stromata` collection, plus the already-staged *Pilgrim's Progress*.
 
 ---
 
