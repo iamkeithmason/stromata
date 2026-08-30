@@ -8,6 +8,9 @@
  *               discriminated skip log — fetch NOTHING, write NOTHING.
  *   --apply     process the gated batch: fetch → clean → detect → stage.
  *   --max N     cap prospects this run (default 3 — sourcing is heavy).
+ *   --refresh <slug>   clear a prospect's staged bundle before re-sourcing, so a
+ *               corrected pin isn't blocked by the immutable raw.txt / already-staged
+ *               guards (--apply only; comma-separate or repeat for several).
  *   --set-notion-status   bump each staged prospect to "In progress" (off by default).
  *
  * Sealed by design: the agent's only tools are the five sourcer tools; no bash,
@@ -41,6 +44,7 @@ import { fetchPinnedSource, politenessDelay } from './fetch';
 import { runPipelineAction, type DetectOutcome } from './runner';
 import { validateProposedMetadata, type AgentMetadataProposal } from './metadata';
 import { stageDraft } from './stage';
+import { clearStagedBundle } from './staging';
 import { loadCorpus, loadAllowlist, type CorpusIndex } from './pipeline-adapters';
 import {
   ALLOWED_TOOLS,
@@ -64,12 +68,16 @@ interface Args {
   dryRun: boolean;
   max: number;
   setNotionStatus: boolean;
+  /** Slugs whose staged bundle to clear before re-sourcing (--apply only). */
+  refreshSlugs: string[];
 }
 
 function parseArgs(argv: string[]): Args {
   let dryRun = true;
   let max = DEFAULT_MAX_PROSPECTS;
   let setNotionStatus = false;
+  const refreshSlugs: string[] = [];
+  const addRefresh = (v: string) => refreshSlugs.push(...v.split(',').map((s) => s.trim()).filter(Boolean));
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
     if (a === '--apply') dryRun = false;
@@ -77,9 +85,11 @@ function parseArgs(argv: string[]): Args {
     else if (a === '--set-notion-status') setNotionStatus = true;
     else if (a === '--max') max = Number(argv[++i]);
     else if (a.startsWith('--max=')) max = Number(a.slice('--max='.length));
+    else if (a === '--refresh') addRefresh(argv[++i] ?? '');
+    else if (a.startsWith('--refresh=')) addRefresh(a.slice('--refresh='.length));
   }
   if (!Number.isFinite(max) || max < 1) max = DEFAULT_MAX_PROSPECTS;
-  return { dryRun, max, setNotionStatus };
+  return { dryRun, max, setNotionStatus, refreshSlugs };
 }
 
 // ---------------------------------------------------------------------------
@@ -130,6 +140,20 @@ async function main() {
     }
   }
   console.log(`  ${corpusView.totalTexts} texts · ${corpusView.authorsByKey.size} authors`);
+
+  // --refresh: clear named staged bundles so a corrected pin can be re-sourced
+  // (immutable raw.txt / already-staged would otherwise block it). Apply-only —
+  // clearing in dry-run would delete a bundle without re-creating it.
+  if (args.refreshSlugs.length) {
+    if (args.dryRun) {
+      console.warn(`  ! --refresh is ignored in dry-run (it clears bundles only on --apply): ${args.refreshSlugs.join(', ')}`);
+    } else {
+      for (const slug of args.refreshSlugs) {
+        const cleared = clearStagedBundle(REPO_ROOT, slug);
+        console.log(cleared ? `  refreshed: cleared staged bundle for "${slug}"` : `  refresh: no staged bundle to clear for "${slug}"`);
+      }
+    }
+  }
 
   console.log('Fetching cleared intake from the Content Prospect List…');
   const candidates = await fetchCandidateProspects();

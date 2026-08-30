@@ -26,8 +26,15 @@ npm run test:sourcer
 ```
 
 Flags: `--dry-run` (default) · `--apply` · `--max N` (default **3** — sourcing is
-heavy) · `--set-notion-status` (bump each staged prospect to `In progress`; off
-by default).
+heavy) · `--refresh <slug>` (clear a prospect's staged bundle before re-sourcing —
+`--apply` only; comma-separate or repeat for several) · `--set-notion-status`
+(bump each staged prospect to `In progress`; off by default).
+
+> **Re-sourcing after a corrected pin.** `raw.txt` is immutable and a staged
+> prospect is refused as `already-staged`, so simply re-running won't pick up an
+> edited `Cleared edition URL` / `Additional edition URLs`. Use
+> `npm run sourcer:apply -- --refresh <slug>` to clear that one bundle and
+> re-fetch from scratch (equivalent to `rm -rf content/staging/<slug>` first).
 
 Required env (see `.env.example`): `ANTHROPIC_API_KEY` (apply only), `NOTION_TOKEN`,
 and a **read-only** Supabase URL/key (`SOURCER_SUPABASE_URL` / `SOURCER_SUPABASE_KEY`).

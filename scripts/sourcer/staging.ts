@@ -45,6 +45,21 @@ export function bundleExists(repoRoot: string, slug: string): boolean {
   return fs.existsSync(bundleDir(repoRoot, slug));
 }
 
+/**
+ * Remove a single prospect's staged bundle (`content/staging/<slug>/`), so a
+ * corrected pin can be re-sourced without the immutable `raw.txt` / already-staged
+ * guards blocking it. Guarded twice: the slug must be a safe single segment, and
+ * the resolved directory must be within staging. Returns true iff it deleted a
+ * directory. Never touches anything outside content/staging/.
+ */
+export function clearStagedBundle(repoRoot: string, slug: string): boolean {
+  if (!/^[A-Za-z0-9][A-Za-z0-9._-]*$/.test(slug)) return false; // rejects slashes + traversal
+  const dir = bundleDir(repoRoot, slug);
+  if (!isWithinStaging(repoRoot, dir) || !fs.existsSync(dir)) return false;
+  fs.rmSync(dir, { recursive: true, force: true });
+  return true;
+}
+
 /** Which of the six canonical bundle files are present on disk. */
 export function presentBundleFiles(repoRoot: string, slug: string): string[] {
   const dir = bundleDir(repoRoot, slug);
