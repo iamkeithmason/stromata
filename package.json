@@ -14,7 +14,12 @@
     "pipeline:import": "node scripts/pipeline-import.mjs",
     "scout": "tsx scripts/scout/scout.ts",
     "scout:apply": "tsx scripts/scout/scout.ts --apply",
-    "test:scout": "tsx --test scripts/scout/*.test.ts"
+    "test:scout": "tsx --test scripts/scout/*.test.ts",
+    "sourcer": "tsx scripts/sourcer/sourcer.ts",
+    "sourcer:apply": "tsx scripts/sourcer/sourcer.ts --apply",
+    "test:sourcer": "tsx --test scripts/sourcer/*.test.ts",
+    "research": "tsx scripts/research/research.ts",
+    "test:research": "tsx --test scripts/research/*.test.ts"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.49.0",
