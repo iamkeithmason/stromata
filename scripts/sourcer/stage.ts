@@ -86,12 +86,15 @@ function renderSourcerMd(input: StageInput, present: string[]): string {
 
   l.push('## Next steps (editor)');
   l.push('');
-  l.push('1. Review `body.md` and edit `ocr-report.md`, then run');
-  l.push(`   \`node scripts/detect-scannos.mjs --apply-reviewed=${STAGING_ROOT}/${prospect.slug}/${BUNDLE_FILES.ocrReport}\`.`);
-  l.push('2. Confirm the proposed genre / themes / collection structure in `metadata.yml`.');
+  const steps: string[] = [
+    'Review `body.md` and edit `ocr-report.md`, then run\n   ' +
+      `\`node scripts/detect-scannos.mjs --apply-reviewed=${STAGING_ROOT}/${prospect.slug}/${BUNDLE_FILES.ocrReport}\`.`,
+    'Confirm the proposed genre / themes / collection structure in `metadata.yml`.',
+  ];
   if (meta.flags.some((f) => f.startsWith('author-missing')))
-    l.push('3. Create the author record (admin Wikipedia lookup) before import — flagged above.');
-  l.push('4. Move the reviewed text into the normal import path and publish from the admin UI.');
+    steps.push('Create the author record (admin Wikipedia lookup) before import — flagged above.');
+  steps.push('Move the reviewed text into the normal import path and publish from the admin UI.');
+  steps.forEach((s, i) => l.push(`${i + 1}. ${s}`));
   l.push('');
   return l.join('\n');
 }
