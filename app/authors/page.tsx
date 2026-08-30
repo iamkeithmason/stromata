@@ -88,7 +88,12 @@ export default async function AuthorsPage({ searchParams }: Props) {
     <div style={{ background: 'var(--paper)', paddingTop: '4rem' }} className="min-h-screen">
       <SiteHeader />
       <main className="max-w-2xl mx-auto px-6 py-12">
-        <AuthorsBrowser items={items} facets={{ traditions, eras }} initial={initial} />
+        <AuthorsBrowser
+          items={items}
+          facets={{ traditions, eras }}
+          initial={initial}
+          from="authors-index"
+        />
       </main>
       <TrackPageEvent event="authors-page-view" />
     </div>

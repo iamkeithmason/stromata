@@ -87,7 +87,12 @@ export default async function TextsPage({ searchParams }: Props) {
     <div style={{ background: 'var(--paper)', paddingTop: '4rem' }} className="min-h-screen">
       <SiteHeader />
       <main className="max-w-2xl mx-auto px-6 py-12">
-        <TextsBrowser items={items} facets={{ traditions, eras, genres }} initial={initial} />
+        <TextsBrowser
+          items={items}
+          facets={{ traditions, eras, genres }}
+          initial={initial}
+          from="library-index"
+        />
       </main>
     </div>
   )

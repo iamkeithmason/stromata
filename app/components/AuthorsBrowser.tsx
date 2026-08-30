@@ -4,6 +4,12 @@ import { useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
 import { FilterPill } from './FilterPill'
 
+declare global {
+  interface Window {
+    umami?: { track: (event: string, data?: Record<string, string | number | null>) => void }
+  }
+}
+
 type Facet = { slug: string; label: string }
 
 export type AuthorItem = {
@@ -31,10 +37,12 @@ export function AuthorsBrowser({
   items,
   facets,
   initial,
+  from,
 }: {
   items: AuthorItem[]
   facets: { traditions: Facet[]; eras: Facet[] }
   initial: Filters
+  from: string
 }) {
   const [filters, setFilters] = useState<Filters>(initial)
 
@@ -47,8 +55,17 @@ export function AuthorsBrowser({
     window.history.replaceState(null, '', qs ? `?${qs}` : window.location.pathname)
   }, [filters])
 
-  const set = (key: keyof Filters, value: string) =>
-    setFilters(f => ({ ...f, [key]: f[key] === value ? '' : value }))
+  // Toggle a facet; fire an analytics event only when a filter is applied (not cleared).
+  const set = (key: 'tradition' | 'era', value: string) => {
+    const next = filters[key] === value ? '' : value
+    if (next) window.umami?.track('index-filter', { from, dimension: key, value: next })
+    setFilters(f => ({ ...f, [key]: next }))
+  }
+
+  const changeSort = (sort: SortKey) => {
+    if (filters.sort !== sort) window.umami?.track('index-sort', { from, sort })
+    setFilters(f => ({ ...f, sort }))
+  }
 
   const hasFilter = Boolean(filters.tradition || filters.era)
 
@@ -104,7 +121,7 @@ export function AuthorsBrowser({
               key={s.key}
               label={s.label}
               active={filters.sort === s.key}
-              onClick={() => setFilters(f => ({ ...f, sort: s.key }))}
+              onClick={() => changeSort(s.key)}
             />
           ))}
           {hasFilter && (
