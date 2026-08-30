@@ -232,7 +232,13 @@ function findOutputFiles(prospect) {
   if (fs.existsSync(dir) && fs.statSync(dir).isDirectory()) {
     const files = fs
       .readdirSync(dir)
-      .filter(f => f.endsWith('.md') && !f.endsWith('-review-summary.md'))
+      // Exclude the review-summary meta file. Two naming conventions exist:
+      // clean-archive-ocr.mjs writes `{slug}-review-summary.md`, while
+      // fetch-texts.mjs writes `_review-summary.md` — matching on the shared
+      // `review-summary.md` suffix catches both. (Missing the underscore form
+      // previously made single-text digital imports look like 2-file
+      // collections, spawning a phantom `collections` row.)
+      .filter(f => f.endsWith('.md') && !f.endsWith('review-summary.md'))
       .sort()
       .map(f => path.join(dir, f));
     if (files.length > 0) return files;
