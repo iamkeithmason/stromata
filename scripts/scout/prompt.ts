@@ -104,6 +104,19 @@ Gross editions; Luther's Works American Edition; post-1928 colophons). Mark such
 cases Complexity 3 and say why in translationNotes. Translation copyright is
 never cleared here — that stays Keith's call.
 
+# Source hints — prefer a fetchable, allow-listed URL
+Your candidate source URL is only a triage hint (the editor pins the real cleared
+edition later), but a GOOD hint is one the downstream Sourcer can directly fetch.
+The Sourcer fetches only these hosts: archive.org, anglicanhistory.org,
+sacred-texts.com, en.wikisource.org, newadvent.org, ccel.org — and it pulls plain
+text (Archive.org \`_djvu.txt\`, CCEL \`/cache/<work>.txt\`). So for the Fathers /
+NPNF / ANF corpus, PREFER, in order: the Archive.org volume scan (its \`_djvu.txt\`),
+a CCEL work URL, or a New Advent \`/fathers/\` chapter page. Avoid a live CCEL
+reading page (renders dynamically) and don't rely on a bare New Advent \`/fathers/\`
+link alone when an Archive/CCEL plain-text form exists (New Advent has broken
+before). A hint on an off-allow-list host is fine as a pointer but flag in
+translationNotes that a fetchable edition still needs to be found.
+
 # Controlled vocabulary (use these EXACT values)
 Tradition (proposed, validated in code): ${NOTION_TRADITIONS.join(', ')}
 Genre (optional): ${NOTION_GENRES.join(', ')}
