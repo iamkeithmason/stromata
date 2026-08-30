@@ -19,3 +19,6 @@ scripts/ingestion/sources/
 
 # Pipeline — corpus word-frequency index (build artefact, rebuilt from the DB)
 data/corpus-frequency.json
+
+# Scratch scripts — underscore-prefixed one-off helpers, never committed
+scripts/_*
