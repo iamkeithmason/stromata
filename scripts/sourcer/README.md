@@ -201,6 +201,32 @@ the staged bundle; the batch + skip log is posted to the Actions run summary.
 Secrets: `ANTHROPIC_API_KEY`, `NOTION_TOKEN`, `SOURCER_SUPABASE_URL`,
 `SOURCER_SUPABASE_KEY`.
 
+## From a staged bundle to import (`stage-to-output.mjs`)
+
+The Sourcer stops at the reviewable bundle. To land a reviewed text as `published:
+false` drafts, `pipeline-import.mjs` reads a different layout — one file per
+collection member under `scripts/ingestion/output/<slug>/`, each with frontmatter,
+plus a `status: "staged"` row in `scripts/ingestion/prospect-queue.json`. The
+legacy `split-into-chapters.mjs` can't parse the Sourcer's inline `## Chapter N.`
+headings, so `stage-to-output.mjs` bridges the two: it splits `content/staging/
+<slug>/body.md` at its `# … (Book N)` headings into the importer's layout with
+frontmatter, and prints (or `--write-queue` appends) the staged queue entry.
+
+```bash
+# split the staged body into per-book files + print the queue entry
+node scripts/sourcer/stage-to-output.mjs <slug> --by=book \
+  --author="…" --title="…" --genre="…" --themes=slug,slug \
+  --tradition=<slug> --era=<slug> --death-year=N \
+  --source-attribution="…" --translation-notes="…"    # add --write-queue to append the entry
+# then import as published:false drafts (+ a collections row for a multi-part work)
+node scripts/pipeline-import.mjs
+```
+
+`--by=single` imports the whole body as one text (for a non-collection work). The
+author-level fields (`tradition` / `era` / `death-year`) come from you — they are
+not in the bundle. Verify the result with a Supabase query (`published:false`,
+`collection_id` links, theme count), not the console alone.
+
 ## What the Sourcer never does (out of scope)
 
 Any copyright or translation-rights *judgement* (the gate only checks a human made
