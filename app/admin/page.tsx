@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { createServerClient } from '@/lib/supabase/server'
 import { readQueue } from '@/lib/pipeline/queue'
+import AgentSchedule from './AgentSchedule'
 
 type TextRow = {
   id: string; title: string; slug: string; published: boolean; editorial_introduction: string | null
@@ -148,24 +149,27 @@ export default async function AdminDashboard({ searchParams }: Props) {
         )}
 
         {/* Nav cards */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-          {[
-            { label: 'Pipeline', href: '/admin/pipeline', count: pendingCount ?? 0 },
-            { label: 'Drafts', href: '/admin/drafts', count: draftCount ?? 0 },
-            { label: 'Authors', href: '/admin/authors', count: authorCount ?? 0 },
-            { label: 'Traditions', href: '/admin/traditions', count: traditionCount ?? 0 },
-            { label: 'Eras', href: '/admin/eras', count: eraCount ?? 0 },
-            { label: 'Locations', href: '/admin/locations', count: locationCount ?? 0 },
-          ].map(({ label, href, count }) => (
-            <Link
-              key={href}
-              href={href}
-              className="border border-stone-200 rounded px-4 py-3 hover:border-stone-400 transition-colors"
-            >
-              <div className="text-xs text-stone-400 uppercase tracking-wide mb-1">{label}</div>
-              <div className="text-lg font-semibold text-stone-800">{count}</div>
-            </Link>
-          ))}
+        <div>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            {[
+              { label: 'Pipeline', href: '/admin/pipeline', count: pendingCount ?? 0 },
+              { label: 'Drafts', href: '/admin/drafts', count: draftCount ?? 0 },
+              { label: 'Authors', href: '/admin/authors', count: authorCount ?? 0 },
+              { label: 'Traditions', href: '/admin/traditions', count: traditionCount ?? 0 },
+              { label: 'Eras', href: '/admin/eras', count: eraCount ?? 0 },
+              { label: 'Locations', href: '/admin/locations', count: locationCount ?? 0 },
+            ].map(({ label, href, count }) => (
+              <Link
+                key={href}
+                href={href}
+                className="border border-stone-200 rounded px-4 py-3 hover:border-stone-400 transition-colors"
+              >
+                <div className="text-xs text-stone-400 uppercase tracking-wide mb-1">{label}</div>
+                <div className="text-lg font-semibold text-stone-800">{count}</div>
+              </Link>
+            ))}
+          </div>
+          <AgentSchedule />
         </div>
 
         {/* Collections */}

@@ -76,6 +76,101 @@ staged Stromata books — II, III (Latin), IV, V, VI, VII — (Book I skipped by
 
 ---
 
+## 2026-08-30 — Admin agent-run countdown; Notion Source Guide
+
+Two small operator-facing additions, no pipeline behaviour change.
+
+**Admin "next agent run" countdown.** The admin dashboard now shows a quiet one-line countdown under
+the nav cards — `Next agent run — Scout in 3d 6h 12m · Sourcer in 12d 7h 12m` — so the schedule is
+visible without opening the Actions tab. It's a client component (`app/admin/AgentSchedule.tsx`) that
+mirrors the two workflow crons in UTC (Scout `0 6 1,15 * *`, Sourcer `0 7 1 * *`) and ticks every 30s;
+it renders a non-breaking placeholder on the server and fills in after mount to avoid a hydration
+mismatch. Display-only — reads nothing, triggers nothing. **If either cron changes, update the
+`SCHEDULES` constant to match** (there's a comment on it pointing at the two YAML files).
+
+**Notion "Source Guide".** Wrote a human-readable source reference under *The Stromata: Growth
+Tracker* (sibling to the Content Prospect List): the Sourcer allowlist, `source_type` values and the
+`Reference URL → source_type` inference, how pinning works (`Cleared edition URL` / `Additional
+edition URLs` / plain-text rewrites / multi-part all-or-nothing), per-source quirks (New Advent
+flip-history, CCEL cache-txt), known provenance traps, the copyright rule, the run cadence + the
+end-to-end editor loop, and a codebase map. `CLAUDE.md` and `scripts/sourcer/config.ts` stay the
+code-side source of truth; the page is a map, not a fork.
+
+---
+
+## 2026-08-29–30 — The Sourcer: acquire & stage rights-cleared prospects (the pipeline's mechanical half)
+
+The **Sourcer** (`scripts/sourcer/`) is the agent after the Scout. Where the Scout *proposes* rows,
+the Sourcer takes a prospect the editor has **rights-cleared and pinned**, acquires that exact
+edition, runs deterministic cleanup, **detects (never fixes)** risky OCR, and stages a reviewable
+draft bundle under `content/staging/`. Then it stops. It never chooses a source, never clears
+copyright, never applies a probabilistic change, and never touches the live site or DB. Merged in
+PR #22.
+
+**The copyright boundary is structural, not a prompt plea.** `fetch_pinned_source` takes a prospect
+id and resolves the fetch URL **server-side** from the editor's `Cleared edition URL` — a `url` in the
+tool input is ignored, and the `PreToolUse` hook denies the fetch if the resolved host is off the
+allowlist. The agent inherits nothing (`settingSources: []`, built-ins disallowed, `allowedTools`
+limited to the five Sourcer tools). So the agent *cannot* substitute or discover a source; it
+concatenates human-pinned, allow-listed parts and nothing else.
+
+**The entry gate** (pure, unit-tested, no SDK/network) refuses with a discriminated reason before any
+fetch: `rights-not-cleared`, `no-cleared-edition` / `source-not-allowlisted`, `no-provenance-basis`,
+`author-copyright-fail`, `author-missing` (flags, doesn't abort), `already-present`, `already-staged`,
+`over-cap`. Two new human-only Notion fields drive it: **`Cleared edition URL`** (url) and **`Rights
+cleared`** (checkbox); `Translation notes` remains the provenance basis, copied verbatim into the
+draft.
+
+**Source allowlist + plain-text rewrites.** Hosts (suffix match): `archive.org`, `anglicanhistory.org`,
+`sacred-texts.com`, `wikisource.org`, `newadvent.org`, `ccel.org`. The fetch tool rewrites to plain
+text where it exists — Archive.org → `_djvu.txt`, and a CCEL work URL (either the reading form
+`/ccel/<author>/<work>/…` or the storage form `/ccel/<letter>/<author>/<work>/…`) → its
+`/cache/<work>.txt` Unicode export. (CCEL reading pages render dynamically; that cache `.txt` is
+directly fetchable — no browser, no Archive detour.)
+
+**Multi-part pinning.** A work split across allow-listed pages (e.g. the four books of John of
+Damascus's *Exact Exposition* on New Advent) is pinned as `Cleared edition URL` + `Additional edition
+URLs` (one per line, in order). All parts are validated **all-or-nothing** (one off-allowlist part
+refuses the whole prospect — this caught a `ttps://…` typo mid-run and correctly refused), fetched in
+order with a rate-limit, and concatenated into one immutable `raw.txt` with a `<!-- SOURCER PART n/N ·
+url -->` marker per part. Prefer one whole-work URL (an Archive `djvu.txt`) where it exists.
+
+**Detect, don't correct.** Deterministic, unattended-grade transforms are *applied* into `body.md`
+(ligature repair, doubled apostrophes, soft-hyphen scrub, footnote-marker strip, Google-Docs block
+repair + verse flagging, **New Advent page-chrome strip**). Everything probabilistic is *detected and
+reported* in an editor-editable `ocr-report.md` (scannos formatted to feed the existing
+`detect-scannos --apply-reviewed` round-trip; orphaned markers; garbled Greek; theologically-loaded
+near-homographs like ἀγένητος vs ἀγέννητος — offered, never applied). The staged bundle is
+`raw.txt` (immutable) · `body.md` · `provenance.yml` (verbatim) · `metadata.yml` (proposed) ·
+`ocr-report.md` · `SOURCER.md`.
+
+**Bridge to import.** `stage-to-output.mjs` splits `content/staging/<slug>/body.md` at its `# … (Book
+N)` headings into the layout `pipeline-import.mjs` consumes (`scripts/ingestion/output/<slug>/*.md` +
+a `staged` queue row), because the legacy `split-into-chapters.mjs` can't parse the Sourcer's inline
+headings. End-to-end validated on John of Damascus: a 4-book draft collection landed in Supabase
+(4 texts, all draft, one collection), `published: false`.
+
+**Ops flags & CI.** `--dry-run` (default) · `--apply` · `--max 3` · `--refresh <slug>` (clear a staged
+bundle to re-source after a corrected pin, since `raw.txt` is immutable and a staged prospect is
+otherwise refused) · `--set-notion-status`. `.github/workflows/sourcer.yml` runs monthly (07:00 UTC,
+1st) `--apply --max 3`, opens a **draft** PR with the bundle, plus `workflow_dispatch` (dry-run
+default) and a PR dry-run on Sourcer files.
+
+**Provenance assistant** (`scripts/research/`, `npm run research`). An *advisory* SAFE/HOLD copyright
+research CLI for the editor — paste a source URL, it fetches (with an SSRF guard) and has Claude
+return a verdict + reasoning to speed the human clearance call. It never imports, never writes Notion,
+never clears anything — the `Rights cleared` decision stays a human call. Coerces to HOLD on any
+ambiguity. This exists because the judgement is the slow part: it caught a nearly-cleared
+copyrighted 1958 Chase translation of John of Damascus (the archaic "hath" was a KJV *epigraph*
+masking a modern body — verify the body with a verbatim phrase match, not the quoted scripture).
+
+**Also this arc:** New Advent's `/fathers/` breakage was confirmed **resolved** (2026-08-29, re-probed
+with a no-redirect `curl`) and `CLAUDE.md`'s source notes updated accordingly; the Scout prompt gained
+a "prefer a fetchable, allow-listed URL" hint so its triage URLs favour what the Sourcer can actually
+fetch (PR #24); and the Scout's env credentials are now read lazily to fix local runs (PR #23).
+
+---
+
 ## 2026-08-28 — Scout agent v0.1: real V/C/E scoring, derived Era, tradition guard
 
 The first live Scout run surfaced two classes of error, and reading the live Content Prospect List
