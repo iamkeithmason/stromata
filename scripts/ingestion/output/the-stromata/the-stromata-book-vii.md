@@ -3,30 +3,17 @@ title: "The Stromata (Book VII)"
 slug: "the-stromata-book-vii"
 author: "Clement of Alexandria"
 genre: "Apology"
-themes: []  # TODO — choose from: Prayer, Repentance, Contemplation, Humility, Suffering, Spiritual Warfare, Desire, Rest, Vocation, Community, Hospitality, Fasting, Poverty, Obedience, Marriage, Work, Trinity, Christology, Pneumatology, Salvation, Eschatology, Creation, Scripture, Providence, Liturgy, Sacraments, Ministry, Monasticism, Preaching, Tradition, Justice, Virtue, Vice, Death, Conscience
-collection: "stromata"
+themes: ["prayer", "contemplation", "virtue"]
+collection: "the-stromata"
 collection_order: 7
-source_attribution: "Translated by William Wilson. From Ante-Nicene Fathers, Vol. 2. Edited by Alexander Roberts, James Donaldson, and A. Cleveland Coxe. Buffalo, NY: Christian Literature Publishing Co., 1885."
-provenance_notes: "Text sourced from New Advent (newadvent.org). Original translation public domain (pre-1900). Accessed April 2026."
-translation_notes: "William Wilson translation, 1885. William Wilson (1800–1871) — translation public domain. No separate translation copyright applies."
-ocr_quality: "high"
+source_attribution: "Roberts-Donaldson translation. Via New Advent, Fathers of the Church (newadvent.org/fathers/02107.htm). Public domain."
+provenance_notes: "Greek original composed c. 198–203 AD in Alexandria. This translation follows the Roberts-Donaldson version as presented by New Advent, which modernises spelling and punctuation from the nineteenth-century Ante-Nicene Fathers edition."
+translation_notes: "The Roberts-Donaldson translation is in the public domain as part of the Ante-Nicene Fathers series (1885). No rights clearance required."
 published: false
 copyright_safe: true
+note_draft: "The seventh book is Clement's fullest account of Christian piety, and his most influential. The true 'Gnostic' is defined not by secret knowledge but by unceasing prayer, gratitude, and likeness to God: he keeps festival not on set days but throughout his life, and his worship is the offering of a purified mind. Clement answers pagan objections to Christian practice and insists that genuine knowledge and genuine holiness are one. Long the most read portion of the *Stromata*, it offers a serene picture of the mature believer. Expect a calmer, more sustained register than the earlier miscellanies — closer to a portrait than a patchwork."
 ---
-
-<!-- EDITORIAL INTRO — write 2–4 sentences here explaining what this text is and why it matters. This appears above the text on the reader page. -->
-
-   
-
- A  B  C  D  E  F  G  H  I  J  K  L  M  N  O  P  Q  R  S  T  U  V  W  X  Y  Z 
-
-![New Advent](../images/logo.gif)
-
-Home > Fathers of the Church > The Stromata (Clement of Alexandria)
-
-# The Stromata (Book VII)
-
-## Chapter 1. The Gnostic a True Worshipper of God, and Unjustly Calumniated by Unbelievers as an Atheist
+# Chapter 1. The Gnostic a True Worshipper of God, and Unjustly Calumniated by Unbelievers as an Atheist
 
 It is now time to show the Greeks that the Gnostic alone is truly pious; so that the philosophers, learning of what description the true Christian is, may condemn their own stupidity in rashly and inconsiderately persecuting the \[Christian\] name, and without reason calling those impious who know the true God. And clearer arguments must be employed, I reckon, with the philosophers, so that they may be able, from the exercise they have already had through their own training, to understand, although they have not yet shown themselves worthy to partake of the power of believing.
 
@@ -44,7 +31,7 @@ Thus also it appears to me that there are three effects of gnostic power: the kn
 
 He, then, who is persuaded that God is omnipotent, and has learned the divine mysteries from His only-begotten Son, how can he be an atheist (ἄθπεος)? Foa he is an atheist who thinks that God does not exist. And he is superstitious who dreads the demons; who deifies all things, both wood and stone; and reduces to bondage spirit, and man who possesses the life of reason.
 
-## Chapter 2. The Son the Ruler and Saviour of All
+# Chapter 2. The Son the Ruler and Saviour of All
 
 To know God is, then, the first step of faith; then, through confidence in the teaching of the Saviour, to consider the doing of wrong in any way as not suitable to the knowledge of God.
 
@@ -82,7 +69,7 @@ Everything, then, which did not hinder a man's choice from being free, He made a
 
 And, on the other hand, He is in no respect whatever the cause of evil. For all things are arranged with a view to the salvation of the universe by the Lord of the universe, both generally and particularly. It is then the function of the righteousness of salvation to improve everything as far as practicable. For even minor matters are arranged with a view to the salvation of that which is better, and for an abode suitable for people's character. Now everything that is virtuous changes for the better; having as the proper cause of change the free choice of knowledge, which the soul has in its own power. But necessary corrections, through the goodness of the great overseeing Judge, both by the attendant angels, and by various acts of anticipative judgment, and by the perfect judgment, compel egregious sinners to repent.
 
-## Chapter 3. The Gnostic Aims at the Nearest Likeness Possible to God and His Son
+# Chapter 3. The Gnostic Aims at the Nearest Likeness Possible to God and His Son
 
 Now I pass over other things in silence, glorifying the Lord. But I affirm that gnostic souls, that surpass in the grandeur of contemplation the mode of life of each of the holy ranks, among whom the blessed abodes of the gods are allotted by distribution, reckoned holy among the holy, transferred entire from among the entire, reaching places better than the better places, embracing the divine vision not in mirrors or by means of mirrors, but in the transcendently clear and absolutely pure insatiable vision which is the privilege of intensely loving souls, holding festival through endless ages, remain honoured with the indentity of all excellence. Such is the vision attainable by the pure in heart. Matthew 5:8 This is the function of the Gnostic, who has been perfected, to have converse with God through the great High Priest, being made like the Lord, up to the measure of his capacity, in the whole service of God, which tends to the salvation of men, through care of the beneficence which has us for its object; and on the other side through worship, through teaching and through beneficence in deeds. The Gnostic even forms and creates himself; and besides also, he, like to God, adorns those who hear him; assimilating as far as possible the moderation which, arising from practice, tends to impassibility, to Him who by nature possesses impassibility; and especially having uninterrupted converse and fellowship with the Lord. Mildness, I think, and philanthropy, and eminent piety, are the rules of gnostic assimilation. I affirm that these virtues are a sacrifice acceptable in the sight of God; Philippians 4:18 Scripture alleging that the humble heart with right knowledge is the holocaust of God; each man who is admitted to holiness being illuminated in order to indissoluble union.
 
@@ -116,7 +103,7 @@ And as those who maltreat property insult the owners, and those who maltreat sol
 
 For, just as the sun not only illumines heaven and the whole world, shining over land and sea, but also through windows and small chinks sends his beams into the innermost recesses of houses, so the Word diffused everywhere casts His eye-glance on the minutest circumstances of the actions of life.
 
-## Chapter 4. The Heathens Made Gods Like Themselves, Whence Springs All Superstition
+# Chapter 4. The Heathens Made Gods Like Themselves, Whence Springs All Superstition
 
 Now, as the Greeks represent the gods as possessing human forms, so also do they as possessing human passions. And as each of them depict their forms similar to themselves, as Xenophanes says, Ethiopians as black and apes, the Thracians ruddy and tawny; so also they assimilate their souls to those who form them: the Barbarians, for instance, who make them savage and wild; and the Greeks, who make them more civilized, yet subject to passion.
 
@@ -202,7 +189,7 @@ For in reality there is no other purity but abstinence from sins. Excellently th
 
 Now also we say that it is requisite to purify the soul from corrupt and bad doctrines by right reason; and so thereafter to the recollection of the principal heads of doctrine. Since also before the communication of the mysteries they think it right to apply certain purifications to those who are to be initiated; so it is requisite for men to abandon impious opinion, and thus turn to the true tradition.
 
-## Chapter 5. The Holy Soul a More Excellent Temple Than Any Edifice Built by Man
+# Chapter 5. The Holy Soul a More Excellent Temple Than Any Edifice Built by Man
 
 For is it not the case that rightly and truly we do not circumscribe in any place that which cannot be circumscribed; nor do we shut up in temples made with hands that which contains all things? What work of builders, and stonecutters, and mechanical art can be holy? Superior to these are not they who think that the air, and the enclosing space, or rather the whole world and the universe, are meet for the excellency of God?
 
@@ -212,7 +199,7 @@ And what can be localized, there being nothing that is not localized? Since all 
 
 But how can He, to whom the things that are belong, need anything? But were God possessed of a human form, He would need, equally with man, food, and shelter, and house, and the attendant incidents. Those who are like in form and affections will require similar sustenance. And if sacred (το ἱερόν) has a twofold application, designating both God Himself and the structure raised to His honour, how shall we not with propriety call the Church holy, through knowledge, made for the honour of God, sacred (ἱερόν) to God, of great value, and not constructed by mechanical art, nor embellished by the hand of an impostor, but by the will of God fashioned into a temple? For it is not now the place, but the assemblage of the elect, that I call the Church. This temple is better for the reception of the greatness of the dignity of God. For the living creature which is of high value, is made sacred by that which is worth all, or rather which has no equivalent, in virtue of the exceeding sanctity of the latter. Now this is the Gnostic, who is of great value, who is honoured by God, in whom God is enshrined, that is, the knowledge respecting God is consecrated. Here, too, we shall find the divine likeness and the holy image in the righteous soul, when it is blessed in being purified and performing blessed deeds. Here also we shall find that which is localized, and that which is being localized — the former in the case of those who are already Gnostics, and the latter in the case of those capable of becoming so, although not yet worthy of receiving the knowledge of God. For every being destined to believe is already faithful in the sight of God, and set up for His honour, an image, endowed with virtue, dedicated to God.
 
-## Chapter 6. Prayers and Praise from a Pure Mind, Ceaselessly Offered, Far Better Than Sacrifices
+# Chapter 6. Prayers and Praise from a Pure Mind, Ceaselessly Offered, Far Better Than Sacrifices
 
 As, then, God is not circumscribed by place, neither is ever represented by the form of a living creature; so neither has He similar passions, nor has He wants like the creatures, so as to desire sacrifice, from hunger, by way of food. Those creatures which are affected by passion are all mortal. And it is useless to bring food to one who is not nourished.
 
@@ -296,7 +283,7 @@ though they happen to be tyrants and robbers?
 
 But we say that the fire sanctifies not flesh, but sinful souls; meaning not the all-devouring vulgar fire but that of wisdom, which pervades the soul passing through the fire.
 
-## Chapter 7. What Sort of Prayer the Gnostic Employs, and How It is Heard by God
+# Chapter 7. What Sort of Prayer the Gnostic Employs, and How It is Heard by God
 
 Now we are commanded to reverence and to honour the same one, being persuaded that He is Word, Saviour, and Leader, and by Him, the Father, not on special days, as some others, but doing this continually in our whole life, and in every way. Certainly the elect race justified by the precept says, Seven times a day have I praised You. Whence not in a specified place, or selected temple, or at certain festivals and on appointed days, but during his whole life, the Gnostic in every place, even if he be alone by himself, and wherever he has any of those who have exercised the like faith, honours God, that is, acknowledges his gratitude for the knowledge of the way to live.
 
@@ -364,7 +351,7 @@ But also it becomes him to make all his prayers gently with the good. For it is 
 
 And what? Does he not also know the other kind of sacrifice, which consists in the giving both of doctrines and of money to those who need? Assuredly. But he does not use wordy prayer by his mouth; having learned to ask of the Lord what is requisite. In every place, therefore, but not ostensibly and visibly to the multitude, he will pray. But while engaged in walking, in conversation, while in silence, while engaged in reading and in works according to reason, he in every mood prays. If he but form the thought in the secret chamber of his soul, and call on the Father with unspoken groanings, Romans 8:26 He is near, and is at his side, while yet speaking. Inasmuch as there are but three ends of all action, he does everything for its excellence and utility; but doing anything for the sake of pleasure, he leaves to those who pursue the common life.
 
-## Chapter 8. The Gnostic So Addicted to Truth as Not to Need to Use an Oath
+# Chapter 8. The Gnostic So Addicted to Truth as Not to Need to Use an Oath
 
 The man of proved character in such piety is far from being apt to lie and to swear. For an oath is a decisive affirmation, with the taking of the divine name. For how can he, that is once faithful, show himself unfaithful, so as to require an oath; and so that his life may not be a sure and decisive oath? He lives, and walks, and shows the trustworthiness of his affirmation in an unwavering and sure life and speech. And if the wrong lies in the judgment of one who does and says \[something\], and not in the suffering of one who has been wronged, he will neither lie nor commit perjury so as to wrong the Deity, knowing that it by nature is incapable of being harmed. Nor yet will he lie or commit any transgression, for the sake of the neighbour whom he has learned to love, though he be not on terms of intimacy. Much more, consequently, will he not lie or perjure himself on his own account, since he never with his will can be found doing wrong to himself.
 
@@ -374,7 +361,7 @@ The Gnostic swears truly, but is not apt to swear, having rarely recourse to an 
 
 Therefore, persuaded always that God is everywhere, and fearing not to speak the truth, and knowing that it is unworthy of him to lie, he is satisfied with the divine consciousness and his own alone And so he lies not, nor does anything contrary to his compacts. And so he swears not even when asked for his oath; nor does he ever deny, so as to speak falsehood, though he should die by tortures.
 
-## Chapter 9. Those Who Teach Others, Ought to Excel in Virtues
+# Chapter 9. Those Who Teach Others, Ought to Excel in Virtues
 
 The gnostic dignity is augmented and increased by him who has undertaken the first place in the teaching of others, and received the dispensation by word and deed of the greatest good on earth, by which he mediates contact and fellowship with the Divinity. And as those who worship terrestrial things pray to them as if they heard, confirming compacts before them; so, in men who are living images, the true majesty of the Word is received by the trustworthy teacher; and the beneficence exerted towards them is carried up to the Lord, after whose image he who is a true man by instruction creates and harmonizes, renewing to salvation the man who receives instruction. For as the Greeks called steel _Ares_, and wine _Dionysus_, on account of a certain relation; so the Gnostic considering the benefit of his neighbours as his own salvation, may be called a living image of the Lord, not as respects the peculiarity of form, but the symbol of power and similarity of preaching.
 
@@ -388,7 +375,7 @@ Such, then, to speak cursorily, is the piety of the Christian. If, then, he does
 
 The Christian is not impious. For this was the point incumbent on us to demonstrate to the philosophers; so that he will never in any way do anything bad or base (which is unjust). Consequently, therefore, he is not impious; but he alone fears God, holily and dutifully worshipping the true God, the universal Ruler, and King, and Sovereign, with the true piety.
 
-## Chapter 10. Steps to Perfection
+# Chapter 10. Steps to Perfection
 
 For knowledge (_gnosis_), to speak generally, a perfecting of man as man, is consummated by acquaintance with divine things, in character, life, and word, accordant and conformable to itself and to the divine Word. For by it faith is perfected, inasmuch as it is solely by it that the believer becomes perfect. Faith is an internal good, and without searching for God, confesses His existence, and glorifies Him as existent. Whence by starting from this faith, and being developed by it, through the grace of God, the knowledge respecting Him is to be acquired as far as possible.
 
@@ -410,7 +397,7 @@ All the action, then, of a man possessed of knowledge is right action; and that 
 
 The same holds also with the other virtues. So too the analogy is preserved in religion. Our Gnostic, then, not only is such in reference to holiness; but corresponding to the piety of knowledge are the commands respecting the rest of the conduct of life. For it is our purpose at present to describe the life of the Gnostic, not to present the system of dogmas, which we shall afterwards explain at the fitting time, preserving the order of topics.
 
-## Chapter 11. Description of the Gnostic's Life
+# Chapter 11. Description of the Gnostic's Life
 
 Respecting the universe, he conceives truly and grandly in virtue of his reception of divine teaching. Beginning, then, with admiration of the Creation, and affording of himself a proof of his capability for receiving knowledge, he becomes a ready pupil of the Lord. Directly on hearing of God and Providence, he believed in consequence of the admiration he entertained. Through the power of impulse thence derived he devotes his energies in every way to learning, doing all those things by means of which he shall be able to acquire the knowledge of what he desires. And desire blended with inquiry arises as faith advances. And this is to become worthy of speculation, of such a character, and such importance. So shall the Gnostic taste of the will of God. For it is not his ears, but his soul, that he yields up to the things signified by what is spoken. Accordingly, apprehending essences and things through the words, he brings his soul, as is fit, to what is essential; apprehending (e.g.) in the peculiar way in which they are spoken to the Gnostic, the commands, Do not commit adultery, Do not kill; and not as they are understood by other people. Training himself, then, in scientific speculation, he proceeds to exercise himself in larger generalizations and grander propositions; knowing right well that He that teaches man knowledge, according to the prophet, is the Lord, the Lord acting by man's mouth. So also He assumed flesh.
 
@@ -458,7 +445,7 @@ For by the service of what is best and most exalted, which is characterized by u
 
 Further, agreement in the same thing is consent. But what is the same is one. And friendship is consummated in likeness; the community lying in oneness. The Gnostic, consequently, in virtue of being a lover of the one true God, is the really perfect man and friend of God, and is placed in the rank of son. For these are names of nobility and knowledge, and perfection in the contemplation of God; which crowning step of advancement the gnostic soul receives, when it has become quite pure, reckoned worthy to behold everlastingly God Almighty, face, it is said, to face. For having become wholly spiritual, and having in the spiritual Church gone to what is of kindred nature, it abides in the rest of God.
 
-## Chapter 12. The True Gnostic is Beneficent, Continent, and Despises Worldly Things
+# Chapter 12. The True Gnostic is Beneficent, Continent, and Despises Worldly Things
 
 Let these things, then, be so. And such being the attitude of the Gnostic towards the body and the soul— towards his neighbours, whether it be a domestic, or a lawful enemy, or whosoever — he is found equal and like. For he does not despise his brother, who, according to the divine law, is of the same father and mother. Certainly he relieves the afflicted, helping him with consolations, encouragements, and the necessaries of life; giving to all that need, though not similarly, but justly, according to desert; furthermore, to him who persecutes and hates, even if he need it; caring little for those who say to him that he has given out of fear, if it is not out of fear that he does so, but to give help. For how much more are those, who towards their enemies are devoid of love of money, and are haters of evil, animated with love to those who belong to them?
 
@@ -528,7 +515,7 @@ He having acquired the habit of doing good, exercises beneficence well, quicker 
 
 He, all day and night, speaking and doing the Lord's commands, rejoices exceedingly, not only on rising in the morning and at noon, but also when walking about, when asleep, when dressing and undressing; and he teaches his son, if he has a son. He is inseparable from the commandment and from hope, and is ever giving thanks to God, like the living creatures figuratively spoken of by Esaias, and submissive in every trial, he says, The Lord gave, and the Lord has taken away. Job 1:21 For such also was Job; who after the spoiling of his effects, along with the health of his body, resigned all through love to the Lord. For he was, it is said, just, holy, and kept apart from all wickedness. Job 1:1 Now the word holy points out all duties toward God, and the entire course of life. Knowing which, he was a Gnostic. For we must neither cling too much to such things, even if they are good, seeing they are human, nor on the other hand detest them, if they are bad; but we must be above both \[good and bad\], trampling the latter under foot, and passing on the former to those who need them. But the Gnostic is cautious in accommodation, lest he be not perceived, or lest the accommodation become disposition.
 
-## Chapter 13. Description of the Gnostic Continued
+# Chapter 13. Description of the Gnostic Continued
 
 He never remembers those who have sinned against him, but forgives them. Wherefore also he righteously prays, saying, Forgive us; for we also forgive. Matthew 6:12; Luke 11:4 For this also is one of the things which God wishes, to covet nothing, to hate no one. For all men are the work of one will. And is it not the Saviour, who wishes the Gnostic to be perfect as the heavenly Father, Matthew 5:48 that is, Himself, who says, Come, you children, hear from me the fear of the Lord? He wishes him no longer to stand in need of help by angels, but to receive it from Himself, having become worthy, and to have protection from Himself by obedience.
 
@@ -550,7 +537,7 @@ Thence now, by knowledge collecting materials to be the food of contemplation, h
 
 Let these statements concerning the Gnostic, containing the germs of the matter in as brief terms as possible, be made to the Greeks. But let it be known that if the \[mere\] believer do rightly one or a second of these things, yet he will not do so in all nor with the highest knowledge, like the Gnostic.
 
-## Chapter 14. Description of the Gnostic Furnished by an Exposition of 1 Cor. vi. 1, Etc
+# Chapter 14. Description of the Gnostic Furnished by an Exposition of 1 Cor. vi. 1, Etc
 
 Now, of what I may call the passionlessness which we attribute to the Gnostic (in which the perfection of the believer, advancing by love, comes to a perfect man, to the measure of full stature, Ephesians 4:13 by being assimilated to God, and by becoming truly angelic), many other testimonies from the Scripture, occur to me to adduce. But I think it better, on account of the length of the discourse, that such an honour should be devolved on those who wish to take pains, and leave it to them to elaborate the dogmas by the selection of Scriptures.
 
@@ -584,7 +571,7 @@ Let the specimen suffice to those who have ears. For it is not required to unfol
 
 If, then, the statement being elliptical, we understand what is wanting, in order to complete the section for those who are incapable of understanding what is left out, we shall both know the will of God, and shall walk at once piously and magnanimously, as befits the dignity of the commandment.
 
-## Chapter 15. The Objection to Join the Church on Account of the Diversity of Heresies Answered
+# Chapter 15. The Objection to Join the Church on Account of the Diversity of Heresies Answered
 
 Since it comes next to reply to the objections alleged against us by Greeks and Jews; and since, in some of the questions previously discussed, the sects also who adhere to other teaching give, their help, it will be well first to clear away the obstacles before us, and then, prepared thus for the solution of the difficulties, to advance to the succeeding Miscellany.
 
@@ -610,7 +597,7 @@ Now, of those who diverge from the truth, some attempt to deceive themselves alo
 
 But, in my opinion, the nature of plausible arguments is of one character, and that of true arguments of another. And we know that it is necessary that the appellation of the heresies should be expressed in contradistinction to the truth; from which the Sophists, drawing certain things for the destruction of men, and burying them in human arts invented by themselves, glory rather in being at the head of a School than presiding over the Church.
 
-## Chapter 16. Scripture the Criterion by Which Truth and Heresy are Distinguished.
+# Chapter 16. Scripture the Criterion by Which Truth and Heresy are Distinguished.
 
 But those who are ready to toil in the most excellent pursuits, will not desist from the search after truth, till they get the demonstration from the Scriptures themselves.
 
@@ -668,7 +655,7 @@ Our Gnostic then alone, having grown old in the Scriptures, and maintaining apos
 
 For we must never, as do those who follow the heresies, adulterate the truth, or steal the canon of the Church, by gratifying our own lusts and vanity, by defrauding our neighbours; whom above all it is our duty, in the exercise of love to them, to teach to adhere to the truth. It is accordingly expressly said, Declare among the heathen His statutes, that they may not be judged, but that those who have previously given ear may be converted. But those who speak treacherously with their tongues have the penalties that are on record.
 
-## Chapter 17. The Tradition of the Church Prior to that of the Heresies
+# Chapter 17. The Tradition of the Church Prior to that of the Heresies
 
 Those, then, that adhere to impious words, and dictate them to others, inasmuch as they do not make a right but a perverse use of the divine words, neither themselves enter into the kingdom of heaven, nor permit those whom they have deluded to attain the truth. But not having the key of entrance, but a false (and as the common phrase expresses it), a counterfeit key (ἀντικλεῖς), by which they do not enter in as we enter in, through the tradition of the Lord, by drawing aside the curtain; but bursting through the side-door, and digging clandestinely through the wall of the Church, and stepping over the truth, they constitute themselves the Mystagogues of the soul of the impious.
 
@@ -690,7 +677,7 @@ But the pre-eminence of the Church, as the principle of union, is, in its onenes
 
 Of the heresies, some receive their appellation from a \[person's\] name, as that which is called after Valentinus, and that after Marcion, and that after Basilides, although they boast of adducing the opinion of Matthew \[without truth\]; for as the teaching, so also the tradition of the apostles was one. Some take their designation from a place, as the Peratici; some from a nation, as the \[heresy\] of the Phrygians; some from an action, as that of the Encratites; and some from peculiar dogmas, as that of the Docetæ, and that of the Hærmatites; and some from suppositions, and from individuals they have honoured, as those called Cainists, and the Ophians; and some from nefarious practices and enormities, as those of the Simonians called Entychites.
 
-## Chapter 18. The Distinction Between Clean and Unclean Animals in the Law Symbolical of the Distinction Between the Church, and Jews, and Heretics
+# Chapter 18. The Distinction Between Clean and Unclean Animals in the Law Symbolical of the Distinction Between the Church, and Jews, and Heretics
 
 After showing a little peep-hole to those who love to contemplate the Church from the law of sacrifices respecting clean and unclean animals (inasmuch as thus the common Jews and the heretics are distinguished mystically from the divine Church), let us bring the discourse to a close.
 
@@ -714,5 +701,3 @@ Now the Miscellanies are not like parts laid out, planted in regular order for t
 The Miscellanies, then, study neither arrangement nor diction; since there are even cases in which the Greeks on purpose wish that ornate diction should be absent, and imperceptibly cast in the seed of dogmas, not according to the truth, rendering such as may read laborious and quick at discovery. For many and various are the baits for the various kinds of fishes.
 
 And now, after this seventh Miscellany of ours, we shall give the account of what follows in order from another commencement.
-
-CONTACT US | ADVERTISE WITH NEW ADVENT

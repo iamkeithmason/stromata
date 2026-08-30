@@ -48,13 +48,28 @@ collection; marked the queue prospect `rejected` with the reason so it can't re-
 draft collection, live text → draft author, thin/≤1-text collections) against Supabase and exits
 non-zero on any live dead link. Safe to run after any batch or in CI.
 
-**Open thread — the Stromata staged books.** Only Book I of Clement's *Stromata* is in the DB,
-though Books I–VIII sit staged under `output/stromata/`. Re-read them: the translation (ANF, PD) is
-clean and complete — good condition — but each file still carries New Advent nav/footer boilerplate
-(the `A B C … Z` bar, the logo, the `Home > Fathers of the Church >` breadcrumb, and a
-`CONTACT US | ADVERTISE WITH NEW ADVENT` footer), has no `note_draft`, and has empty `themes`. Not
-import-ready as-is, but the substantive content is done — worth a cleanup + tag + note-draft pass
-rather than leaving it. (Books II–VII of *The Stromata* also still need Keith's manual text tidy-up.)
+**The Stromata staged books — cleaned & staged.** Only Book I of Clement's *Stromata* was in the
+DB, though Books I–VIII sat staged under `output/stromata/`. Re-read all eight: the translation
+(New Advent / Roberts-Donaldson ANF, PD) is clean and complete, but each file carried New Advent
+nav/footer boilerplate, no `note_draft`, and empty `themes`. Cleaned Books **II, IV, V, VI, VII**
+(stripped the nav header + `CONTACT US | ADVERTISE WITH NEW ADVENT` footer, dropped the duplicate
+`# The Stromata (Book N)` title line, normalised `## Chapter` → `# Chapter` to match the live Book
+I, wrote full frontmatter with themes + a museum-label `note_draft`) into `output/the-stromata/`,
+and added a `the-stromata-clement` queue entry (`status: staged`). **Held** in
+`output/the-stromata/_held/`: Book III (the ANF editors left it untranslated in **Latin** — it
+needs a different PD English translation) and Book VIII (the fragmentary appendix; the collection is
+titled "I–VII", so including it is a scope call). Book I's stale staged copy is kept there too.
+
+This surfaced a real limitation in `pipeline-import.mjs`: its `alreadyInDatabase()` pre-flight
+skipped a whole prospect if a collection with that slug already existed, so it could never **add**
+chapters to an existing collection. Removed that coarse check — per-text slug skipping in
+`importTextFile` (plus the "all files already existed → imported" finalizer) already guarantees
+idempotency, and now a prospect can complete a multi-book work whose first book landed earlier. The
+actual DB insert still has to run where Supabase creds live (`node scripts/pipeline-import.mjs`);
+this session has none, and hand-transcribing ~150k words of patristic text through SQL would risk
+corrupting it, so the run is left for a credentialed environment. That run will import the five
+staged Stromata books (Book I skipped by slug) into the existing `the-stromata` collection, plus the
+already-staged *Pilgrim's Progress*.
 
 ---
 

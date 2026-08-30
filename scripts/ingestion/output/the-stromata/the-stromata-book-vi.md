@@ -3,30 +3,17 @@ title: "The Stromata (Book VI)"
 slug: "the-stromata-book-vi"
 author: "Clement of Alexandria"
 genre: "Apology"
-themes: []  # TODO — choose from: Prayer, Repentance, Contemplation, Humility, Suffering, Spiritual Warfare, Desire, Rest, Vocation, Community, Hospitality, Fasting, Poverty, Obedience, Marriage, Work, Trinity, Christology, Pneumatology, Salvation, Eschatology, Creation, Scripture, Providence, Liturgy, Sacraments, Ministry, Monasticism, Preaching, Tradition, Justice, Virtue, Vice, Death, Conscience
-collection: "stromata"
+themes: ["virtue", "contemplation", "scripture"]
+collection: "the-stromata"
 collection_order: 6
-source_attribution: "Translated by William Wilson. From Ante-Nicene Fathers, Vol. 2. Edited by Alexander Roberts, James Donaldson, and A. Cleveland Coxe. Buffalo, NY: Christian Literature Publishing Co., 1885."
-provenance_notes: "Text sourced from New Advent (newadvent.org). Original translation public domain (pre-1900). Accessed April 2026."
-translation_notes: "William Wilson translation, 1885. William Wilson (1800–1871) — translation public domain. No separate translation copyright applies."
-ocr_quality: "high"
+source_attribution: "Roberts-Donaldson translation. Via New Advent, Fathers of the Church (newadvent.org/fathers/02106.htm). Public domain."
+provenance_notes: "Greek original composed c. 198–203 AD in Alexandria. This translation follows the Roberts-Donaldson version as presented by New Advent, which modernises spelling and punctuation from the nineteenth-century Ante-Nicene Fathers edition."
+translation_notes: "The Roberts-Donaldson translation is in the public domain as part of the Ante-Nicene Fathers series (1885). No rights clearance required."
 published: false
 copyright_safe: true
+note_draft: "Book VI sets out to 'mould a statue of the Gnostic' — Clement's portrait of the perfect Christian. He renews his central claim that Greek philosophy was a divine gift, a preparation for the Gospel as the Law was for the Hebrews, and defends pagan learning against those who feared it. The mature believer is one whose knowledge has become virtue, whose whole life is prayer, and whose study of the created order is itself worship. The book ranges from theories of plagiarism among the Greeks to the discipline of the soul. Expect Clement at his most confident that all truth, wherever found, is God's."
 ---
-
-<!-- EDITORIAL INTRO — write 2–4 sentences here explaining what this text is and why it matters. This appears above the text on the reader page. -->
-
-   
-
- A  B  C  D  E  F  G  H  I  J  K  L  M  N  O  P  Q  R  S  T  U  V  W  X  Y  Z 
-
-![New Advent](../images/logo.gif)
-
-Home > Fathers of the Church > The Stromata (Clement of Alexandria)
-
-# The Stromata (Book VI)
-
-## Chapter 1. Plan.
+# Chapter 1. Plan.
 
 The sixth and also the seventh Miscellany of gnostic notes, in accordance with the true philosophy, having delineated as well as possible the ethical argument conveyed in them, and having exhibited what the Gnostic is in his life, proceed to show the philosophers that he is by no means impious, as they suppose, but that he alone is truly pious, by a compendious exhibition of the Gnostic's form of religion, as far as it is possible, without danger, to commit it to writing in a book of reference. For the Lord enjoined to labour for the meat which endures to eternity. John 6:27 And the prophet says, Blessed is he that sows into all waters, whose ox and ass tread, Isaiah 32:20 \[that is,\] the people, from the Law and from the Gentiles, gathered into one faith.
 
@@ -38,7 +25,7 @@ Our knowledge, and our spiritual garden, is the Saviour Himself; into whom we ar
 
 Now knowledge is otherwise spoken of in a twofold sense: that, commonly so called, which appears in all men (similarly also comprehension and apprehension), universally, in the knowledge of individual objects; in which not only the rational powers, but equally the irrational, share, which I would never term knowledge, inasmuch as the apprehension of things through the senses comes naturally. But that which _par excellence_ is termed knowledge, bears the impress of judgment and reason, in the exercise of which there will be rational cognitions alone, applying purely to objects of thought, and resulting from the bare energy of the soul. He is a good man, says David, who pities (those ruined through error), and lends (from the communication of the word of truth) not at haphazard, for he will dispense his words in judgment: with profound calculation, he has dispersed, he has given to the poor.
 
-## Chapter 2. The Subject of Plagiarisms Resumed. The Greeks Plagiarized from One Another
+# Chapter 2. The Subject of Plagiarisms Resumed. The Greeks Plagiarized from One Another
 
 Before handling the point proposed, we must, by way of preface, add to the close of the fifth book what is wanting. For since we have shown that the symbolic style was ancient, and was employed not only by our prophets, but also by the majority of the ancient Greeks, and by not a few of the rest of the Gentile Barbarians, it was requisite to proceed to the mysteries of the initiated. I postpone the elucidation of these till we advance to the confutation of what is said by the Greeks on first principles; for we shall show that the mysteries belong to the same branch of speculation. And having proved that the declaration of Hellenic thought is illuminated all round by the truth, bestowed on us in the Scriptures, taking it according to the sense, we have proved, not to say what is invidious, that the theft of the truth passed to them.
 
@@ -586,7 +573,7 @@ Eumelus and Acusilaus the historiographers changed the contents of Hesiod into p
 
 From Pythagoras Plato derived the immortality of the soul; and he from the Egyptians. And many of the Platonists composed books, in which they show that the Stoics, as we said in the beginning, and Aristotle, took the most and principal of their dogmas from Plato. Epicurus also pilfered his leading dogmas from Democritus. Let these things then be so. For life would fail me, were I to undertake to go over the subject in detail, to expose the selfish plagiarism of the Greeks, and how they claim the discovery of the best of their doctrines, which they have received from us.
 
-## Chapter 3. Plagiarism by the Greeks of the Miracles Related in the Sacred Books of the Hebrews
+# Chapter 3. Plagiarism by the Greeks of the Miracles Related in the Sacred Books of the Hebrews
 
 And now they are convicted not only of borrowing doctrines from the Barbarians, but also of relating as prodigies of Hellenic mythology the marvels found in our records, wrought through divine power from above, by those who led holy lives, while devoting attention to us. And we shall ask at them whether those things which they relate are true or false. But they will not say that they are false; for they will not with their will condemn themselves of the very great silliness of composing falsehoods, but of necessity admit them to be true. And how will the prodigies enacted by Moses and the other prophets any longer appear to them incredible? For the Almighty God, in His care for all men, turns some to salvation by commands, some by threats, some by miraculous signs, some by gentle promises.
 
@@ -620,7 +607,7 @@ Now the compilers of narratives say that in the island of Britain there is a cav
 
 Those also who composed the _Persics_ relate that in the uplands, in the country of the Magi, three mountains are situated on an extended plain, and that those who travel through the locality, on coming to the first mountain, hear a confused sound as of several myriads shouting, as if in battle array; and on reaching the middle one, they hear a clamour louder and more distinct; and at the end hear people singing a pæan, as if victorious. And the cause, in my opinion, of the whole sound, is the smoothness and cavernous character of the localities; and the air, entering in, being sent back and going to the same point, sounds with considerable force. Let these things be so. But it is possible for God Almighty, even without a medium, to produce a voice and vision through the ear, showing that His greatness has a natural order beyond what is customary, in order to the conversion of the hitherto unbelieving soul, and the reception of the commandment given. But there being a cloud and a lofty mountain, how is it not possible to hear a different sound, the wind moving by the active cause? Wherefore also the prophet says, You heard the voice of words, and saw no similitude. Deuteronomy 4:12 You see how the Lord's voice, the Word, without shape, the power of the Word, the luminous word of the Lord, the truth from heaven, from above, coming to the assembly of the Church, wrought by the luminous immediate ministry.
 
-## Chapter 4. The Greeks Drew Many of Their Philosophical Tenets from the Egyptian and Indian Gymnosophists
+# Chapter 4. The Greeks Drew Many of Their Philosophical Tenets from the Egyptian and Indian Gymnosophists
 
 We shall find another testimony in confirmation, in the fact that the best of the philosophers, having appropriated their most excellent dogmas from us, boast, as it were, of certain of the tenets which pertain to each sect being culled from other Barbarians, chiefly from the Egyptians — both other tenets, and that especially of the transmigration of the soul. For the Egyptians pursue a philosophy of their own. This is principally shown by their sacred ceremonial. For first advances the Singer, bearing some one of the symbols of music. For they say that he must learn two of the books of Hermes, the one of which contains the hymns of the gods, the second the regulations for the king's life. And after the Singer advances the Astrologer, with a horologe in his hand, and a palm, the symbols of astrology. He must have the astrological books of Hermes, which are four in number, always in his mouth. Of these, one is about the order of the fixed stars that are visible, and another about the conjunctions and luminous appearances of the sun and moon; and the rest respecting their risings. Next in order advances the sacred Scribe, with wings on his head, and in his hand a book and rule, in which were writing ink and the reed, with which they write. And he must be acquainted with what are called hieroglyphics, and know about cosmography and geography, the position of the sun and moon, and about the five planets; also the description of Egypt, and the chart of the Nile; and the description of the equipment of the priests and of the places consecrated to them, and about the measures and the things in use in the sacred rites. Then the Stole-keeper follows those previously mentioned, with the cubit of justice and the cup for libations. He is acquainted with all points called Pædeutic (relating to training) and Moschophatic (sacrificial). There are also ten books which relate to the honour paid by them to their gods, and containing the Egyptian worship; as that relating to sacrifices, first-fruits, hymns, prayers, processions, festivals, and the like. And behind all walks the Prophet, with the water-vase carried openly in his arms; who is followed by those who carry the issue of loaves. He, as being the governor of the temple, learns the ten books called Hieratic; and they contain all about the laws, and the gods, and the whole of the training of the priests. For the Prophet is, among the Egyptians, also over the distribution of the revenues. There are then forty-two books of Hermes indispensably necessary; of which the six-and-thirty containing the whole philosophy of the Egyptians are learned by the forementioned personages; and the other six, which are medical, by the Pastophoroi (image-bearers) — treating of the structure of the body, and of diseases, and instruments, and medicines, and about the eyes, and the last about women. Such are the customs of the Egyptians, to speak briefly.
 
@@ -630,7 +617,7 @@ The first, then, being asked whether he thought that the living were more in num
 
 And that the Greeks are called pilferers of all manner of writing, is, as I think, sufficiently demonstrated by abundant proofs.
 
-## Chapter 5. The Greeks Had Some Knowledge of the True God
+# Chapter 5. The Greeks Had Some Knowledge of the True God
 
 And that the men of highest repute among the Greeks knew God, not by positive knowledge, but by indirect expression, Peter says in the _Preaching:_ Know then that there is one God, who made the beginning of all things, and holds the power of the end; and is the Invisible, who sees all things; incapable of being contained, who contains all things; needing nothing, whom all things need, and by whom they are; incomprehensible, everlasting, unmade, who made all things by the 'Word of His power,' that is, according to the gnostic scripture, His Son.
 
@@ -638,7 +625,7 @@ Then he adds: Worship this God not as the Greeks, — signifying plainly, that t
 
 And further, that the same God that furnished both the Covenants was the giver of Greek philosophy to the Greeks, by which the Almighty is glorified among the Greeks, he shows. And it is clear from this. Accordingly, then, from the Hellenic training, and also from that of the law are gathered into the one race of the saved people those who accept faith: not that the three peoples are separated by time, so that one might suppose three natures, but trained in different Covenants of the one Lord, by the word of the one Lord. For that, as God wished to save the Jews by giving to them prophets, so also by raising up prophets of their own in their own tongue, as they were able to receive God's beneficence, He distinguished the most excellent of the Greeks from the common herd, in addition to _Peter's Preaching_, the Apostle Paul will show, saying: Take also the Hellenic books, read the Sibyl, how it is shown that God is one, and how the future is indicated. And taking Hystaspes, read, and you will find much more luminously and distinctly the Son of God described, and how many kings shall draw up their forces against Christ, hating Him and those that bear His name, and His faithful ones, and His patience, and His coming. Then in one word he asks us, Whose is the world, and all that is in the world? Are they not God's? Wherefore Peter says, that the Lord said to the apostles: If any one of Israel then, wishes to repent, and by my name to believe in God, his sins shall be forgiven him, after twelve years. Go forth into the world, that no one may say, We have not heard.
 
-## Chapter 6. The Gospel Was Preached to Jews and Gentiles in Hades.
+# Chapter 6. The Gospel Was Preached to Jews and Gentiles in Hades.
 
 But as the proclamation \[of the Gospel\] has come now at the fit time, so also at the fit time were the Law and the Prophets given to the Barbarians, and Philosophy to the Greeks, to fit their ears for the Gospel. Therefore, says the Lord who delivered Israel, in an acceptable time have I heard you, and in a day of salvation have I helped you. And I have given you for a Covenant to the nations; that you might inhabit the earth, and receive the inheritance of the wilderness; saying to those that are in bonds, Come forth; and to those that are in darkness, Show yourselves. For if the prisoners are the Jews, of whom the Lord said, Come forth, you that will, from your bonds, — meaning the voluntary bound, and who have taken on them _the burdens grievous to be borne_ Matthew 23:4; Luke 11:46 by human injunction — it is plain that those in darkness are they who have the ruling faculty of the soul buried in idolatry.
 
@@ -666,7 +653,7 @@ If, then, in the deluge all sinful flesh perished, punishment having been inflic
 
 Now also Valentinus, the Coryphæus of those who herald community, in his book on _The Intercourse of Friends_, writes in these words: Many of the things that are written, though in common books, are found written in the church of God. For those sayings which proceed from the heart are vain. For the law written in the heart is the People of the Beloved — loved and loving Him. For whether it be the Jewish writings or those of the philosophers that he calls the Common Books, he makes the truth common. And Isidore, at once son and disciple to Basilides, in the first book of the _Expositions of the Prophet Parchor_, writes also in these words: The Attics say that certain things were intimated to Socrates, in consequence of a dæmon attending on him. And Aristotle says that all men are provided with dæmons, that attend on them during the time they are in the body — having taken this piece of prophetic instruction and transferred it to his own books, without acknowledging whence he had abstracted this statement. And again, in the second book of his work, he thus writes: And let no one think that what we say is peculiar to the elect, was said before by any philosophers. For it is not a discovery of theirs. For having appropriated it from our prophets, they attributed it to him who is wise according to them. Again, in the same: For to me it appears that those who profess to philosophize, do so that they may learn what is the winged oak, and the variegated robe on it, all of which Pherecydes has employed as theological allegories, having taken them from the prophecy of Cham.
 
-## Chapter 7. What True Philosophy Is, and Whence So Called
+# Chapter 7. What True Philosophy Is, and Whence So Called
 
 As we have long ago pointed out, what we propose as our subject is not the discipline which obtains in each sect, but that which is really philosophy, strictly systematic Wisdom, which furnishes acquaintance with the things which pertain to life. And we define Wisdom to be certain knowledge, being a sure and irrefragable apprehension of things divine and human, comprehending the present, past, and future, which the Lord has taught us, both by His advent and by the prophets. And it is irrefragable by reason, inasmuch as it has been communicated. And so it is wholly true according to \[God's\] intention, as being known through means of the Son. And in one aspect it is eternal, and in another it becomes useful in time. Partly it is one and the same, partly many and indifferent — partly without any movement of passion, partly with passionate desire — partly perfect, partly incomplete.
 
@@ -686,7 +673,7 @@ And if, too, the end of the wise man is contemplation, that of those who are sti
 
 And the _gnosis_ itself is that which has descended by transmission to a few, having been imparted unwritten by the apostles. Hence, then, knowledge or wisdom ought to be exercised up to the eternal and unchangeable habit of contemplation.
 
-## Chapter 8. Philosophy is Knowledge Given by God
+# Chapter 8. Philosophy is Knowledge Given by God
 
 For Paul too, in the Epistles, plainly does not disparage philosophy; but deems it unworthy of the man who has attained to the elevation of the Gnostic, any more to go back to the Hellenic philosophy, figuratively calling it the rudiments of this world, as being most rudimentary, and a preparatory training for the truth. Wherefore also, writing to the Hebrews, who were declining again from faith to the law, he says, Have you not need again of one to teach you which are the first principles of the oracles of God, and have become such as have need of milk, and not of strong meat? Hebrews 5:12 So also to the Colossians, who were Greek converts, Beware lest any man spoil you by philosophy and vain deceit, after the tradition of men, after the rudiments of this world, and not after Christ, Colossians 2:8 — enticing them again to return to philosophy, the elementary doctrine.
 
@@ -708,7 +695,7 @@ And as in the Barbarian philosophy, so also in the Hellenic, tares were sown by 
 
 But that Gnostic of whom I speak, himself comprehends what seems to be incomprehensible to others; believing that nothing is incomprehensible to the Son of God, whence nothing incapable of being taught. For He who suffered out of His love for us, would have suppressed no element of knowledge requisite for our instruction. Accordingly this faith becomes sure demonstration; since truth follows what has been delivered by God. But if one desires extensive knowledge, he knows things ancient, and conjectures things future; he understands knotty sayings, and the solutions of enigmas. The disciple of wisdom foreknows signs and omens, and the issues of seasons and of times. Wisdom 7:17-18
 
-## Chapter 9. The Gnostic Free of All Perturbations of the Soul
+# Chapter 9. The Gnostic Free of All Perturbations of the Soul
 
 The Gnostic is such, that he is subject only to the affections that exist for the maintenance of the body, such as hunger, thirst, and the like. But in the case of the Saviour, it were ludicrous \[to suppose\] that the body, as a body, demanded the necessary aids in order to its duration. For He ate, not for the sake of the body, which was kept together by a holy energy, but in order that it might not enter into the minds of those who were with Him to entertain a different opinion of Him; in like manner as certainly some afterwards supposed that He appeared in a phantasmal shape (δοκήσει). But He was entirely impassible (ἀπαθής); inaccessible to any movement of feeling — either pleasure or pain. While the apostles, having most gnostically mastered, through the Lord's teaching, anger and fear, and lust, were not liable even to such of the movements of feeling, as seem good, courage, zeal, joy, desire, through a steady condition of mind, not changing a whit; but ever continuing unvarying in a state of training after the resurrection of the Lord.
 
@@ -730,7 +717,7 @@ For, in fine, it is impossible that the immutable should assume firmness and con
 
 In scientific matters, as being alone possessed of scientific knowledge, he will hold the preeminence, and will discourse on the discussion respecting the good, ever intent on intellectual objects, tracing out his procedure in human affairs from the archetypes above; as navigators direct the ship according to the star; prepared to hold himself in readiness for every suitable action; accustomed to despise all difficulties and dangers when it is necessary to undergo them; never doing anything precipitate or incongruous either to himself or the common good; foreseeing; and inflexible by pleasures both of waking hours and of dreams. For, accustomed to spare living and frugality, he is moderate, active, and grave; requiring few necessaries for life; occupying himself with nothing superfluous. But desiring not even these things as chief, but by reason of fellowship in life, as necessary for his sojourn in life, as far as necessary.
 
-## Chapter 10. The Gnostic Avails Himself of the Help of All Human Knowledge
+# Chapter 10. The Gnostic Avails Himself of the Help of All Human Knowledge
 
 For to him knowledge (_gnosis_) is the principal thing. Consequently, therefore, he applies to the subjects that are a training for knowledge, taking from each branch of study its contribution to the truth. Prosecuting, then, the proportion of harmonies in music; and in arithmetic noting the increasing and decreasing of numbers, and their relations to one another, and how the most of things fall under some proportion of numbers; studying geometry, which is abstract essence, he perceives a continuous distance, and an immutable essence which is different from these bodies. And by astronomy, again, raised from the earth in his mind, he is elevated along with heaven, and will revolve with its revolution; studying ever divine things, and their harmony with each other; from which Abraham starting, ascended to the knowledge of Him who created them. Further, the Gnostic will avail himself of dialectics, fixing on the distinction of genera into species, and will master the distinction of existences, till he come to what are primary and simple.
 
@@ -744,7 +731,7 @@ The distinction of names and things also in the Scriptures themselves produces g
 
 Therefore the truth that appears in the Hellenic philosophy, being partial, the real truth, like the sun glancing on the colors both white and black, shows what like each of them is. So also it exposes all sophistical plausibility. Rightly, then, was it proclaimed also by the Greeks: — Truth the queen is the beginning of great virtue.
 
-## Chapter 11. The Mystical Meanings in the Proportions of Numbers, Geometrical Ratios, and Music
+# Chapter 11. The Mystical Meanings in the Proportions of Numbers, Geometrical Ratios, and Music
 
 As then in astronomy we have Abraham as an instance, so also in arithmetic we have the same Abraham. For, hearing that Lot was taken captive, and having numbered his own servants, born in his house, 318 (τιὴ ), he defeats a very great number of the enemy.
 
@@ -803,7 +790,7 @@ And now the wisdom which we possess announces the four virtues in such a way as 
 
 Above all, this ought to be known, that by nature we are adapted for virtue; not so as to be possessed of it from our birth, but so as to be adapted for acquiring it.
 
-## Chapter 12. Human Nature Possesses an Adaptation for Perfection; The Gnostic Alone Attains It
+# Chapter 12. Human Nature Possesses an Adaptation for Perfection; The Gnostic Alone Attains It
 
 By which consideration is solved the question propounded to us by the heretics, Whether Adam was created perfect or imperfect? Well, if imperfect, how could the work of a perfect God — above all, that work being man — be imperfect? And if perfect, how did he transgress the commandments? For they shall hear from us that he was not perfect in his creation, but adapted to the reception of virtue. For it is of great importance in regard to virtue to be made fit for its attainment. And it is intended that we should be saved by ourselves. This, then, is the nature of the soul, to move of itself. Then, as we are rational, and philosophy being rational, we have some affinity with it. Now an aptitude is a movement towards virtue, not virtue itself. All, then, as I said, are naturally constituted for the acquisition of virtue.
 
@@ -829,7 +816,7 @@ And as in the case of Moses, from his righteous conduct, and from his uninterrup
 
 It is He Himself who says, Little children, a little while I am still with you. John 13:33 Since also God Himself remains blessed and immortal, neither molested nor molesting another; not in consequence of being by nature good, but in consequence of doing good in a manner peculiar to Himself. God being essentially, and proving Himself actually, both Father and good, continues immutably in the self-same goodness. For what is the use of good that does not act and do good?
 
-## Chapter 13. Degrees of Glory in Heaven Corresponding with the Dignities of the Church Below
+# Chapter 13. Degrees of Glory in Heaven Corresponding with the Dignities of the Church Below
 
 He, then, who has first moderated his passions and trained himself for impassibility, and developed to the beneficence of gnostic perfection, is here equal to the angels. Luminous already, and like the sun shining in the exercise of beneficence, he speeds by righteous knowledge through the love of God to the sacred abode, like as the apostles. Not that they became apostles through being chosen for some distinguished peculiarity of nature, since also Judas was chosen along with them. But they were capable of becoming apostles on being chosen by Him who foresees even ultimate issues. Matthias, accordingly, who was not chosen along with them, on showing himself worthy of becoming an apostle, is substituted for Judas.
 
@@ -837,7 +824,7 @@ Those, then, also now, who have exercised themselves in the Lord's commandments,
 
 For, in truth, the covenant of salvation, reaching down to us from the foundation of the world, through different generations and times, is one, though conceived as different in respect of gift. For it follows that there is one unchangeable gift of salvation given by one God, through one Lord, benefiting in many ways. For which cause the middle wall which separated the Greek from the Jew is taken away, in order that there might be a peculiar people. And so both meet in the one unity of faith; and the selection out of both is one. And the chosen of the chosen are those who by reason of perfect knowledge are called \[as the best\] from the Church itself, and honoured with the most august glory— the judges and rulers — four-and-twenty (the grace being doubled) equally from Jews and Greeks. Since, according to my opinion, the grades here in the Church, of bishops, presbyters, deacons, are imitations of the angelic glory, and of that economy which, the Scriptures say, awaits those who, following the footsteps of the apostles, have lived in perfection of righteousness according to the Gospel. For these taken up in the clouds, the apostle 1 Thessalonians 4:17 writes, will first minister \[as deacons\], then be classed in the presbyterate, by promotion in glory (for glory differs 1 Corinthians 15:41 from glory) till they grow into a perfect man. Ephesians 4:13
 
-## Chapter 14. Degrees of Glory in Heaven
+# Chapter 14. Degrees of Glory in Heaven
 
 Such, according to David, rest in the holy hill of God, in the Church far on high, in which are gathered the philosophers of God, who are Israelites indeed, who are pure in heart, in whom there is no guile; John 1:47; Matthew 5:8 who do not remain in the seventh seat, the place of rest, but are promoted, through the active beneficence of the divine likeness, to the heritage of beneficence which is the eighth grade; devoting themselves to the pure vision of insatiable contemplation.
 
@@ -867,7 +854,7 @@ But such a good conscience preserves sanctity towards God and justice towards me
 
 Conformably, therefore, there are various abodes, according to the worth of those who have believed. To the point Solomon says, For there shall be given to him the choice grace of faith, and a more pleasant lot in the temple of the Lord. Wisdom 3:14 For the comparative shows that there are lower parts in the temple of God, which is the whole Church. And the superlative remains to be conceived, where the Lord is. These chosen abodes, which are three, are indicated by the numbers in the Gospel— the thirty, the sixty, the hundred. Matthew 13:8 And the perfect inheritance belongs to those who attain to a perfect man, according to the image of the Lord. And the likeness is not, as some imagine, that of the human form; for this consideration is impious. Nor is the likeness to the first cause that which consists in virtue. For this utterance is also impious, being that of those who have imagined that virtue in man and in the sovereign God is the same. You have supposed iniquity, He says, \[in imagining\] that I will be like to you. But it is enough for the disciple to become as the Master, Matthew 25:10 says the Master. To the likeness of God, then, he that is introduced into adoption and the friendship of God, to the just inheritance of the lords and gods is brought; if he be perfected, according to the Gospel, as the Lord Himself taught.
 
-## Chapter 15. Different Degrees of Knowledge
+# Chapter 15. Different Degrees of Knowledge
 
 The Gnostic, then, is impressed with the closest likeness, that is, with the mind of the Master; which He being possessed of, commanded and recommended to His disciples and to the prudent. Comprehending this, as He who taught wished, and receiving it in its grand sense, he teaches worthily on the housetops Matthew 10:27; Luke 12:3 those capable of being built to a lofty height; and begins the doing of what is spoken, in accordance with the example of life. For He enjoined what is possible. And, in truth, the kingly man and Christian ought to be ruler and leader. For we are commanded to be lords over not only the wild beasts without us, but also over the wild passions within ourselves.
 
@@ -931,7 +918,7 @@ Further, Esaias the prophet is ordered to take a new book, and write in it Isaia
 
 Many also of those who called to the Lord said, Son of David, have mercy on me. A few, too, knew Him as the Son of God; as Peter, whom also He pronounced blessed, for flesh and blood revealed not the truth to him, but His Father in heaven, Matthew 16:17 — showing that the Gnostic recognises the Son of the Omnipotent, not by His flesh conceived in the womb, but by the Father's own power. That it is therefore not only to those who read simply that the acquisition of the truth is so difficult, but that not even to those whose prerogative the knowledge of the truth is, is the contemplation of it vouch-safed all at once, the history of Moses teaches, until, accustomed to gaze, at the Hebrews on the glory of Moses, and the prophets of Israel on the visions of angels, so we also become able to look the splendours of truth in the face.
 
-## Chapter 16. Gnostic Exposition of the Decalogue
+# Chapter 16. Gnostic Exposition of the Decalogue
 
 Let the Decalogue be set forth cursorily by us as a specimen for gnostic exposition.
 
@@ -1039,7 +1026,7 @@ The elements, however, and the stars — that is, the administrative powers — 
 
 And the tenth is the command respecting all lusts. As, then, he who entertains unbecoming desires is called to account; in the same way he is not allowed to desire things false, or to suppose that, of created objects, those that are animate have power of themselves, and that inanimate things can at all save or hurt. And should one say that an antidote cannot heal or hemlock kill, he is unwittingly deceived. For none of these operates except one makes use of the plant and the drug; just as the axe does not without one to cut with it, or a saw without one sawing with it. And as they do not work by themselves, but have certain physical qualities which accomplish their proper work by the exertion of the artisan; so also, by the universal providence of God, through the medium of secondary causes, the operative power is propagated in succession to individual objects.
 
-## Chapter 17. Philosophy Conveys Only an Imperfect Knowledge of God
+# Chapter 17. Philosophy Conveys Only an Imperfect Knowledge of God
 
 But, as appears, the philosophers of the Greeks, while naming God, do not know Him. But their philosophical speculations, according to Empedocles, as passing over the tongue of the multitude, are poured out of mouths that know little of the whole. For as art changes the light of the sun into fire by passing it through a glass vessel full of water, so also philosophy, catching a spark from the divine Scripture, is visible in a few. Also, as all animals breathe the same air, some in one way, others in another, and to a different purpose; so also a considerable number of people occupy themselves with the truth, or rather with discourse concerning the truth. For they do not say anything respecting God, but expound Him by attributing their own affections to God. For they spend life in seeking the probable, not the true. But truth is not taught by imitation, but by instruction. For it is not that we may seem good that we believe in Christ, as it is not alone for the purpose of being seen, while in the sun, that we pass into the sun. But in the one case for the purpose of being warmed; and in the other, we are compelled to be Christians in order to be excellent and good. For the kingdom belongs pre-eminently to the violent, who, from investigation, and study, and discipline, reap this fruit, that they become kings.
 
@@ -1101,7 +1088,7 @@ But exposed for imitation and assimilation are truly admirable and holy examples
 
 And to speak comprehensively, all benefit appertaining to life, in its highest reason, proceeding from the Sovereign God, the Father who is over all, is consummated by the Son, who also on this account is the Saviour of all men, says the apostle, but especially of those who believe. 1 Timothy 4:10 But in respect of its immediate reason, it is from those next to each, in accordance with the command and injunction of Him who is nearest the First Cause, that is, the Lord.
 
-## Chapter 18. The Use of Philosophy to the Gnostic
+# Chapter 18. The Use of Philosophy to the Gnostic
 
 ### Greek philosophy the recreation of the Gnostic.
 
@@ -1146,5 +1133,3 @@ But the word of our Teacher remained not in Judea alone, as philosophy did in Gr
 And if any one ruler whatever prohibit the Greek philosophy, it vanishes immediately. But our doctrine on its very first proclamation was prohibited by kings and tyrants together, as well as particular rulers and governors, with all their mercenaries, and in addition by innumerable men, warring against us, and endeavouring as far as they could to exterminate it. But it flourishes the more. For it dies not, as human doctrine dies, nor fades as a fragile gift. For no gift of God is fragile. But it remains unchecked, though prophesied as destined to be persecuted to the end. Thus Plato writes of poetry: A poet is a light and a sacred thing, and cannot write poetry till he be inspired and lose his senses. And Democritus similarly: Whatever things a poet writes with divine afflatus, and with a sacred spirit, are very beautiful. And we know what sort of things poets say. And shall no one be amazed at the prophets of God Almighty becoming the organs of the divine voice?
 
 Having then moulded, as it were, a statue of the Gnostic, we have now shown who he is; indicating in outline, as it were, both the greatness and beauty of his character. What he is as to the study of physical phenomena shall be shown afterwards, when we begin to treat of the creation of the world.
-
-CONTACT US | ADVERTISE WITH NEW ADVENT

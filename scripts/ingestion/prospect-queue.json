@@ -1668,6 +1668,35 @@
       "death_year": 1415,
       "translator_death_year": 1941,
       "stage_1_notes": "Re-sourced from djvu.txt OCR (details-page fetch was wrong). Split into 23 chapters via split-into-chapters.mjs. Schaff 1915 translation, PD (pre-1929). Imported 23 text(s) on 2026-08-18."
+    },
+    {
+      "id": "the-stromata-clement",
+      "status": "staged",
+      "added": "2026-08-30",
+      "author": "Clement of Alexandria",
+      "death_year": 215,
+      "tradition": "patristic",
+      "era": "ante-nicene",
+      "title": "The Stromata (Books I–VII)",
+      "genre": "Apology",
+      "source_type": "newadvent",
+      "source_url": "https://www.newadvent.org/fathers/0210.htm",
+      "collection_slug": "the-stromata",
+      "translation_copyright_clear": true,
+      "translator": "Roberts-Donaldson (ANF)",
+      "translator_death_year": 1915,
+      "stage_1_notes": "Book I already live (imported 2026-05-21). Staging Books II, IV, V, VI, VII (New Advent / Roberts-Donaldson ANF 1885, public domain). Book III held (ANF left it untranslated in Latin); Book VIII held (fragmentary appendix; collection titled I–VII). Clement d. 215 (<1900); ANF published 1885.",
+      "stage_2_output": "scripts/ingestion/output/the-stromata/",
+      "stage_3_themes": [
+        "scripture",
+        "virtue",
+        "contemplation",
+        "prayer",
+        "suffering",
+        "providence"
+      ],
+      "rejection_reason": "",
+      "notes": "Completes the existing the-stromata collection; import extends it (Book I skipped by slug). Book III needs a PD English translation; Book VIII is a scope decision."
     }
   ]
 }

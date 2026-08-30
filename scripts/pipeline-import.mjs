@@ -249,29 +249,6 @@ function findOutputFiles(prospect) {
 }
 
 // ---------------------------------------------------------------------------
-// Pre-flight existence check — avoids re-running all pipeline stages for
-// texts that are already in the database.
-// ---------------------------------------------------------------------------
-
-async function alreadyInDatabase(prospect) {
-  // Check for an existing collection by slug
-  const { data: col } = await supabase
-    .from('collections')
-    .select('id')
-    .eq('slug', prospect.collection_slug)
-    .maybeSingle();
-  if (col) return true;
-
-  // Check for an existing text whose slug is or starts with the collection slug
-  const { data: texts } = await supabase
-    .from('texts')
-    .select('id')
-    .or(`slug.eq.${prospect.collection_slug},slug.like.${prospect.collection_slug}-%`)
-    .limit(1);
-  return !!(texts && texts.length > 0);
-}
-
-// ---------------------------------------------------------------------------
 // Per-text import
 // ---------------------------------------------------------------------------
 
@@ -393,12 +370,11 @@ async function main() {
     }
 
     try {
-      if (await alreadyInDatabase(prospect)) {
-        console.log(`  · already in database — status unchanged, skipping`);
-        console.log('');
-        continue;
-      }
-
+      // No collection-level pre-flight skip. importTextFile skips per-text by
+      // slug, and the finalizer below marks a prospect "imported" when every
+      // file already existed — so re-runs stay idempotent while a prospect can
+      // still add new chapters to a collection that already exists (e.g.
+      // completing a multi-book work whose first book was imported earlier).
       const authorId = await resolveAuthor(prospect);
       const collectionId = files.length > 1 ? await resolveCollectionId(prospect) : null;
 
