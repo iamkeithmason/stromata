@@ -25,6 +25,7 @@ type CollectionRef = {
   title: string
   slug: string
   description: string | null
+  published: boolean
 }
 
 // ── Markdown stripping for body excerpt fallback ───────────────────────────
@@ -146,7 +147,7 @@ export default async function Home() {
     .select(`
       id, title, slug, body, summary, editorial_introduction,
       accession_number, created_at, collection_id,
-      collection:collections(id, title, slug, description),
+      collection:collections(id, title, slug, description, published),
       author:authors(name, slug, death_year, tradition:traditions(slug)),
       genre:genres(name),
       text_themes(theme:themes(name, slug))
@@ -180,7 +181,11 @@ export default async function Home() {
   const seenCollections = new Set<string>()
 
   for (const text of allTexts) {
-    if (text.collection_id && text.collection) {
+    // Only collapse into a collection card when the collection itself is
+    // published — the collection page 404s unpublished slugs, so linking to
+    // one produces a dead card. An unpublished collection's published texts
+    // fall through and render as standalone text entries instead.
+    if (text.collection_id && text.collection && text.collection.published) {
       if (!seenCollections.has(text.collection_id)) {
         seenCollections.add(text.collection_id)
         const stats = collectionStats[text.collection_id]

@@ -7,6 +7,75 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-08-30 — Dead-link sweep: phantom collections, draft-author 404s, admin alert
+
+Started from a reported 404 — the homepage linked John Keble's *National Apostasy* to
+`/collections/national-apostasy-keble`, which didn't exist — and it opened into a whole class of
+dead links. Two independent root causes, plus a data cleanup and a guard so it doesn't recur.
+
+**Phantom single-text collections.** `pipeline-import.mjs`'s `findOutputFiles()` excluded the
+review-summary meta file with `!f.endsWith('-review-summary.md')` — which matches
+`clean-archive-ocr.mjs`'s `{slug}-review-summary.md` but **not** `fetch-texts.mjs`'s
+`_review-summary.md` (underscore prefix). So every *digital single-text* import counted two files,
+tripped the `files.length > 1` branch, and created a bogus `collections` row (unpublished) with the
+one text linked to it. The published text then rendered as a collection card linking to a slug the
+collection page 404s. Fixed by matching the shared `review-summary.md` suffix (same one-liner in
+`detect-scannos.mjs`). Defensive half: the homepage, text-reader, and theme pages joined/linked
+collections without a `published` filter — now they ignore unpublished collections and fall back to
+a standalone text entry. DB cleanup removed the three phantom rows (National Apostasy, Small
+Catechism, the staged Pilgrim's Progress) and unlinked their texts.
+
+**Draft-author 404s.** Author pages 404 for `draft: true` authors (intentional — unreviewed stubs),
+but the text-reader byline links to `/authors/<slug>` unconditionally. 17 authors had published
+texts while still draft stubs (Luther with 6 texts, Jerome, Keble, Tyndale, Hooker, Baxter, …), so
+every one of those bylines was a dead link. Fixed in code without touching the draft flag (HARD
+CONSTRAINT 6 keeps promotion manual): a draft author *with published texts* now renders a minimal
+page (name, dates, tradition, their texts) with the unreviewed bio suppressed everywhere (body,
+JSON-LD, meta description) until Keith promotes them; a draft author with no published texts still
+404s.
+
+**Admin integrity alert.** `/admin` now shows a "Needs attention" panel listing exactly these two
+hazards on live data — a published text with a draft author, or a published text pointing at a draft
+collection — each with a deep link to promote the author / edit the collection. Computed from the
+dashboard's existing text query (added `draft` / `published` to the author and collection joins).
+
+**Duplicate removed.** Found two copies of Chrysostom's *On the Priesthood*: a live New-Advent set
+(`on-the-priesthood`, 2026-05-21) and a redundant OCR re-import (`on-the-priesthood-chrysostom`,
+2026-06-30, done during the June New-Advent `/fathers/` outage). Deleted the 6 draft texts + draft
+collection; marked the queue prospect `rejected` with the reason so it can't re-import.
+
+**New tool.** `scripts/audit-dead-links.mjs` — read-only, runs the same three checks (live text →
+draft collection, live text → draft author, thin/≤1-text collections) against Supabase and exits
+non-zero on any live dead link. Safe to run after any batch or in CI.
+
+**The Stromata staged books — cleaned & staged.** Only Book I of Clement's *Stromata* was in the
+DB, though Books I–VIII sat staged under `output/stromata/`. Re-read all eight: the translation
+(New Advent / Roberts-Donaldson ANF, PD) is clean and complete, but each file carried New Advent
+nav/footer boilerplate, no `note_draft`, and empty `themes`. Cleaned Books **II, IV, V, VI, VII**
+(stripped the nav header + `CONTACT US | ADVERTISE WITH NEW ADVENT` footer, dropped the duplicate
+`# The Stromata (Book N)` title line, normalised `## Chapter` → `# Chapter` to match the live Book
+I, wrote full frontmatter with themes + a museum-label `note_draft`) into `output/the-stromata/`,
+and added a `the-stromata-clement` queue entry (`status: staged`). **Book III** is included too, but
+in **Latin**: the ANF editors left it untranslated out of Victorian reticence, and no public-domain
+English version exists (the only complete one, Oulton & Chadwick 1954, is in copyright). It carries a
+`note_draft` explaining this, and a systematic transcription scanno was corrected (`cure` → `cum`,
+56 instances) — a Latin-literate review is still advisable before publishing. **Held** in
+`output/the-stromata/_held/`: only Book VIII (the fragmentary appendix; the collection is titled
+"I–VII", so including it is a scope call). Book I's stale staged copy is kept there too.
+
+This surfaced a real limitation in `pipeline-import.mjs`: its `alreadyInDatabase()` pre-flight
+skipped a whole prospect if a collection with that slug already existed, so it could never **add**
+chapters to an existing collection. Removed that coarse check — per-text slug skipping in
+`importTextFile` (plus the "all files already existed → imported" finalizer) already guarantees
+idempotency, and now a prospect can complete a multi-book work whose first book landed earlier. The
+actual DB insert still has to run where Supabase creds live (`node scripts/pipeline-import.mjs`);
+this session has none, and hand-transcribing ~150k words of patristic text through SQL would risk
+corrupting it, so the run is left for a credentialed environment. That run will import the six
+staged Stromata books — II, III (Latin), IV, V, VI, VII — (Book I skipped by slug) into the existing
+`the-stromata` collection, plus the already-staged *Pilgrim's Progress*.
+
+---
+
 ## 2026-08-30 — Admin agent-run countdown; Notion Source Guide
 
 Two small operator-facing additions, no pipeline behaviour change.
