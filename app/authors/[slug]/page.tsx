@@ -85,7 +85,7 @@ export async function generateMetadata({ params }: Props) {
     .eq('slug', slug)
     .single()
 
-  if (!author || author.draft) return { title: 'Author — The Stromata' }
+  if (!author) return { title: 'Author — The Stromata' }
 
   // Count published texts for this author
   const { count: textCount } = await supabase
@@ -93,6 +93,10 @@ export async function generateMetadata({ params }: Props) {
     .select('*', { count: 'exact', head: true })
     .eq('author_id', author.id)
     .eq('published', true)
+
+  // Draft authors are hidden UNLESS they have published texts whose bylines
+  // link here (see the page component for the full rationale).
+  if (author.draft && (textCount ?? 0) === 0) return { title: 'Author — The Stromata' }
 
   const tradition = (author.tradition as unknown as { name: string } | null)?.name ?? null
   const eraLabel = (author.era as unknown as { label: string } | null)?.label ?? null
@@ -107,7 +111,9 @@ export async function generateMetadata({ params }: Props) {
     : `${namePart} | The Stromata`
 
   const description = buildMetaDescription(
-    author.name, dates, tradition, textCount ?? 0, author.bio as string | null
+    author.name, dates, tradition, textCount ?? 0,
+    // Suppress the unreviewed bio of a draft author from meta as well.
+    author.draft ? null : (author.bio as string | null)
   )
   const canonicalUrl = `${SITE_URL}/authors/${slug}`
 
@@ -138,7 +144,7 @@ export default async function AuthorPage({ params }: Props) {
     .eq('slug', slug)
     .single()
 
-  if (!author || author.draft) notFound()
+  if (!author) notFound()
 
   const { data: texts } = await supabase
     .from('texts')
@@ -148,6 +154,12 @@ export default async function AuthorPage({ params }: Props) {
     .order('title')
 
   const rows = (texts ?? []) as unknown as TextRow[]
+
+  // A draft author is an unreviewed pipeline stub. Keep it hidden (404) unless
+  // it has published texts — those texts link here from their byline, so the
+  // page must resolve rather than 404. When it does render for a draft author,
+  // the unreviewed bio stays suppressed (below) until the author is promoted.
+  if (author.draft && rows.length === 0) notFound()
 
   // Related authors — same tradition, exclude self, limit 6
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -196,7 +208,7 @@ export default async function AuthorPage({ params }: Props) {
     name: author.name,
     url: canonicalUrl,
     mainEntityOfPage: { '@type': 'WebPage', '@id': canonicalUrl },
-    ...(author.bio ? { description: (author.bio as string).slice(0, 300) } : {}),
+    ...(!author.draft && author.bio ? { description: (author.bio as string).slice(0, 300) } : {}),
     ...(author.birth_year ? { birthDate: String(author.birth_year) } : {}),
     ...(author.death_year ? { deathDate: String(author.death_year) } : {}),
     ...((tradition || topThemes.length > 0)
@@ -268,7 +280,9 @@ export default async function AuthorPage({ params }: Props) {
         </div>
 
         {/* ── Bio ──────────────────────────────────────────────────────────── */}
-        {author.bio && (
+        {/* Hidden for draft authors — the bio is an unreviewed pipeline stub
+            until Keith promotes the author from the admin edit form. */}
+        {!author.draft && author.bio && (
           <div className="mb-10">
             <MarkdownBody content={author.bio} numbered={false} />
           </div>
