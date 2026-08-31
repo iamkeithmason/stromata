@@ -6,6 +6,10 @@ import ScriptureSearch from './ScriptureSearch'
 
 export const metadata = { title: 'Scripture — The Stromata' }
 
+// Render per request so "Most cited" always reflects the current corpus
+// (new texts appear as soon as they're published and indexed, not on redeploy).
+export const dynamic = 'force-dynamic'
+
 type CountRow = {
   osis: string
   book: string
