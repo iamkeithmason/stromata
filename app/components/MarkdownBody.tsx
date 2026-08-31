@@ -1,8 +1,8 @@
-'use client'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
-import { useMemo } from 'react'
 import { slugify } from '@/lib/headings'
+import { rehypeScripture } from '@/lib/scripture/rehype-scripture'
+import ScriptureRef from '@/app/components/ScriptureRef'
 
 // Extracts plain text from a React node tree so we can slugify heading children.
 // Must produce the same string that extractHeadings() produces from raw markdown.
@@ -43,12 +43,26 @@ function buildParagraphLineMap(content: string): Map<number, number> {
 }
 
 export default function MarkdownBody({ content, numbered = true, size = 'default' }: { content: string; numbered?: boolean; size?: 'default' | 'large' }) {
-  const paragraphLineMap = useMemo(() => buildParagraphLineMap(content), [content])
+  const paragraphLineMap = buildParagraphLineMap(content)
 
   return (
     <ReactMarkdown
       remarkPlugins={[remarkGfm]}
+      rehypePlugins={[rehypeScripture]}
       components={{
+        // Scripture references wrapped by rehypeScripture — rendered as the
+        // inline hover/tap verse tooltip. Other spans pass through untouched.
+        span: ({ node, children }) => {
+          const props = node?.properties as { dataReference?: unknown; dataVerse?: unknown } | undefined
+          if (props && typeof props.dataReference === 'string') {
+            return (
+              <ScriptureRef reference={props.dataReference} verse={String(props.dataVerse ?? '')}>
+                {children}
+              </ScriptureRef>
+            )
+          }
+          return <span>{children}</span>
+        },
         // Paragraphs
         p: ({ node, children }) => {
           const num = numbered && node?.position?.start?.line

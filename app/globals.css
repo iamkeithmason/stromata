@@ -190,3 +190,57 @@ article.prose-body div:first-child p::first-letter {
   padding: 0.1em 0.18em 0.15em 0;
   color: var(--ink);
 }
+
+/* ============================================================
+   Inline scripture references — hover / tap KJV verse tooltip
+   (rendered by app/components/ScriptureRef.tsx; refs marked by
+   lib/scripture/rehype-scripture.ts)
+   ============================================================ */
+.scripture-anchor {
+  position: relative;
+  cursor: help;
+  outline: none;
+}
+.scripture-ref {
+  text-decoration: underline;
+  text-decoration-style: dotted;
+  text-decoration-color: var(--gold-rule);
+  text-underline-offset: 0.15em;
+  transition: text-decoration-color var(--dur) var(--ease);
+}
+.scripture-anchor:hover .scripture-ref,
+.scripture-anchor:focus-visible .scripture-ref {
+  text-decoration-color: var(--gold);
+}
+.scripture-popover {
+  position: absolute;
+  top: calc(100% + 0.4rem);
+  left: 0;
+  z-index: 40;
+  display: block;
+  width: max-content;
+  max-width: min(22rem, 80vw);
+  padding: 0.7rem 0.85rem;
+  background: var(--vellum);
+  border: 1px solid var(--gold-rule);
+  border-radius: 2px;
+  box-shadow: 0 6px 24px rgba(28, 24, 20, 0.14);
+  white-space: normal;
+  text-align: left;
+}
+.scripture-popover-ref {
+  display: block;
+  font-family: var(--serif);
+  font-size: var(--text-sm);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 0.3rem;
+}
+.scripture-popover-text {
+  display: block;
+  font-family: var(--serif);
+  font-size: var(--text-base);
+  line-height: 1.5;
+  color: var(--ink-soft);
+}
