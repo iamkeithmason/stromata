@@ -37,6 +37,7 @@ export const SOURCE_ALLOWLIST = [
   'newadvent.org',
   'ccel.org', // pin the /cache/<work>.txt plain-text export
   'gutenberg.org', // pin the /cache/epub/<id>/pg<id>.txt plain-text file; the clean strips PG's header/footer boilerplate
+  'exclassics.com', // David Price's Ex-Classics: clean PD full-text HTML (e.g. the complete Foxe Acts and Monuments)
 ] as const;
 
 /** Obvious placeholder / private hosts — never a real cleared edition. */
