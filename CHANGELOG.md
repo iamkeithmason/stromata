@@ -7,6 +7,29 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-08-31 — Boethius drafts reformatted (headings + verse line breaks)
+
+The two Alfredian Boethius drafts (`consolation-of-philosophy-alfred-prose` / `-lays`, staged
+2026-07-13, still `published: false`) were imported before the pipeline ran `normalise-markdown.mjs`
+automatically, so in the DB their section markers sat as bare text lines (merging into the next
+paragraph) and the verse was one run-on block (Markdown collapses a single newline to a space).
+
+`scripts/ingestion/reformat-boethius-bodies.mjs` (deterministic, idempotent) rewrites just the body:
+prose gets `Proem` / `Boethius and Theodoric` / the 42 roman-numeral sections / `FINIT.` promoted to
+`##` (0 → 45) plus real paragraph boundaries via the shared `normaliseMarkdown` (`treatAllAsProse`),
+so the M./P. stichomythia splits into separate numbered paragraphs; verse gets `PRELUDE` + the 31 lay
+markers promoted to `##` (0 → 32), the redundant bare `LAYS` divider dropped, and a CommonMark hard
+break (`\`) on every line so the poetry renders line-by-line. Confirmed through the reader's real
+`react-markdown` + `remark-gfm` path (prelude → `<h2>` + one paragraph of `<br>`-separated lines).
+
+Delivery is a second, generic script — `scripts/reformat-text-body.mjs` — that matches each staged
+file to its `texts` row by slug and updates the **`body` column only** (dry-run by default, `--apply`
+to write; idempotent; never touches `published`, `note_draft`, `editorial_introduction`, themes,
+genre or author). No creds in this session, so Keith runs it, then reviews and publishes in
+`/admin/drafts` (Stage 5b stays manual). Before/after preview:
+https://claude.ai/code/artifact/e74d5842-ef16-4bf9-baff-8646e2bcf37c · run-log:
+`scripts/ingestion/run-log/2026-08-31.md`.
+
 ## 2026-08-31 — Scripture references: reverse lookup + in-reader verse tooltips
 
 Two features off the Feature Backlog, sharing one parser. **What texts cite a verse** (`/scripture`)
