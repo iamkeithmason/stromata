@@ -182,7 +182,12 @@ html {
   }
 }
 
-article.prose-body div:first-child p::first-letter {
+/* Drop cap on the opening paragraph only. Scoped with child combinators to the
+   article's own first paragraph <div> — `:first-of-type` skips a leading
+   epigraph blockquote or heading and lands on the first paragraph, while `>`
+   prevents matching paragraph <div>s nested inside blockquotes or list items
+   (which would otherwise each get a stray drop cap). */
+article.prose-body > div:first-of-type > p::first-letter {
   font-family: var(--serif-display);
   float: left;
   font-size: 3em;

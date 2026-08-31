@@ -1,7 +1,6 @@
 'use client'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
-import { useMemo } from 'react'
 import { slugify } from '@/lib/headings'
 
 // Extracts plain text from a React node tree so we can slugify heading children.
@@ -17,43 +16,48 @@ function nodeToText(node: React.ReactNode): string {
   return ''
 }
 
-// Builds a map from 1-based start line → paragraph display number.
-// Paragraphs are non-empty blocks that aren't headings, hr, fenced code, blockquotes, or lists.
-function buildParagraphLineMap(content: string): Map<number, number> {
-  const map = new Map<number, number>()
-  const lines = content.split('\n')
-  let pNum = 0
-  let i = 0
-  while (i < lines.length) {
-    while (i < lines.length && !lines[i].trim()) i++
-    if (i >= lines.length) break
-    const blockStart = i + 1 // remark uses 1-based line numbers
-    const first = lines[i].trim()
-    const isHeading = /^#{1,6}\s/.test(first)
-    const isHr = /^[-*_]{3,}$/.test(first)
-    const isCode = first.startsWith('```')
-    const isBlockquote = first.startsWith('>')
-    const isList = /^[-*+]\s|^\d+\.\s/.test(first)
-    while (i < lines.length && lines[i].trim()) i++
-    if (!isHeading && !isHr && !isCode && !isBlockquote && !isList) {
-      map.set(blockStart, ++pNum)
+// Minimal shape of the mdast nodes this plugin touches.
+type MdastNode = {
+  type: string
+  data?: { hProperties?: Record<string, unknown> }
+}
+
+// remark plugin: numbers only top-level paragraphs (direct children of the
+// document root), tagging each with a data-pnum attribute that survives into
+// the rendered HTML. Numbering off the real AST — the same tree react-markdown
+// renders — keeps the display numbers in lockstep with what actually becomes a
+// <p>. Paragraphs nested inside blockquotes or list items are not root
+// children, so they're skipped; HTML comments/blocks and tables are not
+// paragraph nodes, so they never consume a number.
+function remarkNumberParagraphs() {
+  return (tree: { children?: MdastNode[] }) => {
+    let n = 0
+    for (const node of tree.children ?? []) {
+      if (node.type === 'paragraph') {
+        n += 1
+        const data = (node.data ??= {})
+        const props = (data.hProperties ??= {})
+        props['data-pnum'] = n
+      }
     }
   }
-  return map
 }
 
 export default function MarkdownBody({ content, numbered = true, size = 'default' }: { content: string; numbered?: boolean; size?: 'default' | 'large' }) {
-  const paragraphLineMap = useMemo(() => buildParagraphLineMap(content), [content])
+  const remarkPlugins = numbered ? [remarkGfm, remarkNumberParagraphs] : [remarkGfm]
 
   return (
     <ReactMarkdown
-      remarkPlugins={[remarkGfm]}
+      remarkPlugins={remarkPlugins}
       components={{
         // Paragraphs
         p: ({ node, children }) => {
-          const num = numbered && node?.position?.start?.line
-            ? paragraphLineMap.get(node.position.start.line)
-            : undefined
+          const rawNum = node?.properties?.['data-pnum']
+          const num = typeof rawNum === 'number'
+            ? rawNum
+            : typeof rawNum === 'string' && rawNum
+              ? Number(rawNum)
+              : undefined
           return (
             <div className="relative">
               {num !== undefined && (
@@ -111,8 +115,10 @@ export default function MarkdownBody({ content, numbered = true, size = 'default
             {children}
           </ul>
         ),
-        ol: ({ children }) => (
-          <ol className="list-decimal pl-6 mb-5 space-y-1 font-serif text-[1.25rem]" style={{ color: '#1b1b1b' }}>
+        // Preserve the list's starting number so a list that resumes after an
+        // interrupting paragraph (e.g. "3." following prose) renders as 3, not 1.
+        ol: ({ children, start }) => (
+          <ol start={start} className="list-decimal pl-6 mb-5 space-y-1 font-serif text-[1.25rem]" style={{ color: '#1b1b1b' }}>
             {children}
           </ol>
         ),
