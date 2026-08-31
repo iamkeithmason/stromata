@@ -9,7 +9,13 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 
-import { htmlToText, looksLikeHtml, normalizeChars, stripNewAdventChrome } from './clean';
+import {
+  htmlToText,
+  looksLikeHtml,
+  normalizeChars,
+  stripGutenbergBoilerplate,
+  stripNewAdventChrome,
+} from './clean';
 
 test('normalizeChars expands ligatures deterministically', () => {
   assert.equal(normalizeChars('ﬁnal oﬀer ﬂour'), 'final offer flour');
@@ -64,6 +70,41 @@ test('stripNewAdventChrome removes page chrome, keeps body + book/chapter headin
 test('stripNewAdventChrome is a no-op on non-New-Advent text', () => {
   const plain = '## Chapter 1.\n\nPlain patristic prose with no site chrome.\n';
   const { text, removed } = stripNewAdventChrome(plain);
+  assert.equal(removed, 0);
+  assert.equal(text, plain);
+});
+
+test('stripGutenbergBoilerplate keeps only the work between the START and END markers', () => {
+  const input = [
+    'The Project Gutenberg eBook of An Apology of the Church of England',
+    'This ebook is for the use of anyone anywhere in the United States...',
+    'Title: An Apology of the Church of England',
+    'Language: English',
+    '*** START OF THE PROJECT GUTENBERG EBOOK AN APOLOGY OF THE CHURCH OF ENGLAND ***',
+    '',
+    'Produced by Ted Garvin, Project Gutenberg volunteers.',
+    '',
+    'AN APOLOGY OF THE CHURCH OF ENGLAND.',
+    '',
+    'We believe that there is one Church of God...',
+    '',
+    '*** END OF THE PROJECT GUTENBERG EBOOK AN APOLOGY OF THE CHURCH OF ENGLAND ***',
+    'Updated editions will replace the previous one—the old editions will be renamed.',
+    'START: FULL LICENSE',
+  ].join('\n');
+  const { text, removed } = stripGutenbergBoilerplate(input);
+  assert.ok(removed >= 7, `removed ${removed}`);
+  assert.match(text, /AN APOLOGY OF THE CHURCH OF ENGLAND\./);
+  assert.match(text, /We believe that there is one Church of God/);
+  // Header metadata, the transcriber credit, and the trailing license are gone.
+  for (const gone of ['for the use of anyone', 'Language: English', 'Produced by', 'FULL LICENSE', 'START OF THE PROJECT GUTENBERG']) {
+    assert.equal(text.includes(gone), false, gone);
+  }
+});
+
+test('stripGutenbergBoilerplate is a no-op on a non-Gutenberg scan', () => {
+  const plain = 'CHAPTER I.\n\nA Parker Society djvu.txt scan with no PG markers.\n';
+  const { text, removed } = stripGutenbergBoilerplate(plain);
   assert.equal(removed, 0);
   assert.equal(text, plain);
 });

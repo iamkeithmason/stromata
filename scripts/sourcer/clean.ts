@@ -109,6 +109,40 @@ export function stripNewAdventChrome(text: string): { text: string; removed: num
   return { text: kept.join('\n').replace(/\n{3,}/g, '\n\n'), removed };
 }
 
+/**
+ * Project Gutenberg header/footer boilerplate, line-anchored. A PG plain-text file
+ * wraps the work between `*** START OF THE PROJECT GUTENBERG EBOOK … ***` and
+ * `*** END OF THE PROJECT GUTENBERG EBOOK … ***` lines (older files say "THIS"),
+ * with the PG license, transcriber credits and metadata outside them. The text
+ * itself is public domain; only the boilerplate carries PG's trademark license,
+ * so it is dropped. Anchored on the START marker, so this is a no-op on any text
+ * that is not a Project Gutenberg file.
+ */
+const GUTENBERG_START = /^\*\*\*\s*START OF (?:THE|THIS) PROJECT GUTENBERG EBOOK/i;
+const GUTENBERG_END = /^\*\*\*\s*END OF (?:THE|THIS) PROJECT GUTENBERG EBOOK/i;
+
+/**
+ * Strip Project Gutenberg boilerplate, keeping only the work between the START and
+ * END markers. No START marker → not a PG file → returned unchanged. Also drops a
+ * leading "Produced by …" transcriber credit and surrounding blank lines. Returns
+ * the cleaned text and how many lines were removed.
+ */
+export function stripGutenbergBoilerplate(text: string): { text: string; removed: number } {
+  const lines = text.split('\n');
+  const startIdx = lines.findIndex((l) => GUTENBERG_START.test(l));
+  if (startIdx === -1) return { text, removed: 0 };
+  const endIdx = lines.findIndex((l) => GUTENBERG_END.test(l));
+  const bodyEnd = endIdx > startIdx ? endIdx : lines.length;
+  const kept = lines.slice(startIdx + 1, bodyEnd);
+  const removed = lines.length - kept.length;
+  const body = kept
+    .join('\n')
+    .replace(/^\s*\n+/, '') // leading blanks after the START marker
+    .replace(/^Produced by[^\n]*\n/i, '') // transcriber credit line
+    .replace(/^\s*\n+/, '');
+  return { text: body, removed };
+}
+
 /** Deterministic character-level OCR/print fixes. Same input → same output. */
 export function normalizeChars(text: string): string {
   let s = text;
@@ -128,6 +162,8 @@ export interface CleanResult {
   footnoteMarkersStripped: number;
   /** New Advent boilerplate lines removed (nav / support banner / footer). */
   chromeStripped: number;
+  /** Project Gutenberg header/footer lines removed. */
+  gutenbergStripped: number;
   blanksInserted: number;
   verseRuns: number;
   changed: boolean;
@@ -145,7 +181,8 @@ export async function deterministicClean(
   const wasHtml = looksLikeHtml(raw, opts.contentType ?? '');
   let text = wasHtml ? htmlToText(raw) : raw;
   const chrome = stripNewAdventChrome(text);
-  text = normalizeChars(chrome.text);
+  const gutenberg = stripGutenbergBoilerplate(chrome.text);
+  text = normalizeChars(gutenberg.text);
 
   const footnote = await stripFootnoteMarkers(text, {});
   const { output, report } = await normaliseMarkdown(footnote.text, {});
@@ -155,8 +192,10 @@ export async function deterministicClean(
     wasHtml,
     footnoteMarkersStripped: footnote.count,
     chromeStripped: chrome.removed,
+    gutenbergStripped: gutenberg.removed,
     blanksInserted: report.blanksInserted,
     verseRuns: report.verseFlags.length,
-    changed: report.changed || footnote.count > 0 || chrome.removed > 0 || wasHtml,
+    changed:
+      report.changed || footnote.count > 0 || chrome.removed > 0 || gutenberg.removed > 0 || wasHtml,
   };
 }

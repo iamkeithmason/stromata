@@ -36,6 +36,7 @@ export const SOURCE_ALLOWLIST = [
   'wikisource.org', // the editor pins en.wikisource.org; the suffix covers it
   'newadvent.org',
   'ccel.org', // pin the /cache/<work>.txt plain-text export
+  'gutenberg.org', // pin the /cache/epub/<id>/pg<id>.txt plain-text file; the clean strips PG's header/footer boilerplate
 ] as const;
 
 /** Obvious placeholder / private hosts — never a real cleared edition. */
