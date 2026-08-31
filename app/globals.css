@@ -244,3 +244,17 @@ article.prose-body div:first-child p::first-letter {
   line-height: 1.5;
   color: var(--ink-soft);
 }
+.scripture-popover-link {
+  display: inline-block;
+  margin-top: 0.55rem;
+  font-family: var(--serif);
+  font-size: var(--text-sm);
+  letter-spacing: 0.03em;
+  color: var(--gold);
+  text-decoration: none;
+  border-bottom: 1px solid var(--gold-rule);
+  transition: border-color var(--dur) var(--ease);
+}
+.scripture-popover-link:hover {
+  border-bottom-color: var(--gold);
+}

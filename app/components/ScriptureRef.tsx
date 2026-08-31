@@ -50,6 +50,14 @@ export default function ScriptureRef({
         <span className="scripture-popover" role="tooltip" id={id}>
           <span className="scripture-popover-ref">{reference}</span>
           <span className="scripture-popover-text">{verse}</span>
+          <a
+            href={`/scripture/${encodeURIComponent(reference)}`}
+            className="scripture-popover-link"
+            data-umami-event="scripture-lookup"
+            data-umami-event-from="text-reader"
+          >
+            Cited elsewhere →
+          </a>
         </span>
       )}
     </span>
