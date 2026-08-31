@@ -7,6 +7,53 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-08-31 — Source allowlist broadened (Gutenberg / sacred-texts / Ex-Classics); New Whitchurch texts unstuck via "Path A"
+
+The code change (this branch / PR #32) is small but the reasoning behind it is the useful part. It
+started with **New Whitchurch Press** (newwhitchurch.press): the 2026-07-12 pass had already
+catalogued their whole catalogue into the Content Prospect List but **held every row** `Rights
+unclear` / `Needs investigation` on a "pending-permission" note — waiting on a reply to an email that
+never came. That was a misconception. NWP releases their *modernized editions* under CC BY-SA 4.0,
+but the underlying Reformation works are centuries public-domain; you don't need permission, and you
+shouldn't use the CC edition anyway — **source the underlying PD edition instead** ("Path A", e.g.
+the Parker Society volumes on archive.org, or Gutenberg/CCEL). That dissolved the hold on ~a dozen
+rows (Cranmer, Hutchinson, Jewel, Rogers, Ussher, Ridley ×2, Latimer, Askew, Bullinger, Parr, plus
+Hooper's plague homily split out of the *Concerning Plague* modern anthology). Two stayed held with
+notes for a real reason, not rights: Davenant's *Baptismal Regeneration* (the Allport 1864
+translation is PD but lives only on Google Books) and Becon's *Seasonal Works* (scope unconfirmed).
+
+**The allowlist change** (`scripts/sourcer/config.ts` + `clean.ts` + `clean.test.ts`): added
+`gutenberg.org` and `exclassics.com` to `SOURCE_ALLOWLIST` (`sacred-texts.com` was already on it),
+and added two deterministic chrome strippers to `deterministicClean` — Project Gutenberg
+header/footer boilerplate (keep only the text between the `*** START/END OF … ***` markers; the work
+is PD, only the boilerplate carries PG's trademark license) and sacred-texts nav/credit chrome. Both
+are line-anchored and a no-op on any other text, mirroring the existing New Advent chrome pass;
+removed-line counts surface on `CleanResult` (`gutenbergStripped` / `sacredTextsStripped`).
+**Google Books was deliberately NOT added** — it exposes no clean plain-text endpoint (metadata
+pages / image PDFs only) and blocks automated fetches, so it's a discovery tool, not a pinnable
+source. Ex-Classics earns its place as the clean full-text host for the unabridged Foxe *Acts and
+Monuments* (1583), an alternative to the 8-volume archive.org OCR set. Tests: 11/11 clean, 42/42 for
+the rest of the Sourcer suite.
+
+**Medieval/renaissance sourcing** (a sacred-texts `/chr/` survey, casting wider than English
+Reformation): resolved or queued Teresa's *Interior Castle*, Ruysbroeck's *Adornment* (its
+"translator death unknown" hold dissolved by the real rule — a translation *published* pre-1929 is
+PD regardless of translator death), Pseudo-Dionysius's *Mystical Theology*, the *Writings of St.
+Francis*, the *Little Flowers* (pinned as a multi-page sacred-texts collection, `lff004`–`lff061`),
+and Neale's *Hymns of the Eastern Church*. The curated **Summa** (New Advent per-Question multi-page
+pin — Five Ways, Happiness, Law, and the foundational Theological-Virtues questions) and **Calvin's
+Institutes** (Books I + III from CCEL) were scoped and cleared. **Dante deliberately out of scope**:
+the genre model is prose-theology-shaped and has no home for an epic poem — the guiding test for
+casting wider is *purpose* ("does it do the work of the faith?"), not topic, and a `Poem`/`Allegory`
+genre addition is deferred until a literary work (Bunyan, etc.) actually needs it.
+
+Tracker hygiene, all via the Notion prospect list (no code): *Cur Deus Homo* set `Live` and its two
+duplicate rows parked; the 22 `In progress` rows were cross-checked against the Supabase published
+set and the **16 already published were flipped to `Live`** (Foxe, Psychomachia, Odes of Solomon,
+Commentary on the Nicene Creed, Unbelief and Revolution, and the Lamentation of a Sinner stay `In
+progress` — genuinely unpublished). Sourcing verdicts and page-range caveats are recorded per-row in
+the prospect Editorial notes.
+
 ## 2026-08-31 — Boethius drafts reformatted (headings + verse line breaks)
 
 The two Alfredian Boethius drafts (`consolation-of-philosophy-alfred-prose` / `-lays`, staged
