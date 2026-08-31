@@ -15,6 +15,7 @@ import {
   normalizeChars,
   stripGutenbergBoilerplate,
   stripNewAdventChrome,
+  stripSacredTextsChrome,
 } from './clean';
 
 test('normalizeChars expands ligatures deterministically', () => {
@@ -105,6 +106,38 @@ test('stripGutenbergBoilerplate keeps only the work between the START and END ma
 test('stripGutenbergBoilerplate is a no-op on a non-Gutenberg scan', () => {
   const plain = 'CHAPTER I.\n\nA Parker Society djvu.txt scan with no PG markers.\n';
   const { text, removed } = stripGutenbergBoilerplate(plain);
+  assert.equal(removed, 0);
+  assert.equal(text, plain);
+});
+
+test('stripSacredTextsChrome removes nav + credit lines, keeps the body', () => {
+  const input = [
+    'Sacred Texts',
+    'Christianity',
+    'Index',
+    'Previous',
+    'Next',
+    'Buy this Book at Amazon.com',
+    '',
+    'THE ECCLESIASTICAL HISTORY OF THE ENGLISH NATION',
+    '',
+    'Britain, an island in the ocean, formerly called Albion...',
+    '',
+    'Next: Chapter II',
+    'Scanned at sacred-texts.com, June 2004. John Bruno Hare, redactor.',
+  ].join('\n');
+  const { text, removed } = stripSacredTextsChrome(input);
+  assert.ok(removed >= 7, `removed ${removed}`);
+  assert.match(text, /THE ECCLESIASTICAL HISTORY OF THE ENGLISH NATION/);
+  assert.match(text, /Britain, an island in the ocean/);
+  for (const gone of ['Sacred Texts', 'Buy this Book', 'Next: Chapter II', 'sacred-texts.com']) {
+    assert.equal(text.includes(gone), false, gone);
+  }
+});
+
+test('stripSacredTextsChrome is a no-op on text without sacred-texts furniture', () => {
+  const plain = '## Chapter 1.\n\nA djvu.txt scan with no sacred-texts nav.\n';
+  const { text, removed } = stripSacredTextsChrome(plain);
   assert.equal(removed, 0);
   assert.equal(text, plain);
 });

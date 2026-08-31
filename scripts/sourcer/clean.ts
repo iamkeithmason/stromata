@@ -143,6 +143,40 @@ export function stripGutenbergBoilerplate(text: string): { text: string; removed
   return { text: body, removed };
 }
 
+/**
+ * sacred-texts.com page chrome, line-anchored. sacred-texts serves clean HTML
+ * whose only non-text furniture is a small, unmistakable navigation strip (the
+ * "Sacred Texts / Christianity / Index / Previous / Next" links and an Amazon
+ * buy link) plus a scan/copyright credit that names the domain. Every pattern is
+ * specific to sacred-texts, so running this on other text is a no-op. Chapter
+ * headings in the body are plain text and are not matched.
+ */
+const SACREDTEXTS_CHROME: RegExp[] = [
+  /^\s*Sacred[- ]?Texts\s*$/i, // the "Sacred Texts" / "Sacred-Texts" nav link
+  /^\s*Sacred Texts\s+Christianity\s+/i, // the breadcrumb, if joined on one line
+  /^\s*Buy this Book at Amazon\.com\s*$/i,
+  /^\s*(?:Previous|Next|Index)\s*$/, // standalone nav links
+  /^\s*Next:\s+\S/, // the "Next: <chapter>" footer link
+  /sacred-texts\.com/i, // scan-credit / copyright lines that name the domain
+];
+
+/**
+ * Strip sacred-texts.com navigation and credit lines. Deterministic and
+ * line-anchored; a no-op on any text without sacred-texts furniture. Returns the
+ * cleaned text and how many lines were removed.
+ */
+export function stripSacredTextsChrome(text: string): { text: string; removed: number } {
+  let removed = 0;
+  const kept = text.split('\n').filter((line) => {
+    if (SACREDTEXTS_CHROME.some((re) => re.test(line))) {
+      removed++;
+      return false;
+    }
+    return true;
+  });
+  return { text: kept.join('\n').replace(/\n{3,}/g, '\n\n'), removed };
+}
+
 /** Deterministic character-level OCR/print fixes. Same input → same output. */
 export function normalizeChars(text: string): string {
   let s = text;
@@ -164,6 +198,8 @@ export interface CleanResult {
   chromeStripped: number;
   /** Project Gutenberg header/footer lines removed. */
   gutenbergStripped: number;
+  /** sacred-texts.com nav / credit lines removed. */
+  sacredTextsStripped: number;
   blanksInserted: number;
   verseRuns: number;
   changed: boolean;
@@ -182,7 +218,8 @@ export async function deterministicClean(
   let text = wasHtml ? htmlToText(raw) : raw;
   const chrome = stripNewAdventChrome(text);
   const gutenberg = stripGutenbergBoilerplate(chrome.text);
-  text = normalizeChars(gutenberg.text);
+  const sacredTexts = stripSacredTextsChrome(gutenberg.text);
+  text = normalizeChars(sacredTexts.text);
 
   const footnote = await stripFootnoteMarkers(text, {});
   const { output, report } = await normaliseMarkdown(footnote.text, {});
@@ -193,9 +230,15 @@ export async function deterministicClean(
     footnoteMarkersStripped: footnote.count,
     chromeStripped: chrome.removed,
     gutenbergStripped: gutenberg.removed,
+    sacredTextsStripped: sacredTexts.removed,
     blanksInserted: report.blanksInserted,
     verseRuns: report.verseFlags.length,
     changed:
-      report.changed || footnote.count > 0 || chrome.removed > 0 || gutenberg.removed > 0 || wasHtml,
+      report.changed ||
+      footnote.count > 0 ||
+      chrome.removed > 0 ||
+      gutenberg.removed > 0 ||
+      sacredTexts.removed > 0 ||
+      wasHtml,
   };
 }
