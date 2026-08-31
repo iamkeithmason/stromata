@@ -232,7 +232,13 @@ function findOutputFiles(prospect) {
   if (fs.existsSync(dir) && fs.statSync(dir).isDirectory()) {
     const files = fs
       .readdirSync(dir)
-      .filter(f => f.endsWith('.md') && !f.endsWith('-review-summary.md'))
+      // Exclude the review-summary meta file. Two naming conventions exist:
+      // clean-archive-ocr.mjs writes `{slug}-review-summary.md`, while
+      // fetch-texts.mjs writes `_review-summary.md` — matching on the shared
+      // `review-summary.md` suffix catches both. (Missing the underscore form
+      // previously made single-text digital imports look like 2-file
+      // collections, spawning a phantom `collections` row.)
+      .filter(f => f.endsWith('.md') && !f.endsWith('review-summary.md'))
       .sort()
       .map(f => path.join(dir, f));
     if (files.length > 0) return files;
@@ -240,29 +246,6 @@ function findOutputFiles(prospect) {
 
   const flatPath = path.join(OUTPUT_DIR, `${prospect.collection_slug}.md`);
   return fs.existsSync(flatPath) ? [flatPath] : [];
-}
-
-// ---------------------------------------------------------------------------
-// Pre-flight existence check — avoids re-running all pipeline stages for
-// texts that are already in the database.
-// ---------------------------------------------------------------------------
-
-async function alreadyInDatabase(prospect) {
-  // Check for an existing collection by slug
-  const { data: col } = await supabase
-    .from('collections')
-    .select('id')
-    .eq('slug', prospect.collection_slug)
-    .maybeSingle();
-  if (col) return true;
-
-  // Check for an existing text whose slug is or starts with the collection slug
-  const { data: texts } = await supabase
-    .from('texts')
-    .select('id')
-    .or(`slug.eq.${prospect.collection_slug},slug.like.${prospect.collection_slug}-%`)
-    .limit(1);
-  return !!(texts && texts.length > 0);
 }
 
 // ---------------------------------------------------------------------------
@@ -387,12 +370,11 @@ async function main() {
     }
 
     try {
-      if (await alreadyInDatabase(prospect)) {
-        console.log(`  · already in database — status unchanged, skipping`);
-        console.log('');
-        continue;
-      }
-
+      // No collection-level pre-flight skip. importTextFile skips per-text by
+      // slug, and the finalizer below marks a prospect "imported" when every
+      // file already existed — so re-runs stay idempotent while a prospect can
+      // still add new chapters to a collection that already exists (e.g.
+      // completing a multi-book work whose first book was imported earlier).
       const authorId = await resolveAuthor(prospect);
       const collectionId = files.length > 1 ? await resolveCollectionId(prospect) : null;
 

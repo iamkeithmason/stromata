@@ -58,7 +58,7 @@ export default async function TextPage({ params }: Props) {
       author:authors(name, slug, death_year, loc:locations(name, slug), tradition:traditions(slug, name), era:eras(label, slug)),
       genre:genres(name),
       text_themes(theme:themes(name, slug)),
-      collection:collections(id, title, slug)
+      collection:collections(id, title, slug, published)
     `)
     .eq('slug', slug)
     .eq('published', true)
@@ -69,7 +69,11 @@ export default async function TextPage({ params }: Props) {
   // author and genre are many-to-one → plain objects
   const author = text.author as { name: string; slug: string | null; death_year: number | null; loc: { name: string; slug: string } | null; tradition: { slug: string; name: string } | null; era: { label: string; slug: string } | null } | null
   const genre = text.genre as { name: string } | null
-  const collection = text.collection as { id: string; title: string; slug: string } | null
+  // Treat an unpublished collection as no collection at all — the collection
+  // page 404s unpublished slugs, so its breadcrumb / return links would be
+  // dead. A published text under an unpublished collection reads as standalone.
+  const collectionRaw = text.collection as { id: string; title: string; slug: string; published: boolean } | null
+  const collection = collectionRaw?.published ? collectionRaw : null
 
   // text_themes is one-to-many → array; theme within it is many-to-one → object
   const themes = (text.text_themes as { theme: { name: string; slug: string } | null }[])

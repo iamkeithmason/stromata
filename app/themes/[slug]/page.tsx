@@ -112,7 +112,10 @@ export default async function ThemePage({ params }: Props) {
   let collectionTotals: Record<string, number> = {}
   if (collectionIds.length > 0) {
     const [{ data: collectionsData }, { data: allCollectionTexts }] = await Promise.all([
-      supabase.from('collections').select('id, title, slug').in('id', collectionIds),
+      // Only published collections roll up — an unpublished collection's page
+      // 404s, so a text under one stays a standalone entry (it's absent from
+      // collectionMeta, so the rollup check below falls through).
+      supabase.from('collections').select('id, title, slug').eq('published', true).in('id', collectionIds),
       supabase.from('texts').select('id, collection_id').eq('published', true).in('collection_id', collectionIds),
     ])
     collectionMeta = Object.fromEntries(

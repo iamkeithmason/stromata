@@ -7,6 +7,206 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-08-30 — Index filtering & sorting on /texts and /authors
+
+Shipped the long-overdue [Index filtering — /texts and /authors](https://app.notion.com/p/350d9194805d819db153f7a56f8f44f3)
+backlog item ([PR #26](https://github.com/iamkeithmason/stromata/pull/26)). Both index pages
+listed everything alphabetically with no way to narrow — fine at the 23 texts the feature was scored
+against, a materially worse artefact at the current 114 texts / 26 authors. Now `/texts` filters by
+**tradition, era, genre** (sort by title / author / length) and `/authors` filters by **tradition,
+era** (sort by name / most texts / chronological, keeping the per-author text count).
+
+**Data shape mattered here.** The backlog note assumed tradition/era/genre were all foreign keys on
+`texts`; in fact only `genre` is direct — `tradition` and `era` live on `authors`. So the `/texts`
+query embeds the author's tradition/era one hop (`author:authors(…, tradition:traditions(…),
+era:eras(…))`) to filter on them, while `/authors` reads both directly. Facets are derived from the
+*published* library, so a filter dimension only shows values that actually have content and a
+single-value dimension is hidden entirely — no dead filters.
+
+**Shape of the implementation.** Pages stay server components (fetch + facet derivation; reading
+time is computed server-side so text bodies never ship to the client). A small client component
+(`TextsBrowser` / `AuthorsBrowser`, plus a shared `FilterPill` and `lib/facets.ts`) does instant
+client-side filtering — comfortably under the ~200-text threshold the ticket flagged — and syncs
+state to the URL query (`?tradition=&era=&genre=&sort=`) via `history.replaceState`, so a filtered
+view is shareable/bookmarkable without a server round-trip. Pills mirror the existing `ThemeChip`
+(uppercase serif, gold border + ink text when active); existing row markup (including the
+`/authors` stretched-link) is preserved.
+
+**Analytics.** A follow-up commit added Umami tracking on the filter/sort controls, per the CLAUDE.md
+conventions: `index-filter { from, dimension, value }` (fired when a facet is applied, not cleared;
+`value` is the slug) and `index-sort { from, sort }`, with `from` = `library-index` on `/texts`,
+`authors-index` on `/authors`. **Not yet wire-verified** — the beacon can't be observed from the
+build/agent environment, so per the analytics rule these aren't "done" until Keith intercepts the
+request on production, and the two new event names + `dimension`/`value`/`sort` property values still
+want a row in Growth Tracker → Events Register. The result-link clicks themselves remain untracked
+(unchanged from before) — a possible later `text-open`/`author-open` fast-follow.
+
+Notion backlog item moved to **Built**.
+
+## 2026-08-30 — Dead-link sweep: phantom collections, draft-author 404s, admin alert
+
+Started from a reported 404 — the homepage linked John Keble's *National Apostasy* to
+`/collections/national-apostasy-keble`, which didn't exist — and it opened into a whole class of
+dead links. Two independent root causes, plus a data cleanup and a guard so it doesn't recur.
+
+**Phantom single-text collections.** `pipeline-import.mjs`'s `findOutputFiles()` excluded the
+review-summary meta file with `!f.endsWith('-review-summary.md')` — which matches
+`clean-archive-ocr.mjs`'s `{slug}-review-summary.md` but **not** `fetch-texts.mjs`'s
+`_review-summary.md` (underscore prefix). So every *digital single-text* import counted two files,
+tripped the `files.length > 1` branch, and created a bogus `collections` row (unpublished) with the
+one text linked to it. The published text then rendered as a collection card linking to a slug the
+collection page 404s. Fixed by matching the shared `review-summary.md` suffix (same one-liner in
+`detect-scannos.mjs`). Defensive half: the homepage, text-reader, and theme pages joined/linked
+collections without a `published` filter — now they ignore unpublished collections and fall back to
+a standalone text entry. DB cleanup removed the three phantom rows (National Apostasy, Small
+Catechism, the staged Pilgrim's Progress) and unlinked their texts.
+
+**Draft-author 404s.** Author pages 404 for `draft: true` authors (intentional — unreviewed stubs),
+but the text-reader byline links to `/authors/<slug>` unconditionally. 17 authors had published
+texts while still draft stubs (Luther with 6 texts, Jerome, Keble, Tyndale, Hooker, Baxter, …), so
+every one of those bylines was a dead link. Fixed in code without touching the draft flag (HARD
+CONSTRAINT 6 keeps promotion manual): a draft author *with published texts* now renders a minimal
+page (name, dates, tradition, their texts) with the unreviewed bio suppressed everywhere (body,
+JSON-LD, meta description) until Keith promotes them; a draft author with no published texts still
+404s.
+
+**Admin integrity alert.** `/admin` now shows a "Needs attention" panel listing exactly these two
+hazards on live data — a published text with a draft author, or a published text pointing at a draft
+collection — each with a deep link to promote the author / edit the collection. Computed from the
+dashboard's existing text query (added `draft` / `published` to the author and collection joins).
+
+**Duplicate removed.** Found two copies of Chrysostom's *On the Priesthood*: a live New-Advent set
+(`on-the-priesthood`, 2026-05-21) and a redundant OCR re-import (`on-the-priesthood-chrysostom`,
+2026-06-30, done during the June New-Advent `/fathers/` outage). Deleted the 6 draft texts + draft
+collection; marked the queue prospect `rejected` with the reason so it can't re-import.
+
+**New tool.** `scripts/audit-dead-links.mjs` — read-only, runs the same three checks (live text →
+draft collection, live text → draft author, thin/≤1-text collections) against Supabase and exits
+non-zero on any live dead link. Safe to run after any batch or in CI.
+
+**The Stromata staged books — cleaned & staged.** Only Book I of Clement's *Stromata* was in the
+DB, though Books I–VIII sat staged under `output/stromata/`. Re-read all eight: the translation
+(New Advent / Roberts-Donaldson ANF, PD) is clean and complete, but each file carried New Advent
+nav/footer boilerplate, no `note_draft`, and empty `themes`. Cleaned Books **II, IV, V, VI, VII**
+(stripped the nav header + `CONTACT US | ADVERTISE WITH NEW ADVENT` footer, dropped the duplicate
+`# The Stromata (Book N)` title line, normalised `## Chapter` → `# Chapter` to match the live Book
+I, wrote full frontmatter with themes + a museum-label `note_draft`) into `output/the-stromata/`,
+and added a `the-stromata-clement` queue entry (`status: staged`). **Book III** is included too, but
+in **Latin**: the ANF editors left it untranslated out of Victorian reticence, and no public-domain
+English version exists (the only complete one, Oulton & Chadwick 1954, is in copyright). It carries a
+`note_draft` explaining this, and a systematic transcription scanno was corrected (`cure` → `cum`,
+56 instances) — a Latin-literate review is still advisable before publishing. **Held** in
+`output/the-stromata/_held/`: only Book VIII (the fragmentary appendix; the collection is titled
+"I–VII", so including it is a scope call). Book I's stale staged copy is kept there too.
+
+This surfaced a real limitation in `pipeline-import.mjs`: its `alreadyInDatabase()` pre-flight
+skipped a whole prospect if a collection with that slug already existed, so it could never **add**
+chapters to an existing collection. Removed that coarse check — per-text slug skipping in
+`importTextFile` (plus the "all files already existed → imported" finalizer) already guarantees
+idempotency, and now a prospect can complete a multi-book work whose first book landed earlier. The
+actual DB insert still has to run where Supabase creds live (`node scripts/pipeline-import.mjs`);
+this session has none, and hand-transcribing ~150k words of patristic text through SQL would risk
+corrupting it, so the run is left for a credentialed environment. That run will import the six
+staged Stromata books — II, III (Latin), IV, V, VI, VII — (Book I skipped by slug) into the existing
+`the-stromata` collection, plus the already-staged *Pilgrim's Progress*.
+
+---
+
+## 2026-08-30 — Admin agent-run countdown; Notion Source Guide
+
+Two small operator-facing additions, no pipeline behaviour change.
+
+**Admin "next agent run" countdown.** The admin dashboard now shows a quiet one-line countdown under
+the nav cards — `Next agent run — Scout in 3d 6h 12m · Sourcer in 12d 7h 12m` — so the schedule is
+visible without opening the Actions tab. It's a client component (`app/admin/AgentSchedule.tsx`) that
+mirrors the two workflow crons in UTC (Scout `0 6 1,15 * *`, Sourcer `0 7 1 * *`) and ticks every 30s;
+it renders a non-breaking placeholder on the server and fills in after mount to avoid a hydration
+mismatch. Display-only — reads nothing, triggers nothing. **If either cron changes, update the
+`SCHEDULES` constant to match** (there's a comment on it pointing at the two YAML files).
+
+**Notion "Source Guide".** Wrote a human-readable source reference under *The Stromata: Growth
+Tracker* (sibling to the Content Prospect List): the Sourcer allowlist, `source_type` values and the
+`Reference URL → source_type` inference, how pinning works (`Cleared edition URL` / `Additional
+edition URLs` / plain-text rewrites / multi-part all-or-nothing), per-source quirks (New Advent
+flip-history, CCEL cache-txt), known provenance traps, the copyright rule, the run cadence + the
+end-to-end editor loop, and a codebase map. `CLAUDE.md` and `scripts/sourcer/config.ts` stay the
+code-side source of truth; the page is a map, not a fork.
+
+---
+
+## 2026-08-29–30 — The Sourcer: acquire & stage rights-cleared prospects (the pipeline's mechanical half)
+
+The **Sourcer** (`scripts/sourcer/`) is the agent after the Scout. Where the Scout *proposes* rows,
+the Sourcer takes a prospect the editor has **rights-cleared and pinned**, acquires that exact
+edition, runs deterministic cleanup, **detects (never fixes)** risky OCR, and stages a reviewable
+draft bundle under `content/staging/`. Then it stops. It never chooses a source, never clears
+copyright, never applies a probabilistic change, and never touches the live site or DB. Merged in
+PR #22.
+
+**The copyright boundary is structural, not a prompt plea.** `fetch_pinned_source` takes a prospect
+id and resolves the fetch URL **server-side** from the editor's `Cleared edition URL` — a `url` in the
+tool input is ignored, and the `PreToolUse` hook denies the fetch if the resolved host is off the
+allowlist. The agent inherits nothing (`settingSources: []`, built-ins disallowed, `allowedTools`
+limited to the five Sourcer tools). So the agent *cannot* substitute or discover a source; it
+concatenates human-pinned, allow-listed parts and nothing else.
+
+**The entry gate** (pure, unit-tested, no SDK/network) refuses with a discriminated reason before any
+fetch: `rights-not-cleared`, `no-cleared-edition` / `source-not-allowlisted`, `no-provenance-basis`,
+`author-copyright-fail`, `author-missing` (flags, doesn't abort), `already-present`, `already-staged`,
+`over-cap`. Two new human-only Notion fields drive it: **`Cleared edition URL`** (url) and **`Rights
+cleared`** (checkbox); `Translation notes` remains the provenance basis, copied verbatim into the
+draft.
+
+**Source allowlist + plain-text rewrites.** Hosts (suffix match): `archive.org`, `anglicanhistory.org`,
+`sacred-texts.com`, `wikisource.org`, `newadvent.org`, `ccel.org`. The fetch tool rewrites to plain
+text where it exists — Archive.org → `_djvu.txt`, and a CCEL work URL (either the reading form
+`/ccel/<author>/<work>/…` or the storage form `/ccel/<letter>/<author>/<work>/…`) → its
+`/cache/<work>.txt` Unicode export. (CCEL reading pages render dynamically; that cache `.txt` is
+directly fetchable — no browser, no Archive detour.)
+
+**Multi-part pinning.** A work split across allow-listed pages (e.g. the four books of John of
+Damascus's *Exact Exposition* on New Advent) is pinned as `Cleared edition URL` + `Additional edition
+URLs` (one per line, in order). All parts are validated **all-or-nothing** (one off-allowlist part
+refuses the whole prospect — this caught a `ttps://…` typo mid-run and correctly refused), fetched in
+order with a rate-limit, and concatenated into one immutable `raw.txt` with a `<!-- SOURCER PART n/N ·
+url -->` marker per part. Prefer one whole-work URL (an Archive `djvu.txt`) where it exists.
+
+**Detect, don't correct.** Deterministic, unattended-grade transforms are *applied* into `body.md`
+(ligature repair, doubled apostrophes, soft-hyphen scrub, footnote-marker strip, Google-Docs block
+repair + verse flagging, **New Advent page-chrome strip**). Everything probabilistic is *detected and
+reported* in an editor-editable `ocr-report.md` (scannos formatted to feed the existing
+`detect-scannos --apply-reviewed` round-trip; orphaned markers; garbled Greek; theologically-loaded
+near-homographs like ἀγένητος vs ἀγέννητος — offered, never applied). The staged bundle is
+`raw.txt` (immutable) · `body.md` · `provenance.yml` (verbatim) · `metadata.yml` (proposed) ·
+`ocr-report.md` · `SOURCER.md`.
+
+**Bridge to import.** `stage-to-output.mjs` splits `content/staging/<slug>/body.md` at its `# … (Book
+N)` headings into the layout `pipeline-import.mjs` consumes (`scripts/ingestion/output/<slug>/*.md` +
+a `staged` queue row), because the legacy `split-into-chapters.mjs` can't parse the Sourcer's inline
+headings. End-to-end validated on John of Damascus: a 4-book draft collection landed in Supabase
+(4 texts, all draft, one collection), `published: false`.
+
+**Ops flags & CI.** `--dry-run` (default) · `--apply` · `--max 3` · `--refresh <slug>` (clear a staged
+bundle to re-source after a corrected pin, since `raw.txt` is immutable and a staged prospect is
+otherwise refused) · `--set-notion-status`. `.github/workflows/sourcer.yml` runs monthly (07:00 UTC,
+1st) `--apply --max 3`, opens a **draft** PR with the bundle, plus `workflow_dispatch` (dry-run
+default) and a PR dry-run on Sourcer files.
+
+**Provenance assistant** (`scripts/research/`, `npm run research`). An *advisory* SAFE/HOLD copyright
+research CLI for the editor — paste a source URL, it fetches (with an SSRF guard) and has Claude
+return a verdict + reasoning to speed the human clearance call. It never imports, never writes Notion,
+never clears anything — the `Rights cleared` decision stays a human call. Coerces to HOLD on any
+ambiguity. This exists because the judgement is the slow part: it caught a nearly-cleared
+copyrighted 1958 Chase translation of John of Damascus (the archaic "hath" was a KJV *epigraph*
+masking a modern body — verify the body with a verbatim phrase match, not the quoted scripture).
+
+**Also this arc:** New Advent's `/fathers/` breakage was confirmed **resolved** (2026-08-29, re-probed
+with a no-redirect `curl`) and `CLAUDE.md`'s source notes updated accordingly; the Scout prompt gained
+a "prefer a fetchable, allow-listed URL" hint so its triage URLs favour what the Sourcer can actually
+fetch (PR #24); and the Scout's env credentials are now read lazily to fix local runs (PR #23).
+
+---
+
 ## 2026-08-28 — Scout agent v0.1: real V/C/E scoring, derived Era, tradition guard
 
 The first live Scout run surfaced two classes of error, and reading the live Content Prospect List
