@@ -7,6 +7,42 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-08-30 — Index filtering & sorting on /texts and /authors
+
+Shipped the long-overdue [Index filtering — /texts and /authors](https://app.notion.com/p/350d9194805d819db153f7a56f8f44f3)
+backlog item ([PR #26](https://github.com/iamkeithmason/stromata/pull/26)). Both index pages
+listed everything alphabetically with no way to narrow — fine at the 23 texts the feature was scored
+against, a materially worse artefact at the current 114 texts / 26 authors. Now `/texts` filters by
+**tradition, era, genre** (sort by title / author / length) and `/authors` filters by **tradition,
+era** (sort by name / most texts / chronological, keeping the per-author text count).
+
+**Data shape mattered here.** The backlog note assumed tradition/era/genre were all foreign keys on
+`texts`; in fact only `genre` is direct — `tradition` and `era` live on `authors`. So the `/texts`
+query embeds the author's tradition/era one hop (`author:authors(…, tradition:traditions(…),
+era:eras(…))`) to filter on them, while `/authors` reads both directly. Facets are derived from the
+*published* library, so a filter dimension only shows values that actually have content and a
+single-value dimension is hidden entirely — no dead filters.
+
+**Shape of the implementation.** Pages stay server components (fetch + facet derivation; reading
+time is computed server-side so text bodies never ship to the client). A small client component
+(`TextsBrowser` / `AuthorsBrowser`, plus a shared `FilterPill` and `lib/facets.ts`) does instant
+client-side filtering — comfortably under the ~200-text threshold the ticket flagged — and syncs
+state to the URL query (`?tradition=&era=&genre=&sort=`) via `history.replaceState`, so a filtered
+view is shareable/bookmarkable without a server round-trip. Pills mirror the existing `ThemeChip`
+(uppercase serif, gold border + ink text when active); existing row markup (including the
+`/authors` stretched-link) is preserved.
+
+**Analytics.** A follow-up commit added Umami tracking on the filter/sort controls, per the CLAUDE.md
+conventions: `index-filter { from, dimension, value }` (fired when a facet is applied, not cleared;
+`value` is the slug) and `index-sort { from, sort }`, with `from` = `library-index` on `/texts`,
+`authors-index` on `/authors`. **Not yet wire-verified** — the beacon can't be observed from the
+build/agent environment, so per the analytics rule these aren't "done" until Keith intercepts the
+request on production, and the two new event names + `dimension`/`value`/`sort` property values still
+want a row in Growth Tracker → Events Register. The result-link clicks themselves remain untracked
+(unchanged from before) — a possible later `text-open`/`author-open` fast-follow.
+
+Notion backlog item moved to **Built**.
+
 ## 2026-08-30 — Dead-link sweep: phantom collections, draft-author 404s, admin alert
 
 Started from a reported 404 — the homepage linked John Keble's *National Apostasy* to
