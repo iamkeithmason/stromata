@@ -70,13 +70,16 @@ jobs:
       - name: Resolve run flags
         id: flags
         run: |
+          # --set-notion-status is added only on APPLY runs: after a prospect is
+          # staged, bump its Content Prospect List Status to "In progress". It is
+          # a no-op on dry-runs (nothing is staged), so it is left off there.
           if [ "${{ github.event_name }}" = "schedule" ]; then
-            echo "args=--apply --max 3" >> "$GITHUB_OUTPUT"
+            echo "args=--apply --max 3 --set-notion-status" >> "$GITHUB_OUTPUT"
           elif [ "${{ github.event_name }}" = "pull_request" ]; then
             # PR validation is always a dry-run — never fetches or writes.
             echo "args=--dry-run --max 3" >> "$GITHUB_OUTPUT"
           elif [ "${{ github.event.inputs.mode }}" = "apply" ]; then
-            echo "args=--apply --max ${{ github.event.inputs.max }}" >> "$GITHUB_OUTPUT"
+            echo "args=--apply --max ${{ github.event.inputs.max }} --set-notion-status" >> "$GITHUB_OUTPUT"
           else
             echo "args=--dry-run --max ${{ github.event.inputs.max }}" >> "$GITHUB_OUTPUT"
           fi
