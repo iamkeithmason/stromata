@@ -260,8 +260,8 @@ function main() {
   fs.writeFileSync(outPath, output, 'utf8');
   console.log(`✓ Written: ${outPath}`);
   console.log(
-    `  normalised: ${report.blanksInserted} blank(s) inserted · ${report.headingsSpaced} heading(s) spaced · ` +
-      `${report.listsPadded} list run(s) padded`
+    `  normalised: ${report.blanksInserted} blank(s) inserted · ${report.breaksJoined} page-break split(s) rejoined · ` +
+      `${report.headingsSpaced} heading(s) spaced · ${report.listsPadded} list run(s) padded`
   );
 
   if (report.verseFlags.length > 0) {

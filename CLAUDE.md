@@ -418,6 +418,7 @@ node scripts/pipeline-import.mjs
 - Resolves genre and theme IDs against the controlled vocabulary tables.
 - Re-verifies copyright before inserting (HARD CONSTRAINT 3).
 - Inserts each text with `published: false` and `note_draft` populated. **Never writes `editorial_introduction`** — that field stays null until Keith fills it in himself.
+- Rejoins mid-sentence **page-break splits** in the body before insert (only the OCR page-break artifact where a printed page ended mid-sentence; a body with none is stored unchanged). The join count is recorded in the prospect's notes. Verse and scanno checks stay flag-only.
 - For multi-chapter digital sources, creates/reuses a `collections` row (also `published: false`).
 - Skips any text whose slug already exists (idempotent, safe to re-run).
 - Sets the prospect's `status` to `"imported"` (or `"rejected"` if the copyright re-check fails).
@@ -653,7 +654,7 @@ still apply per-file, still parallelize the same way. What changes is Stage 2/5a
 |--------|---------|--------------|
 | `scripts/ingestion/fetch-texts.mjs` | Fetch & clean digital sources; generate note_draft inline | Stage 2, digital |
 | `scripts/ingestion/extract-docx.mjs` | Extract a Google Drive `.docx` → staged markdown; normalises paragraphs & flags verse | Stage 2, `gdrive_docx` |
-| `scripts/normalise-markdown.mjs` | Insert paragraph block boundaries / flag verse (dry-run default, `--write` to apply) | Auto via extract-docx; manual cleanup; flag-only in Stage 5a |
+| `scripts/normalise-markdown.mjs` | Insert paragraph block boundaries / flag verse / **rejoin mid-sentence page-break splits** (dry-run default, `--write` to apply) | Auto via extract-docx; manual cleanup; rejoin applied to the body in Stage 5a |
 | `scripts/ingestion/clean-archive-ocr.mjs` | Clean Archive.org djvu.txt OCR | Stage 2, archive_ocr |
 | `scripts/ingestion/split-into-chapters.mjs` | Split one long text (OCR/markdown) into a per-chapter collection: detects `CHAPTER N`/`BOOK N`/etc. boundaries, extracts titles from the body, de-interleaves footnotes, reflows each chapter, writes the `output/{slug}/` multi-file layout. **Footnotes are dropped by default** (reading editions; apparatus is regenerable from the raw OCR) — pass `--footnotes=endnotes` (GUI: "Keep footnotes as endnotes") to retain them. `--dry` previews boundaries; exports `detectChapters()` for a GUI preview. | Long multi-chapter works |
 | `scripts/ingestion/footnote-deinterleave.mjs` | Pull page-bottom footnotes out of OCR prose (djvu.txt interleaves them at page breaks), rejoin words split across the break, drop inline markers. Returns clean prose + the notes (appended as per-chapter endnotes by the splitter). | Auto via split-into-chapters |
@@ -661,6 +662,7 @@ still apply per-file, still parallelize the same way. What changes is Stage 2/5a
 | `scripts/ingestion/archive-ocr-config.mjs` | Config for clean-archive-ocr.mjs — append per prospect | Stage 2, archive_ocr |
 | `scripts/lib/note-prompt.mjs` | Shared NOTE_PROMPT constant | Stage 4 fallback |
 | `scripts/pipeline-import.mjs` | Import staged output into Supabase as `published: false` | Stage 5a |
+| `scripts/rejoin-text-paragraphs.mjs` | Heal mid-sentence page-break splits in already-imported Supabase texts (dry-run default, `--write` to apply; `--slug=`/`--id=` to scope) | Maintenance only |
 | `scripts/generate-note-drafts.mjs` | Backfill note_draft in Supabase for existing texts | Maintenance only |
 | `scripts/generate-summaries.mjs` | Backfill summaries in Supabase | Maintenance only |
 | `scripts/repair-summaries.mjs` | Repair truncated summaries | Maintenance only |
