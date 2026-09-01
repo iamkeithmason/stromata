@@ -1,0 +1,1611 @@
+# OCR review report — institutes-of-the-christian-religion-calvin
+
+Detection only — the Sourcer changed nothing below. Each class is a proposal for
+you to accept, reject, or edit. Nothing here has been applied to body.md.
+
+Estimated OCR quality: **high** (artefact density 0.0020).
+
+## 1. Character-substitution scannos (apply-reviewed compatible)
+
+Edit a row's ACTION to `fix` / `allow`, then run:
+`node scripts/detect-scannos.mjs --apply-reviewed=content/staging/institutes-of-the-christian-religion-calvin/ocr-report.md`
+
+```
+# (No corpus-frequency index found — scanno detection skipped.
+#  Build it with: node scripts/build-corpus-index.mjs, then re-run the Sourcer.)
+```
+
+## 2. Orphaned footnote markers (advisory — not auto-removed)
+
+- line 430: `[1]` — HIS SOVEREIGN; [1]
+- line 432: `[2]` — JOHN CALVIN PRAYS PEACE AND SALVATION IN CHRIST. [2]
+- line 521: `[3]` — modest personages [3] speak; giving the name of error and imprudence to
+- line 522: `[4]` — that which they know to be [4] the infallible truth of God, and of
+- line 525: `[5]` — his heavenly wisdom. [5] Thus all are ashamed of the Gospel.
+- line 550: `[6]` — are admitted to the hope of eternal salvation: [6] and before men not
+- line 551: `[7]` — even this much remains, [7] since we can glory only in our infirmity, a
+- line 553: `[8]` — tacitly [8] to confess. But our doctrine must stand sublime above all
+- line 584: `[9]` — eternal salvation, with their own supererogations also; [9] because
+- line 620: `[10]` — judgment of the Church with what they call [10] implicit faith; nor are
+- line 624: `[11]` — mother Church. [11] Why, then, do they war for the mass, purgatory,
+- line 655: `[12]` — impunity, [12] would assuredly boil dry.
+- line 706: `[13]` — purpose than to magnify the name of God. [13] And it becomes us to
+- line 729: `[14]` — his tomb, they thought [14] that they were cured of the bite of
+- line 742: `[15]` — be ours. [15] While there is much that is admirable and wise in the
+- line 774: `[16]` — Among the Fathers there were two, the one of whom said, [16] "Our God
+- line 776: `[17]` — salvers;" and the other [17] "Sacred rites do not require gold, and
+- line 781: `[18]` — [18] , they think God is not duly worshipped.
+- line 783: `[19]` — It was a Father who said, [19] "He ate flesh freely on the day on which
+- line 788: `[20]` — There were two Fathers, the one of whom said, [20] "A monk not
+- line 790: `[21]` — robber;" and the other, [21] "Monks, however assiduous they may be in
+- line 795: `[22]` — It was a Father who said, [22] "It is a horrid abomination to see in
+- line 798: `[23]` — Ecclesiastical Council also decreed, [23] "Let nought that is
+- line 799: `[24]` — worshipped be depicted on walls." [24] Very far are they from keeping
+- line 802: `[25]` — Another Father counselled, [25] "That after performing the office of
+- line 807: `[26]` — It is a Father who testifies, [26] "That the substance of bread and
+- line 815: `[27]` — whole Church, [27] and kept back from it the profane and flagitious; so
+- line 816: `[28]` — they, in the severest terms, censured all those [28] who, being
+- line 823: `[29]` — of Christ! [29]
+- line 826: `[30]` — excluded altogether from partaking of Christ's sacred supper, [30] who,
+- line 828: `[31]` — the other Father strongly contends [31] that the blood of the Lord
+- line 835: `[32]` — It was a Father who pronounced it rashness, [32] in an obscure
+- line 841: `[33]` — It was a Father who reproved Montanus, among other heresies, [33] for
+- line 845: `[34]` — It was a Father who denied [34] that the ministers of the Church should
+- line 851: `[35]` — It was a Father who thought [35] that Christ only should be listened
+- line 858: `[36]` — There is a Father who contends [36] that the Church ought not to prefer
+- line 862: `[37]` — Scripture on the judgment of the Church. [37]
+- line 865: `[38]` — [38] against, contaminating the word of God with the subtleties
+- line 915: `[39]` — moreover, to ponder the observation of Cyprian, [39] that those who sin
+- line 919: `[40]` — defence to offer. [40]
+- line 971: `[41]` — with this absurd mode of judging! [41] Let us rather reverently admit,
+- line 976: `[42]` — vengeance of God? [42] It was thus that God, in past ages, punished the
+- line 989: `[43]` — is, that the Pontiff, [43] who holds the apostolic see, and the priests
+- line 990: `[44]` — who are anointed and consecrated by him, [44] provided they have the
+- line 1062: `[45]` — mankind [45] were mere jest and sport to the god of this world, who,
+- line 1128: `[46]` — destruction what ought to be our only saving defence. [46]
+- line 1130: `[47]` — But to return, Sire. [47] Be not moved by the absurd insinuations with
+- line 1134: `[48]` — vice. Our God [48] is not the author of division, but of peace; and the
+- line 1160: `[49]` — Sire, [49] That you may not lend too credulous an ear to the
+- line 1178: `[50]` — despisers, who are now exulting so securely. [50]
+- line 1188: `[1]` — [1] In the last edition by Calvin, the words are, as here translated,
+- line 1192: `[2]` — [2] Ed. 1536. "In Domino."
+- line 1194: `[3]` — [3] "Modesti homines," not in Ed. 1536.
+- line 1196: `[4]` — [4] "Quam norunt," not in Ed. 1536.
+- line 1198: `[5]` — [5] The words, "Quorum ingenium non adeo despicabile Christi fuisse
+- line 1202: `[6]` — [6] The words stand thus in the Ed. 1536: "Qua salvi nullo nostro
+- line 1206: `[7]` — [7] "Non ita multum," not in Ed. 1536.
+- line 1208: `[8]` — [8] "Cum nutu," not in Ed. 1536.
+- line 1210: `[9]` — [9] The only word in the Ed. 1536 after "free will," is "merita."
+- line 1212: `[10]` — [10] "Ut aiunt," not in Ed. 1536.
+- line 1214: `[11]` — [11] No part of this sentence from "provided" is in the Ed. 1536.
+- line 1216: `[12]` — [12] "Tam licenter quam impune," not in Ed. 1536.
+- line 1218: `[13]` — [13] No part of the passage, beginning above, "The deception," &c., is
+- line 1222: `[14]` — [14] Instead of "thought they were cured," the Ed. 1536 says simply,
+- line 1226: `[15]` — [15] "Ut modestissime etiam loquar," not in the Ed. 1536.
+- line 1228: `[16]` — [16] i. Acatius in lib. 11 cap 16, F. Triport. Hist.
+- line 1230: `[17]` — [17] ii. Ambr. lib. 2. De Officiis, cap. 28.
+- line 1232: `[18]` — [18] Instead of the words here translated--viz. "exquisito splendore
+- line 1236: `[19]` — [19] iii. Spiridion. Trip. Hist. lib. 1 cap. 10.
+- line 1238: `[20]` — [20] iv. Trip. Hist. lib. 8 cap 1
+- line 1240: `[21]` — [21] August. De Opere Monach cap 7
+- line 1242: `[22]` — [22] vi. Epiph. Epist. ab Hieron. versa
+- line 1244: `[23]` — [23] vii. Conc. Elibert. can. 36.
+- line 1246: `[24]` — [24] No part of this sentence is in Ed. 1536.
+- line 1248: `[25]` — [25] viii. Ambr de Abraha. lib. i c. 7
+- line 1250: `[26]` — [26] ix. Gelasius Papa in Conc. Rom.
+- line 1252: `[27]` — [27] x. Chrys. in 1. cap. Ephes.
+- line 1254: `[28]` — [28] xi. Calixt. Papa, De Consecrat. dist. 2
+- line 1256: `[29]` — [29] Instead of the whole passage, beginning at bottom of p. 11, "It is
+- line 1263: `[30]` — [30] xii. Gelas. can. Comperimus, De Consec. dist. 2.
+- line 1265: `[31]` — [31] xiii. Cypr. Epist. 2, lib. 1. De Lapsis.
+- line 1267: `[32]` — [32] xiv. August. lib. 2 De Peccat. Mer. cap. uit.
+- line 1269: `[33]` — [33] xv. Apollon. De quo Eccles. Hist. lib 5 cap. 12.
+- line 1271: `[34]` — [34] xvi. Paphnut. Tripart. Hist. lib. 2 cap. 14.
+- line 1273: `[35]` — [35] xvii. Cypr. Epist. 2, lib. 2
+- line 1275: `[36]` — [36] xviii. Aug. cap. 2, Cont. Cresconium Grammat.
+- line 1277: `[37]` — [37] No part of this passage is in Ed. 1536.
+- line 1279: `[38]` — [38] xix. Calv. De Scholast. Doctor. Judicium. Vid. Book II. cap. 2
+- line 1283: `[39]` — [39] Epist. 3, lib. 2; et in Epist ad Julian. De Haeret. Baptiz.
+- line 1285: `[40]` — [40] No part of this sentence is in ed. 1536.
+- line 1287: `[41]` — [41] No part of the passage beginning above is in the Ed. 1536.
+- line 1289: `[42]` — [42] In the last Ed., "justae Dei ultionis:" in Ed. 1536, "divinae
+- line 1293: `[43]` — [43] "Papa Romanus," in the Ed. 1536.
+- line 1295: `[44]` — [44] Instead of the words, "qui ab eo instites inuncti et consecrati,
+- line 1299: `[45]` — [45] For "cuncti fere mortales" the Ed. 1536 has only "homines."
+- line 1301: `[46]` — [46] Instead of the concluding part of the sentence beginning "though
+- line 1305: `[47]` — [47] Instead of "Rex" simply, the E. 1536 has "magnanime Rex."
+- line 1307: `[48]` — [48] Instead of "Deus noster," the Ed. 1536 has only "Deus."
+- line 1309: `[49]` — [49] In Ed. 1536, "Rex magnificentissime"
+- line 1311: `[50]` — [50] The words, "qui tanta securitate nunc exsultant," not in Ed. 1536.
+- line 1472: `[51]` — come, as by other miscreants not better than they [51] ]. After this
+- line 1476: `[52]` — of the princes more readily than might have been expected. [52] This,
+- line 1519: `[51]` — [51] The passage in brackets occurs only in the French original. The
+- line 1526: `[52]` — [52] The words in the French are, "Avec trop grande facilité; ce qui
+- line 2073: `[53]` — Writings; [53] so much so, that it was a common expression among the
+- line 2094: `[53]` — [53] Judges 13:22; Isaiah 6:5; Ezek. 1:28, 3:14; Job 9:4, &c.; Gen.
+- line 2244: `[54]` — But, as a heathen tells us, [54] there is no nation so barbarous, no
+- line 2280: `[55]` — audacious contempt of the Deity than C. Caligula, [55] and yet none
+- line 2304: `[56]` — the fear of God. Though Diagoras, [56] and others of like stamps make
+- line 2338: `[54]` — [54] "Intelligi necesse est deos, quoniam insitas eorum vel potius
+- line 2346: `[55]` — [55] Suet. Calig. c. 51.
+- line 2348: `[56]` — [56] Cic. De Nat. Deor. lib. 1 c. 23. Valer. Max. lib. 1. c. 1.
+- line 2650: `[57]` — views of his glory. [57] Still, none who have the use of their eyes can
+- line 2661: `[58]` — 3. Hence certain of the philosophers [58] have not improperly called
+- line 2762: `[59]` — celebrated passage of Virgil: [59] --
+- line 2782: `[60]` — And every soul is filled with equal flame." [60]
+- line 2786: `[61]` — place, [61] adopted a view common to both Greeks and Latins:--
+- line 2806: `[62]` — Dwell in high heaven, art star th' ethereal way." [62]
+- line 2812: `[63]` — deduction from the same principle. [63] The plain object is to form an
+- line 3013: `[64]` — round globe? [64] What must be the case with the rest, when the
+- line 3037: `[65]` — philosophers [65] who attempted, by reason and learning, to pierce the
+- line 3048: `[66]` — laboured to be thought rational on this subject. [66] And, perhaps, at
+- line 3069: `[67]` — replied, "The longer I consider, the darker the subject appears." [67]
+- line 3173: `[57]` — [57] Augustinus: Astrologia magnum religiosis argumentum, tormentumque
+- line 3177: `[58]` — [58] See Aristot. Hist. Anim. lib. i. c. 17; Macrob. in Somn. Scip lib.
+- line 3181: `[59]` — [59] Aeneid, 6 724, sq. See Calvin on Acts 17:28 Manil. lib. 1. Astron.
+- line 3183: `[60]` — [60] Dryden's Virgil, Æneid, Book 4 1. 980-990.
+- line 3185: `[61]` — [61] Georgic 4. 220. Plat. in Tim. Arist. lib. 1 De Animo. See also
+- line 3189: `[62]` — [62] Dryden's Virgil, Book 4. 1. 252-262.
+- line 3191: `[63]` — [63] He maintains, in the beginning of the First Book, that nothing is
+- line 3197: `[64]` — [64] Plato in Timaeos. See also Cic. De Nat. Deorum, lib. 1 ; Plut. De
+- line 3201: `[65]` — [65] Cicero : Qui deos esse dixerunt tanta sunt in varietate ac
+- line 3205: `[66]` — [66] Plutarch. lib. De Iside et Osiride.
+- line 3207: `[67]` — [67] Cicero, De Nat. Deor. lib. 1.
+- line 3296: `[68]` — [68] or, by the instrumentality and ministry of men, suggested what
+- line 3319: `[69]` — that he may the better profit. [69] Hence it is not strange that those
+- line 3392: `[68]` — [68] 70 The French adds, "C'est à dire, temoignages celestes;"--that is
+- line 3396: `[69]` — [69] Tertullian, Apologet. adv. Gentes: "Quae plenius et impressius tam
+- line 3486: `[70]` — herself never could have existed. [70] Nothings therefore can be more
+- line 3532: `[71]` — [71] but only to intimate (what we too admit to be true) that those who
+- line 3538: `[72]` — different foundation. [72]
+- line 3620: `[73]` — we ought to receive it to the testimony of the Spirit. [73] Enlightened
+- line 3671: `[70]` — [70] The French adds, "Comme le fondement va deuant l'edifice;"--as the
+- line 3675: `[71]` — [71] The French adds,"La destournant du seul fondement qu'elle a en
+- line 3679: `[72]` — [72] Augustin. De Ordine, lib. 2 c. 9 "Ad discendum dupliciter movemur,
+- line 3687: `[73]` — [73] The French adds, "Car jacoit qu'en sa propre majesté elle ait
+- line 3890: `[74]` — of the law delivered, and the doctrine propounded, by him. [74] His
+- line 4158: `[74]` — [74] Exod. 24:18; Exod. 34:29; Exod. 19:16; Exod. 40:34 Numb. 16:24;
+- line 4186: `[75]` — influence of error as madness. For certain giddy men [75] have lately
+- line 4204: `[76]` — elements; [76] he rather shows that, under the reign of Christ, the
+- line 4309: `[75]` — [75] Lactantius: Coelestes literas corruperunt, ut novam sibi doctrinam
+- line 4313: `[76]` — [76] For the Latin, "ac si elementarius esset," the French has, "comme
+- line 4427: `[77]` — forms of speech. [77] But as all, without exception, have in the vanity
+- line 4445: `[77]` — [77] In his book, De Idolatria. See also in Augustine, a letter by one
+- line 4549: `[78]` — Egyptians, every animal was a figure of God. [78] The Greeks, again,
+- line 4685: `[79]` — every one that trusteth in them." [79] And it is to be observed, that
+- line 4696: `[80]` — Gregory: [80] but the Holy Spirit goes a very different decision; and
+- line 4719: `[81]` — 6. Moreover, let Lactantius and Eusebius [81] be read on this subject.
+- line 4720: `[82]` — [82] These writers assume it as an indisputable fact, that all the
+- line 4742: `[83]` — foolish, and childish, and absurd representations. [83] The truth of
+- line 4871: `[84]` — always retained the same gods in their minds; [84] besides, they daily
+- line 4885: `[85]` — that God exerted his power in images. [85] Still the Jews were
+- line 4901: `[86]` — home? [86] Why at the present time do they fight for them to blood and
+- line 5017: `[87]` — compensated! [87]
+- line 5023: `[88]` — Irene. [88] This Council decreed not only that images were to be used
+- line 5074: `[89]` — against with the utmost detestation. [89] It is right to expose this
+- line 5098: `[90]` — images as on the living God. [90]
+- line 5101: `[78]` — [78] 80 The French adds, "voire jusques aux oignons et porreaux;"--they
+- line 5105: `[79]` — [79] Calvin translates the words of the Psalmist as an imprecation,
+- line 5109: `[80]` — [80] See Gregory, Ep. ad Serenum Massiliens, Ep. 109. lib. 7; and Ep. 9
+- line 5113: `[81]` — [81] The French adds, "deux des plus anciens Docteurs de
+- line 5117: `[82]` — [82] Lact. Inst. Div. lib. 1 c. 15; Euseb. Præf. Evang. lib. 3 c. 3, 4;
+- line 5121: `[83]` — [83] The French is "Pourceque la gloire de sa Divinite est vilipendée
+- line 5126: `[84]` — [84] The French is "Neantmoins ils ne disoyent point pour cela au'un
+- line 5130: `[85]` — [85] French, "Ne vouloit monstrer sa vertu que sous les images;"--would
+- line 5134: `[86]` — [86] The two last sentences in French are, "Car laissans là un
+- line 5143: `[87]` — [87] The French is "qu'il n'y ait nulle recompense qui vaille un
+- line 5148: `[88]` — [88] 90 The French is "une mechante Proserpine nommée Irene;"--a wicked
+- line 5152: `[89]` — [89] The French adds, "et qu'il ne se soit trouvé gens qui leur
+- line 5156: `[90]` — [90] See Calvin, De Vitandis Superstitionibus, where also see Resp.
+- line 5196: `[91]` — and ponder what is true. [91] I rather think the name is used in
+- line 5318: `[91]` — [91] Cic. De Nat. Deor. lib. 2 c. 28. See also Lactant. Inst. Div. lib.
+- line 6017: `[92]` — [92] "Ye believe in God," [93] says he, "believe also in me," (John
+- line 6063: `[94]` — [94] Again, no cavils can explain away the force of what Isaiah says,
+- line 6094: `[95]` — not only the beginning or origin, but also the author; [95] as is even
+- line 6163: `[96]` — of the Father, and the Son, and the Holy Spirit? [96] But is this any
+- line 6187: `[97]` — the Trinity without being carried up to the unity." [97] Therefore, let
+- line 6263: `[98]` — by Augustine, when he says, [98] "Christ, as to himself, is called God,
+- line 6398: `[99]` — be seen in its own place. [99]
+- line 6480: `[100]` — essentiated by the Father, [100] denies his selfexistence. Against
+- line 6487: `[101]` — the divinity of the Son will be something abstracte [101] from the
+- line 6500: `[102]` — essence, and indeed without entire essence. [102] The Father certainly
+- line 6555: `[103]` — is attributed to Christ. [103] There is no room for the cavil that
+- line 6614: `[104]` — from one essence, [104] whereas it is plain, from our writings, that we
+- line 6636: `[105]` — [105] --plainly do away with the essence of the Son and Spirit;
+- line 6638: `[106]` — circumstance which would vitiate any distinction. [106] In short, if
+- line 6735: `[107]` — form--not in power, but in order. [107] He says indeed that he holds
+- line 6790: `[108]` — writers, he does not disguise it. [108] And he assumes it as an
+- line 6818: `[92]` — [92] The French adds, "Et ne faisons point cela témérairement, mais
+- line 6822: `[93]` — [93] Calvin translates interrogatively, "Do ye believe in God?"
+- line 6824: `[94]` — [94] The French adds, "à ce qu'elle ne fust point aneantie incontinent;
+- line 6828: `[95]` — [95] The French adds, "Sainct Paul n'eust jamais ainsi parlé, s'il
+- line 6832: `[96]` — [96] The French entirely omits the three previous sentences, beginning,
+- line 6836: `[97]` — [97] Bernard, De Consider. lib. 5 "Cum dico unum, non me trinitatis
+- line 6842: `[98]` — [98] August. Homil. De Temp. 38, De Trinitate. See also Ad Pascentium
+- line 6846: `[99]` — [99] See Calvin. Defensio Orthodox. Fid. S. Trinit. Adv. Prod. Error.
+- line 6850: `[100]` — [100] The French adds, "puisque tels abuseurs forgent des noms contre
+- line 6854: `[101]` — [101] The French is, "tiré comme par un álambic;"--extracted as by an
+- line 6858: `[102]` — [102] See Bernard, Serm. 80, super Cantica., on the heresy of Gilbert,
+- line 6862: `[103]` — [103] The French is expressed somewhat differently, "veu que l'Apostre
+- line 6867: `[104]` — [104] The French adds, "Comme trois ruissuaux;"--like three streams.
+- line 6869: `[105]` — [105] The French adds, "Comme si l'essense étoit au lieu de la personne
+- line 6873: `[106]` — [106] The French is somewhat differently expressed: "Car le Fils a
+- line 6879: `[107]` — [107] Tertullianus, lib. adv. Praxeam;--Perversitas hæ (Praxeæ scil.)
+- line 6892: `[108]` — [108] Athanasuis expresses himself thus learnedly and piously:--"On
+- line 7193: `[109]` — ancient writers, that in those passages [109] wherein it is stated that
+- line 7212: `[110]` — round about them that fear him, and delivereth them." [110] By these
+- line 7235: `[111]` — over kingdoms and provinces. [111] Again, when Christ says that the
+- line 7273: `[112]` — and by Jude as an Archangel. [112] Paul also tells us, that an
+- line 7309: `[113]` — Father, and so forth: [113] there are other passages which most clearly
+- line 7434: `[114]` — roaring lion, [114] the object of all these descriptions is to make us
+- line 7463: `[115]` — is said to have been possessed by a whole legion. [115] By this, then,
+- line 7549: `[116]` — previously described it as the doing of Satan. [116] It is evident,
+- line 7623: `[117]` — are said to be of their father the devil. [117] For as believers are
+- line 7775: `[109]` — [109] Gen 18:2; 32:1, 28; Josh. 5:14; Judges 6:14; 13:10, 22.
+- line 7777: `[110]` — [110] Ps. 91:11; 34:8; Gen. 16:9; 24:7; 48:16; Ex. 14:19, 28, 29;
+- line 7781: `[111]` — [111] Dan. 10:13, 20; 12:1; Mt. 18:20; Luke 15:7; 16:22; 2 Kings 16:17;
+- line 7785: `[112]` — [112] Dan 12:1; Jude 9; 1 Thess. 4:16; Dan. 10:13, 21; Luke 1:19, 26;
+- line 7789: `[113]` — [113] Luke 15:10; Ps. 91:11; Mt. 4:6; Luke 4:10, 16, 22; Matt. 18:10;
+- line 7793: `[114]` — [114] 2 Cor. 4:4; John 12:31; Mt. 12:29; Eph. 2:2.
+- line 7795: `[115]` — [115] Mark 16:9; Mt. 12:43; Luke 8:30.
+- line 7797: `[116]` — [116] Job 1:6; 2:1; 1 Kings 22:20; 1 Sam.16:14; 18:10; 2 Thess. 2:9,
+- line 7801: `[117]` — [117] 2 Cor. 4:4; Eph. 2:2; Rom. 9:22; John 8:44; 1 John 3:8.
+- line 7899: `[118]` — [118]
+- line 7946: `[119]` — body, Scripture would not teach [119] that we dwell in houses of clay,
+- line 7993: `[120]` — Beholds his own hereditary skies." [120]
+- line 8014: `[121]` — utterly absurd. Add that, according to the figment of Osiander, [121]
+- line 8118: `[122]` — there is no solidity in Augustine's speculation, [122] that the soul is
+- line 8150: `[123]` — are. Creation, however, is not a transfusion of essence, [123] but a
+- line 8153: `[124]` — that it is a portion withdrawn from his essence. [124] Here, too,
+- line 8214: `[125]` — sensorium, as into a kind of receptacle: [125] Next comes the
+- line 8219: `[126]` — [126] to intellect, fancy, and reason, the three cognitive faculties of
+- line 8236: `[127]` — philosophers. For they, [127] when they would speak most plainly,
+- line 8325: `[128]` — been more excellent; [128] but to expostulate with God as if he had
+- line 8339: `[118]` — [118] On man's first original, see Calvin against Pighius; and on the
+- line 8348: `[119]` — [119] Job 4:19; 2 Cor. 5:4; 2 Pet. 1:13, 14; 2 Cor. 5:10; 7:1; 1 Pet.
+- line 8352: `[120]` — [120] Ovid, Metam. Lib. I.--Dryden's Translation.
+- line 8354: `[121]` — [121] As to Osiander's absurd fancy, see Book 2. cap 12. sec. 5, squ.
+- line 8360: `[122]` — [122] See Aug. Lib. de Trin. 10, et Lib. de Civit. Dei, 11. See
+- line 8364: `[123]` — [123] The French adds, "comme si on tiroit le vin d'un vaisseau en une
+- line 8368: `[124]` — [124] The French is, "qu'il le coupe de sa substance comme une branche
+- line 8372: `[125]` — [125] The French is "Et que par iceux comme par canaux, tous objects
+- line 8379: `[126]` — [126] See Arist. lib. 1 Ethic. cap. ult.; item, lib. 6 cap. 2.
+- line 8381: `[127]` — [127] See Themist. lib. 3 De Anima, 49, De Dupl. Intellectu.
+- line 8383: `[128]` — [128] See August. lib 11, super Gen. cap. 7,8,9, and De Corrept. et
+- line 8563: `[129]` — influx. [129] Those moreover who confine the providence of God within
+- line 8601: `[130]` — knowingly and willingly decreed. [130]
+- line 8607: `[131]` — to the hand than to the eye. [131] When Abraham said to his son, God
+- line 8629: `[132]` — idle God, [132] and others, not a whit sounder, who of old feigned that
+- line 8817: `[133]` — words, Perhaps, Perchance, Fortuitously, [133] which no religion
+- line 8911: `[129]` — [129] See Hyperius in Methodo Theologiæ.
+- line 8913: `[130]` — [130] See Calvin adversus Astrolog. Judiciariam. August De Ordine, lib.
+- line 8917: `[131]` — [131] The French adds, "Cest à dire, que non seulement il voit, mais
+- line 8921: `[132]` — [132] Plin. lib. 2. c. 7. "Irridendum vero, agere curam rerum
+- line 8925: `[133]` — [133] Forte. Forsan. Forsitan, Fortuito.
+- line 9054: `[134]` — the best of all reasons. [134] When the sky is overcast with dense
+- line 9136: `[135]` — may be concealed. [135]
+- line 9205: `[136]` — it not to be fatal. [136] These insane cavillers overlook what is
+- line 9281: `[137]` — attested by a vast number of the clearest promises. [137] "Cast thy
+- line 9655: `[134]` — [134] "Here the words of Cicero admirably apply:L Nec si ego quod tu
+- line 9659: `[135]` — [135] See Salvian. in Tract. de Vero Judicio et Providentia Dei. Also
+- line 9663: `[136]` — [136] Cic. de Fato. "Recte Chrysippus, tam futile est medicum adhibere,
+- line 9667: `[137]` — [137] Ps. 55:23; 1 Pet. 5:7; Ps. 91:1; Zech. 2:8; Isaiah 26:1; 29:15
+- line 9675: `[138]` — FREE FROM EVERY TAINT. [138]
+- line 9771: `[139]` — sun." [139] The cruelties of the Chaldeans in Judea are declared by
+- line 9945: `[140]` — them. [140] When Absalom defiled his father's bed, though God was
+- line 10036: `[138]` — [138] See Calvin, adv. Libertinos, cap. 15. 16., and Augustin. de
+- line 10040: `[139]` — [139] 2 Sam. 12:12; Jer. 1:25; Is. 5:26; 10:5; 19:25; 2 Sam. 16:10; 1
+- line 10044: `[140]` — [140] The French is, "Car ils meslent perversment le commandement de
+- line 10334: `[141]` — highest possible felicity was to be loved by him. [141] Man, therefore,
+- line 10441: `[142]` — from the soul of the parent. [142] It should be enough for us to know
+- line 10462: `[143]` — spiritual regeneration but carnal descent. [143] Accordingly, as
+- line 10465: `[144]` — nature which begets is corrupt." [144] Moreover, though godly parents
+- line 10481: `[145]` — designated by Paul by the term sin [145] (Gal. 5:19); while the works
+- line 10494: `[146]` — brought us under obligation. [146] Through him, however, not only has
+- line 10498: `[147]` — same time asserts that it is each individual's own sin. [147] And the
+- line 10591: `[148]` — beginning. [148] We, however call it natural to prevent any one from
+- line 10610: `[141]` — [141] The latter clause of this sentence is ommitted in the French.
+- line 10612: `[142]` — [142] The French is, "Assavoir, si l'ame du fils procede de la
+- line 10618: `[143]` — [143] The French is, "Les enfans ne descendent point de la generation
+- line 10624: `[144]` — [144] Lib. contra Pelag. Coelest. See also Ep. 157, ad Gregor., Lib. 7.
+- line 10628: `[145]` — [145] The French adds, "Sans adjouster Originel:"--without adding
+- line 10632: `[146]` — [146] The French is, "Car en ce qui est d't, que par Adam nous sommes
+- line 10643: `[147]` — [147] In many passages, and especially in his treatise, De Peccatorum
+- line 10647: `[148]` — [148] The French is, "Nous nions qu'elle soit de nature, afin de
+- line 10810: `[149]` — fall. To keep free of both these rocks, [149] our proper course will
+- line 10847: `[150]` — most necessary and most useful. [150]
+- line 10944: `[151]` — sentiments just quoted are most inaccurate. [151] Moreover although the
+- line 10958: `[152]` — his supernatural [152] taken away. Of the thing implied by these words,
+- line 10977: `[153]` — writers, few have defined. Origen, [153] however, seems to have stated
+- line 11006: `[154]` — Gentium," (On the Calling of the Gentiles), [154] wishing to show this,
+- line 11092: `[155]` — hesitates not to call the will a slave. [155] In another passages he is
+- line 11121: `[156]` — the word, when he says, [156] "That the will is indeed free, but not
+- line 11151: `[157]` — meant by Cyprian in the passage so often lauded by Augustine, [157]
+- line 11154: `[158]` — depend on God? What is meant by Augustine and Eucherius, [158] when
+- line 11174: `[159]` — this chapter, [159] that he who is most deeply abased and alarmed, by
+- line 11185: `[160]` — parents to aspire to be like gods, knowing good and evil. [160] It is
+- line 11214: `[161]` — Chrysostom, "The foundation of our philosophy is humility;" [161] and
+- line 11215: `[162]` — still more with those of Augustine, "As the orator, [162] when asked,
+- line 11222: `[163]` — passage, [163] "Let no man," says he, "flatter himself: of himself he
+- line 11367: `[164]` — [164] So cogently does it oblige us to acknowledge that its principle
+- line 11724: `[165]` — [165] As to the precepts of the Second Table, there is considerably
+- line 11796: `[166]` — for a renewal of a right spirit, which he had lost by his sin, [166]
+- line 11899: `[149]` — [149] See Calvin Adv. Theolog. Parisienses, Art. 2. These two rocks are
+- line 11903: `[150]` — [150] The French is, "Laquelle toutefois nous cognoistrons etre
+- line 11908: `[151]` — [151] The French adds, "pour en dire franchement ce qu en est;"--to
+- line 11912: `[152]` — [152] The French adds the explanation, "Assavoir ceux qui concernoyent
+- line 11916: `[153]` — [153] Orig. De Principiis, Lib. 3. It is given by Lombard, Lib. 2 Dist
+- line 11920: `[154]` — [154] The French adds ("qu'en attribue ? St Ambroise");--which is
+- line 11924: `[155]` — [155] August. Lib. 1 cont. Julian. For the subsequent quotations, see
+- line 11930: `[156]` — [156] See August. de Corrept. et Grat. cap. 13. Adv. Lib. Arbit. See
+- line 11934: `[157]` — [157] August. de Prædest. Sanct. Idem ad Bonifacum, Lib. 4 et alibi.
+- line 11938: `[158]` — [158] The French adds, "Ancien evesque de Lion;" ancient bishop of
+- line 11942: `[159]` — [159] The French has, "Au commencement de ce traité;" at the
+- line 11946: `[160]` — [160] The French adds, "Si c'est parole diabolique celle qui exalte
+- line 11952: `[161]` — [161] Chrysost. Homil. de Perf. Evang. August. Epist. 56 ad Discur. As
+- line 11956: `[162]` — [162] The French is, "Demosthene orateur Grec;"--the Greek orator
+- line 11960: `[163]` — [163] August. Homil. in Joann. 49, lib. de Natura et Gratia, cap. 52.;
+- line 11964: `[164]` — [164] The French adds, "de ce que l'ame savoit avant qu'etre mis
+- line 11968: `[165]` — [165] The French adds, "Or l'entendement humaiu a eté tel en cest
+- line 11973: `[166]` — [166] Calvin, in his Commentary on the passage, says, "Lost in part or
+- line 12335: `[167]` — compulsion, gave occasion to a pernicious error. [167]
+- line 12544: `[168]` — vigorous effort in the doing of it. [168] God is the author of both. It
+- line 12617: `[169]` — perseverance. [169]
+- line 12744: `[170]` — only means, that man is not drawn as if by an extraneous impulse [170]
+- line 12775: `[167]` — [167] The French adds, "Qui a esté une peste mortelle ? l'Eglise,
+- line 12780: `[168]` — [168] French, "La premiere partie des bonnes oeuvres est la volonté;
+- line 12785: `[169]` — [169] The French is, "Nous voyons que ce mouvement sans vertu, lequel
+- line 12798: `[170]` — [170] French, "Come une pierre;"--like a stone.
+- line 12855: `[171]` — [171] Whether in bad actions anything is to be attributed to God,
+- line 12887: `[172]` — off his flocks. The wickedness of their deed is manifest, [172] as is
+- line 12928: `[173]` — Augustine himself, in his book against Julian, [173] contends at length
+- line 12953: `[174]` — 4. In accordance with the former methods it seems to be said, [174]
+- line 12983: `[175]` — own hand. [175] Augustine is not far from the mark when he states the
+- line 13065: `[176]` — to every difficulty. [176] In this way, I interpret the words of
+- line 13096: `[177]` — portion of the globe. [177]
+- line 13099: `[171]` — [171] The French adds, "dont on doute communement;" on which doubts are
+- line 13103: `[172]` — [172] The French adds, "Car quand nous voyons des voleurs, qui ont
+- line 13109: `[173]` — [173] The French adds, "se retractant de l'autre sentence;" retracting
+- line 13113: `[174]` — [174] Ezek. 7:26; Psalm 107:40; Job 12:20, 24; Isiah 63:17; Exod. 4:21;
+- line 13117: `[175]` — [175] Isa. 5:26; 7:18; Ezek. 12:13; 17:20; Jer. 2:.23; Isa. 10:15.
+- line 13119: `[176]` — [176] The French adds, "D'où procede cela sinon que Dieu besongne tant
+- line 13123: `[177]` — [177] The French is simply, "Car si cela pouvoit etre en l'homme, il ne
+- line 13438: `[178]` — take to flight, [178] so we shall have little difficulty here in
+- line 13508: `[179]` — he wills." [179]
+- line 13512: `[180]` — the Prophets, God repeatedly calls upon us to turn to him. [180] But,
+- line 13597: `[181]` — subject, to say that we are cruelly mocked [181] by the Lord, when he
+- line 13634: `[182]` — yet mocks us for our impotence. [182]
+- line 13766: `[183]` — precipice? [183] Accordingly, nothing is more certain than that under
+- line 13956: `[184]` — pervert his meaning. I am aware they can quote Origin and Jerome [184]
+- line 14071: `[178]` — [178] The French is, "Mais c'est comme si un capitaine assembloit force
+- line 14081: `[179]` — [179] August. Enchir. ad Laurent. de Gratia et Liber. Arbit. cap. 16.
+- line 14085: `[180]` — [180] Joel 2:12; Jer. 31:18; Deut. 10:16; 30:6; Ezek. 36:26; Jer.
+- line 14089: `[181]` — [181] The French is, "Et de fait cette raison a grande apparence
+- line 14095: `[182]` — [182] The French adds, "Veu qu'en cela il fait le profit de ses
+- line 14100: `[183]` — [183] The French is "Où est-ce que sera cette facilité, veu que notre
+- line 14105: `[184]` — [184] Orig. Lig. 7 in Epist. ad Rom.--Hieron. Dial. i in Pelagium.--For
+- line 14403: `[185]` — impious dream, [185] as if Christ had only a share of the Godhead, as a
+- line 14419: `[185]` — [185] French, "reverie infernale."
+- line 14670: `[186]` — to denounce anathema against it. [186] What Jerome thought, I care not;
+- line 14717: `[187]` — proved elsewhere from the writings of Paul (Rom. 8:3). [187]
+- line 14771: `[188]` — [188] But to say this neither insults the law, nor derogates in any
+- line 14816: `[189]` — [189] "The law orders, that we, after attempting to do what is ordered
+- line 15149: `[186]` — [186] See among the works of Justin. Quæst. 103; and Hieronymus ad
+- line 15153: `[187]` — [187] Book 2. chap. 12 sec. 4; and Book 3, chap. 4 sec. 27; and chap.
+- line 15157: `[188]` — [188] August. de Corrept. et Gratia. Ambros. Lib. 1 de Jac. et cap. 6
+- line 15161: `[189]` — [189] August. Ep. 89, Quæst. 2; ad Assell. Ep. 200; ad Innocent. Ep.
+- line 15433: `[190]` — [190] we showed that we cannot form any just conception of the
+- line 15560: `[191]` — [191] Hence in those observances which are generally regarded as good
+- line 15594: `[192]` — source of all the virtues. [192]
+- line 15672: `[193]` — kind of Lesbian code; [193] and thus, by licentiously wresting the
+- line 15771: `[194]` — trunk of a body deprived of its head. [194] Nor is religion the
+- line 15826: `[195]` — it had been every where received in his day. [195] It is also adopted
+- line 15837: `[196]` — author of an unfinished work on Matthew. [196] Josephus, no doubt with
+- line 15896: `[197]` — hand. [197] For the Lord intimates that they were delivered from
+- line 15913: `[198]` — these, and similar modes of expression, [198] do not confine him to one
+- line 15936: `[199]` — he is indebted for deliverance from the jaws of death. [199]
+- line 15955: `[200]` — conscience, Trust, Invocation, Thanksgiving. [200] By Adoration, I mean
+- line 15958: `[201]` — consciences into subjection to his Law. [201] Trust, is secure resting
+- line 16037: `[202]` — I THE LORD THY GOD AM A JEALOUS [202] GOD, VISITING THE INIQUITY OF THE
+- line 16056: `[203]` — a husband; [203] the union by which he connects us with himself, when
+- line 16266: `[204]` — [204] Such expressions intimate, that we cannot call God to witness our
+- line 16289: `[205]` — [205] thus conferring upon them the glory of his Godhead. It is not
+- line 16292: `[206]` — by other gods. [206] The Apostle gives a clear attestation to the same
+- line 16405: `[207]` — in seeking to persuade Elijah, asseverates with an oath. [207] I hold,
+- line 16439: `[208]` — 29. We are taught in many passages [208] that this adumbration of
+- line 16583: `[209]` — arrangement, [209] but by retaining the days as types of spiritual
+- line 16622: `[210]` — nothing was abrogated but what was ceremonial in the commandment, [210]
+- line 16625: `[211]` — [211] But this is nothing else than to insult the Jews, by changing the
+- line 16632: `[212]` — those of the present day, [212] as to those to whom the Prophet
+- line 16696: `[213]` — enjoining obedience. [213]
+- line 16752: `[214]` — derived from him, ought to lead us up to him. [214]
+- line 16791: `[215]` — and gift of Christ will be elsewhere considered. [215] The Lord has
+- line 16907: `[216]` — conjugal intercourse, as committing adultery with his wife. [216]
+- line 17088: `[217]` — sometimes grievously wounded. [217] But if we turn our eye to the
+- line 17121: `[218]` — covetousness. [218] Design, such as we have spoken of in the previous
+- line 17153: `[219]` — I may mention that it was first suggested to me by Augustine. [219] But
+- line 17236: `[220]` — one who has any tolerable acquaintance with them. [220] For, almost on
+- line 17277: `[221]` — excess. Hence it is perfectly plain, [221] that the observance of the
+- line 17393: `[222]` — it the ground-work of their vain speculations. [222]
+- line 17397: `[223]` — direct transgression of the last commandment of the Second Table. [223]
+- line 17459: `[190]` — [190] This chapter is connected with Book 1., chap. 1 and 2, and with
+- line 17463: `[191]` — [191] See Calvin, De Vera Ecclesiæ Reformandæ Ratione.
+- line 17465: `[192]` — [192] See Augustin. De Civitate Dei, Lib. 4 c. 12, and Lib. 12 c. 20,
+- line 17469: `[193]` — [193] "Ne sit nobis Lesbiæ regulæ," omitted in the French.
+- line 17471: `[194]` — [194] The French is "Tout ainsi comme si quelcun vouloit faire une
+- line 17475: `[195]` — [195] Origen in Exod. cap. 20 Homil. 8; Augustin. contra duas Epist.
+- line 17481: `[196]` — [196] The French is, "Nous avous aussi un autre ancien Pere qui accorde
+- line 17487: `[197]` — [197] "Præsenti causæ."--The French is, "du temps que la loi devoit
+- line 17491: `[198]` — [198] Exod. 3:6; Amos 1:2; Hab. 2:20; Psalm 80:2; 99:1; Isaiah 37:16.
+- line 17493: `[199]` — [199] "E faucibus mortis."--French, "du gouffre d'enfer;" from the gulf
+- line 17497: `[200]` — [200] Calvin. in Catechismo; De Necessitate Reformandæ Ecclesiæ Ratio.
+- line 17499: `[201]` — [201] The French adds, "Car c'est un hommage spirituel qui se rend a
+- line 17504: `[202]` — [202] Or "Strong," this name being derived from a word denoting
+- line 17508: `[203]` — [203] 2 Cor. 11:2; Eph. 5:30; Jer. 62:5; Hos. 2:9; Jer. 3:1, 2; Hos.
+- line 17512: `[204]` — [204] 1 Sam. 14:44; 2 Kings 5:31; 2 Cor. 1:23.
+- line 17514: `[205]` — [205] The French adds, "jurans par S. Jaques ou S. Antoine;"--swearing
+- line 17518: `[206]` — [206] Exod. 23:13; Deut. 6:13; 10:20; Heb. 6:13.
+- line 17520: `[207]` — [207] Gen. 21:24; 26:31; 31:53; Ruth 3:13; 1 Kings 18:10.
+- line 17522: `[208]` — [208] Num. 13:22; Ezek. 20:12; 22:8; 23:38; Jer. 27:21, 22, 27; Isiah
+- line 17526: `[209]` — [209] N"Finem istum politicum et ecclesiasticum ordinem."P--French, "la
+- line 17530: `[210]` — [210] As to this liberty, See Socrates, Hist. Trip. Lib. 9 c. 38.
+- line 17532: `[211]` — [211] French, "ne discernans entre le Dimanche et le Sabbath autrement,
+- line 17539: `[212]` — [212] French, "leur conviendroyent mieux;"--whould be more applicable
+- line 17543: `[213]` — [213] Exod. 21:17; Lev. 20:9; Prov. 20:20; Deut. 21:18; Mt. 25:4; Eph.
+- line 17547: `[214]` — [214] The French adds, "et la doit plustost augmenter, qu'amoindrir
+- line 17551: `[215]` — [215] Book 3, Chap. 7 sec 4--7; Chap. 20 sec. 38, 45; Book 4 Chap. 1
+- line 17555: `[216]` — [216] See Ambros. Lib. de Philosoph., quoted by Augustine in his book,
+- line 17559: `[217]` — [217] The French is "D'avantage ce precepte s'estend jusques l?, que
+- line 17570: `[218]` — [218] See supra, chap. 2, end of sec. 24; and Book 3 chap 3 sec. 11,
+- line 17574: `[219]` — [219] See August. Ep. 200, ad Asellicum, et Quæstio, Lib. 88, sub fin.
+- line 17579: `[220]` — [220] Is. 1:17; 57:6; Jer. 7:5, 6; Ezek. 18:7, 8; Hosea 6:6; Zech. 7:9,
+- line 17583: `[221]` — [221] See Book 3 chap. 7 sec. 4. Also August. de Doctrina Christiana,
+- line 17587: `[222]` — [222] The French is "Ces folastres sans propos prennent un grand
+- line 17591: `[223]` — [223] See Book 3 chap. 4 sec. 28, where it is also shown that this is
+- line 17742: `[224]` — the keeping of hope, [224] until we are divested of corruptible flesh,
+- line 17826: `[224]` — [224] "Sub custodia spei."--French, "sous la garde, et comme sous le
+- line 17833: `[225]` — THE RESEMBLANCE BETWEEN THE OLD TESTAMENT AND THE NEW. [225]
+- line 17961: `[226]` — no hope of a blessed immortality. [226] Let us guard pious minds
+- line 18019: `[227]` — kingdom of heaven. [227] But if the doctrine of the Gospel is
+- line 18025: `[228]` — in the Law and the Prophets, were designed for a new people. [228] For
+- line 18054: `[229]` — Virgin [229] and Zachariah, in their hymns, say that the salvation
+- line 18058: `[230]` — denied that the subject of that oath [230] must ever have been Christ
+- line 18244: `[231]` — we may be the children of God. [231] What could be more absurd than
+- line 18322: `[232]` — [232] ) By and bye a much greater difficulty befalls him (Gen. 32, 33).
+- line 18458: `[233]` — his servants." [233] But the Lord often leaves his servants, not only
+- line 18697: `[234]` — existence [234] of spirits, both of which where attested to them by so
+- line 18711: `[225]` — [225] As to the agreement of both dispensations, see August. Lib. de
+- line 18715: `[226]` — [226] The French is, "Veu qu'ils pensent qu notre Seigneur l'ait voulu
+- line 18721: `[227]` — [227] Acts 13:26; Rom. 1:16; 1 Cor. 1:18; Mt. 3:2, 4, 17, &c.,
+- line 18725: `[228]` — [228] "Novo populo." French, "au peuple du Nouveau Testament"--the
+- line 18729: `[229]` — [229] "Beata Virgo." French, "la Vierge Marie;"--the Virgin Mary.
+- line 18731: `[230]` — [230] "Ejus finis." French, "la fin du Vieil Testament;"--the end of
+- line 18735: `[231]` — [231] Calv. in Genes. cap. 12:11--15.
+- line 18737: `[232]` — [232] The French is, "Et encore ne peut il pas ainsi eviter l'iniquité
+- line 18747: `[233]` — [233] Ps. 97:10, 11; 112:9, 10; 140:13; 112:6; 34:22.
+- line 18749: `[234]` — [234] "Animarum substantiam." French, "immortalité des
+- line 18945: `[235]` — this, whenever the New Testament is contrasted with the Old, [235] but
+- line 18981: `[236]` — other sacraments. [236] Hence, in general, the Old Testament is the
+- line 19075: `[237]` — what is peculiar to it. For example, the Law everywhere [237] contains
+- line 19271: `[238]` — dead. [238] We may add, that any strangers whom God had formerly
+- line 19284: `[239]` — so strong [239] as to require a very careful refutation. It is
+- line 19326: `[240]` — way! [240] It has already been observed, that he appointed none of
+- line 19352: `[235]` — [235] The French is,"et ? icelle se doivent reduire quasi tous les
+- line 19358: `[236]` — [236] "Qualiter et aliis Sacramentis dari solet." French, "comme
+- line 19363: `[237]` — [237] "Passim." French, "cá et lá;"--here and there.
+- line 19365: `[238]` — [238] "In demortuorum locum." The French is simply, "en leur
+- line 19369: `[239]` — [239] "Firmæ," French, "Ne si fortes, ne si urgentes;"--neither so
+- line 19373: `[240]` — [240] "Aut ullo modo affciant." French "ou comme si jamais il s'y fust
+- line 19555: `[241]` — need not a physician." [241] I should never have done were I to quote
+- line 19578: `[242]` — unto this hour. Father, glorify thy name." [242] Here he distinctly
+- line 19781: `[241]` — [241] John 3:16; 5:25; Mt. 18:11; 9:12.
+- line 19783: `[242]` — [242] Luke 24:46; John 10:17; 3:14; 12:27, 28.
+- line 19901: `[243]` — own tongue. [243] Moreover, there cannot be a doubt as to what is to be
+- line 20010: `[244]` — [244] I, in my turn, asks whether they are not forced to admit that he
+- line 20067: `[243]` — [243] The last clause of the sentence is omited in the French.
+- line 20069: `[244]` — [244] Latin, "An dicere velimus ex semine menstruali virginis
+- line 20116: `[245]` — similitude [245] seems to be that of man, who obviously consists of two
+- line 20157: `[246]` — handled, [246] apply entirely to his humanity; since, as God, he cannot
+- line 20187: `[247]` — the dead; as to his being honoured even as the Father, [247] are not
+- line 20215: `[248]` — of the divine or human nature simply. [248] Christ, therefore, shall
+- line 20244: `[249]` — furious and frantic spirits cannot throw into confusion. [249] They
+- line 20401: `[250]` — only-begotten Son of God. And Augustine wisely reminds us, [250] that
+- line 20434: `[251]` — visibly manifested was the invisible Son of God. [251]
+- line 20454: `[252]` — already done it in a special treatise. [252] The whole comes to this,
+- line 20496: `[245]` — [245] Augustine employs the same similitude, Epist. 52.
+- line 20498: `[246]` — [246] Isiah 41:1, &c.; John 5:17; Luke 2:52; John 8:50; Mark 13:32;
+- line 20502: `[247]` — [247] John 1:29; 5:21--23; 9:5; 10:9--11; 15:1.
+- line 20504: `[248]` — [248] VideCalv. Epist. ad Polonos adversus Stancarum.
+- line 20506: `[249]` — [249] See August. in Enchir. ad Laurent. c. 36.
+- line 20508: `[250]` — [250] See August. De Corruptione et Gratia. cap. 11, et De Civitate
+- line 20512: `[251]` — [251] See Irenæus, lib. 4 cap 14 et 37; Tertullian adversus Praxeam.
+- line 20516: `[252]` — [252] Vide Calv. Defensio Orthodoxæ Fidei Sacræ Trinitatis adversus
+- line 20594: `[253]` — Counsellor," (Is. 9:6). [253] For this reason, the apostle commending
+- line 20884: `[253]` — [253] Calvin translates, "Angelum vel Interpretem magni
+- line 20990: `[254]` — heaven by an angel, as the herald of the supreme decree; [254] the
+- line 21321: `[255]` — do not omit it, [255] and hence we may conjecture, that having been
+- line 21323: `[256]` — use in the Church not immediately but by degrees. [256] This much is
+- line 21356: `[257]` — were confined. To this effect they wrest the passage [257] in the
+- line 21368: `[258]` — [258] it is nothing but a fable. To conclude from it that the souls of
+- line 21424: `[259]` — both from the nature of the thing and the form of expression. [259]
+- line 21437: `[260]` — [260] How could he be angry with the beloved Son, with whom his soul
+- line 21456: `[261]` — has destroyed. [261]
+- line 21690: `[262]` — all things to the Church." [262] You see to what end he is so seated
+- line 21702: `[263]` — 16. From this doctrine faith derives manifold advantages. [263] First,
+- line 21735: `[264]` — was seen to ascend, [264] and appear to all, with the ineffable majesty
+- line 21745: `[265]` — dead, in a different sense; [265] and, indeed, some ancient writers
+- line 21777: `[266]` — eternal blessedness, will then as judge ratify his promise. [266] The
+- line 21784: `[267]` — attention, are brought separately and distinctly before us. [267] I
+- line 21809: `[268]` — we are taught by the very name of Jesus that he possesses it; [268] if
+- line 21831: `[254]` — [254] Latin, "Supremi decreti." French, "Decret eternel et
+- line 21835: `[255]` — [255] It is not adverted to by Augustine, Lib. 1. De Symbolo de
+- line 21839: `[256]` — [256] The French of this sentence is, "Dont on peut conjecturer qu'il a
+- line 21844: `[257]` — [257] The French is, "Pour colorer leur fantasie, ils tirent par les
+- line 21848: `[258]` — [258] See Justin, Ambrose, Jerome. The opinions of the Fathers and
+- line 21852: `[259]` — [259] French, "Les autres translatent Reverence ou Pieté; mais la
+- line 21857: `[260]` — [260] See Cyril. Lib. 2 De Recta Fide ad Reginas; Item, Hilarius de
+- line 21861: `[261]` — [261] Vide Luther, tom. 1 in Concione de Morte, fol. 87.
+- line 21863: `[262]` — [262] Ephes. 1:20; Phil. 2:9; 1 Cor. 15:27; Ephes. 4:15; Acts 2:33;
+- line 21867: `[263]` — [263] August. de Fide et Symbolo, cap. 8; Eph. 2:6; Heb. 7:25; 9:11.
+- line 21869: `[264]` — [264] Acts 1:11; Mt. 24:30; 25:31; 1 Thess. 4:16, 17.
+- line 21871: `[265]` — [265] The French is, "Il y en a aucuns qui exposent par les vivans et
+- line 21875: `[266]` — [266] Vide Ambros. de Jac. et Vita Beata, Lib. 1 c. 6.
+- line 21877: `[267]` — [267] The French is, "Jusques ici j'ay suivi l'ordre du Symbole qu'on
+- line 21887: `[268]` — [268] Acts 4:12; 1 Cor. 1:30; Heb. 2:17; Gal. 3:3.
+- line 21932: `[269]` — truly, [269] "The Saviour, the man Christ Jesus, is himself the
+- line 21970: `[270]` — Should any one object that Christ is only the formal cause, [270] he
+- line 21987: `[271]` — cross." [271] The nature of this mystery is to be learned from the
+- line 22014: `[272]` — room for reconciliation unless where offence [272] has preceded. The
+- line 22160: `[273]` — a name which is above every name," (Phil. 2:9). [273] By what services
+- line 22174: `[269]` — [269] August. de Prædest. Sanct. Lib. 1 c. 15; De Bono Perseverantia,
+- line 22178: `[270]` — [270] The French adds, "C'est a dire, qui n'emporte en soy vrai
+- line 22182: `[271]` — [271] 1 John 2:2; Col. 1:19, 20; 2 Cor. 5:19; Eph. 1:6; 2:16.
+- line 22184: `[272]` — [272] French, "Offense, haine, divorce;"--offence, hatred, divorce.
+- line 22186: `[273]` — [273] The sentence stands thus in the French:--"Les Sorbonnistes
+- line 22294: `[274]` — him and clothed with him, [274] all which he possesses being, as I have
+- line 22406: `[275]` — the brethren, to those, in fine, who are clothed with him. [275] To
+- line 22446: `[276]` — Spirit [276] (2 Cor. 3:6), since teachers would cry aloud to no
+- line 22456: `[274]` — [274] Eph. 4:15; Rom. 6:5; 11:17; 8:29; Gal. 3:27.
+- line 22458: `[275]` — [275] Rom. 8:15; Gal. 4:6; 2 Cor. 1:22; Eph. 1:13, 14; Rom. 8:10; Isa.
+- line 22462: `[276]` — [276] The French adds, "qui vaut autant a dire comme la predication
+- line 22699: `[277]` — Christ." [277] It is true, indeed, that faith has respect to God only;
+- line 22713: `[278]` — these are found only in Christ." [278] Paul, when he preaches faith
+- line 22720: `[279]` — to the Schoolmen, [279] who have in a manner drawn a veil over Christ,
+- line 22726: `[280]` — destruction. [280] Nay, to state the fact more truly and plainly, this
+- line 22777: `[281]` — 3:15). [281] And certainly experience teaches, that so long as we are
+- line 22950: `[282]` — now have a full definition of faith [282] if we say that it is a firm
+- line 22959: `[283]` — [283] For they imagine that persons who have no fear of God, and no
+- line 23075: `[284]` — fruits of election; [284] and yet the difficulty is easily solved: for
+- line 23115: `[285]` — [285] In the elect alone he implants the living root of faith, so that
+- line 23142: `[286]` — reprobate is afterwards quenched. [286] Nor can it be said that the
+- line 23205: `[287]` — "Rebuke them sharply, that they may be sound in the faith;" [287] by
+- line 23217: `[288]` — engrossed; [288] but because he is satisfied with the simple answer and
+- line 23275: `[289]` — to the test, [289] we by our wavering betray the vice which lurked
+- line 23347: `[290]` — with terror, [290] so violent are the temptations which assail their
+- line 23373: `[291]` — hand of the Most High." [291] As if desperate, he adjudges himself to
+- line 23374: `[292]` — destruction. [292] He not only confesses that he is agitated by doubt,
+- line 23629: `[293]` — methods, to undermine it. [293] But what kind of confidence is that
+- line 23714: `[294]` — I be a master, where is my fear?" [294] But while he thus distinguishes
+- line 23737: `[295]` — if it were impending over them, [295] but are rendered the more
+- line 23884: `[296]` — threatenings against them. [296]
+- line 23950: `[297]` — God are in him yea, and amen. [297] The reason for this is obvious.
+- line 24040: `[298]` — 34. [298] But as Paul argues, "What man knoweth the things of a man,
+- line 24144: `[299]` — [299] so that the minds of believers are seldom at rest, or at least
+- line 24162: `[300]` — 38. Hence we may judge how pernicious is the scholastic dogma, [300]
+- line 24177: `[301]` — is before them," (Eccl. 9:1). [301] For without insisting that the
+- line 24208: `[302]` — Spirit of God. [302] Who could believe that these men, who desire to be
+- line 24408: `[303]` — [303] which calls it rashness, and presumption to confide in the truth
+- line 24419: `[277]` — [277] 1 Tim. 6:16; John 8:12; 14:6; Luke 10:22; 1 Cor. 2:2; Acts 20:21;
+- line 24423: `[278]` — [278] The French is"Car nous tendons a Dieu, et par l'humanité de Jesus
+- line 24427: `[279]` — [279] French, "Theologiens Sorboniques;"--Theologians of Sorbonne.
+- line 24429: `[280]` — [280] In opposition to this ignorance, see Chrysostom in Joann. Homil.
+- line 24433: `[281]` — [281] See Augustin. Ep. 102, "Si propter eos solos Christus mortuus
+- line 24439: `[282]` — [282] This definition is explained, sections 14, 15, 28, 29, 32, 33, 31
+- line 24443: `[283]` — [283] See Lombard, Lib. 3 Dist. 23. See the refutation in the middle of
+- line 24447: `[284]` — [284] Thess. 1:3, 4; 2 Thess. 2:13; Tit. 1.
+- line 24449: `[285]` — [285] The French adds, "Comme par une bouffee,"--as by fits and starts.
+- line 24451: `[286]` — [286] See section 13, where it is said that this impression, sometimes
+- line 24455: `[287]` — [287] 1 Tim. 3:9; 4:1, 6; 2 Tim. 2:15; 3:18; Tit. 1:13; 2:2.
+- line 24457: `[288]` — [288] The French adds, "Comme il montre par ses propos quel souci il en
+- line 24461: `[289]` — [289] Latin"Præsentim ubi ad rem ventum est."--French, "Principalament
+- line 24465: `[290]` — [290] As to the imperfection, strengthening, and increase of faith, see
+- line 24469: `[291]` — [291] Calvin's Latin translation of the passage is, "Atque dixi,
+- line 24474: `[292]` — [292] See Calv adv. Pighiium, near the commencement.
+- line 24476: `[293]` — [293] The French is, "Voila comme Satan, quand il voit que par mensonge
+- line 24483: `[294]` — [294] Ps. 111:10; Prov. 1:7, 9:10, 15:24; Job 28:28; Mal. 1:6.
+- line 24485: `[295]` — [295] Latin, "acsi cervicibus suis impenderet."--French, "comme si
+- line 24489: `[296]` — [296] The French adds, "Combien que nous ayons les promesses de Dieu
+- line 24493: `[297]` — [297] Rom. 1:3; 1 Cor. 2:2; 2 Cor. 1:20.
+- line 24495: `[298]` — [298] The French thus begins the section: "Lequel erreur est facile a
+- line 24499: `[299]` — [299] French, "Doutes, solicitudes, et detresses;"--doubts, anxieties,
+- line 24503: `[300]` — [300] French, "La doctrine des theologiens sophistes;"--the doctrine of
+- line 24507: `[301]` — [301] See Bernard, Serm. 2 in Die Ascensionis, and Serm. 2 in Octava
+- line 24511: `[302]` — [302] The French adds, "En quoy ils demonstrent grandement leur
+- line 24515: `[303]` — [303] Latin "Quis non merito, amice lector, tales bestias execretur?"
+- line 24655: `[304]` — the free imputation of righteousness. [304] That repentance not only
+- line 24693: `[305]` — that initial fear [305] which some writers class among the virtues,
+- line 24753: `[306]` — [306] as examples of legal repentance. Scripture, in describing what is
+- line 24762: `[307]` — divine mercy, turned unto the Lord. [307] Hezekiah was frightened on
+- line 24808: `[308]` — repentance. [308] Whence, also, the sacred history describes it as
+- line 24922: `[309]` — repentance I understand regeneration, [309] the only aim of which is to
+- line 24930: `[310]` — knowledge after the image of him that created him." [310] Accordingly
+- line 24965: `[311]` — care and fidelity. [311] Any reader who is desirous to know the sense
+- line 24991: `[312]` — destroys the dominion of sin, [312] by supplying the agency of the
+- line 25092: `[313]` — err. [313] It would be incredible that the human mind could proceed to
+- line 25258: `[314]` — as special circumstances. [314] Having foretold that most grievous
+- line 25266: `[315]` — customs of these times, [315] yet it is plain that weeping and fasting
+- line 25274: `[316]` — seeing ruin hanging over the necks of their people, [316] they call
+- line 25279: `[317]` — calamity. [317] Hence our Savior connects it with mourning (Mt. 9:15),
+- line 25359: `[318]` — and salvation? [318] Thus, too, Christ began his preaching, "The
+- line 25399: `[319]` — converted, that your sins may be blotted out." [319] Here, however, it
+- line 25407: `[320]` — [320] that the life of the philosopher is to meditate on death. More
+- line 25422: `[321]` — discourse. Hence the Church [321] extols the goodness of God, and looks
+- line 25435: `[322]` — should walk in them," (Eph. 2:10) [322] Those whom God is pleased to
+- line 25488: `[323]` — somewhere gives [323] --viz. that it is obstinate perverseness, with
+- line 25504: `[324]` — 12:31). And Matthew uses the term spirit of blasphemy [324] for
+- line 25529: `[325]` — of the grace of God. [325] If ignorance joined with unbelief made him
+- line 25645: `[304]` — [304] The French adds in explanation, "C'est à dire, que cela s'accorde
+- line 25651: `[305]` — [305] Latin, "Initialis timor," which is thus paraphrased by the
+- line 25656: `[306]` — [306] Gen. 4:13; 1 Sam. 15:30; Matt. 27:3, 4.
+- line 25658: `[307]` — [307] 2 Kings 20:2; Isa. 37:2; Jonah 3:5; 2 Sam. 24:10; 12:13, 16; Acts
+- line 25662: `[308]` — [308] Mt 3:2; 1 Sam. 7:8; Luke 3:8; Rom. 6:4; Acts 26:20.
+- line 25664: `[309]` — [309] French, "une regeneration spirituelle;"--a spiritual
+- line 25668: `[310]` — [310] 2 Cor. 3:18; Eph. 4:23, 24; Col. 3:10; 2 Cor. 4:16.
+- line 25670: `[311]` — [311] See August. ad Bonif. Lib. 4 et cont. Julianum, Lib. 1 and 2. See
+- line 25674: `[312]` — [312] Latin, "Reatus."--the imputation of sin.
+- line 25676: `[313]` — [313] See Calvin, adv. Libertinos, cap. 18.
+- line 25678: `[314]` — [314] French, "Circonstances qui convenoyent specialement
+- line 25682: `[315]` — [315] French, "Fust la coustume de ce temps-la, et ne nous appartienne
+- line 25686: `[316]` — [316] The French adds, "Soit de guerre, de famine, ou de
+- line 25690: `[317]` — [317] Latin, "Calamitosis temporibus peculiariter destinari."--French,
+- line 25697: `[318]` — [318] The French adds, "pource qu'il lui est propre, et comme naturel,
+- line 25701: `[319]` — [319] Isiah 56:1; 59:20; 55:6, 7; Acts 2:38; 3:19.
+- line 25703: `[320]` — [320] This is to be found in different passages of his work, and often
+- line 25707: `[321]` — [321] French, "L'Eglise primitive du temps des Apostres;"--the
+- line 25711: `[322]` — [322] The French adds, "Et ce non seulement au regard d'un jour. mais
+- line 25715: `[323]` — [323] August. Lib. de Correp. et Gratia, cap. 12
+- line 25717: `[324]` — [324] The Greek is "tou pneu'matos blasphemi'a" This Calvin translates
+- line 25721: `[325]` — [325] The omission of this last clause in the French seems to be an
+- line 25905: `[326]` — consented. [326] Supposing we grant that these things were well said by
+- line 25914: `[327]` — power of laws." Moreover, the doctrine which they [327] afterwards
+- line 25917: `[328]` — volumes [328] is, that repentance is a discipline, and austerity, which
+- line 25920: `[329]` — life, there is a strange silence. [329] No doubt, they talk much of
+- line 25926: `[330]` — of works. [330] This is not more logical than the definition, though
+- line 25928: `[331]` — syllogisms. [331] But if any one argues from the definition (a mode of
+- line 25958: `[332]` — shipwreck. [332] Herein they show that they have never awoke from
+- line 25963: `[333]` — not to a matter of no consequence; [333] but to one of the most
+- line 25966: `[334]` — the mouth, and satisfaction of work [334] --they at the same time teach
+- line 25991: `[335]` — the same point; [335] for when will any man venture to promise himself
+- line 26013: `[336]` — them that are bound;" "to comfort all that mourn." [336] Hence the
+- line 26032: `[337]` — they have quoted in their favour. [337] And when they saw that even
+- line 26051: `[338]` — Scripture! [338] The law gives the cognizance of leprosy to the
+- line 26088: `[339]` — from speaking evil of Christ. [339] For there is here no reference to
+- line 26116: `[340]` — rigid and inhumane. Let them go now and vend their allegories. [340]
+- line 26119: `[341]` — passages of Scripture which they think clearly in their favour. [341]
+- line 26178: `[342]` — all the hired ravers of the Pope babble as they may, [342] we hold that
+- line 26188: `[343]` — [343] relates, [344] that this constitution of the bishops was
+- line 26236: `[345]` — may cure the ulcer." [345] Shall we say that Chrysostom, in writing
+- line 26247: `[346]` — frequently the old interpreter [346] has rendered the word confess
+- line 26411: `[347]` — of its defects, [347] supplicates pardon; or when a private individual,
+- line 26438: `[348]` — forgiven thee," (Mt. 9:2), [348] his mind will feel secure, and escape
+- line 26452: `[349]` — [349] so soon as they shall have reached the years of discretion, must,
+- line 26560: `[350]` — weary, worn-out traveler, who lies down by the way. [350] I give myself
+- line 26599: `[351]` — into the ear of some priest. [351] Indeed, they could not then confess,
+- line 26816: `[352]` — declaring, they insinuate a gross error, surrogating ceremony [352] in
+- line 26829: `[353]` — with God, [353] and try to prevent him from admitting to his favor by
+- line 26833: `[354]` — 24. The whole comes to this, [354] when they wish to make God the
+- line 26843: `[355]` — introduced when the world was sunk in shameful barbarism. [355]
+- line 26853: `[356]` — [356] that it is not sufficient for the penitent to abstain from past
+- line 26856: `[357]` — sins, such as tears, fastings oblations, [357] and offices of charity;
+- line 26867: `[358]` — taught in Scripture. [358] First, what is forgiveness but a gift of
+- line 26883: `[359]` — in as subsidiary aids. [359] For when Scripture says, by the name of
+- line 26964: `[360]` — forgiveness of sins is declared refer not only to catechumens, [360]
+- line 26983: `[361]` — Thus they insult and trifle with God. [361] And yet, though they have
+- line 26986: `[362]` — making impiety and impurity of heart [362] to be venial sin. We, on the
+- line 27007: `[363]` — [363] Confidence in satisfaction being thus destroyed, what more would
+- line 27035: `[364]` — denoted in other passages, [364] by casting them behind his back,
+- line 27061: `[365]` — the point of a diamond." [365] If they mean, as they certainly do, that
+- line 27077: `[366]` — whenever Paul makes mention of the redemption procured by him, [366] he
+- line 27080: `[367]` — redemption. [367] For which reason, he also says, that Christ gave
+- line 27099: `[368]` — know that they have still a more subtile evasion, [368] by making a
+- line 27131: `[369]` — [369] Had they observed, what certainly they ought not to have
+- line 27164: `[370]` — [370] This distinction is plainly marked throughout the word of God.
+- line 27202: `[371]` — declared, that the covenant made with us in our true Solomon [371]
+- line 27222: `[372]` — lash, [372] yet because they weigh not the true cause, but rather turn
+- line 27405: `[373]` — charity. [373] In like manner, also, the author of the Epistle to the
+- line 27485: `[374]` — passage in his Enchiridion ad Laurentium, cap. 65. [374] From that
+- line 27508: `[326]` — [326] The first definition is that of Gregory, and is contained
+- line 27515: `[327]` — [327] French "Ces bons glosateurs;"--these worthy glossers.
+- line 27517: `[328]` — [328] Latin, "Immensis voluminibus."--French, "Leur gros bobulaire de
+- line 27521: `[329]` — [329] Latin, "Mirum silentium."--French, "Il n'en est nulles nouuelles
+- line 27525: `[330]` — [330] Sent. Lib. 4 Dist. 16, cap. 1; De poenit. Dist. 1; C. Perfecta
+- line 27529: `[331]` — [331] French, "Combien qu'ils n'estudient autre chose en toute leur vie
+- line 27534: `[332]` — [332] Latin, "Secundam tabulam post naufragium."--French, "Une seconde
+- line 27539: `[333]` — [333] Latin, "De saini umbra rixam."--French, "En un combat
+- line 27543: `[334]` — [334] Luther (adv. Bullam Antichristi, Art. 6) shows that those who set
+- line 27547: `[335]` — [335] French, "Nous tournerons toujours en un même circuit"--we shall
+- line 27551: `[336]` — [336] Mt. 11:28; Is. 59:1; Luke 4:18.
+- line 27553: `[337]` — [337] Erasmus, in a letter to the Augustine Steuchus in 1531, while
+- line 27558: `[338]` — [338] French, "N'est ce pas bien se jouer des Escritures, de les
+- line 27562: `[339]` — [339] The French is, "Car ce que Jesus Christ laisse aux Prestres de la
+- line 27567: `[340]` — [340] French, "Qu'ils voisent maintenant, et facent un bouclier de leur
+- line 27571: `[341]` — [341] Augustin. Epist. 54.
+- line 27573: `[342]` — [342] French, "Quoy que tous les advocats et procureurs du Pape, et
+- line 27578: `[343]` — [343] The French adds, "l'un des auteurs de l'Histoire
+- line 27582: `[344]` — [344] Eccles Hist. Lib. 7 cap. 17, et Trepont. Hist. Lib. ix.
+- line 27584: `[345]` — [345] Chrysost. Hom. 2 in Psal. 1.Serm. de poenit. et Confess. Hom. 5
+- line 27588: `[346]` — [346] Latin, "Vetus interpres."--French, "Le translateur tant Grec qui
+- line 27592: `[347]` — [347] As to the form of repentance enjoined by the primitive Church for
+- line 27596: `[348]` — [348] The French is, "Et que le Pasteur addressant sa parole à lui,
+- line 27601: `[349]` — [349] "C Omnis utriusque sexus;"--every one of both sexes. Innocent's
+- line 27605: `[350]` — [350] The French is, "Mais comme les nautonniers fichans l'anchre au
+- line 27614: `[351]` — [351] "Tous ceux que nous lisons avoir obtenu de Christ la remission de
+- line 27620: `[352]` — [352] Latin simply, "ceremoniam." French, "la ceremonie de faire une
+- line 27624: `[353]` — [353] French, "Car cela vaut autant comme si les prestres se faisoyent
+- line 27628: `[354]` — [354] See on the subject of this section, Calv. ad Concil. Trident.
+- line 27633: `[355]` — [355] French, "une barbarie si vileine que rien plus;"--a barbarism so
+- line 27637: `[356]` — [356] See Lombard, Sent. Lib. 4 Dist 10, c. 4. C. Non suffcit. de
+- line 27641: `[357]` — [357] The French adds, "aumosnes;"--alms.
+- line 27643: `[358]` — [358] Isa. 3:3; Rom. 5:8; Col. 2:14; Tit. 3:5.
+- line 27645: `[359]` — [359] The French is, "Et ne faut pas qu'ils disent, que combien que les
+- line 27651: `[360]` — [360] Latin, "Catechumenos."--French, "Ceux qui ne sont point encore
+- line 27655: `[361]` — [361] See on this Section, Book 2 chap 8 s 58, 59.
+- line 27657: `[362]` — [362] The French adds, "Qui est le plus horrible peché devant
+- line 27661: `[363]` — [363] French, "Et quand ils voudront satisfaire pour plusieurs, ils en
+- line 27667: `[364]` — [364] Isa 38:17; Isa44:22; Micah 7:19; PS 32:1&gt;Ps. 32:1
+- line 27669: `[365]` — [365] Job 14:17; Hos. 13:12; Jer. 22:1
+- line 27671: `[366]` — [366] Rom 3:24; 1Cor. 1:30; Eph. 1:7; Col. 1:14; Tim 2:6
+- line 27673: `[367]` — [367] The French adds, "Que nous appellons Rancon en Francois;"--which
+- line 27677: `[368]` — [368] See Calvin, ad Concil. Tridentini, Sess. cap. 1. ad 15
+- line 27679: `[369]` — [369] For a full expositon of these passages, see infra, sec. 35-37.
+- line 27681: `[370]` — [370] Job 5:17; Prov. 3:11; Heb. 12:5
+- line 27683: `[371]` — [371] French, "Car l'alliance qu'il a une fois faite avec Jesus Christ
+- line 27687: `[372]` — [372] French, "Car combien les reprouvés souspirent ou grincent les
+- line 27691: `[373]` — [373] French, "Integrité, pitié, droiture, et choses
+- line 27695: `[374]` — [374] It is quoted in the Decret. c. in Art. de Poenit. Dist. 1.
+- line 27799: `[375]` — that they are polluted in every part. [375] They give the name of
+- line 27990: `[376]` — overturned. [376] But if it is perfectly clear, from what was lately
+- line 28000: `[377]` — hands. [377] When the Lord declares that the sin against the Holy Ghost
+- line 28031: `[378]` — to concord, where, I ask, are we to find their purgatory? [378]
+- line 28062: `[379]` — that work among the canonical books. But Augustine [379] holds it to be
+- line 28098: `[380]` — [380] give it a different meaning--viz. the tribulation or cross by
+- line 28109: `[381]` — works of all will be tried. [381] And this is not my argument, but that
+- line 28110: `[382]` — of Augustine, who thus impugns that interpretation. [382] And (what
+- line 28165: `[383]` — said of prayers. [383] But the more important the matter was, the more
+- line 28214: `[384]` — those indifferent who were formerly solicitous. [384]
+- line 28238: `[385]` — difficult for us to produce some passages from ancient writers, [385]
+- line 28246: `[386]` — prayers contribute to them? [386] I say nothing of those grosser
+- line 28256: `[375]` — [375] French, "Il est expedient de monstrer ici non seulement quelles
+- line 28263: `[376]` — [376] French. "Tellement que si on ote la fantasie de satisfaire, leur
+- line 28267: `[377]` — [377] Mt. 12:32; Mark 3:28; Luke 12:10; Mt. 5:25.
+- line 28269: `[378]` — [378] The French adds the following sentence: "Brief, que le passage
+- line 28275: `[379]` — [379] See August. contra Secundum Gaudentii Epistolam, cap. 23.
+- line 28277: `[380]` — [380] Chrysostom, Augustine, and others ; see August, Enchirid. ad
+- line 28281: `[381]` — [381] The French adds, "auquel nombre universel sont enclos les
+- line 28285: `[382]` — [382] French, "l'exposition que font aujourdhui nos adversaires;"--the
+- line 28289: `[383]` — [383] French, "L'Escriture raconte souventesfois et bien au long,
+- line 28296: `[384]` — [384] French, "Le liure qu'il à composé tout expres de cest argument,
+- line 28309: `[385]` — [385] See August. Homil. in Joann. 49. De Civitate Dei. Lib. 21 cap.
+- line 28313: `[386]` — [386] The French of the latter clause of this sentence is "et
+- line 28393: `[387]` — of the Fathers. [387] For me it will be sufficient to point out the
+- line 28401: `[388]` — it], [388] while the nature of my present work requires me to glance at
+- line 28419: `[389]` — has numerous admirable methods of recommending righteousness. [389]
+- line 28452: `[390]` — from the true source, [390] when it not only enjoins us to regulate our
+- line 28546: `[387]` — [387] The French adds, "C'est a dire, sermons populaires;"--that is to
+- line 28550: `[388]` — [388] The passage in brackets is ommited in the French.
+- line 28552: `[389]` — [389] The French begins the sentence thus, "Quant est du premier
+- line 28556: `[390]` — [390] Mal. 1:6; Eph. 5:1; 1 John 3:1, 3; Eph. 5:26; Rom. 6:1-4; 1 Cor.
+- line 28563: `[391]` — A SUMMARY OF THE CHRISTIAN LIFE. OF SELF-DENIAL. [391]
+- line 28786: `[392]` — will. [392] In this way, with regard to all with whom we have
+- line 28870: `[393]` — [393] Whatever injury he has done you, when he enjoins you to forgive
+- line 28873: `[394]` — against nature, [394] to love those that hate us, render good for evil,
+- line 29012: `[395]` — blasted, mildewed, or cut off by frost, or struck down by hail, [395]
+- line 29034: `[391]` — [391] On this and the three following chapters, which contain the
+- line 29038: `[392]` — [392] Calvin. de Sacerdotiis Eccles. Papal. in fine.
+- line 29040: `[393]` — [393] French, "Car si nous disons qu'il n'a merité que mal de nous;
+- line 29046: `[394]` — [394] Mt. 5:44; 6:14; 18:35; Luke 17:3.
+- line 29048: `[395]` — [395] The French is, "Soit que ses bleds et vignes soyent gastées et
+- line 29438: `[396]` — on their account? [396] But if the equity of God is undoubtedly
+- line 29460: `[396]` — [396] See end of sec. 4, and sec. 5, 7, 8.
+- line 29550: `[397]` — [397] For what, pray, would happen, if we here enjoyed an uninterrupted
+- line 29568: `[398]` — breaks in with the proverb, that man is the creature of a day, [398] we
+- line 29618: `[399]` — dire and evil omen? Nor was it unreasonable for those [399] who felt
+- line 29743: `[397]` — [397] French, "Or pource que la vie presente a tousiours force de
+- line 29753: `[398]` — [398] Latin, "Animal esseephemeron;" --is an ephemeral animal.
+- line 29755: `[399]` — [399] French, "Le peuple des Scythes;"--the Scythians.
+- line 29818: `[400]` — Moreover, necessity, according to them, [400] was abstinence from every
+- line 29898: `[401]` — heavenly life, and cultivating the interest of his soul. [401] It was
+- line 29979: `[400]` — [400] See Chrysost. ad Heb. 11. As to Cratetes the Theban, see
+- line 29983: `[401]` — [401] French, "Parer notre ame de ses vrais ornemens;"--deck our soul
+- line 30095: `[402]` — 1. I trust I have now sufficiently shown [402] how man's only resource
+- line 30173: `[403]` — from the context, that the term even in Latin [403] must be thus
+- line 30230: `[404]` — [404] But the most satisfactory passage on this subject is that in
+- line 30245: `[405]` — deprives pious minds of a serious sense of divine grace [405] ; before
+- line 30254: `[406]` — the divine essence into men. [406] Hence his other notion, that Adam
+- line 30294: `[407]` — conceals its many tails, [407] if we would not knowingly and willingly
+- line 30369: `[408]` — deposited in it. [408] And yet this is no reason why faith, though in
+- line 30381: `[409]` — Christ, and his office of Mediator, to his eternal divinity. [409] We,
+- line 30443: `[410]` — his own phantom of essential righteousness, [410] though the words have
+- line 30448: `[411]` — [411] (John 12:43). I know that by the righteousness of God is
+- line 30469: `[412]` — the Mediator. [412] In this way, and in this meaning, I deny not that
+- line 30490: `[413]` — to excite prejudice, gives the name of Zuinglians [413] to all who
+- line 30501: `[414]` — [414] transfuses himself into us, as he pretends that there is a carnal
+- line 30510: `[415]` — partakers of the divine nature," (2 Pet. 1:4); [415] as if we now were
+- line 30747: `[416]` — reference to spiritual works. [416] Thus according to them, man is
+- line 30901: `[417]` — nowhere expressly used they will not tolerate its being added. [417] Is
+- line 31063: `[418]` — [418] This is most clearly declared by the Apostle, when he says, that
+- line 31088: `[419]` — under the precious purity [419] of Christ, our first-born brother, that
+- line 31100: `[402]` — [402] See Institutes, Book 2 chap. 6 and 7, and Book 3 from the
+- line 31104: `[403]` — [403] Latin, "etiam dum Latine legitur."--French, "mesme en Grec et en
+- line 31108: `[404]` — [404] French, "Dont il appert qu'il note ces deux choses comme
+- line 31114: `[405]` — [405] French "Que les poures ames ne sauroyent comprendre en telle
+- line 31118: `[406]` — [406] French, "C'est, que l'ame est de l'essence de Dieu;"--that is,
+- line 31122: `[407]` — [407] French, "Mais comme le principe qu'il prend est comme une seche,
+- line 31129: `[408]` — [408] French, "Quant à d'autres folies extravangantes d'Osiander, tout
+- line 31137: `[409]` — [409] French, "Faisant samblant de les rauir à la divinité
+- line 31141: `[410]` — [410] French, "Il magnifie la justice de Dieu tant et plus; mais c'est
+- line 31147: `[411]` — [411] The French adds "signifiant, que ceux desquels il parle ont nagé
+- line 31154: `[412]` — [412] French, "Pour ceste cause j'ay accoustume de dire que Christ nous
+- line 31165: `[413]` — [413] The Latin, "ideo Zuinglianos odiose nominat;" is in the French
+- line 31169: `[414]` — [414] Latin, "crassa mixtura;"--French, "mixtion telle que les viandes
+- line 31173: `[415]` — [415] The French adds, "Osiander tire de la que Dieu a meslée son
+- line 31177: `[416]` — [416] French, "Ainsi ils disent que cela n'appartient de rien aux
+- line 31182: `[417]` — [417] French, "Mais pource que ce mot Seule, n'y est point exprimé, ils
+- line 31187: `[418]` — [418] French, "Ceci est fort contraire a la doctrine ci dessus mise:
+- line 31194: `[419]` — [419] French, "Sous la robbe;"--under the robe.
+- line 31526: `[420]` — may exist without any confidence in works. [420] For many sinners,
+- line 31554: `[420]` — [420] French, "Par arrogance j'enten l'orgueil qui s'engendre d'une
+- line 31701: `[421]` — themselves. [421] Every mind, therefore, would first begin to hesitate,
+- line 31800: `[421]` — [421] The two previous sentences are ommited in the French.
+- line 31922: `[422]` — abomination which it is possible to imagine. [422] Such, then, is the
+- line 31933: `[423]` — in unbelievers [423] are divine gifts. Nor do I set myself so much in
+- line 31972: `[424]` — concludes that all the Fabriciuses, the Scipios, and Catos, [424] in
+- line 32164: `[425]` — person has previously found favor in his sight. [425] Here we should
+- line 32239: `[426]` — Schoolmen as to the beginning of justification. [426] They admit that
+- line 32398: `[427]` — these blustering dogmas will behave to disappear. [427] This, this I
+- line 32514: `[428]` — posteriori. [428] For there is no where such a fear of God as can give
+- line 32587: `[429]` — expressions, the order rather than the cause is noted. [429] The Lord
+- line 32599: `[422]` — [422] Jer. 17:9; Gen. 7:21; Ps. 94:11; 36:2; 14:2, 3; Gen. 6:3; Gal.
+- line 32603: `[423]` — [423] Latin, "in incredulis." French, "en la vie des infideles et
+- line 32607: `[424]` — [424] Latin, "omnes Fabricios, Scipiones, Catones." French, "tous ceux
+- line 32611: `[425]` — [425] See August. Lib. de Poenit., and Gregory, whose words are quoted,
+- line 32615: `[426]` — [426] The following sentence is added in the French:--"Il est bien vray
+- line 32626: `[427]` — [427] French, "Tout ce qu'ils auront determiné ne profitera gueres,
+- line 32630: `[428]` — [428] Latin, "a posteriori;" French, "comme enseigne de la vocation de
+- line 32634: `[429]` — [429] French, "Brief, en toutes ces facons de parler, ou il est fait
+- line 32863: `[430]` — of God. [430] Nor is this all. Being admitted to participation in him,
+- line 32899: `[431]` — translated us into the kingdom of his dear Son." [431] There are
+- line 32936: `[432]` — that he had not been a very successful student. [432] Still there
+- line 32956: `[433]` — away one nail's breadth [433] from that only foundation. After it is
+- line 32967: `[434]` — [434] He who has denied himself has cut off the root of all evils so as
+- line 32987: `[435]` — is in Christ Jesus our Lord;" [435] nay, rather all things will work
+- line 32995: `[430]` — [430] 1. Cor. 1:30; Eph. 1:3-5; Col. 1:14, 20; John 1:12; 10:28.
+- line 32997: `[431]` — [431] John 5:12; John 5:24; Rom. 3:24; John 3:24; Eph. 2:6; Col. 1:13
+- line 32999: `[432]` — [432] French, "d'autant qu'il n'y estoit gueres exercité;"--inasmuch as
+- line 33003: `[433]` — [433] French, "ne fust ce que de la pointe d'une sepingle;"--were it
+- line 33007: `[434]` — [434] John 3:8; 1 Pet. 4:3; 2 Tim. 2:20, 21; Luke 9:23.
+- line 33009: `[435]` — [435] 2 Cor. 4:8; 2 Tim. 2:11; Phil. 3:10; Rom. 7:29, 39.
+- line 33056: `[436]` — their lives. [436] They pretend to lament [437] that when faith is so
+- line 33094: `[438]` — ways. [438] For, first, they are altogether in error when they say
+- line 33141: `[439]` — should follow his steps? [439]
+- line 33156: `[440]` — Chrysost. Homily. in Genes). But those men, [440] because, by
+- line 33218: `[436]` — [436] This sentence is wholly ommitted in the French.
+- line 33220: `[437]` — [437] Latin, "Dolere sibi simulant."--French, "Ils alleguent;"--they
+- line 33224: `[438]` — [438] All the previous sentences of this section, except the first ,
+- line 33228: `[439]` — [439] 1 John 5:10, 19; Heb. 9:14; 10 29; Luke 1:74, 75; Rom. 6:18; Col.
+- line 33233: `[440]` — [440] French, "ces Pharisiens;"--those Pharisees.
+- line 33363: `[441]` — have already shown, [441] that if we cleave to the law we are devoid of
+- line 33442: `[442]` — vices rather than virtues. Hence it appears how much Sophists [442]
+- line 33601: `[443]` — [443] For, as we say, that when justification by faith is established,
+- line 33609: `[444]` — dikaio'mata, justifications, instead of edicts. [444] But I readily
+- line 33639: `[445]` — vicious. [445]
+- line 33701: `[446]` — having a viper's birth? [446] To this their ungodly language tends.
+- line 33734: `[447]` — impair or destroy the doctrine of justification. [447] Thus Paul, to
+- line 33744: `[448]` — "meek," "merciful," &c., [448] they cannot make out that Paul's
+- line 33775: `[449]` — by the deepest roots: [449] to restore peace to the conscience is to
+- line 33907: `[450]` — bribes. But as for me, I will walk in mine integrity." [450] I have
+- line 33995: `[441]` — [441] See Book 2 chap. 7: sec. 2-8, 15; chap. 8 sec 3; chap 11 sec. 8;
+- line 33999: `[442]` — [442] French, "Les Sophistes de Sorbonne;"--the Sophists of Sorbonne.
+- line 34001: `[443]` — [443] French, "de crier contre nous en cest endroit;"--here to raise an
+- line 34005: `[444]` — [444] French, "Edits ou Statuts;"--Edicts or Statutes.
+- line 34007: `[445]` — [445] The French here adds the two following sentences:--"Nostre
+- line 34019: `[446]` — [446] French "Voudrions nous faire une lignee serpentine, que les
+- line 34023: `[447]` — [447] The whole sentence in French stnads thus:--"Or si cette justice
+- line 34032: `[448]` — [448] Rom. 4:7; Ps 32:1, 2; 112:1; Prov. 14:21; Ps. 1:1; 106:3; 119:11;
+- line 34036: `[449]` — [449] French, "Il suffit à nos adversaires s'ils peuvent deraciner la
+- line 34042: `[450]` — [450] Ps. 7:9; 17:1; 18:20; 26:1, 9, 10. Farther on , see Chap 14 s;
+- line 34111: `[451]` — shall receive his own rewards according to his own labour." [451] The
+- line 34130: `[452]` — not at all opposed to grace, but refers to pursuit, [452] and,
+- line 34204: `[453]` — in his words rather than my own: [453] "By means of this comparison,
+- line 34310: `[454]` — the way of pardon. [454]
+- line 34348: `[455]` — works, [455] his error will receive no support from these passages. For
+- line 34410: `[456]` — [456] contend that we are justified by charity rather than by faith,
+- line 34529: `[457]` — good and bad works, in this I dissent from them. [457] The
+- line 34549: `[451]` — [451] Mt. 16:27; 2 Cor. 5:10; Rom. 2:6; John 5:29; Mt. 25:34; Prov.
+- line 34553: `[452]` — [452] French, "mais seulement emporte zele et estude;"--but only
+- line 34557: `[453]` — [453] French, "Pource que c'est un Docteur ancien, j'aime mieux user de
+- line 34561: `[454]` — [454] The French adds, "C'est à dire, en misericorde, et non pas en
+- line 34565: `[455]` — [455] French, "Mais si quelcun pour obscurcir la benignité de Dieu veut
+- line 34569: `[456]` — [456] See Calvin's Answer to Sadolet, who had said that chairty is the
+- line 34573: `[457]` — [457] French, "Mais touchant ce qu'ils semblent advis contrepoiser en
+- line 34962: `[458]` — not rashly to give them offense. But [458] it is sometimes also of
+- line 35002: `[459]` — serve one another." [459] Thus, indeed, it is: our liberty was not
+- line 35057: `[460]` — to things indifferent. [460] Things which are necessary to be done
+- line 35080: `[461]` — food, it is certain that they have never been reared on milk. [461] Two
+- line 35085: `[462]` — again. [462] Let my readers only bear in mind, first, that whatever be
+- line 35212: `[458]` — [458] French, "Mais quelcun dira"--But some one will say.
+- line 35214: `[459]` — [459] Rom. 14:1, 13; 16:1; 1 Cor. 8:9; 10:25, 29, 32; Gal. 5:13.
+- line 35216: `[460]` — [460] The French adds, "Lesquelles ne sont de soy ne bonnes ne
+- line 35220: `[461]` — [461] French, "de bon laict;"--good milk.
+- line 35222: `[462]` — [462] See Epist. de Fugiendis Impiorum Illicitis Sacris. Also Epist. de
+- line 35542: `[463]` — voice? [463] Those who argue thus attend not to the end for which the
+- line 35832: `[464]` — which is attributed to the prophet Baruch, [464] "But the soul that is
+- line 35869: `[465]` — may be pardoned; [465] for it were absurd to wish that the effect
+- line 35872: `[466]` — symptoms, neglect the root of the disease. [466] Nay, our endeavour
+- line 36134: `[467]` — honour him." [467] My intention, however, as I already observed, is not
+- line 36191: `[468]` — David speak of humbly laying their supplications [468] before God. In
+- line 36198: `[469]` — evening sacrifice." [469] The explanation is, that though believers,
+- line 36286: `[470]` — temporal blessing. [470]
+- line 36311: `[471]` — me, [471] that I may recover strength, before I go hence, and be no
+- line 36377: `[472]` — once from fear and shame, with which all must feel oppressed, [472] has
+- line 36513: `[473]` — of peace," [473] (August. Contra Parmenian, Lib. 2 cap. 8). Likewise in
+- line 36595: `[474]` — and the like, they mutter a Pater Noster; [474] and so far are their
+- line 36596: `[475]` — pastors [475] from curing or curbing this frantic course, that, allured
+- line 36602: `[476]` — [476] The Council of Carthage forbade direct prayer to be made at the
+- line 36739: `[477]` — should like them to tell me why, in so great a multitude, [477] no
+- line 36741: `[478]` — well from what a crew they select their intercessors. [478] Let them
+- line 36986: `[479]` — series of verbiage for vulgar display. [479] This childish garrulity
+- line 37034: `[480]` — performed," [480] (Ps. 65:1). By these words the Psalmist reminds us
+- line 37052: `[481]` — heart. [481] If this is the legitimate use of churches (and it
+- line 37115: `[482]` — [482] and that the practice was afterwards followed by the other
+- line 37117: `[483]` — the East. [483] He also intimates (Retract. Lib. 2) that it was
+- line 37123: `[484]` — brethren." [484] And certainly if singing is tempered to a gravity
+- line 37133: `[485]` — were derived from singing, he inclined to the other side. [485] If this
+- line 37155: `[486]` — have no wish that others should understand? [486] Different is the
+- line 37212: `[487]` — our frailty, and deliver us that we may not fall. Ancient writers [487]
+- line 37214: `[488]` — to be considered as explanatory of the sixth petition. [488] But though
+- line 37307: `[489]` — father, though we are unworthy of such a parent. [489] But as our
+- line 37686: `[490]` — [490] (see Calv. on Dan. 9:20); only let them understand that those
+- line 37747: `[491]` — [491] of writing the law upon our hearts; but because we do not obey
+- line 37760: `[492]` — withdraw or decline from God. [492] These temptations are both on the
+- line 37782: `[493]` — tribulation, and other kinds of cross. [493] But the temptations of God
+- line 38003: `[463]` — [463] French, "Dont il sembleroit que ce fust chose superflue de le
+- line 38010: `[464]` — [464] French, "Pourtant ce qui est escrit en la prophetie qu'on
+- line 38016: `[465]` — [465] French, "il recognoissent le chastiement qu'ils ont
+- line 38020: `[466]` — [466] The French adds, "Ils voudront qu'on leur oste le mal de teste et
+- line 38025: `[467]` — [467] Jer. 2:13; Prov. 18:10; Joel 2:32; Is. 65:24; Ps. 91:15; 145:18.
+- line 38027: `[468]` — [468] Latin, "prosternere preces" French, "mettent bas leurs
+- line 38031: `[469]` — [469] Jer. 42:9; Dan. 9:18; Jer. 42:2; 2 Kings 19:4; Ps. 144:2.
+- line 38033: `[470]` — [470] The French adds, "dequel il n'eust pas autrement esté
+- line 38037: `[471]` — [471] Latin, "Desine a me." French, "Retire-toy;"--Withdraw from me.
+- line 38039: `[472]` — [472] French, "Confusion que nous avons, ou devons avoir en
+- line 38043: `[473]` — [473] Heb. 9:11, 24; Rom. 15:30; Eph. 6:19; Col. 4:3; 1 Cor. 12:25; 1
+- line 38047: `[474]` — [474] Erasmus, though stumbling and walking blindfold in clear light,
+- line 38061: `[475]` — [475] Latin, "Pastores;"--French, "ceux qui se disent prelats, curés ou
+- line 38065: `[476]` — [476] French, "Mais encore qu'ils taschent de laver leur mains d'un si
+- line 38076: `[477]` — [477] The French adds, "et quasi en une fourmiliere de saincts;"--and
+- line 38080: `[478]` — [478] "C'est chose trop notoire de quel bourbieu de quelle racaille ils
+- line 38084: `[479]` — [479] French, "Cette longueur de priere a aujord'hui sa vogue en la
+- line 38095: `[480]` — [480] Calvin translates, "Te expectat Deus, laus in Sion;"--God, the
+- line 38099: `[481]` — [481] See Book 1, chap 11 sec 7, 13, on the subject of images in
+- line 38103: `[482]` — [482] This clause of the sentence is omitted in the French.
+- line 38105: `[483]` — [483] The French adds, "o? on en avoit tousjours usé;"--where it had
+- line 38109: `[484]` — [484] The whole of this quotation is omitted in the French.
+- line 38111: `[485]` — [485] French, "Mais il adjouste d'autre part, que quand il souvenoit du
+- line 38119: `[486]` — [486] French, "Qui est-ce donc qui se pourra assez esmerveiller d'une
+- line 38128: `[487]` — [487] August. in Enchirid. ad Laurent. cap. 116. Chrysost. in an
+- line 38132: `[488]` — [488] "Dont il est facile de juger que ce qui est adjousté en S.
+- line 38139: `[489]` — [489] French, "Quelque mauvaistié qu'ayons eië, ou quelque imperfection
+- line 38143: `[490]` — [490] French, "Telles disciples qu'ils voudront;"--such disciples as
+- line 38147: `[491]` — [491] The French adds, "que Dieu nous a donnee et faite;"--which God
+- line 38151: `[492]` — [492] James 1:2, 14; Mt. 4:1, 3; 1 Thess. 3:5; 2 Cor. 6:7, 8.
+- line 38153: `[493]` — [493] Ps. 26:2; Gen. 22:1; Deut. 8:2; 13:3; 1 Cor. 10:13; 2 Pet. 11:9;
+- line 38270: `[494]` — will enter in inextricable labyrinth. [494] For it is not right that
+- line 38533: `[495]` — [495] These are considered as belonging to that one seed of which Paul
+- line 38606: `[494]` — [494] Thus Eck boasts that he had written of predestination to exercise
+- line 38610: `[495]` — [495] On predestination, see the pious and very learned obsesrvations
+- line 38686: `[496]` — petulance and improbity which it is impossible to tolerate. [496]
+- line 38707: `[497]` — observed by Augustine, [497] that in the very head of the Church we
+- line 39042: `[498]` — differs from the others, [498] but shows by clear evidence that the
+- line 39220: `[496]` — [496] French, "Il y en a d'a aucuns, lesquels n'estans exercés en
+- line 39229: `[497]` — [497] August. de Corrept. et Gratia ad Valent. c. 15. Hom. de Bono
+- line 39233: `[498]` — [498] Latin, "a reliquis;" French, "les autre Docteurs anciens;"--the
+- line 39382: `[499]` — God is the supreme rule of righteousness, [499] so that everything
+- line 39396: `[500]` — of absolute power, [500] which, as it is heathenish, so it ought justly
+- line 39478: `[501]` — were abandoned. [501] Of this no other cause can be adduced than
+- line 39481: `[502]` — 5. Now, should some Manes or Coelestinus [502] come forward to arraign
+- line 39570: `[503]` — Adam should perish by his revolt. [503] As if the same God, who is
+- line 39906: `[499]` — [499] This is taken from Auguste Dein Gen. cont. Manich., Lib. 1 c. 3.
+- line 39908: `[500]` — [500] French. "Toutesfois en parlant ainsi, nous n'approuvons pas la
+- line 39913: `[501]` — [501] French, "Si leur constance er fermeté a eté fondee au bon plasir
+- line 39919: `[502]` — [502] The French adds, "ou autre heretique;"--or other heretic.
+- line 39921: `[503]` — [503] See Calvin, De Prædestinatione.
+- line 40040: `[504]` — antecedence of possibility [504] the affection of will, and the effect
+- line 40283: `[505]` — his fold. But anxiety arises as to our future state. [505] For as Paul
+- line 40690: `[506]` — [506] Now, if the genuine meaning of the prophet is inquired into, it
+- line 40814: `[507]` — human affections, and descends beneath his proper majesty? [507] He
+- line 40826: `[508]` — to his will. [508] They also amuse themselves with the cavil, that
+- line 40859: `[504]` — [504] Latin, "possililitatis profectus."--French, "l'avancement de
+- line 40863: `[505]` — [505] French, "Mas quelcun dira qu'il nous faut soucier de ce qui peut
+- line 40869: `[506]` — [506] Bernard, in his Sermon on the Nativity, on 2 Cor. 1:3, quoting
+- line 40873: `[507]` — [507] The French adds, "pour se conformer à notre rudesse;"--in
+- line 40877: `[508]` — [508] 100 D100 These two assertions--"to our apprehension the will of
+- line 40986: `[509]` — our faith, even the salvation of our souls. [509] For this reason Paul
+- line 41019: `[510]` — world engross us we be severely punished for our sloth. [510]
+- line 41227: `[511]` — [511] In all ages a brutish stupor has prevailed, and, accordingly, it
+- line 41246: `[512]` — it (1 Cor. 15), shortly after the Chiliasts [512] arose, who limited
+- line 41259: `[513]` — not how great an insult they offer to Christ and his kingdom. [513] If
+- line 41329: `[514]` — as that of the body. [514] When the abode of blessed spirits is
+- line 41471: `[515]` — quickening power. [515] Nay, under the law, God trained the holy
+- line 41625: `[516]` — entrance. [516] The more necessary is it for us to cultivate sobriety
+- line 41748: `[509]` — [509] 2 Tim. 1:10; John 5:24; Eph. 2:6, 19; Rom. 7:16-18; Heb. 11:1; 2
+- line 41752: `[510]` — [510] rench, "nous recevions un povre salaire de nostre lascheté et
+- line 41756: `[511]` — [511] Calvin translates. "Quis scit an hominis anima ascendit
+- line 41760: `[512]` — [512] 101 D101 Chiliasm (from a Greek word meaning "a thousand") arose
+- line 41771: `[513]` — [513] 102 D102 Calvin's chief objection to "Chiliasm" appears to be
+- line 41787: `[514]` — [514] French, "La question quant au lieu est bien frivole et sotte: veu
+- line 41793: `[515]` — [515] Latin, "ut vivificas esse doceat"--French, "pour monstrer quells
+- line 41797: `[516]` — [516] French, "Et encore quand nous aurons bien profité en cette
+- line 42038: `[517]` — secret election forms the foundation. [517] Nor is it enough to embrace
+- line 42111: `[518]` — [518] let us learn, from her single title of Mother, how useful, nay,
+- line 42338: `[519]` — the invisible Church, [519] which is manifest to the eye of God only,
+- line 42363: `[520]` — us in acknowledging the same God and Christ. [520] The knowledge of his
+- line 42398: `[521]` — lawful assemblies distributed as circumstances require. [521]
+- line 42476: `[522]` — certain that it lives with the Lord? [522] The words of the Apostle
+- line 42490: `[523]` — that doctrine in which the safety of piety consists, [523] and keep the
+- line 42499: `[524]` — peace and discipline when duly arranged. [524]
+- line 42505: `[525]` — as if they had already become a kind of aërial spirits, [525] spurn the
+- line 42560: `[526]` — neither decently nor in order: [526] If there the Church still remains,
+- line 42566: `[527]` — same apostle found churches? [527]
+- line 42591: `[528]` — wicked, are in this more rigid than Paul. [528] For when he exhorts us
+- line 42680: `[529]` — consummation of all things. [529] For although, at the very outset, the
+- line 42755: `[530]` — under the burden of sin, and flee for pardon. For they preten [530]
+- line 42811: `[531]` — converted from impiety to the faith of Christ; [531] but, moreover,
+- line 42874: `[532]` — abominated. [532] At length, softened by the remonstrances of Judah,
+- line 43005: `[533]` — the Church, and produced much scandal. [533] The great difficulty they
+- line 43018: `[517]` — [517] 103 D103 Here Calvin provides a basis for the concept, "the
+- line 43024: `[518]` — [518] 104 D104 Here Calvin employs the term, "the visible Church." (He
+- line 43033: `[519]` — [519] 105 D105 In this section (7), Calvin specifically distinguishes
+- line 43038: `[520]` — [520] 106 D106 Here Calvin enumerates the criteria by which we are to
+- line 43046: `[521]` — [521] 107 D107 Here Calvin distinguishes between the Church universal
+- line 43050: `[522]` — [522] French, "Pour donner exemple, s'il advenoit qu'une Eglise tint
+- line 43061: `[523]` — [523] French, "La doctrine principale de nostre salut;"--the
+- line 43065: `[524]` — [524] French, "Et aussi que demeurant en icelle nous ne troublions
+- line 43069: `[525]` — [525] French. "Comme s'ils eussent ete quelques anges de Paradis;"--as
+- line 43073: `[526]` — [526] l Cor. 1:11; 3:3; 5:l; 6:7; 9:l; 15:12.
+- line 43075: `[527]` — [527] French, "Toutesfois Sainct Paul recognoissoit entre eux quelque
+- line 43079: `[528]` — [528] See Calvin, Lib. de Coena Domini; item, Instructio adv. Anabapt.
+- line 43081: `[529]` — [529] 108 D108 Calvin here asserts that, in all ages, there has been a
+- line 43090: `[530]` — [530] Latin, "Jactant."--French, "Ces grands correcteurs leur
+- line 43094: `[531]` — [531] French, "Ce n'a pas eté seulement afin qu'ils deliassent ceux qui
+- line 43100: `[532]` — [532] Gen. 37:18, 28; 34:25; 35:22; 38:16; 2 Sam 11:4, 15; xii 13.
+- line 43102: `[533]` — [533] French, "Ils usoient de cette maniere de parler afin de mettre
+- line 43170: `[534]` — ; [534] and, secondly, that trivial errors in this ministry ought not
+- line 43176: `[535]` — destroy nor impair the legitimate institution of their Author. [535]
+- line 43194: `[536]` — understand how much of the Church there survives. [536] There, instead
+- line 43207: `[537]` — Church, [537] as if there was not another in the world; and then, as if
+- line 43309: `[538]` — Camillus. [538] That in the government of the Church especially,
+- line 43483: `[539]` — were still entitled to hold it [539] (Exod. 24:9). But the principal
+- line 43575: `[540]` — are the signs of profession, and especially in doctrine. [540] Daniel
+- line 43578: `[541]` — standard-bearer of that wicked and abominable kingdom. [541] By placing
+- line 43599: `[534]` — [534] French, "Secondement, qu'encore il y ait quelques petites fautes,
+- line 43605: `[535]` — [535] 109 D109 Calvin here answers the question, "How far into error
+- line 43612: `[536]` — [536] See chap. 1 sec. 10; 2 sec. 10; 8 sec. 12.
+- line 43614: `[537]` — [537] French, "Je say bien que les flatteurs du Pape magnifient
+- line 43618: `[538]` — [538] French, "Or tent s'en faut que cela ait lieu, que mesmes aux
+- line 43629: `[539]` — [539] French, "Ils savoient que les pretres Levitiques, combien qu'ils
+- line 43638: `[540]` — [540] French, "Mais nous contendons seulement du vrai etat de l'Eglise,
+- line 43644: `[541]` — [541] The French adds, "pour le moins en l'Eglise Occidentale;"--at
+- line 43723: `[542]` — it were, his substitutes, [542] not by transferring his right and
+- line 43729: `[543]` — chooses to employ men. [543] First, in this way he declares his
+- line 43998: `[544]` — beginning, therefore, each church had its senate, [544] composed of
+- line 44086: `[545]` — were indispensably requisite. [545] And Paul, after portraying the
+- line 44154: `[546]` — individual? [546] Those who attribute this right to one individual
+- line 44239: `[542]` — [542] Latin, "quasi vicariam operam."--French, "les faisans comme ses
+- line 44243: `[543]` — [543] See on this subject August. de Doctrina Christiana, Lib. 1
+- line 44245: `[544]` — [544] Latin, "senatum."--French, "conseil ou consistoire;"--council or
+- line 44249: `[545]` — [545] Luke 21:15; 24:49; Mark 6:15; Acts 1 8; 1 Tim. 5:22.
+- line 44251: `[546]` — [546] See chap. 4 sec. 10, 11; chap. 5 sec. 2, 3. Also Calv. in Acts
+- line 44347: `[547]` — Monks he gives no proper place [547] (Hieron. in Jes. c. 9).
+- line 44431: `[548]` — larger discussion, patriarchs were employed along with synods, [548]
+- line 44472: `[549]` — mentions that it already existed in his day. [549] To them belonged the
+- line 44517: `[550]` — edifices, a fourth to the poor, whether [550] strangers or natives. For
+- line 44604: `[551]` — that no suspicion might arise. [551] Moreover, that they might
+- line 44609: `[552]` — the desk was given them. [552] In this way they were gradually
+- line 44635: `[553]` — as in these minor exercises [553] there was no great danger, inasmuch
+- line 44680: `[554]` — approved. [554]
+- line 44808: `[547]` — [547] "Pourtant Sainct Hierome apres avoir divisé l'Eglise en cinq
+- line 44821: `[548]` — [548] French, "La cognoissance venoit aux patriarches, qui assemblerent
+- line 44826: `[549]` — [549] Hieronymus, Epist. ad Nepotianum. It is mentioned also by
+- line 44830: `[550]` — [550] In the Amsterdam edition the words are only "quartam vero advenis
+- line 44835: `[551]` — [551] The French adds, "Afin qu'il n'all' nulle part sans compagnie et
+- line 44839: `[552]` — [552] French, "On leur ordonnoit de faire la lecture des Pseaumes au
+- line 44843: `[553]` — [553] The French adds, "Comme de Lecteurs et Acolytes;"--as Readers and
+- line 44847: `[554]` — [554] The whole narrative in Theodoret is most deserving of notice.
+- line 45099: `[555]` — are worthy. [555] What can you accuse in these venerable fathers save
+- line 45233: `[556]` — 10. I am not here touching on extraneous faults, [556] but only on the
+- line 45535: `[555]` — [555] "C'est un acte semblable, que quand ceux qu'on doit promouvoir se
+- line 45546: `[556]` — [556] French. "Ies vices des personnes:"--the faults of individuals.
+- line 45620: `[557]` — be found only with them, [557] we have not yet touched, because it did
+- line 45650: `[558]` — [558] But the solution is easy, and it is manifold if one does not
+- line 45662: `[559]` — several prefects. [559] But there is still another reason why that
+- line 45777: `[560]` — Some of the Fathers so expounded! [560] But when the whole of Scripture
+- line 45885: `[561]` — from one celestial Head; [561] or, if they will have it more plainly,
+- line 45901: `[562]` — and teachers." [562] Why does he not say, that one presided over all to
+- line 45995: `[563]` — of Christ, and afterwards came to Antioch. [563] How long he remained
+- line 45999: `[564]` — thirty-seven years. [564] For our Lord suffered in the eighteenth year
+- line 46008: `[565]` — arrival at Rome. [565] Still there is no mention of Peter, as there
+- line 46026: `[566]` — 2:21) [566] . And to Timothy he makes the more grievous complaint, that
+- line 46028: `[567]` — Tim. 4:16). Where then was Peter? [567] If they say that he was at
+- line 46044: `[568]` — cannot believe. [568] I do not, however, attach much importance to the
+- line 46128: `[557]` — [557] See Calv. Adversus Concilium Tridentinum. Also Adversus Theologos
+- line 46132: `[558]` — [558] French, "Pour ce faire, ils alleguent la pretrise souveraine qui
+- line 46138: `[559]` — [559] "Car c'est tout ainsi comme si quelcun debattoit que le monde
+- line 46144: `[560]` — [560] French, "Ils ont Four leur bouelier, qu'aucuns des Peres les ont
+- line 46148: `[561]` — [561] The French adds, "Vision receue du Seigneur; Le Seigneur des
+- line 46152: `[562]` — [562] Eph. 4:10, 7, 11.
+- line 46154: `[563]` — [563] 110 D110 Calvin apparently believed that Paul's conversion
+- line 46162: `[564]` — [564] 111 D111 Nero committed suicide in A.D. 68. A subtraction of
+- line 46167: `[565]` — [565] 112 D112 Paul's arrival in Rome as a prisoner is put at A.D. 60.
+- line 46176: `[566]` — [566] 113 D113 During his first imprisonment in Rome (from A.D. 60 to
+- line 46185: `[567]` — [567] 114 D114 In Paul's second epistle to Timothy (the last of the
+- line 46213: `[568]` — [568] 115 D115 Calvin in this one sentence states his conclusions on
+- line 46708: `[569]` — [569] If the Roman See has supreme power not subject to appeal, why
+- line 47021: `[570]` — power. "No man (say they [570] ) is entitled to alter the judgment of
+- line 47280: `[571]` — imposture. [571] A third, that the doctrine of a future life and final
+- line 47296: `[572]` — their list of pontiffs John XXII., [572] who publicly maintained that
+- line 47389: `[569]` — [569] French, "Voila l'Archeveque d'Arles assis pour retracter; si bon
+- line 47395: `[570]` — [570] Nicolas, whose view is given in Decretis 17, Quæst. 3, cap.
+- line 47399: `[571]` — [571] Erasmus, in a letter to Steuchus, says, "It may be that in
+- line 47406: `[572]` — [572] John Gerson, who lived at the time, attests that John XXII.
+- line 47548: `[573]` — Lord, Thus saith the Lord, The mouth of the Lord hath spoken it." [573]
+- line 47599: `[574]` — possessed. [574] From the same fountain all the prophets also drew all
+- line 47629: `[575]` — Spirit; [575] I include the Psalms among the Prophecies, the quality
+- line 47693: `[576]` — [576] For Christ thus defined the terms of their embassy, when he
+- line 47733: `[577]` — Spirit; [577] and, therefore, their writings are to be regarded as the
+- line 47865: `[578]` — the Church. [578] The other passage, as we have elsewhere seen (chap. 1
+- line 48022: `[573]` — [573] The French adds, "Vision receue du Seigneur; Le Seigneur des
+- line 48026: `[574]` — [574] 116 D116 This section admirably expresses Calvin's view
+- line 48036: `[575]` — [575] 117 D117 Although Calvin uses the term "dictated" in connection
+- line 48045: `[576]` — [576] 118 D118 This assertion that the Spirit of Christ "in a manner
+- line 48057: `[577]` — [577] 119 D119 The expression, "sure and authentic amanuenses," would
+- line 48066: `[578]` — [578] The French adds, "Or, nos adversaires mesmes tiennent tous
+- line 48073: `[579]` — OF COUNCILS AND THEIR AUTHORITY. [579]
+- line 48149: `[580]` — [580] But there must be some limitation, there must be nothing
+- line 48252: `[581]` — pastors. [581] All I advise is, to exercise discrimination, and not
+- line 48570: `[579]` — [579] See Calvin's Antidote to the Articles of Sorbonne; Letter to
+- line 48574: `[580]` — [580] French , "Si je tien ici la bride roide pour ne lascher rien
+- line 48583: `[581]` — [581] French, "Toutesfois je ne veux point que ces propos soyent
+- line 48756: `[582]` — external forum and the forum of conscience [582] (Book 3 chap. 19 sec
+- line 48824: `[583]` — conscience. [583] When the whole world was enveloped in the thickest
+- line 49219: `[584]` — godly, [584] the definition which we formerly gave is clear and
+- line 49357: `[585]` — those gesticulations, and whole farrago of useless observances. [585]
+- line 49805: `[582]` — [582] French, "entre le siege judicial de Dieu, qui est spirituel, et
+- line 49809: `[583]` — [583] French, "Et de fait, tel a eté le sens de cette distinction
+- line 49817: `[584]` — [584] Calvin on the Necessity of Reforming the Church.
+- line 49819: `[585]` — [585] French, "Mais depuis sont survenus d'autres singes, qui ont eu
+- line 50117: `[586]` — excommunication, which is not used unless in necessity. [586] This,
+- line 50119: `[587]` — contented with the might of the word of God. [587] In short, the
+- line 50239: `[588]` — priests for imperial power. [588] For the expression which he
+- line 50354: `[589]` — Most Serene Lord, and himself his unworthy servant. [589] Again, in
+- line 50505: `[590]` — Gregory confirms the order, and exhorts them to obey. [590] He himself,
+- line 50514: `[586]` — [586] There is nothing repugnant to this in the statement of Augustine
+- line 50519: `[587]` — [587] 120 D120 It is truly unfortunate that these sound sentiments were
+- line 50536: `[588]` — [588] This is stated by Ambrose, Hom. de Basilic. Tradend. See also
+- line 50540: `[589]` — [589] Gregor. Lib. 2 Ep. 5; Lib. 3 Ep. 20; Lib. 2 Ep. 61; Lib. 4 Ep.
+- line 50544: `[590]` — [590] Lib. 1 Ep. 43; Lib. 4 Ep. 32, 34; Lib. 7 Ep. 39.
+- line 50661: `[591]` — [591] We shall speak first of the common discipline to which all ought
+- line 50770: `[592]` — might he profaned by a promiscuous admission. [592] For it is most
+- line 50845: `[593]` — describes the form. [593] "They act as penitents for a certain time,
+- line 50855: `[594]` — should be subject. Thus Theodosius, [594] when excommunicated by
+- line 50967: `[595]` — degenerate into destruction. [595]
+- line 51012: `[596]` — [596] "Such (says Augustin. contra Parmen. Lib. 3 c. 4), not from
+- line 51063: `[597]` — For we there see, [597] that as often as any weighty matter occurred
+- line 51072: `[598]` — decide; [598] whenever a minister is to be chosen; whenever, in short,
+- line 51163: `[599]` — whose only teaching had been the preaching of Jonah. [599] Why,
+- line 51220: `[600]` — dream of the Manichees, in refuting whom Augustine clearly shows, [600]
+- line 51227: `[601]` — In this respect I dare not entirely excuse ancient writers [601] from
+- line 51278: `[602]` — abstinence, to make a mock of God; [602] [603] for in the most
+- line 51511: `[591]` — [591] French, "J'use de ce mot de Cleres pource qu'il est commun,
+- line 51517: `[592]` — [592] Vide Cyril in Joann. cap. 50, et Luther, de Commun. Populi, tom.
+- line 51521: `[593]` — [593] Cyprian, Lib. 1 Ep. 2; Lib. 3 Ep. 14, 26.
+- line 51523: `[594]` — [594] Ambros. Lib. 1 Ep. 3; et Oratio habita in Funere Theodosii.
+- line 51525: `[595]` — [595] French, "Il y a danger, que de discipline nous ne tombions en une
+- line 51530: `[596]` — [596] See a lengthened refutation in Calv. Instructio adv. Anabap. Art.
+- line 51534: `[597]` — [597] See a striking instance in Ezra 8:21, on the appointment of a
+- line 51538: `[598]` — [598] French "Quand il advient quelque different en Chretienté, qui
+- line 51542: `[599]` — [599] 1 Sam. 7:6; 31:13; 2 Kings 1:12; Jonah 3:5.
+- line 51544: `[600]` — [600] August de Morib. Manich. Lib. 2 c. 13; et cont. Faustum, Lib. 30
+- line 51546: `[601]` — [601] See Chrysostom. Homil. sub. initium Quadragesimæ, where he terms
+- line 51550: `[602]` — [602] Bernard in Serm. 1 in die Paschæ, censures, among others, princes
+- line 51555: `[603]` — [603] 121 D121 Bernard censures, among others, princes also, for
+- line 51670: `[604]` — of God, [604] and burning with an insane zeal of vowing according to
+- line 51727: `[605]` — their infirmity, are confident of their fitness for celibacy. [605] But
+- line 51750: `[606]` — and fouler still. [606] And, indeed, there is here very little occasion
+- line 51831: `[607]` — baptism we confirm, and as it were sanction, by our Catechism, [607]
+- line 51906: `[608]` — travail, it would have been impossible for you to be born" [608]
+- line 52028: `[609]` — divine callings. [609] I am not unaware of the sophistical solution
+- line 52041: `[610]` — moderation lies buried in a few volumes. [610] Who sees not that this
+- line 52133: `[611]` — understood by some of the Fathers; [611] and hence arose an affectation
+- line 52184: `[612]` — great the difference? This much is certain, [612] that there is no
+- line 52427: `[604]` — [604] See Ps. 119:106. "I have sworn, and I will perform it, that I
+- line 52433: `[605]` — [605] On the vow of celibacy. see Calv. de Fugiend. Micit. sacris, Adv.
+- line 52437: `[606]` — [606] Bernard, de Convers. ad Clericos, cap. 29, inveighing against the
+- line 52444: `[607]` — [607] Latin, "Catechism."--French, "En faisant protestation de notre
+- line 52448: `[608]` — [608] At the same place, he admirably says, "Dearly beloved, love ease,
+- line 52453: `[609]` — [609] Laurentius, defending his written assertion, that the monks
+- line 52458: `[610]` — [610] French, ",Par ce moyen ils attirent farine au moulin et vendent
+- line 52464: `[611]` — [611] Chrysostom, in his Homily on the words of Paul, "Salute Prisca,"
+- line 52469: `[612]` — [612] See Bernard. ad Guliel. Abbat.. "I wonder why there is so much
+- line 52602: `[613]` — faith of it. [613] For the truth of God is in itself sufficiently
+- line 53028: `[614]` — sign, so as not to transfer to the one what belongs to the other. [614]
+- line 53274: `[615]` — comparison between circumcision and baptism. [615] Their washings and
+- line 53357: `[616]` — letter, [616] and object that it is in no esteem with God; that it
+- line 53386: `[617]` — follows, and which I lately quote [617] --viz. that all the Jewish
+- line 53396: `[618]` — was in a manner suspended until the manifestation of Christ. [618]
+- line 53471: `[619]` — trifling talk of the sophists concerning the opus operatum, [619] [620]
+- line 53477: `[621]` — [621] ) no work can be ascribed to them.
+- line 53480: `[613]` — [613] 122 D122 That is, the sacrament cannot make the promise of God
+- line 53489: `[614]` — [614] 123 D123 Sometimes this distinction is expressed in terms of the
+- line 53496: `[615]` — [615] Heb. 9:1-14; 1 John 1:7; Rev. 1:5; Heb. 4:14; 5:5; 9:11.
+- line 53498: `[616]` — [616] Rom. 2:25-29; 1 Cor. 7:19; Gal. 6:15; 1 Cor. 10:5; 1 Pet. 3:21;
+- line 53502: `[617]` — [617] French, "Mais on fera encore un autre argument."--But there is
+- line 53506: `[618]` — [618] 124 D124 Perhaps an expansion of Calvin's thrust will help to
+- line 53567: `[619]` — [619] The French adds, "Qu'ils appellent en leur gergon."--So called in
+- line 53571: `[620]` — [620] 125 D125 This expression, opus operatum, in connection with the
+- line 53590: `[621]` — [621] The French adds, "J'appel le acte passif, pourceque Dieu fait le
+- line 54011: `[622]` — which he here delivers. [622]
+- line 54201: `[623]` — [623] was thought to open the door for baptism. Though I am not unaware
+- line 54208: `[624]` — baptism, were introduced with unbridled licence. [624] From our
+- line 54227: `[625]` — primitive Church. [625] [626]
+- line 54287: `[627]` — [627] But other valid reasons prove, that what a foolish woman did is
+- line 54338: `[622]` — [622] French, "Nous suivons donc de mot à mot la doctrine de Sainct
+- line 54346: `[623]` — [623] Latin, "Exsufflatio."--French, "Le souffle pour conjurer le
+- line 54350: `[624]` — [624] Vid. Calv. in Epist. de Fugiendis illicitis sacris. Item, Vera
+- line 54354: `[625]` — [625] French, "Au reste, c'est une chose de nulle importance, si on
+- line 54369: `[626]` — [626] 126 D126 In this sentence Calvin makes three assertions: (1) that
+- line 54421: `[627]` — [627] French, "Car par une mesme raison il faudroit dire, le service
+- line 54537: `[628]` — subject of baptism. [628] The argument by which pædobaptism is assailed
+- line 54634: `[629]` — of faith [629] (Rom. 12:3, 6). And certainly in this matter the truth
+- line 55131: `[630]` — and regenerated by the Spirit of God. [630] As to their objection that,
+- line 55166: `[631]` — rather leave undecided); [631] but I would somewhat curb the stolid
+- line 55244: `[632]` — to precede the sign in the order of time. [632] For the truth of
+- line 55388: `[633]` — all the unbaptised to eternal death. [633] Let us suppose, then, that,
+- line 55543: `[634]` — briefly to dispose of them. [634] He pretends that as the symbols of
+- line 55733: `[628]` — [628] The French from the beginning of the chapter is as follows:--"Or
+- line 55752: `[629]` — [629] 127 D127 The "analogy of faith," to which we are to "bring every
+- line 55765: `[630]` — [630] 128 D128 This strong assertion must be seen in its relationship
+- line 55770: `[631]` — [631] 129 D129 It is instructive to take not of Calvin's careful
+- line 55779: `[632]` — [632] 130 D130 In connection with the sacraments, there are three
+- line 55793: `[3]` — spiritual significance [3] must always follow the spiritual reality
+- line 55794: `[1]` — which is signified [1]). Calvin's specific interest in this section is,
+- line 55804: `[633]` — [633] See Calv. Cont. Articulos Theologorum Paris. Art 4. Item, Ad.
+- line 55809: `[634]` — [634] French, "Combien qu'il me fasche d'amasser tant de reveries
+- line 56199: `[635]` — they had cruelly shed." [635] But in very many other passages he
+- line 56450: `[636]` — 14. Hence proceeded that fictitious transubstantiation [636] for which
+- line 56563: `[637]` — not whether this was an extemporary conversion of substance. [637] For
+- line 56602: `[638]` — that it lies hid under it, [638] I must employ a short time in exposing
+- line 56805: `[639]` — metonymically." [639] Nor is the name merely transferred from the
+- line 56809: `[640]` — and the face of God, and the dove is called the Holy Spirit. [640] For
+- line 56848: `[641]` — horse and the ox are endued with motion. [641] Indeed, longer
+- line 56938: `[642]` — the blood. [642] If they answer, that we must look to the end or use
+- line 56957: `[643]` — the order of nature admits, and common sense dictates. [643] From these
+- line 57042: `[644]` — light of truth. [644] Hence the supercilious moroseness. We have no
+- line 57151: `[645]` — pertinent to the matter, [645] but will be contented to show briefly,
+- line 57261: `[646]` — spiritual life (Tertull. Cont. Marc. Lib. 4). [646] And certainly
+- line 57350: `[647]` — the bread in the Supper. [647] Secondly, the context proves that Christ
+- line 57372: `[648]` — the unity of person, he converted God into man and man into God. [648]
+- line 57453: `[649]` — enter us. [649] I may add, that there can be no doubt that the analogy
+- line 57573: `[650]` — [650] this head of doctrine, that the grace figured by the sacraments
+- line 58187: `[651]` — practice is to hold the Scriptures in derision, here cavil. [651]
+- line 58228: `[652]` — age. [652] "What the blood of the Lamb is you have learned, not by
+- line 58273: `[635]` — [635] See August. Hom. in Joann. 31 et 40, &c., Chrysost. Hom. ad
+- line 58277: `[636]` — [636] 131 D131 The degree to which Calvin's words concerning the Roman
+- line 58300: `[637]` — [637] Compare together Ambrose on those who are initiated in the
+- line 58304: `[638]` — [638] 132 D132 Calvin, though tactfully refraining from any mention of
+- line 58333: `[639]` — [639] Gen. 17:10; Exod. 12:11; 17:6; 1 Cor. 10:4.
+- line 58335: `[640]` — [640] Exod. 3:2; Psalm 84:8; 42:3; Mt 3:16.
+- line 58337: `[641]` — [641] French, "Certes si on ne veut abolir toute raison, on ne peut
+- line 58343: `[642]` — [642] The French adds, "Je di si Jesus Christ est enclos sous chacun
+- line 58347: `[643]` — [643] The French adds, "En lisant nos ecrits, on verra incontinent
+- line 58352: `[644]` — [644] Thus Augustine, speaking of certain persons, says: "It is
+- line 58356: `[645]` — [645] That the dogma of those who place the body of Christ in the bread
+- line 58362: `[646]` — [646] The French adds, "Car la figure seroit fausse, si ce qu'elle
+- line 58366: `[647]` — [647] The French adds, "veu qu'ils confessent que nous l'avons aussi
+- line 58370: `[648]` — [648] French, "Il faisoit Jesus Christ homme en tant qu'il est Dieu, et
+- line 58374: `[649]` — [649] See Bernard in Cant. Serm. 74, 75; et Trad. de Gratia et Liber.
+- line 58378: `[650]` — [650] See August. Cont. Liter. Petiliani, Lib. 2 c. 47, et Tract. in
+- line 58382: `[651]` — [651] See Calvin de Coena Domini. Item, Adv. Theol. Paris. Item, Vera
+- line 58386: `[652]` — [652] 133 D133 The reference is to Gregory I (frequently referred to as
+- line 58390: `[653]` — CHAPTER [653]
+- line 58483: `[654]` — Schoolmen at first received this dogma. [654] I leave them with their
+- line 58512: `[655]` — was not appointed Priest and Pontiff by the Father [655] for a time
+- line 58565: `[656]` — [656] undoubtedly the power and efficacy of his sacrifice continues
+- line 58769: `[657]` — may be more surely known by the diligent reading of the Fathers. [657]
+- line 58831: `[658]` — Parmen. Lib. 2 c. 8). [658]
+- line 58876: `[659]` — authority of man or length of prescription? [659] Accordingly, the
+- line 59038: `[660]` — golden cup, [660] has so intoxicated all the kings and nations of the
+- line 59093: `[661]` — gushing from the rock, the brazen serpent, and the like), [661] by this
+- line 59105: `[662]` — designated in Scripture [662] by the last hour, the last days, the last
+- line 59128: `[663]` — once a year, but in a garbled, mutilated, and lacerated form. [663]
+- line 59131: `[653]` — [653] Vid. Calv. Ep. de Fugiend. Illic. Sacris. Item, De Sacerdotiis
+- line 59135: `[654]` — [654] The French adds, "qui ont parlé un petit plus passablement que
+- line 59139: `[655]` — [655] Heb. 5:5-10; 7:17; 21; 9:11; 10:21; Ps. 110:4; Gen. 14:18.
+- line 59141: `[656]` — [656] Heb. 9:11, 12, 26; 10:10, 14, 16.
+- line 59143: `[657]` — [657] The French of this sentence is, "Car combien que ceux qui sont
+- line 59155: `[658]` — [658] This last sentence forms, in the French, the first of sec. 11.
+- line 59157: `[659]` — [659] French, "n'ancun authorite humaine, ne longeur de temps, ne
+- line 59161: `[660]` — [660] The French explains, "c'est à dire, sous le nom de la parole de
+- line 59165: `[661]` — [661] Exod. 16:13-15; 17:6; Num. 20:8., 21:9; 1 Cor. 10:4; John 3:14.
+- line 59167: `[662]` — [662] 1 John 2:18; 1 Pet. 1:20; Luke 10:22, Heb. 1:1; 1 Cor. 13:12.
+- line 59169: `[663]` — [663] French, "deschiree, decouppee, departie, brisee, divisee, et
+- line 59393: `[664]` — [664] does he not sufficiently intimate that these two ordinances excel
+- line 59400: `[665]` — OF CONFIRMATION. [665]
+- line 59514: `[666]` — absurd false zeal), [666] where did they get their oil which they call
+- line 59555: `[667]` — the Council of Melita? [667] "Let him who says that baptism is given
+- line 59589: `[668]` — words. [668] I thought that everything pertaining to Christianity was
+- line 59795: `[669]` — to regard as a saint. [669] "Visible sacraments were instituted for the
+- line 59826: `[670]` — Augustine, [670] that there is a sanctification without a visible
+- line 59839: `[671]` — promise of God, which is the only ground of a sacrament; [671] and,
+- line 59847: `[672]` — it by penitence. [672] This was a saying of Jerome. Let it be whose it
+- line 59896: `[673]` — [673] Our Lord, when about to give sight to the blind man, spat on the
+- line 59949: `[674]` — promise have reference to us. [674] No man contends that circumcision
+- line 59994: `[675]` — friends. [675] Our authority for this is Sigebert, in his Chronicles.
+- line 60026: `[676]` — of the Lord. [676] Although others who are more acute make not seven
+- line 60032: `[677]` — he makes Psalmists and Readers different. [677] To the former, he gives
+- line 60044: `[678]` — Christ their colleague. First, they say [678] he performed the office
+- line 60169: `[679]` — dress, let their locks hang loose. [679] But when hair returned to use,
+- line 60436: `[680]` — 36. The thing which misled them was the term sacrament. [680] But, was
+- line 60450: `[681]` — the title of a sacrament, [681] can it be anything but vertiginous
+- line 60493: `[664]` — [664] Ambros. de iis qui init. Mysteriis et de Sacrament.
+- line 60495: `[665]` — [665] Calv. adv. Concil. Trident. Præfat. in Catechis. Latinum. Viret.
+- line 60499: `[666]` — [666] French, "en laquelle toutesfois ils n'ont rien semblable a eux,
+- line 60503: `[667]` — [667] The French adds, "du ternps de Sainct Augustin;" --of the time of
+- line 60507: `[668]` — [668] De Consecr. Dist. 5, Concil. Aurel. cap. Ut Jejuni de Consecr.
+- line 60511: `[669]` — [669] French, "Auquel ils font semblant de porter une reverence
+- line 60515: `[670]` — [670] August. Quæst. Vet. Test. Lib. 3 De Bapt. Parvul. De Bapt. Cont.
+- line 60519: `[671]` — [671] The French adds, "Car, comme nous avoos assez declairé ci dessus,
+- line 60534: `[672]` — [672] Sent. Lib. 4 Dist. 14, cap. 1. De Poenit. Dist. 1, cap. 2.
+- line 60538: `[673]` — [673] John 9:6; Mt. 9:29; Luke 18:42; Acts 3:6; 5:16; 19:12.
+- line 60540: `[674]` — [674] 134 D134 This distinction in no way calls into question the value
+- line 60548: `[675]` — [675] The French adds, "Comment accorderont ils cela avec ce qu'ils
+- line 60552: `[676]` — [676] Isa. 11:2; Ezek. 1:20; Rom. 1:4, 8:15.
+- line 60554: `[677]` — [677] Isidor. Lib. 7, Etymolog, allegatim, cap. Cleros. Dist. 21, 33,
+- line 60558: `[678]` — [678] John 2:15; 10:7; Luke 4:17; Mt. 7:33; John 8:12; 13:5; Mt. 26:26;
+- line 60562: `[679]` — [679] The French adds, "Voila comment la tonsure n'estoit point une
+- line 60567: `[680]` — [680] French, "Ills ont eto trompé du mot de Sacrement qui est en la
+- line 60571: `[681]` — [681] Lat. Lib. 4 Dist. 26, cap. 6, et in Decret 27, Quæst. 2, cap. Quæ
+- line 60806: `[682]` — has conferred upon it. To mention a, few. [682] When those who bear the
+- line 60847: `[683]` — 5. Those who are desirous to introduce anarchy [683] object that,
+- line 60956: `[684]` — sedition. [684] When these three forms of government, of which
+- line 61077: `[685]` — [685] "They shall not hurt or destroy," how can magistrates be at once
+- line 61085: `[686]` — the pious, at the command of God, is neither to afflict nor hurt. [686]
+- line 61097: `[687]` — God. This was the feeling of Moses [687] when, recognising himself as
+- line 61114: `[688]` — executed the vengeance committed to them by God. Solomon says, [688]
+- line 61413: `[689]` — a crime, [689] because he repelled the calumnies of his accusers,
+- line 61605: `[690]` — effect. [690] We need not labour to prove that an impious king is a
+- line 61755: `[691]` — inclinations of kingdoms.65 [691] "God standeth in the congregation of
+- line 61787: `[692]` — [692] the Lord by their means equally executed his own work, when he
+- line 61857: `[682]` — [682] Exod. 22:8, 9; Ps. 82:1, 6; John 10:34, 35; Deut. 1:16, 17; 2
+- line 61861: `[683]` — [683] French, "Ceux qui voudroyent que les hommes vesquissent pesle
+- line 61865: `[684]` — [684] French "On conte trois especes de regime civil: c'est assavoir
+- line 61876: `[685]` — [685] Exod. 20:13; Deut. 5:17; Mt. 5:21; Isa. 11:9; 65:25.
+- line 61878: `[686]` — [686] The French adds, "Pourtant il est facile de conclure, qu'en cette
+- line 61892: `[687]` — [687] Exod 2:12; Acts 7:21; Exod. 32:26; 1 Kings 2:5; Ps 101:8; 45:8.
+- line 61894: `[688]` — [688] Prov 16:12; 20:26; 25:4, 5; 17:15; 17:14; 24:24.
+- line 61896: `[689]` — [689] Acts 22, 24:12; 16:37; 22:25; 25:10; Lev. 19:18; Mt. 5:39; Deut.
+- line 61900: `[690]` — [690] Job 34:30; Hos. 13:11; Isa. 3:4; 10:5: Deut. 28:29.
+- line 61902: `[691]` — [691] Dan. 9:7; Prov. 21:1; Psalm 82:1; 2:10; Isaiah 10:1.
+- line 61904: `[692]` — [692] The French adds, "Car les uns les faisoyent estans asseurez
+- line 61911: `[693]` — ONE HUNDRED APHORISMS, [693]
+- line 62569: `[693]` — [693] * The One Hundred Aphorisms, with the various Tables and Indices,
+- line 62583: `[1]` — [1]1:2   [2]1:26   [3]1:27   [4]1:31   [5]2:7   [6]2:7   [7]2:17
+- line 62584: `[8]` — [8]2:18   [9]2:23   [10]2:23   [11]3:7   [12]3:9   [13]3:12
+- line 62585: `[14]` — [14]3:15   [15]3:15   [16]3:15   [17]3:22   [18]4:4   [19]4:7
+- line 62586: `[20]` — [20]4:10   [21]4:13   [22]6:3   [23]6:5   [24]6:6   [25]6:18
+- line 62587: `[26]` — [26]7:21   [27]8:21   [28]9:6   [29]12:12   [30]12:17   [31]14:18
+- line 62588: `[32]` — [32]14:18   [33]15:1   [34]15:1   [35]15:5   [36]15:17   [37]16:9
+- line 62589: `[38]` — [38]17:7   [39]17:7   [40]17:10   [41]17:10   [42]17:13   [43]17:15
+- line 62590: `[44]` — [44]17:27   [45]18:2   [46]18:23   [47]20:3   [48]20:7   [49]21:1
+- line 62591: `[50]` — [50]21:12   [51]21:24   [52]22:1   [53]22:8   [54]22:16-18   [55]23:4
+- line 62592: `[56]` — [56]23:19   [57]24:7   [58]24:10   [59]26:27   [60]27:28
+- line 62593: `[61]` — [61]27:38-39   [62]28:12   [63]28:20   [64]29   [65]30:2   [66]31:19
+- line 62594: `[67]` — [67]31:20   [68]31:40-41   [69]32   [70]32:10   [71]32:13
+- line 62595: `[72]` — [72]32:29-30   [73]33   [74]34   [75]36:22   [76]37:18   [77]37:28
+- line 62596: `[78]` — [78]37:33   [79]38:18   [80]42   [81]43   [82]43:14   [83]45:5
+- line 62597: `[84]` — [84]47:9   [85]47:9   [86]47:29-30   [87]48:14   [88]48:16
+- line 62598: `[89]` — [89]49:5-6   [90]49:18
+- line 62602: `[91]` — [91]2:12   [92]3:2   [93]3:4   [94]3:4   [95]3:6   [96]3:21
+- line 62603: `[97]` — [97]4:11   [98]4:21   [99]4:21   [100]4:21   [101]4:25   [102]6:7
+- line 62604: `[103]` — [103]7:1   [104]9:11   [105]11:3   [106]12:5   [107]12:11
+- line 62605: `[108]` — [108]12:26   [109]12:43   [110]13:12   [111]14:19   [112]14:28
+- line 62606: `[113]` — [113]14:29   [114]14:31   [115]16:7   [116]16:13-15   [117]17:9
+- line 62607: `[118]` — [118]18:16   [119]19:5   [120]19:6   [121]19:13   [122]19:16
+- line 62608: `[123]` — [123]20:4   [124]20:6   [125]20:6   [126]20:13   [127]20:24
+- line 62609: `[128]` — [128]21:13   [129]21:17   [130]22   [131]22:1   [132]22:8-9
+- line 62610: `[133]` — [133]22:11   [134]22:29   [135]23:1   [136]23:4   [137]23:7
+- line 62611: `[138]` — [138]23:12   [139]23:13   [140]24:9   [141]24:18   [142]24:18
+- line 62612: `[143]` — [143]25:17   [144]25:18   [145]25:21   [146]25:40   [147]29:36
+- line 62613: `[148]` — [148]30:30   [149]31:2   [150]31:13-17   [151]32:4   [152]32:26
+- line 62614: `[153]` — [153]32:32   [154]33:19   [155]33:19   [156]33:20   [157]34:6-7
+- line 62615: `[158]` — [158]34:7   [159]34:29   [160]40:34
+- line 62619: `[161]` — [161]4   [162]18:5   [163]18:5   [164]18:5   [165]18:5   [166]19:1
+- line 62620: `[167]` — [167]19:2   [168]19:12   [169]19:16   [170]19:18   [171]19:18
+- line 62621: `[172]` — [172]19:30-31   [173]20:9   [174]20:27   [175]26:3   [176]26:4
+- line 62622: `[177]` — [177]26:11   [178]26:12   [179]26:20   [180]26:23-24   [181]26:26
+- line 62623: `[182]` — [182]26:36
+- line 62627: `[183]` — [183]6:18   [184]9:18   [185]11:9   [186]11:18   [187]11:33
+- line 62628: `[188]` — [188]12:1   [189]13:22   [190]14:18   [191]14:43   [192]16:24
+- line 62629: `[193]` — [193]20:8   [194]20:10   [195]23:10   [196]23:19
+- line 62633: `[197]` — [197]1:16   [198]1:16   [199]1:16-17   [200]1:39   [201]2:30
+- line 62634: `[202]` — [202]2:30   [203]4:2   [204]4:7   [205]4:8-9   [206]4:11   [207]4:15
+- line 62635: `[208]` — [208]4:15   [209]4:37   [210]5:14   [211]5:17   [212]6:5   [213]6:5
+- line 62636: `[214]` — [214]6:13   [215]6:16   [216]6:25   [217]7:6   [218]7:7-8
+- line 62637: `[219]` — [219]7:12-13   [220]8:2   [221]8:3   [222]8:3   [223]8:17   [224]9:6
+- line 62638: `[225]` — [225]10:12-13   [226]10:14-15   [227]10:14-15   [228]10:16
+- line 62639: `[229]` — [229]11:26   [230]12:28-32   [231]12:32   [232]17:9   [233]17:11
+- line 62640: `[234]` — [234]17:16-20   [235]17:18-19   [236]18:11   [237]19:5   [238]19:19
+- line 62641: `[239]` — [239]21:18   [240]21:23   [241]23:5   [242]24:13   [243]27:26
+- line 62642: `[244]` — [244]27:26   [245]27:26   [246]27:26   [247]28:1   [248]28:1
+- line 62643: `[249]` — [249]28:1   [250]28:29   [251]28:65   [252]29:2   [253]29:3
+- line 62644: `[254]` — [254]29:4   [255]29:18   [256]29:29   [257]29:29   [258]30:3
+- line 62645: `[259]` — [259]30:6   [260]30:11   [261]30:12   [262]30:12   [263]30:12-13
+- line 62646: `[264]` — [264]30:14   [265]30:14   [266]30:14   [267]30:19   [268]32
+- line 62647: `[269]` — [269]32:8-9   [270]32:8-9   [271]32:15   [272]32:17   [273]32:22
+- line 62648: `[274]` — [274]32:35   [275]32:35   [276]32:46-47   [277]33:3   [278]33:29
+- line 62652: `[279]` — [279]1:7-8   [280]2:4   [281]5:14   [282]7:19   [283]10:13
+- line 62654: `[284]` — [284]11:20   [285]24:2
+- line 62658: `[286]` — [286]2:1   [287]2:20   [288]6:7   [289]6:14   [290]6:34   [291]6:37
+- line 62659: `[292]` — [292]8:27   [293]9:20   [294]11:30   [295]13:19   [296]13:22
+- line 62660: `[297]` — [297]16:28   [298]21:25
+- line 62664: `[299]` — [299]3:13
+- line 62668: `[300]` — [300]1:13   [301]2:6   [302]2:9   [303]2:10   [304]2:25   [305]2:25
+- line 62669: `[306]` — [306]2:34   [307]2:35   [308]6:9   [309]7:6   [310]7:7   [311]7:8
+- line 62670: `[312]` — [312]8:11   [313]10:6   [314]10:26   [315]11:6   [316]11:15
+- line 62671: `[317]` — [317]12:22   [318]14:44   [319]15   [320]15:11   [321]15:11
+- line 62672: `[322]` — [322]15:22   [323]15:23   [324]15:29   [325]15:30   [326]16:13
+- line 62673: `[327]` — [327]16:14   [328]16:14   [329]23:26-27   [330]24:6   [331]24:11
+- line 62674: `[332]` — [332]26:23
+- line 62678: `[333]` — [333]5:8   [334]7:14   [335]7:27   [336]7:28   [337]10:12   [338]11:4
+- line 62679: `[339]` — [339]11:15   [340]12:12   [341]12:13   [342]12:13-14   [343]12:18
+- line 62680: `[344]` — [344]16:10   [345]17:7   [346]17:14   [347]17:14   [348]22:20-21
+- line 62681: `[349]` — [349]24:1   [350]24:10
+- line 62685: `[351]` — [351]1:21   [352]2:5   [353]8:23   [354]8:27   [355]8:46   [356]8:46
+- line 62686: `[357]` — [357]8:46-50   [358]8:58   [359]11:23   [360]11:31   [361]11:34
+- line 62687: `[362]` — [362]11:39   [363]12:10   [364]12:10   [365]12:15   [366]12:15
+- line 62688: `[367]` — [367]12:20   [368]12:28   [369]15:4   [370]18:10   [371]18:17-18
+- line 62689: `[372]` — [372]18:42   [373]19:8   [374]19:13   [375]19:14   [376]19:18
+- line 62690: `[377]` — [377]21:28-29   [378]22:6   [379]22:11   [380]22:20   [381]22:22
+- line 62691: `[382]` — [382]22:22
+- line 62695: `[383]` — [383]1:12   [384]5:17-19   [385]5:31   [386]6:17   [387]6:17
+- line 62696: `[388]` — [388]8:19   [389]10:10   [390]16:10   [391]16:17   [392]17:24-34
+- line 62697: `[393]` — [393]19:4   [394]19:35   [395]20:2   [396]20:3   [397]20:9
+- line 62698: `[398]` — [398]20:11   [399]20:15   [400]22:1   [401]22:3-4   [402]22:8
+- line 62699: `[403]` — [403]22:20   [404]23:16
+- line 62703: `[405]` — [405]19:6-7   [406]19:6-7   [407]34:15
+- line 62707: `[408]` — [408]8:21
+- line 62711: `[409]` — [409]1:4   [410]1:5   [411]1:6-7   [412]9:14
+- line 62715: `[413]` — [413]4:16
+- line 62719: `[414]` — [414]1:6   [415]1:21   [416]4:17-20   [417]4:18   [418]4:19
+- line 62720: `[419]` — [419]5:17   [420]9:2-3   [421]9:3   [422]9:4   [423]9:20   [424]10:15
+- line 62721: `[425]` — [425]12:18   [426]12:20   [427]12:24   [428]13:15   [429]14:4
+- line 62722: `[430]` — [430]14:5   [431]14:5   [432]14:17   [433]15:15-16   [434]18:17
+- line 62723: `[435]` — [435]19:25-27   [436]19:25-27   [437]21:13   [438]26:14   [439]28:21
+- line 62724: `[440]` — [440]28:28   [441]28:28   [442]34:30   [443]41:11   [444]110
+- line 62728: `[445]` — [445]1   [446]1:1   [447]1:2   [448]2:2-4   [449]2:8   [450]2:9
+- line 62729: `[451]` — [451]2:9   [452]2:10   [453]2:12   [454]2:12   [455]3   [456]3:5
+- line 62730: `[457]` — [457]5:3   [458]5:7   [459]5:7   [460]6:1   [461]7:6   [462]7:9
+- line 62731: `[463]` — [463]8:2   [464]8:3   [465]8:4   [466]8:4   [467]9:10   [468]12:2
+- line 62732: `[469]` — [469]12:6   [470]14:1   [471]14:3   [472]14:53   [473]15:1-2
+- line 62733: `[474]` — [474]15:1-2   [475]15:1-2   [476]16   [477]16:2   [478]16:2-3
+- line 62734: `[479]` — [479]16:5   [480]16:5-6   [481]16:10   [482]17:15   [483]17:15
+- line 62735: `[484]` — [484]18:1   [485]18:27   [486]18:30   [487]19   [488]19   [489]19
+- line 62736: `[490]` — [490]19:1   [491]19:1-9   [492]19:7-8   [493]19:12   [494]19:12
+- line 62737: `[495]` — [495]19:12   [496]20:3   [497]20:9   [498]22:5   [499]22:8
+- line 62738: `[500]` — [500]22:26   [501]23   [502]23:4   [503]23:4   [504]23:6   [505]24:6
+- line 62739: `[506]` — [506]25   [507]25:1   [508]25:7   [509]25:7   [510]25:10
+- line 62740: `[511]` — [511]25:10-11   [512]25:18   [513]26   [514]26:2   [515]27:10
+- line 62741: `[516]` — [516]27:14   [517]30:5   [518]30:6-7   [519]31   [520]31   [521]31
+- line 62742: `[522]` — [522]31:5   [523]31:15   [524]31:22   [525]32   [526]32:1   [527]32:1
+- line 62743: `[528]` — [528]32:1   [529]32:1   [530]32:1-2   [531]32:1-2   [532]32:5
+- line 62744: `[533]` — [533]32:6   [534]32:13-14   [535]33:6   [536]33:6   [537]33:12
+- line 62745: `[538]` — [538]33:12   [539]33:13   [540]33:22   [541]34:6   [542]34:7
+- line 62746: `[543]` — [543]34:14   [544]34:15   [545]34:15   [546]34:15-16   [547]34:16
+- line 62747: `[548]` — [548]36:1   [549]36:5   [550]36:6   [551]36:7   [552]36:9   [553]36:9
+- line 62748: `[554]` — [554]38:4   [555]38:7   [556]39:5   [557]39:6   [558]39:7   [559]39:9
+- line 62749: `[560]` — [560]39:12   [561]39:13   [562]40   [563]40:3   [564]40:5
+- line 62750: `[565]` — [565]40:7-8   [566]40:10-11   [567]41:4   [568]42:4   [569]42:6
+- line 62751: `[570]` — [570]44:3   [571]44:20-21   [572]45   [573]45:7   [574]45:8
+- line 62752: `[575]` — [575]45:10   [576]46:1-2   [577]46:5   [578]47:4   [579]48:10
+- line 62753: `[580]` — [580]48:11   [581]49:6   [582]49:7   [583]49:10   [584]50
+- line 62754: `[585]` — [585]50:15   [586]50:15   [587]50:15   [588]50:15   [589]51
+- line 62755: `[590]` — [590]51:1   [591]51:4   [592]51:4   [593]51:5   [594]51:5   [595]51:5
+- line 62756: `[596]` — [596]51:6   [597]51:10   [598]51:12   [599]51:12   [600]51:15
+- line 62757: `[601]` — [601]51:17   [602]52:6   [603]52:8   [604]55:22-23   [605]55:23
+- line 62758: `[606]` — [606]56:9   [607]59   [608]59:10   [609]60:12   [610]62:8
+- line 62759: `[611]` — [611]62:10   [612]63:3   [613]65:1   [614]65:2   [615]65:4   [616]68
+- line 62760: `[617]` — [617]68:19   [618]68:20   [619]69:4   [620]69:21   [621]69:28
+- line 62761: `[622]` — [622]69:28   [623]70   [624]70   [625]72:8   [626]72:11   [627]73
+- line 62762: `[628]` — [628]73:2   [629]73:3   [630]73:3-4   [631]73:16   [632]73:17
+- line 62763: `[633]` — [633]73:26   [634]74:9   [635]75:6-7   [636]77   [637]77:9
+- line 62764: `[638]` — [638]77:11   [639]78   [640]78:8   [641]78:36-37   [642]78:60
+- line 62765: `[643]` — [643]78:67   [644]78:67-68   [645]78:70   [646]78:71   [647]79:13
+- line 62766: `[648]` — [648]80:2   [649]80:3   [650]80:4   [651]80:17   [652]82:1
+- line 62767: `[653]` — [653]82:1   [654]82:1   [655]82:3-4   [656]82:6   [657]82:6
+- line 62768: `[658]` — [658]82:6   [659]84   [660]84:8   [661]86:2   [662]86:5   [663]86:11
+- line 62769: `[664]` — [664]88   [665]88   [666]88:16   [667]89:3-4   [668]89:30-33
+- line 62770: `[669]` — [669]89:31-34   [670]89:35   [671]89:37   [672]90:4   [673]90:7-9
+- line 62771: `[674]` — [674]90:11   [675]91:1   [676]91:2-6   [677]91:11   [678]91:11
+- line 62772: `[679]` — [679]91:14   [680]91:15   [681]92:6   [682]92:12-14   [683]93
+- line 62773: `[684]` — [684]93:5   [685]94   [686]94:11   [687]94:11   [688]94:12-13
+- line 62774: `[689]` — [689]95:7   [690]95:8   [691]96   [692]97   [693]97:7   [694]97:10-11
+- line 62775: `[695]` — [695]98   [696]99   [697]100:3   [698]100:3   [699]101:4-6
+- line 62776: `[700]` — [700]101:8   [701]102   [702]102:18   [703]102:21   [704]102:25-28
+- line 62777: `[705]` — [705]102:26   [706]103:17   [707]103:20   [708]104   [709]104:2
+- line 62778: `[710]` — [710]104:3-4   [711]104:15   [712]104:27-30   [713]105:4   [714]105:6
+- line 62779: `[715]` — [715]105:25   [716]105:25   [717]106:4-5   [718]106:30-31
+- line 62780: `[719]` — [719]106:30-31   [720]106:37   [721]106:46   [722]106:47   [723]107
+- line 62781: `[724]` — [724]107:6   [725]107:13   [726]107:16   [727]107:19   [728]107:25
+- line 62782: `[729]` — [729]107:29   [730]107:40   [731]107:40   [732]109   [733]110:1
+- line 62783: `[734]` — [734]110:4   [735]110:4   [736]110:4   [737]110:4   [738]110:4
+- line 62784: `[739]` — [739]110:6   [740]111:2   [741]111:10   [742]111:10   [743]112
+- line 62785: `[744]` — [744]113   [745]113:5-6   [746]113:7   [747]115:3   [748]115:3
+- line 62786: `[749]` — [749]115:3   [750]115:4   [751]115:8   [752]115:135   [753]116:1
+- line 62787: `[754]` — [754]116:7   [755]116:12-13   [756]116:15   [757]116:15   [758]116:15
+- line 62788: `[759]` — [759]117:2   [760]118   [761]118   [762]118:6   [763]118:18
+- line 62789: `[764]` — [764]118:25-26   [765]119   [766]119:10   [767]119:10   [768]119:18
+- line 62790: `[769]` — [769]119:34   [770]119:36   [771]119:41   [772]119:43   [773]119:71
+- line 62791: `[774]` — [774]119:76   [775]119:76   [776]119:105   [777]119:106
+- line 62792: `[778]` — [778]119:112   [779]119:133   [780]119:146-147   [781]121:4
+- line 62793: `[782]` — [782]130:3   [783]130:3   [784]130:4   [785]130:4   [786]131:1-2
+- line 62794: `[787]` — [787]132:7   [788]132:10   [789]132:11   [790]132:13-14   [791]133:3
+- line 62795: `[792]` — [792]136:25   [793]137   [794]138:2   [795]139   [796]139
+- line 62796: `[797]` — [797]141:2   [798]141:4   [799]142   [800]142:5   [801]142:7
+- line 62797: `[802]` — [802]143:2   [803]143:2   [804]143:2   [805]143:2   [806]143:5
+- line 62798: `[807]` — [807]144   [808]144:2   [809]144:15   [810]145   [811]145:9
+- line 62799: `[812]` — [812]145:18   [813]145:18   [814]145:19   [815]146:9   [816]147:10-11
+- line 62800: `[817]` — [817]147:20
+- line 62804: `[818]` — [818]1:7   [819]1:9   [820]3:11   [821]3:11-12   [822]8:15
+- line 62805: `[823]` — [823]8:15-16   [824]8:22   [825]8:22   [826]10:7   [827]10:12
+- line 62806: `[828]` — [828]10:12   [829]12:14   [830]12:28   [831]14:21   [832]14:26
+- line 62807: `[833]` — [833]15:8   [834]16:1   [835]16:2   [836]16:4   [837]16:6   [838]16:6
+- line 62808: `[839]` — [839]16:9   [840]16:12   [841]16:14   [842]16:33   [843]18:10
+- line 62809: `[844]` — [844]18:10   [845]19:17   [846]20:7   [847]20:7   [848]20:9
+- line 62810: `[849]` — [849]20:12   [850]20:20   [851]20:24   [852]20:28   [853]21:1
+- line 62811: `[854]` — [854]21:1   [855]21:2   [856]22:28   [857]24:21   [858]25:2
+- line 62812: `[859]` — [859]25:21   [860]25:27   [861]26:10   [862]28:2   [863]28:14
+- line 62813: `[864]` — [864]29:13   [865]29:18   [866]30:4   [867]30:5   [868]30:6
+- line 62817: `[869]` — [869]3:19   [870]7:29   [871]7:29   [872]9:1   [873]9:1   [874]9:4
+- line 62819: `[875]` — [875]9:5-6   [876]12:7
+- line 62823: `[877]` — [877]1:3   [878]1:5-6   [879]1:10   [880]1:12   [881]1:13
+- line 62824: `[882]` — [882]1:13-16   [883]1:14   [884]1:15   [885]1:16-17   [886]1:17
+- line 62825: `[887]` — [887]1:18   [888]1:19-20   [889]2:8   [890]2:31   [891]3:1   [892]3:3
+- line 62826: `[893]` — [893]3:4   [894]3:14   [895]4:1   [896]4:3   [897]5:8   [898]5:10
+- line 62827: `[899]` — [899]5:26   [900]5:26   [901]6   [902]6:4   [903]6:5   [904]6:5
+- line 62828: `[905]` — [905]6:9   [906]6:9-10   [907]7:4   [908]7:4   [909]7:14   [910]8:12
+- line 62829: `[911]` — [911]8:14   [912]8:14   [913]8:16   [914]8:17   [915]9:6   [916]9:6
+- line 62830: `[917]` — [917]9:6   [918]9:6   [919]10:1   [920]10:6   [921]10:15   [922]11:2
+- line 62831: `[923]` — [923]11:2   [924]11:2   [925]11:2   [926]11:4   [927]11:9
+- line 62832: `[928]` — [928]11:10   [929]12:1   [930]14:1   [931]14:27   [932]19:18
+- line 62833: `[933]` — [933]24:23   [934]25:1   [935]25:8   [936]25:9   [937]25:9
+- line 62834: `[938]` — [938]26:1   [939]26:19   [940]26:19-21   [941]26:21   [942]28:16
+- line 62835: `[943]` — [943]29:13   [944]29:13   [945]29:13-14   [946]30:1   [947]30:15
+- line 62836: `[948]` — [948]30:33   [949]33:14-15   [950]33:14-15   [951]33:22   [952]33:22
+- line 62837: `[953]` — [953]33:22   [954]33:24   [955]35:8   [956]37:2   [957]37:16
+- line 62838: `[958]` — [958]37:32   [959]37:35   [960]37:36   [961]38:2   [962]38:7
+- line 62839: `[963]` — [963]38:15   [964]38:17   [965]38:20   [966]39:7   [967]40:2
+- line 62840: `[968]` — [968]40:2   [969]40:3   [970]40:6   [971]40:11   [972]40:13
+- line 62841: `[973]` — [973]40:13   [974]40:18   [975]40:21   [976]40:29-31   [977]41:8
+- line 62842: `[978]` — [978]41:9   [979]42:8   [980]42:9   [981]42:10   [982]42:13
+- line 62843: `[983]` — [983]43:10   [984]43:11   [985]43:25   [986]43:25   [987]44:3
+- line 62844: `[988]` — [988]44:3   [989]44:6   [990]44:6   [991]44:16   [992]45:7
+- line 62845: `[993]` — [993]45:7   [994]45:23   [995]45:23   [996]45:23   [997]45:25
+- line 62846: `[998]` — [998]45:25   [999]48:10   [1000]48:16   [1001]49:15   [1002]49:23
+
+## 3. Garbled polytonic Greek (advisory — reconstruct by hand)
+
+_No suspect Greek runs detected._
+
+## 4. Near-homographs (choose — alternatives offered, never applied)
+
+_No known theological near-homographs present._
