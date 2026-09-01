@@ -3,43 +3,10 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { TRADITIONS, ERAS } from '@/lib/constants'
+import { slugify, fetchWikipediaSuggestions } from '@/lib/authors/wikipedia'
 
 const input = 'w-full px-3 py-2 border border-stone-300 rounded text-stone-800 focus:outline-none focus:ring-2 focus:ring-stone-400 bg-white'
 const label = 'block text-sm font-medium text-stone-700 mb-1'
-
-function slugify(text: string): string {
-  return text.toLowerCase().replace(/[^a-z0-9\s-]/g, '').replace(/\s+/g, '-').replace(/-+/g, '-').trim()
-}
-
-function extractYears(text: string): { birth: number | null; death: number | null } {
-  const range = text.match(/\([^)]*?(\d{3,4})\s*[–—-]\s*[^)]*?(\d{3,4})[^)]*?\)/)
-  if (range) return { birth: parseInt(range[1]), death: parseInt(range[2]) }
-  const born = text.match(/born\s+(?:c\.?\s*)?(\d{3,4})/)
-  const died = text.match(/died\s+(?:c\.?\s*)?(\d{3,4})/)
-  return { birth: born ? parseInt(born[1]) : null, death: died ? parseInt(died[1]) : null }
-}
-
-function suggestTradition(text: string): string {
-  const t = text.toLowerCase()
-  if (t.includes('reformed') || t.includes('calvinist') || t.includes('presbyterian')) return 'reformed'
-  if (t.includes('lutheran')) return 'lutheran'
-  if (t.includes('anglican') || t.includes('church of england')) return 'anglican'
-  if (t.includes('methodist')) return 'methodist'
-  if (t.includes('anabaptist') || t.includes('mennonite') || t.includes('quaker')) return 'radical-reformation'
-  if (t.includes('eastern orthodox') || t.includes('greek orthodox') || t.includes('russian orthodox')) return 'eastern-orthodox'
-  if (t.includes('roman catholic') || t.includes('jesuit') || t.includes('dominican') || t.includes('franciscan') || t.includes('benedictine')) return 'roman-catholic'
-  if (t.includes('coptic') || t.includes('syriac') || t.includes('armenian church') || t.includes('ethiopian') || t.includes('oriental orthodox')) return 'oriental-orthodox'
-  if (t.includes('byzantine') || t.includes('carolingian') || t.includes('john of damascus') || t.includes('maximus the confessor')) return 'imperial'
-  if (
-    t.includes('church father') || t.includes('patristic') ||
-    t.includes('archbishop of constantinople') || t.includes('bishop of hippo') ||
-    t.includes('bishop of milan') || t.includes('bishop of carthage') ||
-    t.includes('cappadocian') || t.includes('doctor of the church') ||
-    t.includes('archbishop') || t.includes('patriarch')
-  ) return 'patristic'
-  if (t.includes('early church') || t.includes('apostolic father') || t.includes('apologist') || t.includes('ante-nicene')) return 'early-church'
-  return ''
-}
 
 type LocationOption = { id: number; name: string; slug: string }
 
@@ -77,37 +44,27 @@ export default function NewAuthorForm() {
     if (!name.trim()) return
     setWikiLoading(true)
     setWikiNote(null)
-    try {
-      const res = await fetch(
-        `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(name.trim())}`,
-        { headers: { Accept: 'application/json' } }
+    const result = await fetchWikipediaSuggestions(name)
+    setWikiLoading(false)
+
+    if (!result.ok) {
+      setWikiNote(
+        result.reason === 'not-found'
+          ? { type: 'warn', text: `No Wikipedia article found for "${name}". Try a different spelling.` }
+          : { type: 'warn', text: 'Could not reach Wikipedia. Check your connection and try again.' }
       )
-      if (!res.ok) {
-        setWikiNote({ type: 'warn', text: `No Wikipedia article found for "${name}". Try a different spelling.` })
-        return
-      }
-      const data = await res.json()
-      const extract: string = data.extract ?? ''
-      const description: string = data.description ?? ''
-
-      const { birth, death } = extractYears(extract)
-      if (birth) setBirthYear(String(birth))
-      if (death) setDeathYear(String(death))
-
-      setTraditionSlug('')
-      const suggested = suggestTradition(extract + ' ' + description)
-      if (suggested) setTraditionSlug(suggested)
-
-      const sentences = extract.replace(/\n+/g, ' ').split(/(?<=[.!?])\s+/)
-      setBio(sentences.slice(0, 3).join(' '))
-      setBioSource(`Wikipedia, cached ${new Date().toISOString().split('T')[0]}`)
-
-      setWikiNote({ type: 'success', text: `Suggestions loaded from Wikipedia: "${data.title}". Review every field before saving.` })
-    } catch {
-      setWikiNote({ type: 'warn', text: 'Could not reach Wikipedia. Check your connection and try again.' })
-    } finally {
-      setWikiLoading(false)
+      return
     }
+
+    // New author starts blank, so every suggestion is applied wholesale.
+    const s = result.suggestions
+    if (s.birthYear) setBirthYear(String(s.birthYear))
+    if (s.deathYear) setDeathYear(String(s.deathYear))
+    setTraditionSlug(s.traditionSlug)
+    setBio(s.bio)
+    setBioSource(s.bioSource)
+
+    setWikiNote({ type: 'success', text: `Suggestions loaded from Wikipedia: "${s.title}". Review every field before saving.` })
   }
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
