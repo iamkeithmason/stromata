@@ -1,0 +1,13 @@
+# provenance.yml — copied verbatim from the human clearance record.
+# Values copied verbatim from the human clearance record on the Content Prospect List, not synthesised by the Sourcer. Copyright and translation-rights judgement remain the editor’s.
+
+cleared_edition_url: https://ccel.org/ccel/calvin/institutes
+fetched_url: https://ccel.org/ccel/c/calvin/institutes/cache/institutes.txt
+translator: Henry Beveridge
+edition_year: 1564
+publication_year: 1845
+pd_basis: "Calvin d.1564. English translation by Henry Beveridge, 1845 (Calvin Translation Society) — published 1845, public domain. PD source: CCEL full Institutes (single plain-text export, institutes.txt)."
+ocr_source: ccel.org
+fetched_at: 2026-09-01T12:28:28.539Z
+sourcer_version: sourcer-agent v0
+provenance_note: Values copied verbatim from the human clearance record on the Content Prospect List, not synthesised by the Sourcer. Copyright and translation-rights judgement remain the editor’s.

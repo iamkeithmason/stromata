@@ -1,0 +1,40 @@
+# provenance.yml — copied verbatim from the human clearance record.
+# Values copied verbatim from the human clearance record on the Content Prospect List, not synthesised by the Sourcer. Copyright and translation-rights judgement remain the editor’s.
+
+cleared_edition_url: https://www.newadvent.org/summa/1002.htm
+fetched_url: https://www.newadvent.org/summa/1002.htm
+fetched_parts:
+  - https://www.newadvent.org/summa/1002.htm
+  - https://www.newadvent.org/summa/2001.htm
+  - https://www.newadvent.org/summa/2002.htm
+  - https://www.newadvent.org/summa/2003.htm
+  - https://www.newadvent.org/summa/2004.htm
+  - https://www.newadvent.org/summa/2005.htm
+  - https://www.newadvent.org/summa/2090.htm
+  - https://www.newadvent.org/summa/2091.htm
+  - https://www.newadvent.org/summa/2092.htm
+  - https://www.newadvent.org/summa/2093.htm
+  - https://www.newadvent.org/summa/2094.htm
+  - https://www.newadvent.org/summa/2095.htm
+  - https://www.newadvent.org/summa/2096.htm
+  - https://www.newadvent.org/summa/2097.htm
+  - https://www.newadvent.org/summa/3001.htm
+  - https://www.newadvent.org/summa/3002.htm
+  - https://www.newadvent.org/summa/3003.htm
+  - https://www.newadvent.org/summa/3004.htm
+  - https://www.newadvent.org/summa/3017.htm
+  - https://www.newadvent.org/summa/3018.htm
+  - https://www.newadvent.org/summa/3019.htm
+  - https://www.newadvent.org/summa/3023.htm
+  - https://www.newadvent.org/summa/3024.htm
+  - https://www.newadvent.org/summa/3025.htm
+  - https://www.newadvent.org/summa/3026.htm
+  - https://www.newadvent.org/summa/3027.htm
+translator: null
+edition_year: 1274
+publication_year: 1929
+pd_basis: "Aquinas d.1274. English translation: Fathers of the English Dominican Province, 1911–1925 (pre-1929, public domain), as hosted on New Advent. PD source: New Advent Summa per-Question pages (allowlisted; the cleaner strips New Advent chrome)."
+ocr_source: newadvent.org
+fetched_at: 2026-09-01T12:26:25.565Z
+sourcer_version: sourcer-agent v0
+provenance_note: Values copied verbatim from the human clearance record on the Content Prospect List, not synthesised by the Sourcer. Copyright and translation-rights judgement remain the editor’s.
