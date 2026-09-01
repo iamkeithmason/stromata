@@ -7,6 +7,30 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-09-01 — Sourcer workflow now bumps Notion Status to "In progress" on apply runs
+
+The first live run of the Sourcer GitHub Action (run #24, manual `apply`) reported a job **failure**,
+but the agent itself did all its work correctly — it gated 33 candidates to 3, staged all three
+bundles, and even pushed the branch. The only thing that failed was the final
+`peter-evans/create-pull-request` step: `GitHub Actions is not permitted to create or approve pull
+requests`. That's the repo/org setting (Settings → Actions → General → Workflow permissions → "Allow
+GitHub Actions to create and approve pull requests"), not a code bug. The already-pushed branch was
+opened as a draft PR by hand and merged (the three bundles: Aquinas *Summa* selection, Neale *Hymns
+of the Eastern Church*, Calvin *Institutes* selection).
+
+Follow-on change (this branch): the Sourcer already had `bumpStatusInProgress()` wired to the
+`--set-notion-status` CLI flag (one Notion write, off by default — it never touches `Rights cleared`
+or `Cleared edition URL`), but `.github/workflows/sourcer.yml` never passed the flag, so scheduled
+runs read the prospect list without ever writing back. Added `--set-notion-status` to the two APPLY
+branches of the "Resolve run flags" step (schedule + manual-apply); left off the dry-run branches
+(nothing is staged there, so it's a no-op anyway). After a prospect is staged, its Content Prospect
+List **Status** is set to **"In progress"**. Verified against the live Notion schema first: `Status`
+is a `select` property (so the code's `{select:{name}}` PATCH shape is correct) and `In progress`
+(lowercase "p", purple) is an existing option — exact match for `config.ts`'s `inProgressStatus`.
+One thing still to confirm on Keith's side: the Notion integration behind `NOTION_TOKEN` needs
+**Update content** capability on the database, or each bump 403s and is recorded as a non-fatal error
+(the run still succeeds, the status just doesn't move).
+
 ## 2026-08-31 — Source allowlist broadened (Gutenberg / sacred-texts / Ex-Classics); New Whitchurch texts unstuck via "Path A"
 
 The code change (this branch / PR #32) is small but the reasoning behind it is the useful part. It
