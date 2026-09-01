@@ -44,8 +44,9 @@ function remarkNumberParagraphs() {
   }
 }
 
-export default function MarkdownBody({ content, numbered = true, size = 'default' }: { content: string; numbered?: boolean; size?: 'default' | 'large' }) {
+export default function MarkdownBody({ content, numbered = true, size = 'default' }: { content: string; numbered?: boolean; size?: 'default' | 'large' | 'small' }) {
   const remarkPlugins = numbered ? [remarkGfm, remarkNumberParagraphs] : [remarkGfm]
+  const proseSize = size === 'large' ? 'var(--text-xl)' : size === 'small' ? 'var(--text-label)' : 'var(--text-prose)'
 
   return (
     <ReactMarkdown
@@ -90,7 +91,7 @@ export default function MarkdownBody({ content, numbered = true, size = 'default
                   {num}
                 </span>
               )}
-              <p className="font-serif leading-loose mb-5" style={{ color: '#1b1b1b', fontSize: size === 'large' ? 'var(--text-xl)' : 'var(--text-prose)' }}>
+              <p className={`font-serif mb-5 ${size === 'small' ? 'leading-relaxed' : 'leading-loose'}`} style={{ color: '#1b1b1b', fontSize: proseSize }}>
                 {children}
               </p>
             </div>

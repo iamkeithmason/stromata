@@ -1,6 +1,21 @@
 import Link from 'next/link'
 
-export function ThemeChip({ href, name, source }: { href: string; name: string; source: string }) {
+export function ThemeChip({
+  href,
+  name,
+  source,
+  tone = 'light',
+}: {
+  href: string
+  name: string
+  source: string
+  /**
+   * 'light' (default) — muted ink on the parchment ground.
+   * 'dark'  — light vellum on a dark ground (used in the frontispiece hero).
+   */
+  tone?: 'light' | 'dark'
+}) {
+  const dark = tone === 'dark'
   return (
     <Link
       href={href}
@@ -8,8 +23,8 @@ export function ThemeChip({ href, name, source }: { href: string; name: string; 
       style={{
         fontFamily: 'var(--serif)',
         fontSize: 'var(--text-sm)',
-        color: 'var(--ink-mute)',
-        border: '1px solid var(--rule)',
+        color: dark ? 'rgba(250,246,236,0.75)' : 'var(--ink-mute)',
+        border: `1px solid ${dark ? 'rgba(250,246,236,0.45)' : 'var(--rule)'}`,
         letterSpacing: '0.1em',
         textTransform: 'uppercase',
         padding: '2px 8px',
