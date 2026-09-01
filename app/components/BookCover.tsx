@@ -1,18 +1,4 @@
-const TRADITION_COLORS: Record<string, string> = {
-  'early-church':        '#7A6147',
-  'patristic':           '#5A2A2A',
-  'eastern-orthodox':    '#2C3A4A',
-  'roman-catholic':      '#3D2E20',
-  'anglican':            '#3D5167',
-  'reformed':            '#2C3E2E',
-  'lutheran':            '#3A3825',
-  'radical-reformation': '#5A3A2A',
-  'methodist':           '#2E3A4A',
-  'ecumenical':          '#3D3D35',
-  'imperial':            '#2C2E4A',
-  'oriental-orthodox':   '#3A2E20',
-}
-const FALLBACK_COLOR = '#3D5167'
+import { traditionColor } from '@/lib/tradition-colors'
 
 export function BookCover({
   title,
@@ -39,7 +25,7 @@ export function BookCover({
    */
   accessionDisplay?: string | null
 }) {
-  const ground = TRADITION_COLORS[traditionSlug ?? ''] ?? FALLBACK_COLOR
+  const ground = traditionColor(traditionSlug)
   const num = String(accessionNumber ?? index + 1).padStart(2, '0')
   const bandAccession = accessionDisplay !== undefined
     ? accessionDisplay   // null → hidden below; string → shown as-is

@@ -11,8 +11,15 @@ import { readingTime } from '@/lib/reading-time'
 import { extractHeadings } from '@/lib/headings'
 import { OG_IMAGE } from '@/lib/metadata'
 import { ThemeChip } from '@/app/components/ThemeChip'
+import { BookCover } from '@/app/components/BookCover'
+import { AuthorAside } from '@/app/components/AuthorAside'
 
 type Props = { params: Promise<{ slug: string }> }
+
+// Shared horizontal frame so the frontispiece hero and the reading container
+// stay in vertical alignment: the book cover lines up with the left margin
+// column, and the hero title lines up with the main reading column.
+const FRAME = 'mx-auto w-full max-w-[1200px] px-6 lg:px-12'
 
 export async function generateMetadata({ params }: Props) {
   const { slug } = await params
@@ -55,7 +62,7 @@ export default async function TextPage({ params }: Props) {
     .from('texts')
     .select(`
       *,
-      author:authors(name, slug, death_year, loc:locations(name, slug), tradition:traditions(slug, name), era:eras(label, slug)),
+      author:authors(name, slug, bio, birth_year, death_year, loc:locations(name, slug), tradition:traditions(slug, name), era:eras(label, slug)),
       genre:genres(name),
       text_themes(theme:themes(name, slug)),
       collection:collections(id, title, slug, published)
@@ -67,7 +74,16 @@ export default async function TextPage({ params }: Props) {
   if (!text) notFound()
 
   // author and genre are many-to-one → plain objects
-  const author = text.author as { name: string; slug: string | null; death_year: number | null; loc: { name: string; slug: string } | null; tradition: { slug: string; name: string } | null; era: { label: string; slug: string } | null } | null
+  const author = text.author as {
+    name: string
+    slug: string | null
+    bio: string | null
+    birth_year: number | null
+    death_year: number | null
+    loc: { name: string; slug: string } | null
+    tradition: { slug: string; name: string } | null
+    era: { label: string; slug: string } | null
+  } | null
   const genre = text.genre as { name: string } | null
   // Treat an unpublished collection as no collection at all — the collection
   // page 404s unpublished slugs, so its breadcrumb / return links would be
@@ -83,6 +99,13 @@ export default async function TextPage({ params }: Props) {
   const body = text.body as string
   const summary = text.summary as string | null
   const editorialIntro = text.editorial_introduction as string | null
+
+  // Era label without the parenthetical span, e.g. "Nicene & Post-Nicene".
+  const eraName = author?.era?.label?.replace(/\s*\(.*?\)/, '') ?? null
+
+  // Frontispiece kicker: "Author • Location • Collection", omitting any part
+  // that's absent.
+  const kickerParts = [author?.name, author?.loc?.name, collection?.title].filter(Boolean) as string[]
 
   // Extract headings for the TOC sidebar. Only show TOC if 3+ headings exist —
   // short letters and prayers are flowing prose with no meaningful structure to navigate.
@@ -115,7 +138,6 @@ export default async function TextPage({ params }: Props) {
     <div style={{ background: 'var(--paper)', paddingTop: '4rem' }} className="min-h-screen">
       <ReadingProgressBar slug={slug} title={text.title} />
       <SiteHeader breadcrumb={author ? (() => {
-        const eraName = author.era?.label?.replace(/\s*\(.*?\)/, '') ?? null
         return (
           <>
             {author.slug
@@ -142,223 +164,232 @@ export default async function TextPage({ params }: Props) {
         )
       })() : undefined} />
 
-      {/* Content column — max-w-3xl. The desktop TOC is fixed in the right margin (see below). */}
-      <main className="max-w-4xl mx-auto px-6 py-12">
-        {/* Mobile TOC disclosure — visible below xl where fixed TOC is hidden */}
-        {hasToc && (
-          <div className="xl:hidden mb-8">
-            <TableOfContents headings={headings} mobile />
+      {/* ─── Frontispiece hero — book cover + title on the dark ink ground ─── */}
+      <section style={{ background: 'var(--ink)' }}>
+        <div className={`${FRAME} flex flex-col items-center gap-10 py-12 lg:flex-row lg:items-center lg:gap-16 lg:py-20`}>
+          {/* Book cover — aligns with the left margin column below */}
+          <div className="w-[200px] shrink-0 lg:w-[248px]">
+            <BookCover
+              title={text.title}
+              authorName={author?.name ?? null}
+              deathYear={author?.death_year ?? null}
+              accessionNumber={text.accession_number ?? null}
+              traditionSlug={author?.tradition?.slug ?? null}
+              index={0}
+            />
           </div>
-        )}
 
-        {/* Text header */}
-        <div className="mb-20">
-          {/* Author left / Collection right */}
-          <div
-            className="flex flex-wrap justify-between items-baseline gap-x-4 gap-y-1 mb-4 text-xs tracking-widest uppercase font-serif"
-            style={{ color: 'var(--ink-mute)' }}
-          >
-            <div className="flex items-baseline gap-2">
-              {author?.slug ? (
-                <Link href={`/authors/${author.slug}`} className="hover:opacity-70 transition-opacity">
-                  {author.name}
-                </Link>
-              ) : author?.name ? (
-                <span>{author.name}</span>
-              ) : null}
-              {author?.loc && (
-                <>
-                  <span style={{ color: 'var(--rule)' }}>·</span>
-                  <Link
-                    href={`/locations/${author.loc.slug}`}
-                    className="hover:opacity-70 transition-opacity"
-                    data-umami-event="location-country-click"
-                    data-umami-event-country={author.loc.name}
-                    data-umami-event-from="text-reader"
-                  >
-                    {author.loc.name}
-                  </Link>
-                </>
-              )}
+          {/* Title block */}
+          <div className="flex w-full min-w-0 flex-col items-center gap-6 text-center lg:items-start lg:gap-8 lg:text-left">
+            {kickerParts.length > 0 && (
+              <p
+                className="font-serif uppercase"
+                style={{ fontSize: 'var(--text-label)', letterSpacing: '0.18em', color: 'rgba(250,246,236,0.7)' }}
+              >
+                {kickerParts.join(' • ')}
+              </p>
+            )}
+
+            <div className="flex flex-col items-center gap-3 lg:items-start">
+              <h1
+                style={{
+                  fontFamily: 'var(--serif-display)',
+                  fontSize: 'var(--text-hero)',
+                  lineHeight: 1.05,
+                  letterSpacing: '-0.01em',
+                  color: '#FAF6EC',
+                }}
+              >
+                {text.title}
+              </h1>
+              <p
+                className="font-serif italic"
+                style={{ fontSize: 'var(--text-base)', color: 'rgba(250,246,236,0.7)' }}
+              >
+                Approx. {readingTime(body)} min read
+              </p>
             </div>
-            {collection && (
-              <Link href={`/collections/${collection.slug}`} className="hover:opacity-70 transition-opacity">
-                {collection.title}
-              </Link>
+
+            {themes.length > 0 && (
+              <div className="flex flex-wrap justify-center gap-2 lg:justify-start">
+                {themes.map(theme => (
+                  <ThemeChip key={theme.slug} href={`/themes/${theme.slug}`} name={theme.name} source="text-page" tone="dark" />
+                ))}
+              </div>
             )}
           </div>
+        </div>
+      </section>
 
-          <hr style={{ borderColor: 'var(--rule)', borderTopWidth: '1px', marginBottom: '3rem' }} />
+      {/* ─── Reading container — margin column + main reading column ─── */}
+      <div className={`${FRAME} py-12 lg:py-16`}>
+        <div className="flex flex-col-reverse gap-12 lg:flex-row lg:gap-16">
+          {/* Left margin column: summary · author · provenance */}
+          <aside className="w-full lg:w-[248px] lg:shrink-0">
+            <div className="flex flex-col gap-10">
+              {summary && (
+                <section>
+                  <p className="kicker" style={{ marginBottom: '0.75rem' }}>Summary</p>
+                  <p
+                    className="font-serif"
+                    style={{ color: 'var(--ink-soft)', fontSize: 'var(--text-label)', lineHeight: 1.6 }}
+                  >
+                    {summary}
+                  </p>
+                </section>
+              )}
 
-          {/* Reading time — kicker above the title */}
-          <p className="text-xs mb-3" style={{ color: 'var(--ink-mute)' }}>
-            Approx. {readingTime(body)} min read
-          </p>
+              {author && (
+                <AuthorAside
+                  name={author.name}
+                  slug={author.slug}
+                  birthYear={author.birth_year}
+                  deathYear={author.death_year}
+                  eraName={eraName}
+                  tradition={author.tradition}
+                  bio={author.bio}
+                />
+              )}
 
-          {/* Title — IM Fell English at display size, left-aligned */}
-          <h1
-            className="mb-2"
-            style={{
-              fontFamily: 'var(--serif-display)',
-              fontSize: 'var(--text-display)',
-              lineHeight: 1.5,
-              color: 'var(--ink)',
-            }}
-          >
-            {text.title}
-          </h1>
-
-          {themes.length > 0 && (
-            <div className="flex flex-wrap gap-2 mb-2">
-              {themes.map(theme => (
-                <ThemeChip key={theme.slug} href={`/themes/${theme.slug}`} name={theme.name} source="text-page" />
-              ))}
+              {/* Provenance / accession — sourced metadata */}
+              {(text.source_attribution || text.provenance_notes || text.translation_notes || text.accession_number) && (
+                <section
+                  className="flex flex-col gap-3 text-xs"
+                  style={{ color: 'var(--ink-mute)' }}
+                >
+                  {text.source_attribution && <p>Source: {text.source_attribution}</p>}
+                  {text.provenance_notes && <p>{text.provenance_notes}</p>}
+                  {text.translation_notes && <p>Translation: {text.translation_notes}</p>}
+                  {text.accession_number && (
+                    <p className="font-mono" style={{ color: 'var(--ink-faint)', letterSpacing: '0.04em' }}>
+                      STROMATA № {String(text.accession_number).padStart(2, '0')}
+                    </p>
+                  )}
+                </section>
+              )}
             </div>
-          )}
-          {/* OCR quality notice */}
-          {text.ocr_quality === 'low' && (
-            <p
-              className="mt-4 text-xs rounded px-3 py-2 border"
-              style={{ color: '#92400e', background: '#fffbeb', borderColor: '#fcd34d' }}
-            >
-              This text was digitised from a scan and may contain OCR errors. If you spot mistakes,
-              please let us know.
-            </p>
-          )}
-          {text.ocr_quality === 'medium' && (
-            <p
-              className="mt-4 text-xs rounded px-3 py-2 border"
-              style={{ color: 'var(--ink-mute)', background: '#f4f0e8', borderColor: 'var(--rule)' }}
-            >
-              This text was digitised from a scan and has been partially reviewed for accuracy.
-            </p>
-          )}
+          </aside>
+
+          {/* Main reading column */}
+          <main className="w-full min-w-0 lg:max-w-[800px] lg:flex-1">
+            {/* Mobile TOC disclosure — visible below xl where the fixed TOC is hidden */}
+            {hasToc && (
+              <div className="xl:hidden mb-8">
+                <TableOfContents headings={headings} mobile />
+              </div>
+            )}
+
+            {/* OCR quality notice */}
+            {text.ocr_quality === 'low' && (
+              <p
+                className="mb-8 text-xs rounded px-3 py-2 border"
+                style={{ color: '#92400e', background: '#fffbeb', borderColor: '#fcd34d' }}
+              >
+                This text was digitised from a scan and may contain OCR errors. If you spot mistakes,
+                please let us know.
+              </p>
+            )}
+            {text.ocr_quality === 'medium' && (
+              <p
+                className="mb-8 text-xs rounded px-3 py-2 border"
+                style={{ color: 'var(--ink-mute)', background: '#f4f0e8', borderColor: 'var(--rule)' }}
+              >
+                This text was digitised from a scan and has been partially reviewed for accuracy.
+              </p>
+            )}
+
+            {/* Editorial introduction */}
+            {editorialIntro && (
+              <div
+                className="mb-12 pb-10 border-b"
+                style={{ borderColor: 'var(--rule)' }}
+              >
+                <p className="kicker" style={{ marginBottom: '1rem' }}>Introduction</p>
+                <div className="prose-body" style={{ color: 'var(--ink-soft)' }}>
+                  <MarkdownBody content={editorialIntro} numbered={false} />
+                </div>
+              </div>
+            )}
+
+            {/* Body */}
+            <article className="prose-body mb-16">
+              <MarkdownBody content={body} />
+            </article>
+
+            {/* Prev / next within collection */}
+            {(prevText || nextText || collection) && (
+              <nav
+                className="flex justify-between gap-4 mb-12 pt-6 border-t"
+                style={{ borderColor: 'var(--rule)' }}
+              >
+                {prevText ? (
+                  <Link
+                    href={`/texts/${prevText.slug}`}
+                    className="group flex flex-col max-w-[45%]"
+                    data-umami-event="collection-nav"
+                    data-umami-event-direction="prev"
+                    data-umami-event-collection={collection?.title}
+                  >
+                    <span className="text-xs uppercase tracking-widest mb-1 group-hover:opacity-70 transition-opacity" style={{ color: 'var(--ink-mute)' }}>
+                      ← Previous
+                    </span>
+                    <span className="font-serif text-sm group-hover:opacity-70 transition-opacity" style={{ color: 'var(--ink)' }}>
+                      {prevText.title}
+                    </span>
+                    {prevText.author && (
+                      <span className="text-xs mt-0.5 group-hover:opacity-70 transition-opacity" style={{ color: 'var(--ink-mute)' }}>
+                        {prevText.author.name}
+                      </span>
+                    )}
+                  </Link>
+                ) : <span />}
+                {nextText ? (
+                  <Link
+                    href={`/texts/${nextText.slug}`}
+                    className="group flex flex-col text-right max-w-[45%]"
+                    data-umami-event="collection-nav"
+                    data-umami-event-direction="next"
+                    data-umami-event-collection={collection?.title}
+                  >
+                    <span className="text-xs uppercase tracking-widest mb-1 group-hover:opacity-70 transition-opacity" style={{ color: 'var(--ink-mute)' }}>
+                      Next →
+                    </span>
+                    <span className="font-serif text-sm group-hover:opacity-70 transition-opacity" style={{ color: 'var(--ink)' }}>
+                      {nextText.title}
+                    </span>
+                    {nextText.author && (
+                      <span className="text-xs mt-0.5 group-hover:opacity-70 transition-opacity" style={{ color: 'var(--ink-mute)' }}>
+                        {nextText.author.name}
+                      </span>
+                    )}
+                  </Link>
+                ) : collection ? (
+                  <Link
+                    href={`/collections/${collection.slug}`}
+                    className="group flex flex-col text-right max-w-[45%]"
+                    data-umami-event="collection-nav"
+                    data-umami-event-direction="end"
+                    data-umami-event-collection={collection.title}
+                  >
+                    <span className="text-xs uppercase tracking-widest mb-1 group-hover:opacity-70 transition-opacity" style={{ color: 'var(--ink-mute)' }}>
+                      End of collection
+                    </span>
+                    <span className="font-serif text-sm group-hover:opacity-70 transition-opacity" style={{ color: 'var(--ink)' }}>
+                      Return to {collection.title} →
+                    </span>
+                  </Link>
+                ) : <span />}
+              </nav>
+            )}
+          </main>
         </div>
 
-        {/* Summary */}
-        {summary && (
-          <div
-            className="mb-12 pb-10 border-b"
-            style={{ borderColor: 'var(--rule)' }}
-          >
-            <p
-              className="text-xs uppercase tracking-[0.18em] mb-4"
-              style={{ color: 'var(--ink-mute)' }}
-            >
-              Summary
-            </p>
-            <p
-              className="font-serif leading-relaxed"
-              style={{ color: 'var(--ink-soft)', fontSize: 'var(--text-base)' }}
-            >
-              {summary}
-            </p>
-          </div>
-        )}
-
-        {/* Editorial introduction */}
-        {editorialIntro && (
-          <div
-            className="mb-12 pb-10 border-b"
-            style={{ borderColor: 'var(--rule)' }}
-          >
-            <p
-              className="text-xs uppercase tracking-[0.18em] mb-4"
-              style={{ color: 'var(--ink-mute)' }}
-            >
-              Introduction
-            </p>
-            <div className="prose-body" style={{ color: 'var(--ink-soft)' }}>
-              <MarkdownBody content={editorialIntro} numbered={false} size="large" />
-            </div>
-          </div>
-        )}
-
-        {/* Body */}
-        <article className="prose-body mb-16">
-          <MarkdownBody content={body} />
-        </article>
-
-        {/* Prev / next within collection */}
-        {(prevText || nextText || collection) && (
-          <nav
-            className="flex justify-between gap-4 mb-12 pt-6 border-t"
-            style={{ borderColor: '#e5e0d8' }}
-          >
-            {prevText ? (
-              <Link
-                href={`/texts/${prevText.slug}`}
-                className="group flex flex-col max-w-[45%]"
-                data-umami-event="collection-nav"
-                data-umami-event-direction="prev"
-                data-umami-event-collection={collection?.title}
-              >
-                <span className="text-xs uppercase tracking-widest mb-1 group-hover:opacity-70 transition-opacity" style={{ color: '#6f6a60' }}>
-                  ← Previous
-                </span>
-                <span className="font-serif text-sm group-hover:opacity-70 transition-opacity" style={{ color: '#1b1b1b' }}>
-                  {prevText.title}
-                </span>
-                {prevText.author && (
-                  <span className="text-xs mt-0.5 group-hover:opacity-70 transition-opacity" style={{ color: '#6f6a60' }}>
-                    {prevText.author.name}
-                  </span>
-                )}
-              </Link>
-            ) : <span />}
-            {nextText ? (
-              <Link
-                href={`/texts/${nextText.slug}`}
-                className="group flex flex-col text-right max-w-[45%]"
-                data-umami-event="collection-nav"
-                data-umami-event-direction="next"
-                data-umami-event-collection={collection?.title}
-              >
-                <span className="text-xs uppercase tracking-widest mb-1 group-hover:opacity-70 transition-opacity" style={{ color: '#6f6a60' }}>
-                  Next →
-                </span>
-                <span className="font-serif text-sm group-hover:opacity-70 transition-opacity" style={{ color: '#1b1b1b' }}>
-                  {nextText.title}
-                </span>
-                {nextText.author && (
-                  <span className="text-xs mt-0.5 group-hover:opacity-70 transition-opacity" style={{ color: '#6f6a60' }}>
-                    {nextText.author.name}
-                  </span>
-                )}
-              </Link>
-            ) : collection ? (
-              <Link
-                href={`/collections/${collection.slug}`}
-                className="group flex flex-col text-right max-w-[45%]"
-                data-umami-event="collection-nav"
-                data-umami-event-direction="end"
-                data-umami-event-collection={collection.title}
-              >
-                <span className="text-xs uppercase tracking-widest mb-1 group-hover:opacity-70 transition-opacity" style={{ color: '#6f6a60' }}>
-                  End of collection
-                </span>
-                <span className="font-serif text-sm group-hover:opacity-70 transition-opacity" style={{ color: '#1b1b1b' }}>
-                  Return to {collection.title} →
-                </span>
-              </Link>
-            ) : <span />}
-          </nav>
-        )}
-
-        {/* Footer metadata */}
+        {/* Footer — full width beneath both columns */}
         <footer
-          className="border-t pt-6 text-xs space-y-1"
-          style={{ borderColor: '#e5e0d8', color: '#6f6a60' }}
+          className="mt-16 border-t pt-6 text-xs"
+          style={{ borderColor: 'var(--rule)', color: 'var(--ink-mute)' }}
         >
-          {text.source_attribution && <p>Source: {text.source_attribution}</p>}
-          {text.provenance_notes && <p>{text.provenance_notes}</p>}
-          {text.translation_notes && <p>Translation: {text.translation_notes}</p>}
-          {text.accession_number && (
-            <p className="pt-3 font-mono" style={{ color: '#c8c3bb' }}>
-              Stromata № {String(text.accession_number).padStart(2, '0')}
-            </p>
-          )}
-          <p className="pt-5 border-t" style={{ borderColor: '#e5e0d8' }}>
+          <p>
             The Stromata is free to read and always will be.{' '}
             <a
               href="https://ko-fi.com/stromata"
@@ -372,10 +403,10 @@ export default async function TextPage({ params }: Props) {
             </a>
           </p>
         </footer>
-      </main>
+      </div>
 
       {/* Desktop TOC — fixed in right viewport margin, hover to expand.
-          Renders outside <main> so it doesn't affect content column width.
+          Renders outside the reading container so it doesn't affect column width.
           Only shown at xl (1280px+) where the right margin has enough room. */}
       {hasToc && <TableOfContents headings={headings} />}
 
