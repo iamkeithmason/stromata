@@ -285,8 +285,8 @@ export default async function TextPage({ params }: Props) {
                 className="mb-8 text-xs rounded px-3 py-2 border"
                 style={{ color: '#92400e', background: '#fffbeb', borderColor: '#fcd34d' }}
               >
-                This text was digitised from a scan and may contain OCR errors. If you spot mistakes,
-                please let us know.
+                This text was digitised from a scan and reviewed for accuracy, though as a rougher
+                scan some errors may remain — if you spot one, do let us know.
               </p>
             )}
             {text.ocr_quality === 'medium' && (
