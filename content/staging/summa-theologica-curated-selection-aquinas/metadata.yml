@@ -1,0 +1,34 @@
+# metadata.yml — PROPOSED. Every value below requires editorial confirmation
+# before import. The Sourcer proposes; nothing here has been applied.
+# (Tradition / Era are author-level — edit them on the prospect, not here.)
+
+slug: summa-theologica-curated-selection-aquinas
+title: Summa Theologica (curated selection)
+author: Thomas Aquinas
+
+proposed_genre: Treatise
+proposed_themes:
+  - desire
+  - salvation
+  - virtue
+  - eschatology
+  - contemplation
+proposed_ocr_quality: high
+
+proposed_collection:
+  shape: collection
+  rationale: The curated selection combines two separately numbered Questions from different Parts of the Summa (existence of God from the Prima Pars; man's last end and happiness from the Secunda Pars), each internally divided into Articles — a reader navigates between Questions as discrete topical units rather than following one continuous argument.
+  parts:
+    - order: 1
+      title: "Question 2: The Existence of God (Prima Pars)"
+    - order: 2
+      title: "Question 1: Man's Last End (Secunda Pars)"
+    - order: 3
+      title: "Question 2: Things in Which Man's Happiness Consists (Secunda Pars)"
+    - order: 4
+      title: "Question 3: What Is Happiness (Secunda Pars)"
+    - order: 5
+      title: "Question 4: Things Required for Happiness (Secunda Pars)"
+
+flags:
+  - "author-missing: author is not yet in the corpus — create the author record before import"

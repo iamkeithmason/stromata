@@ -1,0 +1,33 @@
+# metadata.yml — PROPOSED. Every value below requires editorial confirmation
+# before import. The Sourcer proposes; nothing here has been applied.
+# (Tradition / Era are author-level — edit them on the prospect, not here.)
+
+slug: institutes-of-the-christian-religion-calvin
+title: Institutes of the Christian Religion (curated selection)
+author: John Calvin
+
+proposed_genre: Treatise
+proposed_themes:
+  - scripture
+  - providence
+  - christology
+  - salvation
+  - sacraments
+  - prayer
+proposed_ocr_quality: high
+
+proposed_collection:
+  shape: excerpt
+  rationale: At roughly 795,000 words the pinned CCEL/Beveridge text is the complete Institutes, not a pre-trimmed selection despite the prospect title; Calvin himself organized the whole work into four self-contained Books, each a coherent argument, so excerpting at the Book level gives the editor self-contained units to select from rather than one undifferentiated mass.
+  parts:
+    - order: 1
+      title: "Book I: The Knowledge of God the Creator"
+    - order: 2
+      title: "Book II: The Knowledge of God the Redeemer in Christ"
+    - order: 3
+      title: "Book III: The Mode of Obtaining the Grace of Christ"
+    - order: 4
+      title: "Book IV: The External Means or Aids by Which God Invites Us into the Society of Christ"
+
+flags:
+  - "author-missing: author is not yet in the corpus — create the author record before import"
