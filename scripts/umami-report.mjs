@@ -142,17 +142,31 @@ let ctx = null; // { base, headers, websiteId, via }
 // Set UMAMI_API_BASE to pin the winner and skip probing once it's known.
 function shareCandidates() {
   const enc = encodeURIComponent(SHARE_ID);
-  const r = REGION ? `/${REGION}` : '';
-  const pairs = [
-    [`https://api.umami.is/v1${r}/share/${enc}`, `https://api.umami.is/v1${r}`],
-  ];
-  if (REGION) pairs.push([`https://${REGION}.umami.is/api/share/${enc}`, `https://${REGION}.umami.is/api`]);
+  const pairs = [];
+  // Umami Cloud's browser share dashboard resolves + queries through the
+  // regional gateway host (verified on the wire): gateway-<region>.umami.is/api.
+  // Resolution is unauthenticated; data calls carry x-umami-share-token.
+  if (REGION) pairs.push([`https://gateway-${REGION}.umami.is/api/share/${enc}`, `https://gateway-${REGION}.umami.is/api`]);
+  pairs.push([`https://gateway.umami.is/api/share/${enc}`, `https://gateway.umami.is/api`]);
+  // Fallbacks for other/self-hosted layouts (api.umami.is/v1 needs an API key
+  // even for share, so it only works in api-key mode — kept last).
   pairs.push(
     [`https://cloud.umami.is/api/share/${enc}`, `https://cloud.umami.is/api`],
     [`https://api.umami.is/v1/share/${enc}`, `https://api.umami.is/v1`]
   );
   if (API_BASE_ENV) pairs.unshift([`${API_BASE_ENV}/share/${enc}`, API_BASE_ENV]);
   return pairs;
+}
+
+// The share token is a JWT whose payload carries the websiteId — decode it as a
+// fallback if the resolver response doesn't include the id directly.
+function websiteIdFromToken(token) {
+  try {
+    const payload = token.split('.')[1];
+    return JSON.parse(Buffer.from(payload, 'base64url').toString('utf8')).websiteId;
+  } catch {
+    return undefined;
+  }
 }
 
 async function authContext() {
@@ -187,16 +201,22 @@ async function authContext() {
         tried.push(`${url} -> 200 but non-JSON: ${raw.slice(0, 80)}`);
         continue;
       }
-      if (data?.token && data?.websiteId) {
+      if (data?.token) {
+        const websiteId = WEBSITE_ID_ENV || data.websiteId || websiteIdFromToken(data.token);
+        if (!websiteId) {
+          tried.push(`${url} -> 200 with token but no websiteId (set UMAMI_WEBSITE_ID)`);
+          continue;
+        }
         ctx = {
           base,
-          headers: { 'x-umami-share-token': data.token },
-          websiteId: WEBSITE_ID_ENV || data.websiteId,
+          // Data calls need both headers — the token and the share context flag.
+          headers: { 'x-umami-share-token': data.token, 'x-umami-share-context': '1' },
+          websiteId,
           via: url,
         };
         return ctx;
       }
-      tried.push(`${url} -> 200 but no token/websiteId`);
+      tried.push(`${url} -> 200 but no token in response`);
     }
     fail(
       `Could not resolve the share slug "${SHARE_ID}"` +
@@ -348,7 +368,7 @@ async function cmdDoctor(range) {
 
 async function cmdOverview(range) {
   await cmdStats(range);
-  await cmdMetric(range, 'url', `Top pages (${flags.range || '7d'})`);
+  await cmdMetric(range, 'path', `Top pages (${flags.range || '7d'})`);
   await cmdMetric(range, 'referrer', 'Top referrers');
   await cmdActive();
 }
@@ -365,7 +385,7 @@ function fail(msg) {
 async function main() {
   const range = resolveRange();
   const metrics = {
-    pages: ['url', 'Top pages'],
+    pages: ['path', 'Top pages'],
     referrers: ['referrer', 'Top referrers'],
     browsers: ['browser', 'Browsers'],
     os: ['os', 'Operating systems'],
