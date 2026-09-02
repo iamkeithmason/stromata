@@ -73,7 +73,7 @@ async function loadCorpus(sb) {
     sb.from('genres').select('id, name'),
     sb.from('themes').select('id, name'),
     sb.from('text_themes').select('text_id, theme_id'),
-    sb.from('collections').select('slug, name'),
+    sb.from('collections').select('slug, title'),
   ]);
   for (const [label, res] of Object.entries({ texts, authors, traditions, eras, genres, themes, textThemes, collections })) {
     if (res.error) die(`Supabase read failed for ${label}: ${res.error.message}`);
@@ -95,7 +95,8 @@ async function loadCorpus(sb) {
     erasById: new Map((eras.data ?? []).map((e) => [e.id, e.label])),
     genresById: new Map((genres.data ?? []).map((g) => [g.id, g.name])),
     themesByTextId,
-    collectionsBySlug: new Map((collections.data ?? []).map((c) => [c.slug, c])),
+    // aggregate/render use `.name` as the display label; collections store `title`.
+    collectionsBySlug: new Map((collections.data ?? []).map((c) => [c.slug, { name: c.title }])),
   };
 }
 
