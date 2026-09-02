@@ -10,6 +10,10 @@ proposed_genre: Hymn
 proposed_themes:
   - liturgy
   - salvation
+  - liturgy
+  - salvation
+  - death
+  - prayer
   - christology
   - eschatology
 proposed_ocr_quality: high

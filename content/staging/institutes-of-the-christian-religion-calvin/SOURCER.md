@@ -3,7 +3,7 @@
 - **Author:** John Calvin
 - **Slug:** `institutes-of-the-christian-religion-calvin`
 - **Pinned edition:** https://ccel.org/ccel/calvin/institutes
-- **Fetched:** https://ccel.org/ccel/c/calvin/institutes/cache/institutes.txt (2026-09-01T12:14:35.486Z)
+- **Fetched:** https://ccel.org/ccel/c/calvin/institutes/cache/institutes.txt (2026-09-01T12:28:28.539Z)
 - **Prospect:** https://app.notion.com/p/Institutes-of-the-Christian-Religion-curated-selection-3cdd9194805d81dab0eef1657802bdcc
 - **Staged by:** sourcer-agent v0
 
@@ -18,7 +18,7 @@ un-applied in `ocr-report.md` for you to accept/reject.
 ## Proposed metadata (confirm before import)
 
 - Genre: Treatise
-- Themes: scripture, providence, christology, salvation, sacraments, prayer
+- Themes: scripture, trinity, christology, salvation, sacraments, providence, prayer
 - OCR quality: high
 - Collection shape: **excerpt** — At roughly 795,000 words the pinned CCEL/Beveridge text is the complete Institutes, not a pre-trimmed selection despite the prospect title; Calvin himself organized the whole work into four self-contained Books, each a coherent argument, so excerpting at the Book level gives the editor self-contained units to select from rather than one undifferentiated mass.
   1. Book I: The Knowledge of God the Creator

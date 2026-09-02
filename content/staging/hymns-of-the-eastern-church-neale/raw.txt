@@ -3,7 +3,7 @@
 <!-- __ _ _ _ __| |_ (_)__ _____
     / _` | '_/ _| ' \| |\ V / -_)
     \__,_|_| \__|_||_|_| \_/\___| -->
-  <head data-release=5c0e6658 data-node="www08.us.archive.org">
+  <head data-release=ebba2d72 data-node="www14.us.archive.org">
     <title>Full text of &quot;Hymns of the Eastern Church&quot;</title>
 
           <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -11,8 +11,8 @@
         <meta name="google-site-verification" content="Q2YSouphkkgHkFNP7FgAkc4TmBs1Gmag3uGNndb53B8" />
     <meta name="google-site-verification" content="bpjKvUvsX0lxfmjg19TLblckWkDpnptZEYsBntApxUk" />
 
-    <meta name="baggage" content="sentry-trace_id=92ef8f6066c548dcb91a6d609541b843,sentry-sample_rate=0.001,sentry-transaction=%2Fdownload.php,sentry-public_key=94bf3037c1e245c8a927aaa4daad2dbb,sentry-environment=production,sentry-sampled=false,sentry-sample_rand=0.145134"/>    <meta name="sentry-trace" content="92ef8f6066c548dcb91a6d609541b843-f6f3b03535064976-0"/>
-    <script  nonce="d011cc233930ac1537fb677c99501b84" >
+    <meta name="baggage" content="sentry-trace_id=4a8180fc1bc447609f4f2fd3c8952eeb,sentry-sample_rate=0.001,sentry-transaction=%2Fdownload.php,sentry-public_key=94bf3037c1e245c8a927aaa4daad2dbb,sentry-environment=production,sentry-sampled=false,sentry-sample_rand=0.106271"/>    <meta name="sentry-trace" content="4a8180fc1bc447609f4f2fd3c8952eeb-d34d458056c2440e-0"/>
+    <script  nonce="5c92ff6ee30691f772340a9b90831eae" >
 /* @licstart  The following is the entire license notice for the
  * JavaScript code in this page.
  *
@@ -36,11 +36,11 @@
         <meta charset="UTF-8">
                       <meta property="mediatype" content="texts">
                       <meta property="primary_collection" content="">
-            <script src="//archive.org/includes/athena.js?v=5c0e6658" type="text/javascript"></script>
-    <script src="//archive.org/includes/apollo.js?v=5c0e6658" type="text/javascript"></script>
-    <script src="//archive.org/components/npm/lit/polyfill-support.js?v=5c0e6658" type="text/javascript"></script>
-    <script src="//archive.org/components/npm/@webcomponents/webcomponentsjs/webcomponents-bundle.js?v=5c0e6658" type="text/javascript"></script>
-<script nonce="d011cc233930ac1537fb677c99501b84" >
+            <script src="//archive.org/includes/athena.js?v=ebba2d72" type="text/javascript"></script>
+    <script src="//archive.org/includes/apollo.js?v=ebba2d72" type="text/javascript"></script>
+    <script src="//archive.org/components/npm/lit/polyfill-support.js?v=ebba2d72" type="text/javascript"></script>
+    <script src="//archive.org/components/npm/@webcomponents/webcomponentsjs/webcomponents-bundle.js?v=ebba2d72" type="text/javascript"></script>
+<script nonce="5c92ff6ee30691f772340a9b90831eae" >
       window.__realDefine = customElements.define.bind(customElements);
       customElements.define = function() {
         try {
@@ -49,10 +49,10 @@
           console.warn(e);
         }
       }
-    </script>    <script src="//archive.org/includes/build/js/ia-topnav.min.js?v=5c0e6658" type="text/javascript"></script>
-    <script src="//archive.org/includes/build/js/archive.min.js?v=5c0e6658" type="text/javascript"></script>
+    </script>    <script src="//archive.org/includes/build/js/ia-topnav.min.js?v=ebba2d72" type="text/javascript"></script>
+    <script src="//archive.org/includes/build/js/archive.min.js?v=ebba2d72" type="text/javascript"></script>
 <link rel="canonical" href="https://archive.org/details/hymnsofeasternch00neal_0">
-    <link href="//archive.org/includes/build/css/archive.min.css?v=5c0e6658" rel="stylesheet" type="text/css"/>
+    <link href="//archive.org/includes/build/css/archive.min.css?v=ebba2d72" rel="stylesheet" type="text/css"/>
     <link rel="SHORTCUT ICON" href="https://archive.org/images/glogo.jpg"/>
   </head>
   <body class="navia ">
@@ -9596,13 +9596,13 @@ very  worst  taste.
     </div><!--/#wrap-->
 
     <!-- Timing ...
-     rendered on: www08.us.archive.org
+     rendered on: www14.us.archive.org
  seconds diff sec                                      message   stack(file:line:function)
 =========================================================
-  0.0000   0.0000                                petabox start   var/cache/petabox/petabox/www/sf/download.php:1:require
+  0.0000   0.0000                                petabox start   petabox/www/sf/download.php:1:require
                                              |common/ia:66:require_once
                                              |setup.php:384:log
-  0.0059   0.0059                             redis_read start   var/cache/petabox/petabox/www/sf/download.php:79:main_wrap
+  0.0062   0.0062                             redis_read start   petabox/www/sf/download.php:79:main_wrap
                                              |download.php:98:main
                                              |download.php:317:getItem
                                              |common/Item.inc:78:parseMetadata
@@ -9615,7 +9615,7 @@ very  worst  taste.
                                              |AdapterPipeline.inc:466:fetch
                                              |AdapterPipeline.inc:895:execute_pipeline
                                              |RecordServer.inc:184:log
-  0.0093   0.0034                            redis_read finish   var/cache/petabox/petabox/www/sf/download.php:79:main_wrap
+  0.0077   0.0015                            redis_read finish   petabox/www/sf/download.php:79:main_wrap
                                              |download.php:98:main
                                              |download.php:317:getItem
                                              |common/Item.inc:78:parseMetadata
@@ -9628,7 +9628,7 @@ very  worst  taste.
                                              |AdapterPipeline.inc:466:fetch
                                              |AdapterPipeline.inc:895:execute_pipeline
                                              |RecordServer.inc:193:log
-  0.7854   0.7762                             start db connect   var/cache/petabox/petabox/www/sf/download.php:79:main_wrap
+  1.0979   1.0901                             start db connect   petabox/www/sf/download.php:79:main_wrap
                                              |download.php:98:main
                                              |download.php:317:getItem
                                              |common/Item.inc:78:parseMetadata
@@ -9650,7 +9650,7 @@ very  worst  taste.
                                              |DB.inc:813:connect
                                              |DB.inc:105:conn
                                              |DB.inc:915:log
-  0.8004   0.0150                                       got db   var/cache/petabox/petabox/www/sf/download.php:79:main_wrap
+  1.1226   0.0247                                       got db   petabox/www/sf/download.php:79:main_wrap
                                              |download.php:98:main
                                              |download.php:317:getItem
                                              |common/Item.inc:78:parseMetadata
@@ -9672,7 +9672,7 @@ very  worst  taste.
                                              |DB.inc:813:connect
                                              |DB.inc:105:conn
                                              |DB.inc:964:log
-  0.8047   0.0043                            redis_write start   var/cache/petabox/petabox/www/sf/download.php:79:main_wrap
+  1.1292   0.0066                            redis_write start   petabox/www/sf/download.php:79:main_wrap
                                              |download.php:98:main
                                              |download.php:317:getItem
                                              |common/Item.inc:78:parseMetadata
@@ -9691,7 +9691,7 @@ very  worst  taste.
                                              |Metadata/AdapterPipeline.inc:626:update
                                              |RecordServer.inc:248:_update
                                              |RecordServer.inc:283:log
-  0.8060   0.0013                           redis_write finish   var/cache/petabox/petabox/www/sf/download.php:79:main_wrap
+  1.1317   0.0025                           redis_write finish   petabox/www/sf/download.php:79:main_wrap
                                              |download.php:98:main
                                              |download.php:317:getItem
                                              |common/Item.inc:78:parseMetadata
@@ -9710,21 +9710,21 @@ very  worst  taste.
                                              |Metadata/AdapterPipeline.inc:626:update
                                              |RecordServer.inc:248:_update
                                              |RecordServer.inc:290:log
-  0.8114   0.0055                          begin session_start   var/cache/petabox/petabox/www/sf/download.php:79:main_wrap
+  1.1515   0.0198                          begin session_start   petabox/www/sf/download.php:79:main_wrap
                                              |download.php:98:main
                                              |download.php:504:stream
                                              |download.php:872:head
                                              |common/Nav.inc:155:__construct
                                              |Nav.inc:230:session_start
                                              |Cookies.inc:50:log
-  0.8115   0.0000   skipping session_start, user not logged-in   var/cache/petabox/petabox/www/sf/download.php:79:main_wrap
+  1.1515   0.0000   skipping session_start, user not logged-in   petabox/www/sf/download.php:79:main_wrap
                                              |download.php:98:main
                                              |download.php:504:stream
                                              |download.php:872:head
                                              |common/Nav.inc:155:__construct
                                              |Nav.inc:230:session_start
                                              |Cookies.inc:60:log
-  0.8498   0.0383                                     bug dump   var/cache/petabox/petabox/www/sf/download.php:79:main_wrap
+  1.1866   0.0350                                     bug dump   petabox/www/sf/download.php:79:main_wrap
                                              |download.php:98:main
                                              |download.php:504:stream
                                              |download.php:902:footer
@@ -9732,7 +9732,7 @@ very  worst  taste.
                                              |Nav.inc:820:dump
                                              |Bug.inc:94:log
     -->
-    <script  nonce="d011cc233930ac1537fb677c99501b84" >
+    <script  nonce="5c92ff6ee30691f772340a9b90831eae" >
 if (typeof archive_analytics !== 'undefined') {
   archive_analytics.send_pageview_on_load(archive_analytics);
   archive_analytics.process_url_events(location);
@@ -9742,16 +9742,16 @@ if (typeof archive_analytics !== 'undefined') {
       vs[i] = {};
     }
     vs[i]['cache_bust']=Math.random();
-    vs[i]['server_ms']=849;
-    vs[i]['server_name']="www08.us.archive.org";
+    vs[i]['server_ms']=1186;
+    vs[i]['server_name']="www14.us.archive.org";
       }
 }
 </script>
-          <img src="//athena.archive.org/0.gif?kind=track_js&track_js_case=control&cache_bust=324736421" alt="" />
+          <img src="//athena.archive.org/0.gif?kind=track_js&track_js_case=control&cache_bust=386195052" alt="" />
           <noscript>
-        <img src="//athena.archive.org/0.gif?kind=track_js&track_js_case=disabled&cache_bust=2091535471" />
+        <img src="//athena.archive.org/0.gif?kind=track_js&track_js_case=disabled&cache_bust=2051914747" />
       </noscript>
-          <script  nonce="d011cc233930ac1537fb677c99501b84" >
+          <script  nonce="5c92ff6ee30691f772340a9b90831eae" >
         document.addEventListener('DOMContentLoaded', function() {
           if (typeof archive_analytics !== 'undefined')
             archive_analytics.create_tracking_image('in_page_executes');

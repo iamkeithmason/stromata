@@ -3,7 +3,7 @@
 - **Author:** Thomas Aquinas
 - **Slug:** `summa-theologica-curated-selection-aquinas`
 - **Pinned edition:** https://www.newadvent.org/summa/1002.htm
-- **Fetched:** https://www.newadvent.org/summa/1002.htm (+25 more part(s)) (2026-09-01T12:12:32.480Z)
+- **Fetched:** https://www.newadvent.org/summa/1002.htm (+25 more part(s)) (2026-09-01T12:26:25.565Z)
 - **Prospect:** https://app.notion.com/p/Summa-Theologica-curated-selection-3cdd9194805d81aa8569dd522b4f1a1d
 - **Staged by:** sourcer-agent v0
 
@@ -18,7 +18,7 @@ un-applied in `ocr-report.md` for you to accept/reject.
 ## Proposed metadata (confirm before import)
 
 - Genre: Treatise
-- Themes: desire, salvation, virtue, eschatology, contemplation
+- Themes: contemplation, desire, virtue, salvation, eschatology
 - OCR quality: high
 - Collection shape: **collection** — The curated selection combines two separately numbered Questions from different Parts of the Summa (existence of God from the Prima Pars; man's last end and happiness from the Secunda Pars), each internally divided into Articles — a reader navigates between Questions as discrete topical units rather than following one continuous argument.
   1. Question 2: The Existence of God (Prima Pars)
