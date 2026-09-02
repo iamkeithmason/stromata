@@ -1,0 +1,284 @@
+import Link from 'next/link'
+import {
+  getDashboardData,
+  RANGES,
+  type Range,
+  type Ranked,
+  type Stats,
+} from '@/lib/analytics/dashboard'
+
+// Live data — never statically cached; the numbers change and the fetch can fail.
+export const dynamic = 'force-dynamic'
+
+const RANGE_LABEL: Record<Range, string> = {
+  '24h': '24h',
+  today: 'Today',
+  '7d': '7 days',
+  '30d': '30 days',
+  '90d': '90 days',
+  all: 'All time',
+}
+
+const n = (x: unknown) => Number(x || 0).toLocaleString('en-US')
+const fmtDate = (ms: number) => new Date(ms).toISOString().slice(0, 10)
+
+// stats values arrive either as a number or { value } depending on the endpoint.
+function stat(stats: Stats, key: string): number {
+  const v = stats?.[key]
+  if (v && typeof v === 'object') return Number(v.value || 0)
+  return Number(v || 0)
+}
+
+function RangeSelector({ current }: { current: Range }) {
+  return (
+    <div className="flex flex-wrap gap-1.5">
+      {RANGES.map((r) => (
+        <Link
+          key={r}
+          href={`/admin/analytics?range=${r}`}
+          className={`text-xs px-2.5 py-1 rounded border transition-colors ${
+            r === current
+              ? 'border-stone-800 bg-stone-800 text-white'
+              : 'border-stone-200 text-stone-600 hover:border-stone-400'
+          }`}
+        >
+          {RANGE_LABEL[r]}
+        </Link>
+      ))}
+    </div>
+  )
+}
+
+// A ranked demand list (theme / author / era / tradition / genre).
+function RankList({ title, ranked, max = 12 }: { title: string; ranked: Ranked[]; max?: number }) {
+  const top = ranked.slice(0, max)
+  const peak = Math.max(1, ...top.map((r) => r.value))
+  return (
+    <div>
+      <h3 className="text-xs text-stone-400 uppercase tracking-wide mb-2">{title}</h3>
+      {top.length === 0 ? (
+        <p className="text-xs text-stone-400">No data.</p>
+      ) : (
+        <ul className="space-y-1">
+          {top.map((r) => (
+            <li key={r.label} className="flex items-center gap-2 text-sm">
+              <span className="tabular-nums text-stone-500 text-xs w-10 text-right shrink-0">{n(r.value)}</span>
+              <span className="flex-1 min-w-0">
+                <span className="relative block h-4">
+                  <span
+                    className="absolute inset-y-0 left-0 bg-stone-100 rounded-sm"
+                    style={{ width: `${Math.max(4, (r.value / peak) * 100)}%` }}
+                    aria-hidden
+                  />
+                  <span className="relative text-stone-700 truncate pl-1.5 leading-4 block">{r.label}</span>
+                </span>
+              </span>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  )
+}
+
+type Props = { searchParams: Promise<{ range?: string }> }
+
+export default async function AnalyticsDashboard({ searchParams }: Props) {
+  const { range: rawRange } = await searchParams
+  const data = await getDashboardData(rawRange)
+
+  return (
+    <main>
+      <div className="mb-6">
+        <Link href="/admin" className="text-xs text-stone-400 hover:text-stone-700">← Admin</Link>
+      </div>
+
+      <div className="flex items-baseline justify-between mb-1">
+        <h2 className="text-lg font-semibold text-stone-800">Reader demand</h2>
+      </div>
+      <p className="text-xs text-stone-400 mb-5">
+        Umami records opens by slug; Supabase knows what the slugs mean. This joins them and rolls
+        demand up by theme, author, era, tradition and genre — the view Umami can’t produce.
+      </p>
+
+      <div className="mb-8">
+        <RangeSelector current={data.range} />
+      </div>
+
+      {!data.ok ? (
+        <section className="border border-amber-300 bg-amber-50 rounded px-4 py-4">
+          <h3 className="text-sm font-semibold text-amber-800 mb-1">Analytics unavailable</h3>
+          <p className="text-xs text-amber-800 mb-3">
+            Couldn’t load the demand digest for this range. Umami may be unreachable — it’s blocked
+            by common ad/tracking blockers (including Keith’s own Chrome) and can’t be reached from
+            CI/build environments — or the Supabase read credentials aren’t configured. The page
+            itself is fine; nothing was written.
+          </p>
+          <pre className="text-[11px] text-amber-900/80 bg-amber-100/60 border border-amber-200 rounded px-2.5 py-2 whitespace-pre-wrap break-words">
+            {data.error}
+          </pre>
+        </section>
+      ) : (
+        <Digest data={data} />
+      )}
+    </main>
+  )
+}
+
+function Digest({ data }: { data: Extract<Awaited<ReturnType<typeof getDashboardData>>, { ok: true }> }) {
+  const { digest, stats, eventCounts, window: win } = data
+  const t = digest.totals
+
+  return (
+    <div className="space-y-10">
+      <p className="text-xs text-stone-400">
+        Window {fmtDate(win.startAt)} → {fmtDate(win.endAt)} · Umami access: {data.umamiMode}
+      </p>
+
+      {/* Traffic summary */}
+      <section>
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          {[
+            { label: 'Visitors', value: stat(stats, 'visitors') },
+            { label: 'Visits', value: stat(stats, 'visits') },
+            { label: 'Pageviews', value: stat(stats, 'pageviews') },
+            { label: 'Bounces', value: stat(stats, 'bounces') },
+          ].map(({ label, value }) => (
+            <div key={label} className="border border-stone-200 rounded px-4 py-3">
+              <div className="text-xs text-stone-400 uppercase tracking-wide mb-1">{label}</div>
+              <div className="text-lg font-semibold text-stone-800 tabular-nums">{n(value)}</div>
+            </div>
+          ))}
+        </div>
+        <p className="text-xs text-stone-500 mt-3">
+          <span className="font-medium text-stone-700">{n(t.totalTextOpens)}</span> text-opens across{' '}
+          <span className="font-medium text-stone-700">{n(t.distinctTextsOpened)}</span> texts
+          {t.unmatchedOpens > 0 && (
+            <span className="text-amber-700"> · ⚠ {n(t.unmatchedOpens)} opens on slugs not in the DB</span>
+          )}
+          .
+        </p>
+        <p className="text-[11px] text-stone-400 mt-1.5">
+          Undercount: ad/tracking blockers drop the beacon, so treat these as lower bounds and read
+          shares, not absolutes.
+        </p>
+      </section>
+
+      {/* Demand by content dimension */}
+      <section>
+        <h2 className="text-sm font-semibold text-stone-800 mb-1">Demand by content dimension</h2>
+        <p className="text-xs text-stone-400 mb-4">
+          What readers actually open, rolled up the way Umami can’t. Feeds pipeline + backlog priority.
+        </p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-6">
+          <RankList title="By theme" ranked={digest.byTheme} />
+          <RankList title="By author" ranked={digest.byAuthor} />
+          <RankList title="By era" ranked={digest.byEra} />
+          <RankList title="By tradition" ranked={digest.byTradition} />
+          <RankList title="By genre" ranked={digest.byGenre} />
+        </div>
+      </section>
+
+      {/* Top texts */}
+      <section>
+        <h2 className="text-sm font-semibold text-stone-800 mb-3">Top texts opened</h2>
+        {digest.topTexts.length === 0 ? (
+          <p className="text-xs text-stone-400">No text-open events in range.</p>
+        ) : (
+          <div className="border border-stone-200 rounded divide-y divide-stone-100">
+            {digest.topTexts.slice(0, 20).map((x) => (
+              <div key={x.slug} className="flex items-center justify-between px-4 py-2.5 gap-4">
+                <div className="min-w-0">
+                  <span className="text-sm font-medium text-stone-800">{x.title}</span>
+                  <span className="text-xs text-stone-400 ml-2">{x.author}</span>
+                  <span className="block text-[11px] text-stone-300 font-mono truncate">{x.slug}</span>
+                </div>
+                <span className="text-sm tabular-nums text-stone-600 shrink-0">{n(x.count)}</span>
+              </div>
+            ))}
+          </div>
+        )}
+      </section>
+
+      {/* Collections */}
+      {digest.collections.length > 0 && (
+        <section>
+          <h2 className="text-sm font-semibold text-stone-800 mb-3">Collections opened</h2>
+          <div className="border border-stone-200 rounded divide-y divide-stone-100">
+            {digest.collections.slice(0, 20).map((c) => (
+              <div key={c.slug} className="flex items-center justify-between px-4 py-2.5 gap-4">
+                <div className="min-w-0">
+                  <span className="text-sm text-stone-800">{c.name}</span>
+                  <span className="block text-[11px] text-stone-300 font-mono truncate">{c.slug}</span>
+                </div>
+                <span className="text-sm tabular-nums text-stone-600 shrink-0">{n(c.count)}</span>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Reading entry points */}
+      <section>
+        <h2 className="text-sm font-semibold text-stone-800 mb-1">Reading entry points (from)</h2>
+        <p className="text-xs text-stone-400 mb-4">
+          Which surfaces drive people into texts — where UI work has leverage.
+        </p>
+        <div className="max-w-md">
+          <RankList title="text-open origins" ranked={digest.fromAttribution} max={20} />
+        </div>
+      </section>
+
+      {/* Data-quality flags */}
+      {(digest.unmatchedTexts.length > 0 || digest.unmatchedCollections.length > 0) && (
+        <section className="border border-amber-200 bg-amber-50 rounded px-4 py-3">
+          <h2 className="text-sm font-semibold text-amber-800 mb-2">⚠ Data-quality flags</h2>
+          {digest.unmatchedTexts.length > 0 && (
+            <>
+              <p className="text-xs text-amber-800 mb-1.5">
+                Slugs opened but not found in Supabase (renamed / unpublished / stale share data):
+              </p>
+              <ul className="space-y-0.5 mb-2">
+                {digest.unmatchedTexts.slice(0, 20).map((u) => (
+                  <li key={u.slug} className="text-xs text-stone-700 flex items-center gap-2">
+                    <span className="tabular-nums text-stone-500 w-8 text-right">{n(u.count)}</span>
+                    <span className="font-mono">{u.slug}</span>
+                  </li>
+                ))}
+              </ul>
+            </>
+          )}
+          {digest.unmatchedCollections.length > 0 && (
+            <p className="text-xs text-amber-800">
+              Unmatched collection slugs:{' '}
+              {digest.unmatchedCollections.map((u) => `${u.slug} (${u.count})`).join(', ')}
+            </p>
+          )}
+        </section>
+      )}
+
+      {/* Events firing */}
+      <section>
+        <h2 className="text-sm font-semibold text-stone-800 mb-1">Events firing</h2>
+        <p className="text-xs text-stone-400 mb-4">
+          Cross-check against Growth Tracker → Events Register; investigate any event here that isn’t
+          documented there, or documented events absent here.
+        </p>
+        {eventCounts.length === 0 ? (
+          <p className="text-xs text-stone-400">No custom events in range.</p>
+        ) : (
+          <div className="flex flex-wrap gap-2">
+            {eventCounts.slice(0, 40).map((e) => (
+              <span
+                key={e.key}
+                className="text-xs border border-stone-200 rounded px-2 py-1 text-stone-600"
+              >
+                {e.key} <span className="tabular-nums text-stone-400 ml-1">{n(e.count)}</span>
+              </span>
+            ))}
+          </div>
+        )}
+      </section>
+    </div>
+  )
+}

@@ -153,6 +153,7 @@ export default async function AdminDashboard({ searchParams }: Props) {
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             {[
               { label: 'Pipeline', href: '/admin/pipeline', count: pendingCount ?? 0 },
+              { label: 'Analytics', href: '/admin/analytics', count: '→' as number | string },
               { label: 'Drafts', href: '/admin/drafts', count: draftCount ?? 0 },
               { label: 'Authors', href: '/admin/authors', count: authorCount ?? 0 },
               { label: 'Traditions', href: '/admin/traditions', count: traditionCount ?? 0 },
