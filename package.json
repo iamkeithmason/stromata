@@ -25,6 +25,7 @@
     "test:research": "tsx --test scripts/research/*.test.ts"
   },
   "dependencies": {
+    "@react-pdf/renderer": "^4.9.0",
     "@supabase/supabase-js": "^2.49.0",
     "@tailwindcss/typography": "^0.5.19",
     "bible-passage-reference-parser": "^4.0.0",

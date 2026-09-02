@@ -13,6 +13,9 @@ import { OG_IMAGE } from '@/lib/metadata'
 import { ThemeChip } from '@/app/components/ThemeChip'
 import { BookCover } from '@/app/components/BookCover'
 import { AuthorAside } from '@/app/components/AuthorAside'
+import { DownloadLinks } from '@/app/components/DownloadLinks'
+import { ReaderSettings } from '@/app/components/ReaderSettings'
+import { CitationButton } from '@/app/components/CitationButton'
 
 type Props = { params: Promise<{ slug: string }> }
 
@@ -267,11 +270,19 @@ export default async function TextPage({ params }: Props) {
                   )}
                 </section>
               )}
+
+              {/* Free, ungated downloads — this text, and the whole collection
+                  it belongs to (if any). Reading feature, never membership-gated. */}
+              <DownloadLinks
+                textSlug={slug}
+                collectionSlug={collection?.slug}
+                from="text-reader"
+              />
             </div>
           </aside>
 
           {/* Main reading column */}
-          <main className="w-full min-w-0 lg:max-w-[800px] lg:flex-1">
+          <main id="reader-main" className="w-full min-w-0 lg:max-w-[800px] lg:flex-1">
             {/* Mobile TOC disclosure — visible below xl where the fixed TOC is hidden */}
             {hasToc && (
               <div className="xl:hidden mb-8">
@@ -403,6 +414,15 @@ export default async function TextPage({ params }: Props) {
               Support the library on Ko-fi →
             </a>
           </p>
+          <p className="mt-2">
+            <CitationButton
+              title={text.title}
+              authorName={author?.name ?? null}
+              slug={slug}
+              sourceAttribution={text.source_attribution ?? null}
+              accessionNumber={text.accession_number ?? null}
+            />
+          </p>
         </footer>
       </div>
 
@@ -410,6 +430,8 @@ export default async function TextPage({ params }: Props) {
           Renders outside the reading container so it doesn't affect column width.
           Only shown at xl (1280px+) where the right margin has enough room. */}
       {hasToc && <TableOfContents headings={headings} />}
+
+      <ReaderSettings />
 
       <RecordVisit
         slug={slug}
