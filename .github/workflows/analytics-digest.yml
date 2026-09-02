@@ -1,0 +1,117 @@
+name: Analytics digest — weekly demand report
+
+# Runs the read-only Umami × Supabase demand digest (scripts/analytics/digest.mjs)
+# on a weekly schedule and DELIVERS it by committing a dated Markdown report to
+# scripts/analytics/reports/<YYYY-MM-DD>.md. Nothing is published and no site data
+# is written — the only write is the committed report file. The digest itself is
+# strictly read-only against Umami (share link) and Supabase (SELECT-only).
+#
+# ── Required repository Secrets (Settings → Secrets and variables → Actions) ──
+#   UMAMI_SHARE_URL          Umami Cloud per-website Share URL
+#                            (…/analytics/<region>/share/<slug>). Free-tier auth;
+#                            the digest resolves the website id + region from it.
+#   ANALYTICS_SUPABASE_URL   Supabase project URL (read-only usage).
+#   ANALYTICS_SUPABASE_KEY   Supabase read key. Needs to see authors/texts, which
+#                            RLS hides from the anon key — use a service-role key
+#                            or a dedicated read role.
+#
+#   Fallbacks the digest also accepts if the ANALYTICS_* pair is unset (pick ONE
+#   source of Supabase creds and set it as repo Secrets so the runner can read it):
+#     SCOUT_SUPABASE_URL / SCOUT_SUPABASE_KEY   (already configured for the Scout)
+#     NEXT_PUBLIC_SUPABASE_URL + SUPABASE_SERVICE_ROLE_KEY (or NEXT_PUBLIC_SUPABASE_ANON_KEY)
+#   All are passed through below; whichever pair is populated wins.
+#
+# ── Network ──
+#   The runner must reach the Umami Cloud region gateway (e.g. gateway-eu.umami.is)
+#   and cloud.umami.is, plus the Supabase project host. All are public HTTPS egress
+#   — fine on GitHub-hosted runners, no allowlisting needed.
+#
+# The commit-back no-ops when the report is unchanged (e.g. a same-day re-run), so
+# "no new data" never fails the job. A hard digest failure (missing/invalid Secrets)
+# DOES fail the job on purpose, so a misconfiguration is visible rather than silent.
+
+on:
+  schedule:
+    # 08:00 UTC every Monday — a start-of-week demand snapshot for prioritisation.
+    - cron: '0 8 * * 1'
+  workflow_dispatch:
+    inputs:
+      range:
+        description: 'Digest window'
+        type: choice
+        default: '7d'
+        options:
+          - 24h
+          - 7d
+          - 30d
+          - 90d
+          - all
+
+concurrency:
+  group: analytics-digest-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  digest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run digest → dated report
+        id: digest
+        env:
+          # Umami — free-tier share-link auth (read-only).
+          UMAMI_SHARE_URL: ${{ secrets.UMAMI_SHARE_URL }}
+          # Supabase read creds — preferred pair, plus the fallbacks digest.mjs accepts.
+          ANALYTICS_SUPABASE_URL: ${{ secrets.ANALYTICS_SUPABASE_URL }}
+          ANALYTICS_SUPABASE_KEY: ${{ secrets.ANALYTICS_SUPABASE_KEY }}
+          SCOUT_SUPABASE_URL: ${{ secrets.SCOUT_SUPABASE_URL }}
+          SCOUT_SUPABASE_KEY: ${{ secrets.SCOUT_SUPABASE_KEY }}
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+        run: |
+          set -euo pipefail
+          RANGE="${{ github.event.inputs.range || '7d' }}"
+          mkdir -p scripts/analytics/reports
+          REPORT="scripts/analytics/reports/$(date -u +%F).md"
+          echo "report=$REPORT" >> "$GITHUB_OUTPUT"
+          # Capture to a temp file so a mid-run failure never commits a partial report.
+          if npm run --silent umami:digest -- --range="$RANGE" > "$REPORT.tmp"; then
+            mv "$REPORT.tmp" "$REPORT"
+          else
+            echo "::error::Digest failed — check UMAMI_SHARE_URL and the Supabase read Secrets."
+            rm -f "$REPORT.tmp"
+            exit 1
+          fi
+          # A rendered-but-empty file would mean something went wrong silently; don't commit it.
+          if [ ! -s "$REPORT" ]; then
+            echo "::warning::Digest produced no output; nothing to commit."
+            rm -f "$REPORT"
+          fi
+
+      - name: Commit report
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add scripts/analytics/reports/
+          if git diff --staged --quiet; then
+            echo "No report changes to commit (unchanged, or nothing rendered)."
+            exit 0
+          fi
+          git commit -m "Analytics digest — $(date -u +%F)"
+          # Push to the branch that triggered the run (robust to detached HEAD).
+          git push origin "HEAD:${{ github.ref_name }}"
