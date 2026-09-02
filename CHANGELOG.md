@@ -7,6 +7,30 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-09-02 — Reader dark mode (completes the typography-settings card)
+
+The light/dark preference deferred out of the reader-cluster PR, now built. Adds a **Theme (Light/Dark)**
+row to the reader settings panel, persisted in the same `stromata:reader` localStorage prefs.
+
+Mechanism: the whole reading page already consumes the design tokens (`--paper`, `--ink*`, `--rule`,
+`--vellum`), so dark mode is a scoped **token override** — a `[data-reader-theme="dark"]` block in
+globals.css redefines the palette to a warm near-black, and `ReaderSettings` toggles that attribute on
+the text-page root (`#reader-page`). Most of the page flips through the cascade for free (header, margin
+column, TOC, footer, settings panel, scripture popovers). Two things needed hands: the frontispiece hero
+used `var(--ink)` as a *background*, which would have flipped light — split out to a stable
+`--hero-ground` token that stays dark; and `MarkdownBody` hardcoded its body colours (`#1b1b1b` etc.),
+now moved onto `--reader-*` tokens **whose light values equal the old hardcodes exactly**, so light mode
+is unchanged (verified by screenshot). The two OCR-quality notices were tokenised too so they don't glow
+white on the dark ground.
+
+No-flash: a tiny inline script on the page root reads the saved preference and sets the attribute during
+HTML parse, before first paint.
+
+Verified light + dark by headless-Chromium screenshot of a representative reading sample (the real app
+needs Supabase creds unavailable here) — light is pixel-identical to before; dark is a comfortable warm
+off-white on near-black. Tracking: the `theme` value folds into the existing `reader-setting-change`
+event (`setting: theme`). **Wire-verification still owed** on prod. Keith to eyeball on a real text page.
+
 ## 2026-09-02 — Reader cluster: typography settings + inline citation generator (one PR)
 
 Two independent Feature Backlog items, shipped together because both edit the text reader

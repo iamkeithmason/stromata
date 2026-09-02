@@ -92,6 +92,57 @@
   --dur-fast:  120ms;
   --dur:       200ms;
   --dur-slow:  320ms;
+
+  /* Stable dark frontispiece ground — was inlined as var(--ink); split out so
+     the reader dark theme (which flips --ink to a light value) leaves the hero
+     dark. Light value is the current --ink. */
+  --hero-ground: #1E2D3D;
+
+  /* Reader body colours. Light values equal MarkdownBody's previous hardcodes
+     EXACTLY, so light-mode reading is unchanged; the dark reader theme below
+     overrides them. */
+  --reader-text:       #1b1b1b;   /* paragraphs, headings, strong, lists */
+  --reader-quote:      #6f6a60;   /* blockquote text */
+  --reader-quote-rule: #c8c3bb;   /* blockquote left border */
+  --reader-hr:         #e5e0d8;   /* section-break rule */
+
+  /* Low-OCR-quality notice (amber). */
+  --notice-bg:     #fffbeb;
+  --notice-text:   #92400e;
+  --notice-border: #fcd34d;
+}
+
+/* =============================================================
+   Reader dark theme — opt-in per reader via ReaderSettings, scoped to the
+   text page root ([data-reader-theme="dark"] on #reader-page). Overrides the
+   palette tokens the reading page already consumes, so most of the page flips
+   through the cascade; the hero stays dark via --hero-ground. A warm near-black
+   ground to suit the parchment aesthetic rather than a clinical grey.
+   ============================================================= */
+[data-reader-theme="dark"] {
+  --paper:      #16130F;
+  --paper-deep: #1D1914;
+  --paper-edge: #2A241C;
+  --vellum:     #211C16;
+
+  --ink:        #ECE6D8;
+  --ink-soft:   #CFC8B8;
+  --ink-mute:   #A8A08F;
+  --ink-faint:  #928A79;
+
+  --rule:       #3A342B;
+  --rule-soft:  #2C2720;
+
+  --reader-text:       #E6E0D2;
+  --reader-quote:      #A8A08F;
+  --reader-quote-rule: #3A342B;
+  --reader-hr:         #2C2720;
+
+  --notice-bg:     #2A2213;
+  --notice-text:   #F2C879;
+  --notice-border: #5A4A22;
+
+  color-scheme: dark;
 }
 
 @tailwind base;
