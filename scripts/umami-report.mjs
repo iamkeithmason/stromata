@@ -7,9 +7,15 @@
  * which is exactly what this script uses — no API key, no account password.
  *
  * Auth (pick one; share mode is the free-tier path):
- *   - Share mode  : set UMAMI_SHARE_ID to the site's share slug (free tier).
+ *   - Share mode  : set UMAMI_SHARE_URL to the full share link (easiest — the
+ *                   Cloud region and slug are parsed from it), or set
+ *                   UMAMI_SHARE_ID (+ UMAMI_REGION for EU/US Cloud). Free tier.
  *   - API-key mode: set UMAMI_API_KEY (paid plan) — same commands, used
  *                   automatically if present.
+ *
+ * Umami Cloud is regionalised; the share resolver auto-discovers the working
+ * endpoint by probing the known candidates and `doctor` reports which won —
+ * pin it as UMAMI_API_BASE afterwards to skip probing.
  *
  * This script only ever issues GET requests. Because Umami Cloud has no
  * read-only API-key tier, that GET-only discipline IS the safety boundary —
@@ -53,11 +59,32 @@ import path from 'path';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 dotenv.config({ path: path.join(__dirname, '..', '.env.local'), quiet: true });
 
-const SHARE_ID = process.env.UMAMI_SHARE_ID;
 const API_KEY = process.env.UMAMI_API_KEY;
-const HOST = (process.env.UMAMI_HOST || 'https://cloud.umami.is').replace(/\/$/, '');
-const API_BASE = (process.env.UMAMI_API_BASE || 'https://api.umami.is/v1').replace(/\/$/, '');
 const WEBSITE_ID_ENV = process.env.UMAMI_WEBSITE_ID;
+
+// Umami Cloud is regionalised (US / EU). The region is the first path segment
+// of the regional API gateway (https://api.umami.is/v1/<region>) and also
+// appears in the share link (…/analytics/<region>/share/<slug>). Accept either
+// the whole share URL (easiest — region + slug are parsed from it) or a bare
+// slug plus an optional region.
+function parseShare() {
+  const rawUrl = process.env.UMAMI_SHARE_URL?.trim();
+  let slug = process.env.UMAMI_SHARE_ID?.trim() || '';
+  let region = process.env.UMAMI_REGION?.trim() || '';
+  if (rawUrl) {
+    // …/analytics/<region>/share/<slug>  or  …/share/<slug>/<name>
+    const m = /\/analytics\/([a-z]{2})\/share\/([^/?#]+)/i.exec(rawUrl) ||
+      /\/share\/([^/?#]+)/i.exec(rawUrl);
+    if (m) {
+      if (m.length === 3) { region ||= m[1].toLowerCase(); slug ||= m[2]; }
+      else slug ||= m[1];
+    }
+  }
+  return { slug, region };
+}
+const { slug: SHARE_ID, region: REGION } = parseShare();
+// Explicit overrides win; otherwise probe the candidates below.
+const API_BASE_ENV = process.env.UMAMI_API_BASE?.replace(/\/$/, '');
 
 // ---------------------------------------------------------------------------
 // Arg parsing
@@ -107,39 +134,82 @@ function resolveRange() {
 // HTTP — always GET, auth header redacted in any error
 // ---------------------------------------------------------------------------
 
-let ctx = null; // { base, headers, websiteId }
+let ctx = null; // { base, headers, websiteId, via }
+
+// Candidate (share-resolution URL -> matching data base) pairs, tried in order.
+// The first that returns a valid { token, websiteId } wins; its data base is
+// reused for every subsequent query so resolution and data stay on one host.
+// Set UMAMI_API_BASE to pin the winner and skip probing once it's known.
+function shareCandidates() {
+  const enc = encodeURIComponent(SHARE_ID);
+  const r = REGION ? `/${REGION}` : '';
+  const pairs = [
+    [`https://api.umami.is/v1${r}/share/${enc}`, `https://api.umami.is/v1${r}`],
+  ];
+  if (REGION) pairs.push([`https://${REGION}.umami.is/api/share/${enc}`, `https://${REGION}.umami.is/api`]);
+  pairs.push(
+    [`https://cloud.umami.is/api/share/${enc}`, `https://cloud.umami.is/api`],
+    [`https://api.umami.is/v1/share/${enc}`, `https://api.umami.is/v1`]
+  );
+  if (API_BASE_ENV) pairs.unshift([`${API_BASE_ENV}/share/${enc}`, API_BASE_ENV]);
+  return pairs;
+}
 
 async function authContext() {
   if (ctx) return ctx;
   if (API_KEY) {
     if (!WEBSITE_ID_ENV) fail('API-key mode needs UMAMI_WEBSITE_ID in .env.local.');
-    ctx = { base: API_BASE, headers: { 'x-umami-api-key': API_KEY }, websiteId: WEBSITE_ID_ENV };
+    const base = API_BASE_ENV || `https://api.umami.is/v1${REGION ? `/${REGION}` : ''}`;
+    ctx = { base, headers: { 'x-umami-api-key': API_KEY }, websiteId: WEBSITE_ID_ENV, via: base };
     return ctx;
   }
   if (SHARE_ID) {
-    const url = `${HOST}/api/share/${encodeURIComponent(SHARE_ID)}`;
-    const res = await fetch(url);
-    if (!res.ok) {
-      fail(
-        `Could not resolve share id at ${url} (HTTP ${res.status}).\n` +
-          'Enable the Share URL for the site in Umami (Websites -> Edit -> Share URL)\n' +
-          'and copy the slug from the share link into UMAMI_SHARE_ID.'
-      );
+    const tried = [];
+    for (const [url, base] of shareCandidates()) {
+      let res;
+      try {
+        res = await fetch(url);
+      } catch (e) {
+        tried.push(`${url} -> ${e.code || e.message}`);
+        continue;
+      }
+      if (!res.ok) {
+        tried.push(`${url} -> HTTP ${res.status}`);
+        continue;
+      }
+      let data;
+      try {
+        data = await res.json();
+      } catch {
+        tried.push(`${url} -> non-JSON response`);
+        continue;
+      }
+      if (data?.token && data?.websiteId) {
+        ctx = {
+          base,
+          headers: { 'x-umami-share-token': data.token },
+          websiteId: WEBSITE_ID_ENV || data.websiteId,
+          via: url,
+        };
+        return ctx;
+      }
+      tried.push(`${url} -> 200 but no token/websiteId`);
     }
-    const data = await res.json();
-    if (!data?.token || !data?.websiteId) {
-      fail(`Share resolution returned an unexpected shape: ${JSON.stringify(data).slice(0, 200)}`);
-    }
-    ctx = {
-      base: `${HOST}/api`,
-      headers: { 'x-umami-share-token': data.token },
-      websiteId: WEBSITE_ID_ENV || data.websiteId,
-    };
-    return ctx;
+    fail(
+      `Could not resolve the share slug "${SHARE_ID}"` +
+        (REGION ? ` (region "${REGION}")` : ' (no region set)') +
+        ' at any known endpoint.\nTried:\n  ' +
+        tried.join('\n  ') +
+        '\n\nChecks:\n' +
+        '  - Is the Share URL enabled for the site in Umami (Websites -> Edit -> Share URL)?\n' +
+        '  - Set UMAMI_SHARE_URL to the full share link so the region is parsed\n' +
+        '    (e.g. https://cloud.umami.is/analytics/eu/share/<slug>), or set UMAMI_REGION.\n' +
+        '  - If you know the working API base, pin it with UMAMI_API_BASE.'
+    );
   }
   fail(
-    'No Umami credentials found. Set UMAMI_SHARE_ID (free tier) or UMAMI_API_KEY\n' +
-      '(paid plan) in .env.local. See .env.example for details.'
+    'No Umami credentials found. Set UMAMI_SHARE_URL or UMAMI_SHARE_ID (free tier),\n' +
+      'or UMAMI_API_KEY (paid plan) in .env.local. See .env.example for details.'
   );
 }
 
@@ -255,11 +325,13 @@ async function cmdEvent(range) {
 }
 
 async function cmdDoctor(range) {
-  const { base, headers, websiteId } = await authContext();
+  const { base, headers, websiteId, via } = await authContext();
   const mode = API_KEY ? 'api-key' : SHARE_ID ? 'share' : 'none';
   console.log('Umami auth doctor');
   console.log(`  mode        : ${mode}`);
-  console.log(`  data base   : ${base}`);
+  console.log(`  region      : ${REGION || '(none set)'}`);
+  console.log(`  resolved via: ${via}`);
+  console.log(`  data base   : ${base}   <- pin this as UMAMI_API_BASE to skip probing`);
   console.log(`  auth header : ${Object.keys(headers)[0]} (value redacted)`);
   console.log(`  website id  : ${websiteId}`);
   const s = await api('websites/{id}/stats', range);
