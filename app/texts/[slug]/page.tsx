@@ -139,7 +139,7 @@ export default async function TextPage({ params }: Props) {
 
   return (
     <div style={{ background: 'var(--paper)', paddingTop: '4rem' }} className="min-h-screen">
-      <ReadingProgressBar slug={slug} title={text.title} />
+      <ReadingProgressBar slug={slug} />
       <SiteHeader breadcrumb={author ? (() => {
         return (
           <>
