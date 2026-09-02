@@ -173,15 +173,18 @@ async function authContext() {
         tried.push(`${url} -> ${e.code || e.message}`);
         continue;
       }
+      const raw = await res.text();
       if (!res.ok) {
-        tried.push(`${url} -> HTTP ${res.status}`);
+        // Surface the body — a 400/404 usually explains what the endpoint wants.
+        const snippet = raw.replace(/\s+/g, ' ').trim().slice(0, 180);
+        tried.push(`${url} -> HTTP ${res.status}${snippet ? ` · ${snippet}` : ''}`);
         continue;
       }
       let data;
       try {
-        data = await res.json();
+        data = JSON.parse(raw);
       } catch {
-        tried.push(`${url} -> non-JSON response`);
+        tried.push(`${url} -> 200 but non-JSON: ${raw.slice(0, 80)}`);
         continue;
       }
       if (data?.token && data?.websiteId) {
