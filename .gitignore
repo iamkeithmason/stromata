@@ -22,3 +22,6 @@ data/corpus-frequency.json
 
 # Scratch scripts — underscore-prefixed one-off helpers, never committed
 scripts/_*
+
+# Transient agent worktrees (created by Claude Code subagent isolation)
+.claude/worktrees/

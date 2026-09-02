@@ -12,22 +12,26 @@ proposed_themes:
   - desire
   - virtue
   - salvation
+  - eschatology
+proposed_ocr_quality: high
+
+proposed_collection:
 proposed_ocr_quality: high
 
 proposed_collection:
   shape: collection
-  rationale: The curated selection spans distinct numbered Questions drawn from different Parts of the Summa (Prima Pars Q.2 on God's existence; Secunda Pars Q.1-4 on happiness), each with its own articles — a reader would navigate between these named Questions rather than read straight through.
+  rationale: The curated selection combines two separately numbered Questions from different Parts of the Summa (existence of God from the Prima Pars; man's last end and happiness from the Secunda Pars), each internally divided into Articles — a reader navigates between Questions as discrete topical units rather than following one continuous argument.
   parts:
     - order: 1
-      title: Question 2. The Existence of God
+      title: "Question 2: The Existence of God (Prima Pars)"
     - order: 2
-      title: Question 1. Man's Last End
+      title: "Question 1: Man's Last End (Secunda Pars)"
     - order: 3
-      title: Question 2. Things in Which Man's Happiness Consists
+      title: "Question 2: Things in Which Man's Happiness Consists (Secunda Pars)"
     - order: 4
-      title: Question 3. What Is Happiness
+      title: "Question 3: What Is Happiness (Secunda Pars)"
     - order: 5
-      title: Question 4. Things That Are Required for Happiness
+      title: "Question 4: Things Required for Happiness (Secunda Pars)"
 
 flags:
   - "author-missing: author is not yet in the corpus — create the author record before import"

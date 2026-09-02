@@ -18,13 +18,13 @@ un-applied in `ocr-report.md` for you to accept/reject.
 ## Proposed metadata (confirm before import)
 
 - Genre: Treatise
-- Themes: scripture, trinity, christology, salvation, sacraments
+- Themes: scripture, trinity, christology, salvation, sacraments, providence, prayer
 - OCR quality: high
-- Collection shape: **collection** — The Institutes is natively structured in four numbered Books, each further divided into chapters, and readers of this classic navigate between the Books as distinct units of argument.
+- Collection shape: **excerpt** — At roughly 795,000 words the pinned CCEL/Beveridge text is the complete Institutes, not a pre-trimmed selection despite the prospect title; Calvin himself organized the whole work into four self-contained Books, each a coherent argument, so excerpting at the Book level gives the editor self-contained units to select from rather than one undifferentiated mass.
   1. Book I: The Knowledge of God the Creator
   2. Book II: The Knowledge of God the Redeemer in Christ
   3. Book III: The Mode of Obtaining the Grace of Christ
-  4. Book IV: The External Means or Helps by Which God Invites Us into Fellowship with Christ
+  4. Book IV: The External Means or Aids by Which God Invites Us into the Society of Christ
 
 ## Detection summary (see `ocr-report.md`)
 

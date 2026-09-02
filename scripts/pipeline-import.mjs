@@ -23,7 +23,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { createClient } from '@supabase/supabase-js';
 import dotenv from 'dotenv';
-import { normaliseMarkdown, overrideForFile } from './normalise-markdown.mjs';
+import { normaliseMarkdown, rejoinSpuriousBreaks, overrideForFile } from './normalise-markdown.mjs';
 import { detectScannos, loadCorpus, loadAllowlist } from './detect-scannos.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -280,11 +280,25 @@ async function importTextFile(filePath, prospect, authorId, collectionId) {
 
   const themeIds = await resolveThemeIds(data.themes);
 
+  const warnings = [];
+  const corrections = [];
+
+  // Page-break repair. Scanned/OCR sources split a sentence into two paragraphs
+  // wherever a printed page ended; this rejoins those mid-sentence splits (and
+  // only those — see rejoinSpuriousBreaks) so the stored body reads correctly.
+  // Nothing else about the body's spacing is touched, and a body with no such
+  // splits is inserted byte-for-byte unchanged.
+  const override = overrideForFile(filePath);
+  const { output: repairedBody, joined: breaksJoined } = rejoinSpuriousBreaks(body, { override });
+  if (breaksJoined > 0) {
+    corrections.push(`${data.slug}: rejoined ${breaksJoined} mid-sentence page-break split(s)`);
+    console.log(`  ↩ rejoined ${breaksJoined} mid-sentence page-break split(s) in ${data.slug}`);
+  }
+
   // Verse check (flag-only — never rewrites the body). A stanza silently split
   // into paragraphs is the one failure mode that ships wrong output, so surface
   // it at import time rather than let it be discovered after publication.
-  const warnings = [];
-  const { report: normReport } = normaliseMarkdown(body, { override: overrideForFile(filePath) });
+  const { report: normReport } = normaliseMarkdown(repairedBody, { override });
   if (normReport.verseFlags.length > 0) {
     const ranges = normReport.verseFlags.map(f => `${f.startLine}-${f.endLine}`).join(', ');
     const warning = `${data.slug}: ${normReport.verseFlags.length} verse run(s) flagged, review before publish (body lines ${ranges})`;
@@ -296,7 +310,7 @@ async function importTextFile(filePath, prospect, authorId, collectionId) {
   // near-certain OCR errors are reviewed before publish. Skipped if the corpus
   // index isn't built yet.
   if (scannoCorpus) {
-    const tier1 = detectScannos(body, { corpus: scannoCorpus, allowlist: scannoAllowlist, slug: data.slug })
+    const tier1 = detectScannos(repairedBody, { corpus: scannoCorpus, allowlist: scannoAllowlist, slug: data.slug })
       .filter(f => f.tier === 1).length;
     if (tier1 > 0) {
       warnings.push(`${data.slug}: ${tier1} Tier-1 scanno(s) flagged, review before publish`);
@@ -311,7 +325,7 @@ async function importTextFile(filePath, prospect, authorId, collectionId) {
       slug: data.slug,
       author_id: authorId,
       genre_id: genreId,
-      body,
+      body: repairedBody,
       collection_id: collectionId,
       collection_order: data.collection_order ?? null,
       source_attribution: data.source_attribution || null,
@@ -335,7 +349,7 @@ async function importTextFile(filePath, prospect, authorId, collectionId) {
   }
 
   console.log(`  + imported: ${data.title}`);
-  return { skipped: false, warnings };
+  return { skipped: false, warnings, corrections };
 }
 
 // ---------------------------------------------------------------------------
@@ -381,11 +395,13 @@ async function main() {
       let importedCount = 0;
       const failures = [];
       const reviewWarnings = [];
+      const appliedCorrections = [];
       for (const file of files) {
         const result = await importTextFile(file, prospect, authorId, collectionId);
         if (!result.skipped) {
           importedCount++;
           if (result.warnings) reviewWarnings.push(...result.warnings);
+          if (result.corrections) appliedCorrections.push(...result.corrections);
         } else if (result.reason !== 'already_exists') {
           failures.push(result.detail || result.reason);
         }
@@ -400,6 +416,9 @@ async function main() {
         let note = `Imported ${importedCount} text(s) on ${today}.`;
         if (failures.length > 0) {
           note += ` ${failures.length} file(s) failed and were NOT imported: ${failures.join(' | ')}`;
+        }
+        if (appliedCorrections.length > 0) {
+          note += ` Auto-corrected: ${appliedCorrections.join(' | ')}.`;
         }
         if (reviewWarnings.length > 0) {
           note += ` REVIEW NEEDED before publish: ${reviewWarnings.join(' | ')}`;

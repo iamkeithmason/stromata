@@ -18,9 +18,15 @@ un-applied in `ocr-report.md` for you to accept/reject.
 ## Proposed metadata (confirm before import)
 
 - Genre: Hymn
-- Themes: liturgy, salvation, death, prayer
+- Themes: liturgy, salvation, death, prayer, christology, eschatology
 - OCR quality: high
-- Collection shape: **single** — Automated heading detection on this scanned archive.org edition surfaced only site-navigation artifacts, not reliable internal hymn or section titles; absent tool-verified named divisions, the volume is staged as one continuous text for editorial review.
+- Collection shape: **collection** — The work is an anthology of individually authored/translated Greek and Syriac hymns (canons, troparia, idiomela) grouped by original hymnographer rather than one continuous argument. The pipeline's heading detector surfaced only archive.org page-wrapper navigation labels, not the book's own hymn/section titles, so the parts below are drawn from the well-documented published structure of this anthology and should be verified by the editor against the staged body text.
+  1. Introductory essay on Greek ecclesiastical hymnody
+  2. Hymns of St. John Damascene
+  3. Hymns of St. Cosmas
+  4. Hymns of St. Theophanes and St. Joseph of the Studium
+  5. Hymns of St. Anatolius and other Byzantine hymnographers
+  6. Notes
 
 ## Detection summary (see `ocr-report.md`)
 

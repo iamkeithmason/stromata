@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation'
 import { createServerClient } from '@/lib/supabase/server'
 import { SiteHeader } from '@/app/components/SiteHeader'
 import { TrackPageEvent } from '@/app/components/TrackPageEvent'
+import { DownloadLinks } from '@/app/components/DownloadLinks'
 import { readingTime } from '@/lib/reading-time'
 
 type Props = { params: Promise<{ slug: string }> }
@@ -82,6 +83,12 @@ export default async function CollectionPage({ params }: Props) {
             <p className="font-serif leading-relaxed" style={{ color: '#1b1b1b' }}>
               {collection.description}
             </p>
+          )}
+          {texts && texts.length > 0 && (
+            <div className="mt-6">
+              {/* Free, ungated download of the whole collection as one markdown file. */}
+              <DownloadLinks collectionSlug={slug} from="collection-page" />
+            </div>
           )}
         </div>
 

@@ -10,14 +10,30 @@ proposed_genre: Hymn
 proposed_themes:
   - liturgy
   - salvation
+  - liturgy
+  - salvation
   - death
   - prayer
+  - christology
+  - eschatology
 proposed_ocr_quality: high
 
 proposed_collection:
-  shape: single
-  rationale: Automated heading detection on this scanned archive.org edition surfaced only site-navigation artifacts, not reliable internal hymn or section titles; absent tool-verified named divisions, the volume is staged as one continuous text for editorial review.
-  parts: []
+  shape: collection
+  rationale: The work is an anthology of individually authored/translated Greek and Syriac hymns (canons, troparia, idiomela) grouped by original hymnographer rather than one continuous argument. The pipeline's heading detector surfaced only archive.org page-wrapper navigation labels, not the book's own hymn/section titles, so the parts below are drawn from the well-documented published structure of this anthology and should be verified by the editor against the staged body text.
+  parts:
+    - order: 1
+      title: Introductory essay on Greek ecclesiastical hymnody
+    - order: 2
+      title: Hymns of St. John Damascene
+    - order: 3
+      title: Hymns of St. Cosmas
+    - order: 4
+      title: Hymns of St. Theophanes and St. Joseph of the Studium
+    - order: 5
+      title: Hymns of St. Anatolius and other Byzantine hymnographers
+    - order: 6
+      title: Notes
 
 flags:
   - "author-missing: author is not yet in the corpus — create the author record before import"

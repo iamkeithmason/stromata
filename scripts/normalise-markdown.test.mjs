@@ -14,7 +14,7 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
-import { normaliseMarkdown } from './normalise-markdown.mjs';
+import { normaliseMarkdown, rejoinSpuriousBreaks } from './normalise-markdown.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const FIXTURE_DIR = path.join(__dirname, '__fixtures__', 'normalise-markdown');
@@ -93,6 +93,80 @@ test('treatAllAsProse override suppresses verse flagging', () => {
   const input = fs.readFileSync(path.join(FIXTURE_DIR, 'hymn-stanza.input.md'), 'utf8');
   const { report } = normaliseMarkdown(input, { override: { treatAllAsProse: true } });
   assert.equal(report.verseFlags.length, 0, 'no verse flagged under treatAllAsProse');
+});
+
+// --- Mid-sentence page-break rejoin ---------------------------------------
+
+test('rejoins a mid-sentence page-break split (the real Hus / De Ecclesia case)', () => {
+  // Verbatim shape of the OCR artifact: a sentence cut at a printed page edge.
+  const input =
+    'and (4) by Matt. 5 : 20: "Whoso shall\n\n' +
+    'break one of the least of these commandments and teach men so, shall be least in the kingdom of heaven."\n';
+  const { output, report } = normaliseMarkdown(input);
+  assert.equal(report.breaksJoined, 1);
+  assert.ok(output.includes('"Whoso shall break one of the least'), 'the split should be healed with a single space');
+  assert.ok(!/shall\n\nbreak/.test(output), 'no blank line should remain inside the sentence');
+});
+
+test('rejoins a mid-word page-break split', () => {
+  // "essence o" / "flowing" — the page ended mid-word ("of").
+  const input = 'these forces become part of the very essence o\n\nflowing into them from the soul.\n';
+  const { output, report } = normaliseMarkdown(input);
+  assert.equal(report.breaksJoined, 1);
+  assert.ok(output.includes('essence o flowing into them'));
+});
+
+test('does NOT merge two genuine paragraphs', () => {
+  // First ends with a full stop; second opens with a capital — a real boundary.
+  const input = 'A complete first paragraph that ends properly.\n\nA second paragraph that begins with a capital.\n';
+  const { output, report } = normaliseMarkdown(input);
+  assert.equal(report.breaksJoined, 0);
+  assert.ok(output.includes('.\n\nA second paragraph'), 'the blank-line boundary is preserved');
+});
+
+test('does NOT merge when the earlier paragraph ends mid-clause but the next starts with a capital', () => {
+  // Unfinished-looking end, but a capitalised continuation is not a page-break split.
+  const input = 'A line that trails off without a full stop\n\nProperly capitalised next paragraph here.\n';
+  const { report } = normaliseMarkdown(input);
+  assert.equal(report.breaksJoined, 0);
+});
+
+test('does NOT merge across a heading, list, or blockquote', () => {
+  const acrossHeading = 'A trailing clause with no full stop\n\n## a lowercase heading\n\nmore text here.\n';
+  assert.equal(normaliseMarkdown(acrossHeading).report.breaksJoined, 0);
+
+  const acrossList = 'The steps that follow, in order\n\n- item one here\n- item two here\n';
+  assert.equal(normaliseMarkdown(acrossList).report.breaksJoined, 0);
+});
+
+test('does NOT merge a list intro ending in a colon into the following prose', () => {
+  // A colon is a legitimate paragraph-final mark; it must not read as a cut.
+  const input = 'Consider the following point:\n\nand here the next paragraph continues lowercase.\n';
+  assert.equal(normaliseMarkdown(input).report.breaksJoined, 0);
+});
+
+test('the noRejoin override disables page-break repair', () => {
+  const input = 'a clause that trails off here\n\nlowercase continuation after the break.\n';
+  assert.ok(normaliseMarkdown(input).report.breaksJoined >= 1, 'default rejoins');
+  assert.equal(normaliseMarkdown(input, { override: { noRejoin: true } }).report.breaksJoined, 0);
+});
+
+test('rejoinSpuriousBreaks leaves a clean body byte-for-byte unchanged', () => {
+  const clean = 'First paragraph, correctly separated.\n\nSecond paragraph, correctly separated.\n';
+  const { output, joined } = rejoinSpuriousBreaks(clean);
+  assert.equal(joined, 0);
+  assert.equal(output, clean, 'no change means the exact original string is returned');
+});
+
+test('rejoinSpuriousBreaks heals splits without re-spacing the rest of the body', () => {
+  // A deliberate section break (double blank) must survive the rejoin-only pass.
+  const input =
+    'a clause cut at the page edge\n\nlowercase continuation of that clause.\n\n\n' +
+    'A separate section after a deliberate double blank.\n';
+  const { output, joined } = rejoinSpuriousBreaks(input);
+  assert.equal(joined, 1);
+  assert.ok(output.includes('page edge lowercase continuation of that clause.'), 'the split is healed');
+  assert.ok(output.includes('clause.\n\n\nA separate section'), 'the double-blank section break is preserved verbatim');
 });
 
 test('three or more blank lines collapse to two; a double stays double', () => {

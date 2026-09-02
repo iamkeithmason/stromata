@@ -9,6 +9,13 @@
  * inserts the blank lines that signal block boundaries, WITHOUT disturbing
  * lists, tables, code, blockquotes, or verse.
  *
+ * It also does the *inverse* repair: rejoins prose paragraphs that a page
+ * break wrongly split mid-sentence. Scanned/OCR sources (djvu.txt) drop a
+ * blank line wherever a printed page ended, so a sentence that straddled two
+ * pages arrives as two paragraphs — e.g. `…Matt. 5 : 20: "Whoso shall` / (blank)
+ * / `break one of the least…`. This is caught by a deliberately narrow rule
+ * (see mergeSpuriousBreaks) so it can never merge two genuine paragraphs.
+ *
  * No AI, no network, no dependencies — Node built-ins only. Pure transform:
  * same input always yields the same output. Running it twice is identical to
  * running it once (idempotent).
@@ -270,6 +277,59 @@ function tokenize(input, opts) {
   return { blocks, gaps };
 }
 
+// ---------------------------------------------------------------------------
+// Spurious page-break repair — rejoin prose paragraphs a page break split
+// mid-sentence. Deliberately narrow: only fires when the earlier paragraph is
+// visibly unfinished AND the later one visibly continues it, a conjunction
+// that well-formed prose never produces at a real paragraph boundary.
+// ---------------------------------------------------------------------------
+
+// The earlier paragraph looks cut off: its last non-space character is a letter
+// or a comma. A real paragraph ends in sentence-final punctuation (. ! ? " ) …)
+// or, at worst, a scripture-reference digit — none of which match here. Cuts
+// land mid-word ("essence o") or mid-clause ("that she is", "Whoso shall").
+const endsMidSentence = (text) => /[A-Za-z,]$/.test(text.replace(/\s+$/, ''));
+
+// The later paragraph looks like a continuation: after any opening quote or
+// bracket, its first letter is lower-case. A genuine new paragraph opens with a
+// capital. ("break one…", "his body…", "the church…", "and he is…")
+const startsLowercase = (text) => /^["'“”‘’(\[]?\s*[a-z]/.test(text.replace(/^\s+/, ''));
+
+// Walk the token stream and fold each mid-sentence page-break split back into
+// one prose block. Only adjacent PROSE blocks that were separated by a real
+// blank line (source gap ≥ 1) are candidates, so verse, lists, blockquotes,
+// tables, headings and code are never touched. Folding into the accumulator
+// (not the raw previous block) collapses a run split across several pages in a
+// single pass, which also makes the transform idempotent.
+function mergeSpuriousBreaks(blocks, gaps) {
+  if (blocks.length === 0) return { blocks, gaps, joined: 0 };
+
+  const outBlocks = [blocks[0]];
+  const outGaps = [gaps[0]];
+  let joined = 0;
+
+  for (let k = 1; k < blocks.length; k++) {
+    const prev = outBlocks[outBlocks.length - 1];
+    const next = blocks[k];
+    const mergeable =
+      prev.type === 'prose' &&
+      next.type === 'prose' &&
+      gaps[k] >= 1 &&
+      endsMidSentence(prev.text) &&
+      startsLowercase(next.text);
+
+    if (mergeable) {
+      outBlocks[outBlocks.length - 1] = { type: 'prose', text: `${prev.text} ${next.text}` };
+      joined++;
+    } else {
+      outBlocks.push(next);
+      outGaps.push(gaps[k]);
+    }
+  }
+
+  return { blocks: outBlocks, gaps: outGaps, joined };
+}
+
 function splitProse(runLines) {
   const paragraphs = [];
   let current = [runLines[0]];
@@ -301,6 +361,20 @@ function resolveGap(prev, next, sourceGap) {
 
 function blockLines(block) {
   return block.text.split('\n');
+}
+
+// Render the blocks preserving each original source gap verbatim — used by the
+// rejoin-only path so a live body is never re-spaced, only its page-break
+// splits are healed. (The full normaliser uses render(), which also resolves
+// block spacing.)
+function renderPreserving(blocks, gaps) {
+  if (blocks.length === 0) return '';
+  const out = [];
+  for (let k = 0; k < blocks.length; k++) {
+    if (k > 0) for (let g = 0; g < gaps[k]; g++) out.push('');
+    out.push(...blockLines(blocks[k]));
+  }
+  return out.join('\n') + '\n';
 }
 
 function render(blocks, gaps, report) {
@@ -344,6 +418,7 @@ export function normaliseMarkdown(input, options = {}) {
 
   const report = {
     blanksInserted: 0,
+    breaksJoined: 0,
     headingsSpaced: 0,
     listsPadded: 0,
     blockquotesSeparated: 0,
@@ -353,11 +428,19 @@ export function normaliseMarkdown(input, options = {}) {
 
   const normalisedInput = input.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
 
-  const { blocks, gaps } = tokenize(normalisedInput, {
+  const tokenized = tokenize(normalisedInput, {
     heuristics,
     treatAllAsVerse: !!override.treatAllAsVerse,
     treatAllAsProse: !!override.treatAllAsProse,
   });
+
+  // Repair mid-sentence page-break splits before spacing the blocks. On by
+  // default; `override.noRejoin` opts a file out if it ever misfires.
+  const rejoined = override.noRejoin
+    ? { ...tokenized, joined: 0 }
+    : mergeSpuriousBreaks(tokenized.blocks, tokenized.gaps);
+  const { blocks, gaps } = rejoined;
+  report.breaksJoined = rejoined.joined;
 
   for (const block of blocks) {
     if (block.type === 'blockquote') report.blockquotesSeparated += block.separated || 0;
@@ -369,6 +452,34 @@ export function normaliseMarkdown(input, options = {}) {
   const output = render(blocks, gaps, report);
   report.changed = output !== input;
   return { output, report };
+}
+
+/**
+ * Rejoin only the mid-sentence page-break splits in a Markdown string, leaving
+ * all other spacing exactly as it was. Returns the original input untouched
+ * when nothing needs joining, so it is safe to run over already-clean bodies
+ * (e.g. curated text stored in the database).
+ * @param {string} input
+ * @param {object} [options]
+ * @param {object} [options.override] - { treatAllAsVerse } | { treatAllAsProse } | { noRejoin }
+ * @returns {{ output: string, joined: number }}
+ */
+export function rejoinSpuriousBreaks(input, options = {}) {
+  const override = options.override || {};
+  if (override.noRejoin) return { output: input, joined: 0 };
+
+  const heuristics = { ...CONFIG.heuristics, ...(options.heuristics || {}) };
+  const normalisedInput = input.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+
+  const tokenized = tokenize(normalisedInput, {
+    heuristics,
+    treatAllAsVerse: !!override.treatAllAsVerse,
+    treatAllAsProse: !!override.treatAllAsProse,
+  });
+
+  const { blocks, gaps, joined } = mergeSpuriousBreaks(tokenized.blocks, tokenized.gaps);
+  if (joined === 0) return { output: input, joined: 0 };
+  return { output: renderPreserving(blocks, gaps), joined };
 }
 
 /** Resolve the override entry for a file, keyed by basename without `.md`. */
@@ -446,8 +557,9 @@ function formatFileReport(filePath, report, { write, verbose, before, after }) {
   lines.push(`${report.changed ? '✎' : '·'} ${filePath}${report.changed ? ` — ${verb}` : ' — no change'}`);
   if (report.changed || report.verseFlags.length) {
     lines.push(
-      `    blanks inserted: ${report.blanksInserted}  ·  headings spaced: ${report.headingsSpaced}` +
-        `  ·  list runs padded: ${report.listsPadded}  ·  blockquote paras separated: ${report.blockquotesSeparated}`
+      `    blanks inserted: ${report.blanksInserted}  ·  breaks rejoined: ${report.breaksJoined}` +
+        `  ·  headings spaced: ${report.headingsSpaced}  ·  list runs padded: ${report.listsPadded}` +
+        `  ·  blockquote paras separated: ${report.blockquotesSeparated}`
     );
   }
   if (report.verseFlags.length) {
@@ -488,7 +600,7 @@ async function main() {
     process.exit(1);
   }
 
-  const totals = { files: files.length, changed: 0, blanks: 0, headings: 0, lists: 0, quotes: 0, verse: 0, verseFiles: 0 };
+  const totals = { files: files.length, changed: 0, blanks: 0, joined: 0, headings: 0, lists: 0, quotes: 0, verse: 0, verseFiles: 0 };
   const fileReports = [];
 
   for (const file of files) {
@@ -500,6 +612,7 @@ async function main() {
       if (write) fs.writeFileSync(file, output, 'utf8');
     }
     totals.blanks += report.blanksInserted;
+    totals.joined += report.breaksJoined;
     totals.headings += report.headingsSpaced;
     totals.lists += report.listsPadded;
     totals.quotes += report.blockquotesSeparated;
@@ -515,7 +628,8 @@ async function main() {
 
   const totalsLine =
     `\nTOTALS: ${totals.changed}/${totals.files} file(s) ${write ? 'changed' : 'would change'}  ·  ` +
-    `${totals.blanks} blank(s) inserted  ·  ${totals.headings} heading(s) spaced  ·  ` +
+    `${totals.blanks} blank(s) inserted  ·  ${totals.joined} break(s) rejoined  ·  ` +
+    `${totals.headings} heading(s) spaced  ·  ` +
     `${totals.lists} list run(s) padded  ·  ${totals.quotes} blockquote para(s) separated  ·  ` +
     `${totals.verse} verse run(s) flagged across ${totals.verseFiles} file(s)`;
 

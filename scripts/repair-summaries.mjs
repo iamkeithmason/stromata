@@ -50,24 +50,31 @@ function isTruncated(summary) {
   return false;
 }
 
-// ── Trim only at sentence boundary, never add ellipses ───────────────────────
+// ── Reduce to whole sentences that fit; never cut mid-sentence ────────────────
+// Only if a single sentence already exceeds `max` does it fall back to a
+// word-boundary cut, so a word is never split.
 function trimToLength(text, max) {
-  if (text.length <= max) return text;
-  const truncated = text.slice(0, max);
-  const lastEnd = Math.max(
-    truncated.lastIndexOf('.'),
-    truncated.lastIndexOf('!'),
-    truncated.lastIndexOf('?')
-  );
-  if (lastEnd > 0) return truncated.slice(0, lastEnd + 1).trim();
-  return truncated.trim();
+  const clean = text.trim();
+  if (clean.length <= max) return clean;
+  const sentences = clean.match(/[^.!?]+[.!?]+/g) ?? [];
+  let out = '';
+  for (const sentence of sentences) {
+    if ((out + sentence).length > max) break;
+    out += sentence;
+  }
+  out = out.trim();
+  if (out) return out;
+  const slice = clean.slice(0, max);
+  const lastSpace = slice.lastIndexOf(' ');
+  return (lastSpace > 0 ? slice.slice(0, lastSpace) : slice).trim();
 }
 
-// ── Generate one summary, retrying with tighter limit if truncated ────────────
-async function generateSummary(title, authorName, body, maxChars = 160, attempt = 1) {
-  // Each retry tightens the char limit so the model fits within a complete sentence
-  const limitInstruction = SUMMARY_PROMPT.replace('160 characters', `${maxChars} characters`);
-
+// ── Generate one summary, re-asking the model to shorten if it overshoots ─────
+// If the model overshoots 160 characters or stops mid-sentence, hand its own
+// draft back with the exact character count and ask it to rewrite shorter.
+// Feeding the overshoot back lets the model self-correct — far more reliable
+// than the old tighten-and-re-trim loop, which produced mid-word cutoffs.
+async function generateSummary(title, authorName, body) {
   const userMessage = [
     `Title: ${title}`,
     `Author: ${authorName}`,
@@ -75,22 +82,28 @@ async function generateSummary(title, authorName, body, maxChars = 160, attempt 
     body.slice(0, 3000),
   ].join('\n');
 
-  const message = await anthropic.messages.create({
-    model: 'claude-haiku-4-5-20251001',
-    max_tokens: 100,
-    system: limitInstruction,
-    messages: [{ role: 'user', content: userMessage }],
-  });
-
-  const result = trimToLength(message.content[0].text.trim(), maxChars);
-
-  // Retry with a tighter limit (up to 4 attempts: 160 → 140 → 120 → 100)
-  if (isTruncated(result) && attempt < 4) {
-    await new Promise(r => setTimeout(r, 100)); // rate-limit between retries too
-    return generateSummary(title, authorName, body, maxChars - 20, attempt + 1);
+  const conversation = [{ role: 'user', content: userMessage }];
+  let fallback = '';
+  let lastTrim = '';
+  for (let attempt = 1; attempt <= 4; attempt++) {
+    if (attempt > 1) await new Promise(r => setTimeout(r, 100)); // rate-limit between retries
+    const message = await anthropic.messages.create({
+      model: 'claude-haiku-4-5-20251001',
+      max_tokens: 200,
+      system: SUMMARY_PROMPT,
+      messages: conversation,
+    });
+    const candidate = message.content[0].text.trim();
+    if (candidate.length <= 160 && /[.!?]$/.test(candidate)) return candidate;
+    lastTrim = trimToLength(candidate, 160);
+    if (!isTruncated(lastTrim) && lastTrim.length >= fallback.length) fallback = lastTrim;
+    conversation.push({ role: 'assistant', content: candidate });
+    conversation.push({
+      role: 'user',
+      content: `That draft was ${candidate.length} characters. Rewrite it as one or two complete sentences, each ending in a period, totalling 160 characters or fewer. Return only the summary.`,
+    });
   }
-
-  return result;
+  return fallback || lastTrim;
 }
 
 // ── Main ──────────────────────────────────────────────────────────────────────

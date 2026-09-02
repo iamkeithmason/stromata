@@ -18,14 +18,14 @@ un-applied in `ocr-report.md` for you to accept/reject.
 ## Proposed metadata (confirm before import)
 
 - Genre: Treatise
-- Themes: contemplation, desire, virtue, salvation
+- Themes: contemplation, desire, virtue, salvation, eschatology
 - OCR quality: high
-- Collection shape: **collection** — The curated selection spans distinct numbered Questions drawn from different Parts of the Summa (Prima Pars Q.2 on God's existence; Secunda Pars Q.1-4 on happiness), each with its own articles — a reader would navigate between these named Questions rather than read straight through.
-  1. Question 2. The Existence of God
-  2. Question 1. Man's Last End
-  3. Question 2. Things in Which Man's Happiness Consists
-  4. Question 3. What Is Happiness
-  5. Question 4. Things That Are Required for Happiness
+- Collection shape: **collection** — The curated selection combines two separately numbered Questions from different Parts of the Summa (existence of God from the Prima Pars; man's last end and happiness from the Secunda Pars), each internally divided into Articles — a reader navigates between Questions as discrete topical units rather than following one continuous argument.
+  1. Question 2: The Existence of God (Prima Pars)
+  2. Question 1: Man's Last End (Secunda Pars)
+  3. Question 2: Things in Which Man's Happiness Consists (Secunda Pars)
+  4. Question 3: What Is Happiness (Secunda Pars)
+  5. Question 4: Things Required for Happiness (Secunda Pars)
 
 ## Detection summary (see `ocr-report.md`)
 

@@ -7,6 +7,134 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-09-02 — Reader dark mode (completes the typography-settings card)
+
+The light/dark preference deferred out of the reader-cluster PR, now built. Adds a **Theme (Light/Dark)**
+row to the reader settings panel, persisted in the same `stromata:reader` localStorage prefs.
+
+Mechanism: the whole reading page already consumes the design tokens (`--paper`, `--ink*`, `--rule`,
+`--vellum`), so dark mode is a scoped **token override** — a `[data-reader-theme="dark"]` block in
+globals.css redefines the palette to a warm near-black, and `ReaderSettings` toggles that attribute on
+the text-page root (`#reader-page`). Most of the page flips through the cascade for free (header, margin
+column, TOC, footer, settings panel, scripture popovers). Two things needed hands: the frontispiece hero
+used `var(--ink)` as a *background*, which would have flipped light — split out to a stable
+`--hero-ground` token that stays dark; and `MarkdownBody` hardcoded its body colours (`#1b1b1b` etc.),
+now moved onto `--reader-*` tokens **whose light values equal the old hardcodes exactly**, so light mode
+is unchanged (verified by screenshot). The two OCR-quality notices were tokenised too so they don't glow
+white on the dark ground.
+
+No-flash: a tiny inline script on the page root reads the saved preference and sets the attribute during
+HTML parse, before first paint.
+
+Verified light + dark by headless-Chromium screenshot of a representative reading sample (the real app
+needs Supabase creds unavailable here) — light is pixel-identical to before; dark is a comfortable warm
+off-white on near-black. Tracking: the `theme` value folds into the existing `reader-setting-change`
+event (`setting: theme`). **Wire-verification still owed** on prod. Keith to eyeball on a real text page.
+
+## 2026-09-02 — Reader cluster: typography settings + inline citation generator (one PR)
+
+Two independent Feature Backlog items, shipped together because both edit the text reader
+(`app/texts/[slug]/page.tsx`) — clustering them into one PR avoids the merge conflict two parallel
+branches would have had in that file. Both are pure frontend (no DB / admin / API), which is why they
+were the highest-confidence hand-off candidates after the downloads work.
+
+**Reader typography settings** (backlog ICE 432) — `app/components/ReaderSettings.tsx`, a floating "Aa"
+control on the reader with **Text size** (S/M/L/XL) and **Width** (Narrow/Normal/Wide), persisted in
+`localStorage`, no account. Applied by overriding CSS custom properties on `#reader-main`:
+`--reader-font-scale` multiplies `--text-prose` (a one-line rule added to globals.css), and `max-width`
+sets the measure. At the default scale the reading page is byte-identical to before — verified the
+calc resolves to the prior 1.25rem. `MarkdownBody`'s list font-size moved from a hardcoded `1.25rem`
+to `var(--text-prose)` so lists scale with paragraphs (same default value, no regression).
+**Light/dark deferred on purpose:** a dark reading mode needs `MarkdownBody`'s hardcoded text colours
+(`#1b1b1b` etc.) moved onto tokens first — a change to the core reading renderer that wants its own
+review, not a silent recolor of every text page.
+
+**Inline citation generator** (backlog ICE 392) — `app/components/CitationButton.tsx`, a "Cite this
+text" button in the footer that builds a plain citation from on-page metadata (author, title, URL,
+accessed-date, accession, source attribution) and copies it (clipboard API with an `execCommand`
+fallback). MVP = static footer button, no highlight-to-cite popover yet.
+
+Tracking: two distinct events — `reader-setting-change` (`from` · `setting` · `value`) and
+`citation-copy` (`from` · `text` slug) — Events Register rows added (Status Planned), both backlog
+cards moved to Planned with progress logs. `tsc` / `lint` / `next build` all clean.
+**Wire-verification owed** on prod for both (check `typeof window.umami` first — ad-blocked in Keith's
+Chrome). The interactive UI itself couldn't be eyeballed in the agent environment (no Supabase creds /
+admin login) — Keith to sanity-check the control renders and behaves on a real text page.
+
+## 2026-09-02 — Text & whole-collection downloads (markdown slice); distinct Umami tracking; backlog-triage skill
+
+Started the Feature Backlog item **"Text downloads (PDF and markdown)"** (ICE 384, Phase 1). Shipped
+the markdown half first, exactly as that card's MVP-validation note prescribes (markdown is ~an hour;
+PDF is deferred behind a demand signal). The founder's ask added a scope the card didn't have: the
+*whole collection* a text sits in, not just the single text — so this ships **both** download shapes.
+
+What's in the branch (`claude/pdf-download-texts-hu76kf`):
+- `lib/downloads.ts` — shared builders `buildTextMarkdown` / `buildCollectionMarkdown` so the single
+  route and the collection route emit identical frontmatter + colophon. Body is already markdown in
+  `texts.body`, so a download is essentially frontmatter + colophon + body. YAML scalars are escaped.
+- `app/texts/[slug]/download/markdown/route.ts` — one text as a `.md` attachment (frontmatter: title,
+  author, tradition, era, genre, source, accession, url, downloaded; then the agreed colophon,
+  editorial introduction if present, body, provenance footer). Published-only, ungated.
+- `app/collections/[slug]/download/markdown/route.ts` — every published text in the collection, in
+  reading order (`collection_order`, then title), bundled into one `.md`.
+- `app/components/DownloadLinks.tsx` — server-rendered download panel (plain `<a>`, so Umami's
+  `data-umami-event` auto-binding tracks the click; no client JS). On `/texts/[slug]` it offers *This
+  text* plus *Whole collection* when the text belongs to one; on `/collections/[slug]` it offers
+  *Download all*. Added `SITE_URL` to `lib/metadata.ts`.
+
+Tracking is deliberately **two distinct events**, never one overloaded name: `text-download`
+(props `from` · `format` · `text`) and `collection-download` (props `from` · `format` · `collection`),
+identifiers as slugs. Both formats reuse the same event names (`format: markdown` now, `format: pdf`
+later). Rows added to the Notion **Events Register** (Status **Planned**), and the backlog card moved
+to **Planned** with a progress log in its page body. **Wire-verification is still owed** — per the
+house rule these aren't done until the outgoing beacon is observed on prod carrying the expected
+payload; Keith to confirm after deploy (Umami is also ad-blocked in his own Chrome, so check
+`typeof window.umami` first).
+
+Also added a project skill **`.claude/skills/backlog-triage/`** — one command to pull the ICE-ranked
+Feature Backlog table (the SQL that the CLAUDE.md plan-gate note said might be blocked now works) and
+focus on a single feature's rank and neighbours.
+
+**PDF format (added same day):** picked **`@react-pdf/renderer`** over Puppeteer (the card's steer —
+lighter, no headless-Chromium binary, runs in the Vercel Node runtime; externalised via
+`serverExternalPackages`, standard Times fonts so no font files). Routes
+`app/texts/[slug]/download/pdf` and `app/collections/[slug]/download/pdf` render a styled A4 book
+page (title, author, meta, colophon, editorial intro, body with bold/italic/blockquote/list, provenance
+footer, fixed page-number footer); the collection PDF leads with a cover/contents page then one
+page-break section per text. `lib/pdf/markdown.ts` parses the markdown body into block/run primitives
+(@react-pdf can't take markdown); `lib/pdf/TextDocument.tsx` holds the Document components.
+`DownloadLinks` now offers **Markdown · PDF** on every row, both formats reusing the two events with
+`format: markdown|pdf`. Verified by rendering real PDFs under the Node/CJS path Next uses in prod
+(valid `%PDF-`, layout eyeballed) — the tsx dev-loader chokes on `@react-pdf/hyphenate`'s subpath
+exports, but that's a loader artifact, not the runtime path.
+
+Still to do: **wire-verify** both events (all four `format` combinations) on prod post-deploy before
+they count as done.
+
+## 2026-09-01 — Sourcer workflow now bumps Notion Status to "In progress" on apply runs
+
+The first live run of the Sourcer GitHub Action (run #24, manual `apply`) reported a job **failure**,
+but the agent itself did all its work correctly — it gated 33 candidates to 3, staged all three
+bundles, and even pushed the branch. The only thing that failed was the final
+`peter-evans/create-pull-request` step: `GitHub Actions is not permitted to create or approve pull
+requests`. That's the repo/org setting (Settings → Actions → General → Workflow permissions → "Allow
+GitHub Actions to create and approve pull requests"), not a code bug. The already-pushed branch was
+opened as a draft PR by hand and merged (the three bundles: Aquinas *Summa* selection, Neale *Hymns
+of the Eastern Church*, Calvin *Institutes* selection).
+
+Follow-on change (this branch): the Sourcer already had `bumpStatusInProgress()` wired to the
+`--set-notion-status` CLI flag (one Notion write, off by default — it never touches `Rights cleared`
+or `Cleared edition URL`), but `.github/workflows/sourcer.yml` never passed the flag, so scheduled
+runs read the prospect list without ever writing back. Added `--set-notion-status` to the two APPLY
+branches of the "Resolve run flags" step (schedule + manual-apply); left off the dry-run branches
+(nothing is staged there, so it's a no-op anyway). After a prospect is staged, its Content Prospect
+List **Status** is set to **"In progress"**. Verified against the live Notion schema first: `Status`
+is a `select` property (so the code's `{select:{name}}` PATCH shape is correct) and `In progress`
+(lowercase "p", purple) is an existing option — exact match for `config.ts`'s `inProgressStatus`.
+One thing still to confirm on Keith's side: the Notion integration behind `NOTION_TOKEN` needs
+**Update content** capability on the database, or each bump 403s and is recorded as a non-fatal error
+(the run still succeeds, the status just doesn't move).
+
 ## 2026-08-31 — Source allowlist broadened (Gutenberg / sacred-texts / Ex-Classics); New Whitchurch texts unstuck via "Path A"
 
 The code change (this branch / PR #32) is small but the reasoning behind it is the useful part. It
