@@ -4,7 +4,7 @@ import {
   RANGES,
   type Range,
   type Ranked,
-  type Stats,
+  type Kpi,
 } from '@/lib/analytics/dashboard'
 
 // Live data — never statically cached; the numbers change and the fetch can fail.
@@ -22,11 +22,62 @@ const RANGE_LABEL: Record<Range, string> = {
 const n = (x: unknown) => Number(x || 0).toLocaleString('en-US')
 const fmtDate = (ms: number) => new Date(ms).toISOString().slice(0, 10)
 
-// stats values arrive either as a number or { value } depending on the endpoint.
-function stat(stats: Stats, key: string): number {
-  const v = stats?.[key]
-  if (v && typeof v === 'object') return Number(v.value || 0)
-  return Number(v || 0)
+// Format a KPI value for display according to its metric shape.
+function fmtKpi(value: number, format: Kpi['format']): string {
+  switch (format) {
+    case 'pct':
+      return `${(value * 100).toFixed(1)}%`
+    case 'ratio':
+      return value.toFixed(1)
+    case 'duration': {
+      const s = Math.round(value)
+      return `${Math.floor(s / 60)}m ${String(s % 60).padStart(2, '0')}s`
+    }
+    default:
+      return n(value)
+  }
+}
+
+// A ▲/▼ delta vs the previous equivalent period, coloured by whether the move is
+// favourable for that metric (bounce rate falling is good; visits rising is good).
+function DeltaChip({ kpi }: { kpi: Kpi }) {
+  if (kpi.prev == null) return null
+  if (kpi.prev === 0) {
+    if (kpi.value === 0) return null
+    return <span className="text-[11px] text-emerald-600">▲ new</span>
+  }
+  const change = (kpi.value - kpi.prev) / kpi.prev
+  if (Math.abs(change) < 0.005) return <span className="text-[11px] text-stone-400">±0%</span>
+  const up = kpi.value > kpi.prev
+  const favourable = up === kpi.higherIsBetter
+  return (
+    <span className={`text-[11px] ${favourable ? 'text-emerald-600' : 'text-rose-500'}`}>
+      {up ? '▲' : '▼'} {Math.abs(change * 100).toFixed(0)}%
+    </span>
+  )
+}
+
+function KpiTile({ kpi }: { kpi: Kpi }) {
+  return (
+    <div
+      className={`rounded px-4 py-3 border ${
+        kpi.hero ? 'border-stone-800 bg-stone-800 text-white' : 'border-stone-200'
+      }`}
+    >
+      <div className={`text-xs uppercase tracking-wide mb-1 ${kpi.hero ? 'text-stone-300' : 'text-stone-400'}`}>
+        {kpi.label}
+      </div>
+      <div className="flex items-baseline gap-2">
+        <span className={`text-xl font-semibold tabular-nums ${kpi.hero ? 'text-white' : 'text-stone-800'}`}>
+          {fmtKpi(kpi.value, kpi.format)}
+        </span>
+        <DeltaChip kpi={kpi} />
+      </div>
+      {kpi.note && (
+        <div className={`text-[11px] mt-1 ${kpi.hero ? 'text-stone-300' : 'text-stone-400'}`}>{kpi.note}</div>
+      )}
+    </div>
+  )
 }
 
 function RangeSelector({ current }: { current: Range }) {
@@ -94,11 +145,11 @@ export default async function AnalyticsDashboard({ searchParams }: Props) {
       </div>
 
       <div className="flex items-baseline justify-between mb-1">
-        <h2 className="text-lg font-semibold text-stone-800">Reader demand</h2>
+        <h2 className="text-lg font-semibold text-stone-800">Reader analytics</h2>
       </div>
       <p className="text-xs text-stone-400 mb-5">
-        Umami records opens by slug; Supabase knows what the slugs mean. This joins them and rolls
-        demand up by theme, author, era, tradition and genre — the view Umami can’t produce.
+        Growth first — returning visits (the North Star) and their drivers — then where visits come
+        from and land, then reader demand joined to the corpus (the view Umami can’t produce).
       </p>
 
       <div className="mb-8">
@@ -126,49 +177,64 @@ export default async function AnalyticsDashboard({ searchParams }: Props) {
 }
 
 function Digest({ data }: { data: Extract<Awaited<ReturnType<typeof getDashboardData>>, { ok: true }> }) {
-  const { digest, stats, eventCounts, window: win } = data
+  const { digest, kpis, landingPages, landingByType, referrers, eventCounts, window: win, growthNotes } = data
   const t = digest.totals
 
   return (
     <div className="space-y-10">
       <p className="text-xs text-stone-400">
-        Window {fmtDate(win.startAt)} → {fmtDate(win.endAt)} · Umami access: {data.umamiMode}
+        Window {fmtDate(win.startAt)} → {fmtDate(win.endAt)} · deltas vs the previous {RANGE_LABEL[data.range].toLowerCase()} · Umami access: {data.umamiMode}
       </p>
 
-      {/* Traffic summary */}
+      {/* Growth — North Star first */}
       <section>
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-          {[
-            { label: 'Visitors', value: stat(stats, 'visitors') },
-            { label: 'Visits', value: stat(stats, 'visits') },
-            { label: 'Pageviews', value: stat(stats, 'pageviews') },
-            { label: 'Bounces', value: stat(stats, 'bounces') },
-          ].map(({ label, value }) => (
-            <div key={label} className="border border-stone-200 rounded px-4 py-3">
-              <div className="text-xs text-stone-400 uppercase tracking-wide mb-1">{label}</div>
-              <div className="text-lg font-semibold text-stone-800 tabular-nums">{n(value)}</div>
-            </div>
+        <h2 className="text-sm font-semibold text-stone-800 mb-1">Growth</h2>
+        <p className="text-xs text-stone-400 mb-4">
+          Returning visits lead — the North Star. Repeat visits = visits − visitors (repeat visits,
+          not unique returning visitors, which Umami’s stats endpoint doesn’t split out). Each tile
+          shows the change vs the previous equivalent period.
+        </p>
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+          {kpis.map((k) => (
+            <KpiTile key={k.key} kpi={k} />
           ))}
         </div>
-        <p className="text-xs text-stone-500 mt-3">
-          <span className="font-medium text-stone-700">{n(t.totalTextOpens)}</span> text-opens across{' '}
-          <span className="font-medium text-stone-700">{n(t.distinctTextsOpened)}</span> texts
-          {t.unmatchedOpens > 0 && (
-            <span className="text-amber-700"> · ⚠ {n(t.unmatchedOpens)} opens on slugs not in the DB</span>
-          )}
-          .
-        </p>
-        <p className="text-[11px] text-stone-400 mt-1.5">
+        <p className="text-[11px] text-stone-400 mt-3">
           Undercount: ad/tracking blockers drop the beacon, so treat these as lower bounds and read
-          shares, not absolutes.
+          shares and trends, not absolutes.
         </p>
+      </section>
+
+      {/* Acquisition — where visits come from and land */}
+      <section>
+        <h2 className="text-sm font-semibold text-stone-800 mb-1">Where visits come from &amp; land</h2>
+        <p className="text-xs text-stone-400 mb-4">
+          External referrers and the pages people arrive on — the top of the funnel that feeds
+          returning visits.
+        </p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-6">
+          <RankList title="Landing pages — by type" ranked={landingByType} />
+          <RankList title="External referrers" ranked={referrers} />
+          <RankList title="Top landing pages" ranked={landingPages} max={12} />
+          <RankList title="In-site entry surface (from)" ranked={digest.fromAttribution} max={12} />
+        </div>
+        {growthNotes.length > 0 && (
+          <ul className="mt-4 space-y-1">
+            {growthNotes.map((note) => (
+              <li key={note} className="text-[11px] text-amber-700">⚠ {note}</li>
+            ))}
+          </ul>
+        )}
       </section>
 
       {/* Demand by content dimension */}
       <section>
-        <h2 className="text-sm font-semibold text-stone-800 mb-1">Demand by content dimension</h2>
+        <h2 className="text-sm font-semibold text-stone-800 mb-1">Reader demand by content dimension</h2>
         <p className="text-xs text-stone-400 mb-4">
-          What readers actually open, rolled up the way Umami can’t. Feeds pipeline + backlog priority.
+          What readers actually open, rolled up the way Umami can’t —{' '}
+          <span className="font-medium text-stone-600">{n(t.totalTextOpens)}</span> text-opens across{' '}
+          <span className="font-medium text-stone-600">{n(t.distinctTextsOpened)}</span> texts. Feeds
+          pipeline + backlog priority.
         </p>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-6">
           <RankList title="By theme" ranked={digest.byTheme} />
@@ -217,17 +283,6 @@ function Digest({ data }: { data: Extract<Awaited<ReturnType<typeof getDashboard
           </div>
         </section>
       )}
-
-      {/* Reading entry points */}
-      <section>
-        <h2 className="text-sm font-semibold text-stone-800 mb-1">Reading entry points (from)</h2>
-        <p className="text-xs text-stone-400 mb-4">
-          Which surfaces drive people into texts — where UI work has leverage.
-        </p>
-        <div className="max-w-md">
-          <RankList title="text-open origins" ranked={digest.fromAttribution} max={20} />
-        </div>
-      </section>
 
       {/* Data-quality flags */}
       {(digest.unmatchedTexts.length > 0 || digest.unmatchedCollections.length > 0) && (
