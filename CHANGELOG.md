@@ -41,8 +41,21 @@ Also added a project skill **`.claude/skills/backlog-triage/`** — one command 
 Feature Backlog table (the SQL that the CLAUDE.md plan-gate note said might be blocked now works) and
 focus on a single feature's rank and neighbours.
 
-Still to do: **PDF format** (the heavier half — open choice between `@react-pdf/renderer` and
-Puppeteer; the card leans lighter-first), and wire-verify both events post-deploy.
+**PDF format (added same day):** picked **`@react-pdf/renderer`** over Puppeteer (the card's steer —
+lighter, no headless-Chromium binary, runs in the Vercel Node runtime; externalised via
+`serverExternalPackages`, standard Times fonts so no font files). Routes
+`app/texts/[slug]/download/pdf` and `app/collections/[slug]/download/pdf` render a styled A4 book
+page (title, author, meta, colophon, editorial intro, body with bold/italic/blockquote/list, provenance
+footer, fixed page-number footer); the collection PDF leads with a cover/contents page then one
+page-break section per text. `lib/pdf/markdown.ts` parses the markdown body into block/run primitives
+(@react-pdf can't take markdown); `lib/pdf/TextDocument.tsx` holds the Document components.
+`DownloadLinks` now offers **Markdown · PDF** on every row, both formats reusing the two events with
+`format: markdown|pdf`. Verified by rendering real PDFs under the Node/CJS path Next uses in prod
+(valid `%PDF-`, layout eyeballed) — the tsx dev-loader chokes on `@react-pdf/hyphenate`'s subpath
+exports, but that's a loader artifact, not the runtime path.
+
+Still to do: **wire-verify** both events (all four `format` combinations) on prod post-deploy before
+they count as done.
 
 ## 2026-09-01 — Sourcer workflow now bumps Notion Status to "In progress" on apply runs
 
