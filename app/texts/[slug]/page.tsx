@@ -148,7 +148,7 @@ export default async function TextPage({ params }: Props) {
             "try{var p=JSON.parse(localStorage.getItem('stromata:reader')||'{}');if(p&&p.theme==='dark'){document.currentScript.parentElement.setAttribute('data-reader-theme','dark')}}catch(e){}",
         }}
       />
-      <ReadingProgressBar slug={slug} title={text.title} />
+      <ReadingProgressBar slug={slug} />
       <SiteHeader breadcrumb={author ? (() => {
         return (
           <>

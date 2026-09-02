@@ -175,6 +175,11 @@ Rules:
 - On **2026-08-06** the `text-open` property values changed from titles to slugs, and collection
   clicks moved from `text-open` to `collection-open`. Data before and after that date is not
   directly comparable for those properties — Umami stores what was sent and cannot be backfilled.
+- On **2026-09-02** `text-read` (fired at read-depth by `ReadingProgressBar`) changed its `text`
+  property from the title to the **slug**, aligning it with `text-open` and the slug rule. Before
+  this date `text-read` values are titles and don't join to Supabase; after, they're slugs — the two
+  spans aren't directly comparable. Surfaced by the `stromata-analytics` digest's Events Register
+  reconciliation on its first run.
 
 ---
 

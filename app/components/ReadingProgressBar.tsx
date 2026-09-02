@@ -7,7 +7,7 @@ const READ_THRESHOLD = 0.75
 const PROGRESS_NOT_STARTED = 0.05
 const PROGRESS_FINISHED = 0.95
 
-export function ReadingProgressBar({ slug, title }: { slug: string; title: string }) {
+export function ReadingProgressBar({ slug }: { slug: string }) {
   const barRef = useRef<HTMLDivElement>(null)
   const maxRef = useRef(0)
   const firedReadEvent = useRef(false)
@@ -60,7 +60,9 @@ export function ReadingProgressBar({ slug, title }: { slug: string; title: strin
 
       if (!firedReadEvent.current && maxRef.current >= READ_THRESHOLD) {
         firedReadEvent.current = true
-        window.umami?.track('text-read', { text: title })
+        // Send the slug (not the title) so text-read joins to Supabase and
+        // matches text-open, per the slug rule in CLAUDE.md's analytics section.
+        window.umami?.track('text-read', { text: slug })
       }
 
       const now2 = performance.now()
@@ -87,7 +89,7 @@ export function ReadingProgressBar({ slug, title }: { slug: string; title: strin
       if (rafRef.current) cancelAnimationFrame(rafRef.current)
       persist()
     }
-  }, [slug, title, computeProgress, persist])
+  }, [slug, computeProgress, persist])
 
   useEffect(() => {
     if (!barRef.current) return
