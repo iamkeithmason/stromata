@@ -7,6 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
+    "umami": "node scripts/umami-report.mjs",
     "generate:note-drafts": "node scripts/generate-note-drafts.mjs",
     "generate:summaries": "node scripts/generate-summaries.mjs",
     "repair:summaries": "node scripts/repair-summaries.mjs",
