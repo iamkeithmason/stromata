@@ -35,17 +35,31 @@ const MEASURES = [
   { value: 'wide', px: '920px', label: 'Wide' },
 ] as const
 
-type Measure = (typeof MEASURES)[number]['value']
-type Prefs = { scale: number; measure: Measure }
+const THEMES = [
+  { value: 'light', label: 'Light' },
+  { value: 'dark', label: 'Dark' },
+] as const
 
-const DEFAULTS: Prefs = { scale: 1.0, measure: 'normal' }
+type Measure = (typeof MEASURES)[number]['value']
+type Theme = (typeof THEMES)[number]['value']
+type Prefs = { scale: number; measure: Measure; theme: Theme }
+
+const DEFAULTS: Prefs = { scale: 1.0, measure: 'normal', theme: 'light' }
 
 function applyPrefs(p: Prefs) {
-  const el = document.getElementById('reader-main')
-  if (!el) return
-  el.style.setProperty('--reader-font-scale', String(p.scale))
-  const m = MEASURES.find(x => x.value === p.measure) ?? MEASURES[1]
-  el.style.maxWidth = m.px
+  // Font size + measure live on the reading column; theme lives on the page
+  // root (so the whole reading surface — hero, margins, footer — flips).
+  const main = document.getElementById('reader-main')
+  if (main) {
+    main.style.setProperty('--reader-font-scale', String(p.scale))
+    const m = MEASURES.find(x => x.value === p.measure) ?? MEASURES[1]
+    main.style.maxWidth = m.px
+  }
+  const page = document.getElementById('reader-page')
+  if (page) {
+    if (p.theme === 'dark') page.setAttribute('data-reader-theme', 'dark')
+    else page.removeAttribute('data-reader-theme')
+  }
 }
 
 function loadPrefs(): Prefs {
@@ -55,7 +69,8 @@ function loadPrefs(): Prefs {
     const parsed = JSON.parse(raw) as Partial<Prefs>
     const scale = SCALES.some(s => s.value === parsed.scale) ? (parsed.scale as number) : DEFAULTS.scale
     const measure = MEASURES.some(m => m.value === parsed.measure) ? (parsed.measure as Measure) : DEFAULTS.measure
-    return { scale, measure }
+    const theme = THEMES.some(t => t.value === parsed.theme) ? (parsed.theme as Theme) : DEFAULTS.theme
+    return { scale, measure, theme }
   } catch {
     return DEFAULTS
   }
@@ -72,7 +87,7 @@ export function ReaderSettings() {
     applyPrefs(p)
   }, [])
 
-  const update = useCallback((patch: Partial<Prefs>, setting: 'font-size' | 'measure', value: string) => {
+  const update = useCallback((patch: Partial<Prefs>, setting: 'font-size' | 'measure' | 'theme', value: string) => {
     setPrefs(prev => {
       const next = { ...prev, ...patch }
       applyPrefs(next)
@@ -107,6 +122,32 @@ export function ReaderSettings() {
             padding: '0.9rem 1rem',
           }}
         >
+          <p className="kicker" style={{ marginBottom: '0.5rem' }}>Theme</p>
+          <div className="flex gap-1.5 mb-4">
+            {THEMES.map(t => {
+              const active = prefs.theme === t.value
+              return (
+                <button
+                  key={t.value}
+                  type="button"
+                  onClick={() => update({ theme: t.value }, 'theme', t.value)}
+                  aria-pressed={active}
+                  className="flex-1 py-1 transition-opacity hover:opacity-80"
+                  style={{
+                    fontFamily: 'var(--serif)',
+                    fontSize: 'var(--text-sm)',
+                    border,
+                    borderRadius: 3,
+                    background: active ? 'var(--ink)' : 'transparent',
+                    color: active ? 'var(--vellum)' : 'var(--ink-soft)',
+                  }}
+                >
+                  {t.label}
+                </button>
+              )
+            })}
+          </div>
+
           <p className="kicker" style={{ marginBottom: '0.5rem' }}>Text size</p>
           <div className="flex gap-1.5 mb-4">
             {SCALES.map(s => {
