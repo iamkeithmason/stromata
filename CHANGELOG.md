@@ -7,6 +7,43 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-09-02 — Text & whole-collection downloads (markdown slice); distinct Umami tracking; backlog-triage skill
+
+Started the Feature Backlog item **"Text downloads (PDF and markdown)"** (ICE 384, Phase 1). Shipped
+the markdown half first, exactly as that card's MVP-validation note prescribes (markdown is ~an hour;
+PDF is deferred behind a demand signal). The founder's ask added a scope the card didn't have: the
+*whole collection* a text sits in, not just the single text — so this ships **both** download shapes.
+
+What's in the branch (`claude/pdf-download-texts-hu76kf`):
+- `lib/downloads.ts` — shared builders `buildTextMarkdown` / `buildCollectionMarkdown` so the single
+  route and the collection route emit identical frontmatter + colophon. Body is already markdown in
+  `texts.body`, so a download is essentially frontmatter + colophon + body. YAML scalars are escaped.
+- `app/texts/[slug]/download/markdown/route.ts` — one text as a `.md` attachment (frontmatter: title,
+  author, tradition, era, genre, source, accession, url, downloaded; then the agreed colophon,
+  editorial introduction if present, body, provenance footer). Published-only, ungated.
+- `app/collections/[slug]/download/markdown/route.ts` — every published text in the collection, in
+  reading order (`collection_order`, then title), bundled into one `.md`.
+- `app/components/DownloadLinks.tsx` — server-rendered download panel (plain `<a>`, so Umami's
+  `data-umami-event` auto-binding tracks the click; no client JS). On `/texts/[slug]` it offers *This
+  text* plus *Whole collection* when the text belongs to one; on `/collections/[slug]` it offers
+  *Download all*. Added `SITE_URL` to `lib/metadata.ts`.
+
+Tracking is deliberately **two distinct events**, never one overloaded name: `text-download`
+(props `from` · `format` · `text`) and `collection-download` (props `from` · `format` · `collection`),
+identifiers as slugs. Both formats reuse the same event names (`format: markdown` now, `format: pdf`
+later). Rows added to the Notion **Events Register** (Status **Planned**), and the backlog card moved
+to **Planned** with a progress log in its page body. **Wire-verification is still owed** — per the
+house rule these aren't done until the outgoing beacon is observed on prod carrying the expected
+payload; Keith to confirm after deploy (Umami is also ad-blocked in his own Chrome, so check
+`typeof window.umami` first).
+
+Also added a project skill **`.claude/skills/backlog-triage/`** — one command to pull the ICE-ranked
+Feature Backlog table (the SQL that the CLAUDE.md plan-gate note said might be blocked now works) and
+focus on a single feature's rank and neighbours.
+
+Still to do: **PDF format** (the heavier half — open choice between `@react-pdf/renderer` and
+Puppeteer; the card leans lighter-first), and wire-verify both events post-deploy.
+
 ## 2026-09-01 — Sourcer workflow now bumps Notion Status to "In progress" on apply runs
 
 The first live run of the Sourcer GitHub Action (run #24, manual `apply`) reported a job **failure**,

@@ -13,6 +13,7 @@ import { OG_IMAGE } from '@/lib/metadata'
 import { ThemeChip } from '@/app/components/ThemeChip'
 import { BookCover } from '@/app/components/BookCover'
 import { AuthorAside } from '@/app/components/AuthorAside'
+import { DownloadLinks } from '@/app/components/DownloadLinks'
 
 type Props = { params: Promise<{ slug: string }> }
 
@@ -267,6 +268,14 @@ export default async function TextPage({ params }: Props) {
                   )}
                 </section>
               )}
+
+              {/* Free, ungated downloads — this text, and the whole collection
+                  it belongs to (if any). Reading feature, never membership-gated. */}
+              <DownloadLinks
+                textSlug={slug}
+                collectionSlug={collection?.slug}
+                from="text-reader"
+              />
             </div>
           </aside>
 
