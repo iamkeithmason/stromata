@@ -127,14 +127,14 @@ export default function MarkdownBody({ content, numbered = true, size = 'default
         ),
         // Lists
         ul: ({ children }) => (
-          <ul className="list-disc pl-6 mb-5 space-y-1 font-serif text-[1.25rem]" style={{ color: '#1b1b1b' }}>
+          <ul className="list-disc pl-6 mb-5 space-y-1 font-serif" style={{ color: '#1b1b1b', fontSize: 'var(--text-prose)' }}>
             {children}
           </ul>
         ),
         // Preserve the list's starting number so a list that resumes after an
         // interrupting paragraph (e.g. "3." following prose) renders as 3, not 1.
         ol: ({ children, start }) => (
-          <ol start={start} className="list-decimal pl-6 mb-5 space-y-1 font-serif text-[1.25rem]" style={{ color: '#1b1b1b' }}>
+          <ol start={start} className="list-decimal pl-6 mb-5 space-y-1 font-serif" style={{ color: '#1b1b1b', fontSize: 'var(--text-prose)' }}>
             {children}
           </ol>
         ),

@@ -7,6 +7,36 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-09-02 — Reader cluster: typography settings + inline citation generator (one PR)
+
+Two independent Feature Backlog items, shipped together because both edit the text reader
+(`app/texts/[slug]/page.tsx`) — clustering them into one PR avoids the merge conflict two parallel
+branches would have had in that file. Both are pure frontend (no DB / admin / API), which is why they
+were the highest-confidence hand-off candidates after the downloads work.
+
+**Reader typography settings** (backlog ICE 432) — `app/components/ReaderSettings.tsx`, a floating "Aa"
+control on the reader with **Text size** (S/M/L/XL) and **Width** (Narrow/Normal/Wide), persisted in
+`localStorage`, no account. Applied by overriding CSS custom properties on `#reader-main`:
+`--reader-font-scale` multiplies `--text-prose` (a one-line rule added to globals.css), and `max-width`
+sets the measure. At the default scale the reading page is byte-identical to before — verified the
+calc resolves to the prior 1.25rem. `MarkdownBody`'s list font-size moved from a hardcoded `1.25rem`
+to `var(--text-prose)` so lists scale with paragraphs (same default value, no regression).
+**Light/dark deferred on purpose:** a dark reading mode needs `MarkdownBody`'s hardcoded text colours
+(`#1b1b1b` etc.) moved onto tokens first — a change to the core reading renderer that wants its own
+review, not a silent recolor of every text page.
+
+**Inline citation generator** (backlog ICE 392) — `app/components/CitationButton.tsx`, a "Cite this
+text" button in the footer that builds a plain citation from on-page metadata (author, title, URL,
+accessed-date, accession, source attribution) and copies it (clipboard API with an `execCommand`
+fallback). MVP = static footer button, no highlight-to-cite popover yet.
+
+Tracking: two distinct events — `reader-setting-change` (`from` · `setting` · `value`) and
+`citation-copy` (`from` · `text` slug) — Events Register rows added (Status Planned), both backlog
+cards moved to Planned with progress logs. `tsc` / `lint` / `next build` all clean.
+**Wire-verification owed** on prod for both (check `typeof window.umami` first — ad-blocked in Keith's
+Chrome). The interactive UI itself couldn't be eyeballed in the agent environment (no Supabase creds /
+admin login) — Keith to sanity-check the control renders and behaves on a real text page.
+
 ## 2026-09-02 — Text & whole-collection downloads (markdown slice); distinct Umami tracking; backlog-triage skill
 
 Started the Feature Backlog item **"Text downloads (PDF and markdown)"** (ICE 384, Phase 1). Shipped
