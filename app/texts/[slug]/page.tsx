@@ -138,7 +138,16 @@ export default async function TextPage({ params }: Props) {
   }
 
   return (
-    <div style={{ background: 'var(--paper)', paddingTop: '4rem' }} className="min-h-screen">
+    <div id="reader-page" style={{ background: 'var(--paper)', paddingTop: '4rem' }} className="min-h-screen">
+      {/* Apply the reader's saved dark-theme preference before paint, to avoid a
+          light flash. Runs during HTML parse and sets the attribute on this
+          same #reader-page element (its parent). */}
+      <script
+        dangerouslySetInnerHTML={{
+          __html:
+            "try{var p=JSON.parse(localStorage.getItem('stromata:reader')||'{}');if(p&&p.theme==='dark'){document.currentScript.parentElement.setAttribute('data-reader-theme','dark')}}catch(e){}",
+        }}
+      />
       <ReadingProgressBar slug={slug} title={text.title} />
       <SiteHeader breadcrumb={author ? (() => {
         return (
@@ -168,7 +177,7 @@ export default async function TextPage({ params }: Props) {
       })() : undefined} />
 
       {/* ─── Frontispiece hero — book cover + title on the dark ink ground ─── */}
-      <section style={{ background: 'var(--ink)' }}>
+      <section style={{ background: 'var(--hero-ground)' }}>
         <div className={`${FRAME} flex flex-col items-center gap-10 py-12 lg:flex-row lg:items-center lg:gap-16 lg:py-20`}>
           {/* Book cover — aligns with the left margin column below */}
           <div className="w-[200px] shrink-0 lg:w-[248px]">
@@ -294,7 +303,7 @@ export default async function TextPage({ params }: Props) {
             {text.ocr_quality === 'low' && (
               <p
                 className="mb-8 text-xs rounded px-3 py-2 border"
-                style={{ color: '#92400e', background: '#fffbeb', borderColor: '#fcd34d' }}
+                style={{ color: 'var(--notice-text)', background: 'var(--notice-bg)', borderColor: 'var(--notice-border)' }}
               >
                 This text was digitised from a scan and reviewed for accuracy, though as a rougher
                 scan some errors may remain — if you spot one, do let us know.
@@ -303,7 +312,7 @@ export default async function TextPage({ params }: Props) {
             {text.ocr_quality === 'medium' && (
               <p
                 className="mb-8 text-xs rounded px-3 py-2 border"
-                style={{ color: 'var(--ink-mute)', background: '#f4f0e8', borderColor: 'var(--rule)' }}
+                style={{ color: 'var(--ink-mute)', background: 'var(--paper-deep)', borderColor: 'var(--rule)' }}
               >
                 This text was digitised from a scan and reviewed for accuracy. As with any scanned
                 source, an occasional error may have slipped through — if you spot one, do let us know.
