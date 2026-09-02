@@ -48,6 +48,18 @@ export type Digest = {
 
 export type Stats = Record<string, number | { value: number } | undefined>
 
+// A headline growth metric with its previous-period value for a delta.
+export type Kpi = {
+  key: string
+  label: string
+  value: number
+  prev: number | null // previous equivalent period, or null if not reported
+  higherIsBetter: boolean
+  format: 'int' | 'pct' | 'ratio' | 'duration'
+  hero?: boolean
+  note?: string
+}
+
 export type DashboardWindow = { startAt: number; endAt: number }
 
 // The read-only client returned by createUmamiClient. Its `.get` is attached by
@@ -64,9 +76,15 @@ export type DashboardData =
       range: Range
       window: DashboardWindow
       stats: Stats
+      kpis: Kpi[]
+      repeatRate: number
+      landingPages: Ranked[] // top entry pages, slug-enriched
+      landingByType: Ranked[] // entry pages rolled up by page type
+      referrers: Ranked[]
       digest: Digest
       eventCounts: EventCount[]
       umamiMode: string
+      growthNotes: string[] // soft warnings (e.g. a metric the share token refused)
     }
   | {
       ok: false
@@ -157,6 +175,90 @@ async function loadCorpus(sb: ReturnType<typeof supabaseClient>) {
   }
 }
 
+// ── Growth KPIs ───────────────────────────────────────────────────────────
+
+function num(x: unknown): number {
+  if (typeof x === 'number') return x
+  if (x && typeof x === 'object' && 'value' in x) return Number((x as { value: unknown }).value) || 0
+  return Number(x) || 0
+}
+
+// Umami /stats returns current-period totals plus a `comparison` object with the
+// previous equivalent period. From those we derive the growth headline —
+// including "repeat visits" (visits − visitors), the closest proxy the read-only
+// stats endpoint gives for The Stromata's returning-visits North Star. It is
+// repeat *visits*, not unique returning *visitors* (Umami's stats endpoint
+// doesn't split those) — labelled as such, not dressed up as more.
+function buildKpis(stats: Record<string, unknown>): { kpis: Kpi[]; repeatRate: number } {
+  const cmp =
+    stats && typeof stats.comparison === 'object' && stats.comparison
+      ? (stats.comparison as Record<string, unknown>)
+      : null
+  const g = (k: string) => num(stats?.[k])
+  const p = (k: string) => (cmp ? num(cmp[k]) : null)
+
+  const visitors = g('visitors')
+  const visits = g('visits')
+  const pageviews = g('pageviews')
+  const bounces = g('bounces')
+  const totaltime = g('totaltime')
+
+  const repeat = Math.max(0, visits - visitors)
+  const pVisitors = p('visitors')
+  const pVisits = p('visits')
+  const pRepeat = pVisitors != null && pVisits != null ? Math.max(0, pVisits - pVisitors) : null
+  const repeatRate = visits > 0 ? repeat / visits : 0
+
+  const ratio = (a: number, b: number) => (b > 0 ? a / b : 0)
+  const pRatio = (ak: string, bk: string) => {
+    const a = p(ak)
+    const b = p(bk)
+    return a != null && b != null && b > 0 ? a / b : null
+  }
+
+  const kpis: Kpi[] = [
+    { key: 'repeat', label: 'Repeat visits', value: repeat, prev: pRepeat, higherIsBetter: true, format: 'int', hero: true, note: `${(repeatRate * 100).toFixed(0)}% of visits — North Star` },
+    { key: 'visitors', label: 'Visitors', value: visitors, prev: pVisitors, higherIsBetter: true, format: 'int' },
+    { key: 'visits', label: 'Visits', value: visits, prev: pVisits, higherIsBetter: true, format: 'int' },
+    { key: 'pageviews', label: 'Pageviews', value: pageviews, prev: p('pageviews'), higherIsBetter: true, format: 'int' },
+    { key: 'perVisit', label: 'Views / visit', value: ratio(pageviews, visits), prev: pRatio('pageviews', 'visits'), higherIsBetter: true, format: 'ratio' },
+    { key: 'bounce', label: 'Bounce rate', value: ratio(bounces, visits), prev: pRatio('bounces', 'visits'), higherIsBetter: false, format: 'pct' },
+    { key: 'duration', label: 'Avg visit', value: ratio(totaltime, visits), prev: pRatio('totaltime', 'visits'), higherIsBetter: true, format: 'duration' },
+  ]
+  return { kpis, repeatRate }
+}
+
+// ── Landing pages (entry-page paths -> page type + enriched label) ──────────
+
+const PAGE_TYPE: [RegExp, string][] = [
+  [/^\/texts\//, 'Text'],
+  [/^\/collections\//, 'Collection'],
+  [/^\/authors?\b/, 'Author'],
+  [/^\/locations?\//, 'Location'],
+  [/^\/themes?\//, 'Theme'],
+  [/^\/eras?\//, 'Era'],
+  [/^\/traditions?\//, 'Tradition'],
+]
+function pageType(path: string): string {
+  if (path === '/' || path === '' || path === '(none)') return 'Home'
+  for (const [re, name] of PAGE_TYPE) if (re.test(path)) return name
+  return 'Other'
+}
+function enrichPath(path: string, db: Awaited<ReturnType<typeof loadCorpus>>): string {
+  const t = /^\/texts\/([^/?#]+)/.exec(path)
+  if (t) {
+    const x = db.textsBySlug.get(t[1])
+    if (x) return `${x.title}  ·  text`
+  }
+  const c = /^\/collections\/([^/?#]+)/.exec(path)
+  if (c) {
+    const x = db.collectionsBySlug.get(c[1])
+    if (x) return `${x.name}  ·  collection`
+  }
+  if (path === '/' || path === '' || path === '(none)') return 'Home (/)'
+  return path
+}
+
 // ── Entry point ─────────────────────────────────────────────────────────────
 
 export function normaliseRange(raw: string | undefined | null): Range {
@@ -196,14 +298,55 @@ export async function getDashboardData(rawRange: string | undefined | null): Pro
 
     const eventCounts = rows(eventMetrics, 'key').sort((a, b) => b.count - a.count)
 
+    // Growth extras — fetched tolerantly: a share token that refuses `entry` or
+    // `referrer` degrades just that panel, never the whole page.
+    const [entryRes, referrerRes] = await Promise.allSettled([
+      umami.get('websites/{id}/metrics', { ...rangeParams, type: 'entry', limit: 25 }),
+      umami.get('websites/{id}/metrics', { ...rangeParams, type: 'referrer', limit: 20 }),
+    ])
+    const growthNotes: string[] = []
+
+    let landingPages: Ranked[] = []
+    let landingByType: Ranked[] = []
+    if (entryRes.status === 'fulfilled') {
+      const entries = rows(entryRes.value, 'path')
+      landingPages = entries
+        .map((e) => ({ label: enrichPath(e.path, db), value: e.count }))
+        .sort((a, b) => b.value - a.value)
+      const byType = new Map<string, number>()
+      for (const e of entries) byType.set(pageType(e.path), (byType.get(pageType(e.path)) || 0) + e.count)
+      landingByType = [...byType.entries()]
+        .map(([label, value]) => ({ label, value }))
+        .sort((a, b) => b.value - a.value)
+    } else {
+      growthNotes.push('Landing pages (entry metric) unavailable for this share token.')
+    }
+
+    let referrers: Ranked[] = []
+    if (referrerRes.status === 'fulfilled') {
+      referrers = rows(referrerRes.value, 'label')
+        .map((r) => ({ label: r.label && r.label !== '(none)' ? r.label : '(direct / none)', value: r.count }))
+        .sort((a, b) => b.value - a.value)
+    } else {
+      growthNotes.push('Referrers unavailable for this share token.')
+    }
+
+    const { kpis, repeatRate } = buildKpis((stats ?? {}) as Record<string, unknown>)
+
     return {
       ok: true,
       range,
       window: { startAt: win.startAt, endAt: win.endAt },
       stats: (stats ?? {}) as Stats,
+      kpis,
+      repeatRate,
+      landingPages,
+      landingByType,
+      referrers,
       digest,
       eventCounts,
       umamiMode: umami.mode,
+      growthNotes,
     }
   } catch (err) {
     return { ok: false, range, error: err instanceof Error ? err.message : String(err) }
