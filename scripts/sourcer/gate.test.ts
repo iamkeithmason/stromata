@@ -60,6 +60,17 @@ test('a fully-cleared prospect with a known pre-1900 author PASSES', () => {
   assert.equal(r.skips.length, 0);
 });
 
+test('already-live when Notion Status is already "Live"', () => {
+  const r = runGate([prospect({ status: 'Live' })], corpusWithAthanasius(), OPTS);
+  assert.equal(r.accepted.length, 0);
+  assert.equal(r.skips[0].reason, 'already-live');
+});
+
+test('already-live is case/whitespace-insensitive and checked before other gate failures', () => {
+  const r = runGate([prospect({ status: ' live ', rightsCleared: false })], corpusWithAthanasius(), OPTS);
+  assert.equal(r.skips[0].reason, 'already-live');
+});
+
 test('rights-not-cleared when the checkbox is not set', () => {
   const r = runGate([prospect({ rightsCleared: false })], corpusWithAthanasius(), OPTS);
   assert.equal(r.accepted.length, 0);

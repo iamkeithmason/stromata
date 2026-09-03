@@ -3,7 +3,7 @@
 - **Author:** John Mason Neale
 - **Slug:** `hymns-of-the-eastern-church-neale`
 - **Pinned edition:** https://archive.org/details/hymnsofeasternch00neal_0
-- **Fetched:** https://archive.org/stream/hymnsofeasternch00neal_0/hymnsofeasternch00neal_0_djvu.txt (2026-09-01T12:27:00.026Z)
+- **Fetched:** https://archive.org/stream/hymnsofeasternch00neal_0/hymnsofeasternch00neal_0_djvu.txt (2026-09-01T12:13:07.286Z)
 - **Prospect:** https://app.notion.com/p/Hymns-of-the-Eastern-Church-3cdd9194805d81c9b172d281d3fa361d
 - **Staged by:** sourcer-agent v0
 
@@ -18,7 +18,7 @@ un-applied in `ocr-report.md` for you to accept/reject.
 ## Proposed metadata (confirm before import)
 
 - Genre: Hymn
-- Themes: liturgy, salvation, death, prayer, christology, eschatology
+- Themes: liturgy, salvation, christology, eschatology
 - OCR quality: high
 - Collection shape: **collection** — The work is an anthology of individually authored/translated Greek and Syriac hymns (canons, troparia, idiomela) grouped by original hymnographer rather than one continuous argument. The pipeline's heading detector surfaced only archive.org page-wrapper navigation labels, not the book's own hymn/section titles, so the parts below are drawn from the well-documented published structure of this anthology and should be verified by the editor against the staged body text.
   1. Introductory essay on Greek ecclesiastical hymnody
