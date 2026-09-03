@@ -70,10 +70,16 @@ type UmamiClient = {
   get: (path: string, params?: Record<string, unknown>) => Promise<unknown>
 }
 
+// mode says which selector is active; month is set (YYYY-MM) only in month mode.
+export type SelectionMode = 'range' | 'month'
+
 export type DashboardData =
   | {
       ok: true
+      mode: SelectionMode
       range: Range
+      month: string | null
+      label: string
       window: DashboardWindow
       stats: Stats
       kpis: Kpi[]
@@ -88,7 +94,10 @@ export type DashboardData =
     }
   | {
       ok: false
+      mode: SelectionMode
       range: Range
+      month: string | null
+      label: string
       error: string
     }
 
@@ -266,16 +275,73 @@ export function normaliseRange(raw: string | undefined | null): Range {
   return RANGES.includes(r) || r === 'today' ? r : '30d'
 }
 
+// ── Calendar-month selection ────────────────────────────────────────────────
+// A month is just a specific window, so it flows through the same data path as
+// the presets. Boundaries are UTC (month-granularity; the ~1h London offset is
+// immaterial here). Umami's `comparison` for a ~month window is the preceding
+// equal-length span, so deltas read as "vs the previous period".
+
+export type MonthOption = { value: string; label: string }
+const MONTH_NAMES = [
+  'January', 'February', 'March', 'April', 'May', 'June',
+  'July', 'August', 'September', 'October', 'November', 'December',
+]
+
+export function monthToWindow(month: string | null | undefined): DashboardWindow | null {
+  const m = /^(\d{4})-(\d{2})$/.exec(month || '')
+  if (!m) return null
+  const year = Number(m[1])
+  const mon = Number(m[2])
+  if (mon < 1 || mon > 12) return null
+  const startAt = Date.UTC(year, mon - 1, 1)
+  const endAt = Date.UTC(year, mon, 1) - 1 // last ms of the month
+  return { startAt, endAt }
+}
+
+export function monthLabel(month: string): string {
+  const m = /^(\d{4})-(\d{2})$/.exec(month)
+  return m ? `${MONTH_NAMES[Number(m[2]) - 1]} ${m[1]}` : month
+}
+
+// The last `count` calendar months, newest first, for the month selector.
+export function recentMonths(count = 12, now = new Date()): MonthOption[] {
+  const y = now.getUTCFullYear()
+  const mo = now.getUTCMonth()
+  const out: MonthOption[] = []
+  for (let i = 0; i < count; i++) {
+    const d = new Date(Date.UTC(y, mo - i, 1))
+    const value = `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, '0')}`
+    out.push({ value, label: `${MONTH_NAMES[d.getUTCMonth()].slice(0, 3)} ${d.getUTCFullYear()}` })
+  }
+  return out
+}
+
 /**
  * Fetch Umami + Supabase and build the demand digest for the given range.
  * Never throws — Umami may be blocked (ad-blockers, Keith's own network) or
  * unreachable in CI/build; on any failure this returns { ok: false, error }
  * so the page can render a notice instead of 500-ing.
  */
-export async function getDashboardData(rawRange: string | undefined | null): Promise<DashboardData> {
-  const range = normaliseRange(rawRange)
+const RANGE_LABELS: Record<Range, string> = {
+  '24h': 'Last 24 hours',
+  today: 'Today',
+  '7d': 'Last 7 days',
+  '30d': 'Last 30 days',
+  '90d': 'Last 90 days',
+  all: 'All time',
+}
+
+export type Selection = { range?: string | null; month?: string | null }
+
+export async function getDashboardData(selection: Selection): Promise<DashboardData> {
+  const monthWin = monthToWindow(selection.month)
+  const mode: SelectionMode = monthWin ? 'month' : 'range'
+  const range = normaliseRange(selection.range)
+  const month = mode === 'month' ? selection.month! : null
+  const label = mode === 'month' ? monthLabel(month!) : RANGE_LABELS[range]
+  const base = { mode, range, month, label }
   try {
-    const win = rangeToWindow(range)
+    const win = monthWin ?? rangeToWindow(range)
     if (!win) throw new Error(`Unknown range "${range}".`)
     const rangeParams = { startAt: win.startAt, endAt: win.endAt }
 
@@ -335,7 +401,7 @@ export async function getDashboardData(rawRange: string | undefined | null): Pro
 
     return {
       ok: true,
-      range,
+      ...base,
       window: { startAt: win.startAt, endAt: win.endAt },
       stats: (stats ?? {}) as Stats,
       kpis,
@@ -349,6 +415,6 @@ export async function getDashboardData(rawRange: string | undefined | null): Pro
       growthNotes,
     }
   } catch (err) {
-    return { ok: false, range, error: err instanceof Error ? err.message : String(err) }
+    return { ok: false, ...base, error: err instanceof Error ? err.message : String(err) }
   }
 }
