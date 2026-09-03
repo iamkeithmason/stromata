@@ -7,6 +7,45 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-09-03 — Fix: PDF page breaks landing mid-page with wasted whitespace
+
+Keith downloaded `national-apostasy.pdf` right after the previous fix confirmed working and spotted
+an odd page break: a paragraph ends, then the next paragraph starts on a fresh page with no visible
+reason (plenty of room left on the previous page). Root cause was in the fix from earlier today (the
+one before the pdfkit standard-fonts one) — chunking each text's blocks into fixed groups of 8 and
+forcing an explicit `<Page>` per chunk to dodge react-pdf's pagination bug. A fixed *block count* per
+chunk forces a hard page break at every 8th paragraph/heading/etc. regardless of how much room was
+actually left on the page, so short paragraphs leave a page mostly blank while long ones would (in
+principle) overflow it — confirmed against the exact paragraph Keith flagged: block 15 of 42
+("These, which have been hitherto mentioned...") was the last block of chunk 2 purely because it was
+the 16th block counted from zero, not because of anything about its content or position.
+
+**Fix:** `lib/pdf/TextDocument.tsx` — replaced the fixed `BLOCKS_PER_PAGE = 8` count with a character-
+budget chunker (`CHARS_PER_CHUNK = 12000`): accumulate blocks into a chunk until the next one would
+cross the budget, then break. Short blocks now pack more densely onto a page; a break only forces once
+a chunk has accumulated roughly a page-budget's worth of content, not after a fixed number of
+paragraphs. The 12,000-character budget keeps a wide margin (3x+) under the ~39,600-character
+single-`<Page>` crash boundary bisected for the original bug, so this can't reopen that failure.
+
+Verified against National Apostasy specifically: page count dropped from 12 to 10 (three hard breaks
+instead of six), and the chunk containing the paragraph Keith flagged now holds 11,431 characters
+(16 blocks) versus the old scheme's ~5,200 characters (8 blocks) before breaking — the same rough spot
+still lands on a chunk boundary for this particular text (coincidence of where 12,000 characters falls
+in its prose), but the page is now packed full first rather than cut short early. Re-ran the full
+stress-test fixture set from the earlier fixes (short text, 75-paragraph, 600-paragraph, 96,000-word
+bodies) — all render without error, page counts uniformly *lower* than before (e.g. the 96,000-word
+body: 162 pages vs. 201 previously), consistent with less wasted space overall. `tsc --noEmit`,
+`next lint`, `next build` all clean.
+
+Note for next time: this is a heuristic, not an exact page-fill algorithm — it estimates each block's
+rendered size from character count rather than actually measuring wrapped line count, so it will
+occasionally still leave a chunk boundary short or long of an ideal page-fill point. A genuinely
+tight fit would mean re-implementing enough of react-pdf's own text-wrapping logic to predict line
+counts, which isn't worth the complexity for a heuristic whose failure mode is "occasionally not
+perfectly full," not incorrect output.
+
+---
+
 ## 2026-09-03 — Fix: the *actual* PDF 500 — pdfkit's standard-font files missing from the Vercel bundle
 
 The previous entry's `ERR_REQUIRE_ESM` diagnosis was **wrong**. It shipped, deployed cleanly to
