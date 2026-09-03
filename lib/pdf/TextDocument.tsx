@@ -149,9 +149,31 @@ function Footer() {
   )
 }
 
-// The header + body of one text, usable both as a standalone document page and
-// as one section within a collection document.
-function TextSection({ text, showColophon }: { text: DownloadableText; showColophon: boolean }) {
+// @react-pdf's automatic within-a-Page pagination (measuring one flowing Yoga
+// tree and slicing it into physical pages at render time) corrupts its own
+// layout math once a single <Page> element overflows past roughly ten to
+// thirteen physical pages — it throws `unsupported number: -2.3e+21` from
+// pdfkit's transform call, reliably, on any long text (reproduced locally: a
+// ~9,000-word body already fails). Splitting the content into many explicit
+// <Page> elements up front — each holding a small, bounded slice of blocks —
+// keeps every individual Page's own overflow small enough to dodge the bug,
+// and rendered a 96,000-word body across 114 pages without error where the
+// single-Page version failed at 9 pages. Chunk size is deliberately well
+// under the observed ~10-page failure threshold.
+const BLOCKS_PER_PAGE = 8
+
+function chunkBlocks(blocks: Block[], size: number): Block[][] {
+  if (blocks.length === 0) return [[]]
+  const chunks: Block[][] = []
+  for (let i = 0; i < blocks.length; i += size) chunks.push(blocks.slice(i, i + size))
+  return chunks
+}
+
+// The header + body of one text, split across one or more physical <Page>s so
+// that no single Page's automatic pagination has to absorb the whole text.
+// Usable both as a standalone document's pages and as one section within a
+// collection document.
+function TextPages({ text, showColophon }: { text: DownloadableText; showColophon: boolean }) {
   const authorName = text.author?.name ?? null
   const metaParts = [text.author?.tradition?.name, eraName(text.author?.era?.label), text.genre?.name].filter(
     Boolean
@@ -162,33 +184,43 @@ function TextSection({ text, showColophon }: { text: DownloadableText; showColop
     text.translation_notes ? `Translation: ${text.translation_notes}` : null,
   ].filter(Boolean) as string[]
 
+  const introBlocks = text.editorial_introduction ? parseMarkdownBlocks(text.editorial_introduction) : []
+  const bodyBlocks = parseMarkdownBlocks(text.body)
+  const contentBlocks: Block[] = [...introBlocks, ...(introBlocks.length > 0 ? [{ type: 'hr' } as Block] : []), ...bodyBlocks]
+  const pages = chunkBlocks(contentBlocks, BLOCKS_PER_PAGE)
+
   return (
     <>
-      <Text style={styles.title}>{text.title}</Text>
-      {authorName && <Text style={styles.author}>{authorName}</Text>}
-      {metaParts.length > 0 && <Text style={styles.meta}>{metaParts.join('  ·  ')}</Text>}
-      {accession(text.accession_number) && <Text style={styles.accession}>{accession(text.accession_number)}</Text>}
-      {showColophon && <Text style={styles.colophon}>{COLOPHON}</Text>}
-      <View style={styles.rule} />
+      {pages.map((pageBlocks, i) => (
+        <Page key={i} size="A4" style={styles.page}>
+          {i === 0 && (
+            <>
+              <Text style={styles.title}>{text.title}</Text>
+              {authorName && <Text style={styles.author}>{authorName}</Text>}
+              {metaParts.length > 0 && <Text style={styles.meta}>{metaParts.join('  ·  ')}</Text>}
+              {accession(text.accession_number) && (
+                <Text style={styles.accession}>{accession(text.accession_number)}</Text>
+              )}
+              {showColophon && <Text style={styles.colophon}>{COLOPHON}</Text>}
+              <View style={styles.rule} />
+              {introBlocks.length > 0 && <Text style={styles.sectionLabel}>Introduction</Text>}
+            </>
+          )}
 
-      {text.editorial_introduction && (
-        <>
-          <Text style={styles.sectionLabel}>Introduction</Text>
-          <Blocks blocks={parseMarkdownBlocks(text.editorial_introduction)} />
-          <View style={styles.rule} />
-        </>
-      )}
+          <Blocks blocks={pageBlocks} />
 
-      <Blocks blocks={parseMarkdownBlocks(text.body)} />
+          {i === pages.length - 1 && provenance.length > 0 && (
+            <View style={styles.provenance}>
+              {provenance.map((line, pi) => (
+                <Text key={pi}>{line}</Text>
+              ))}
+              <Text>{`${SITE_URL}/texts/${text.slug}`}</Text>
+            </View>
+          )}
 
-      {provenance.length > 0 && (
-        <View style={styles.provenance}>
-          {provenance.map((line, i) => (
-            <Text key={i}>{line}</Text>
-          ))}
-          <Text>{`${SITE_URL}/texts/${text.slug}`}</Text>
-        </View>
-      )}
+          <Footer />
+        </Page>
+      ))}
     </>
   )
 }
@@ -196,10 +228,7 @@ function TextSection({ text, showColophon }: { text: DownloadableText; showColop
 export function TextDocument({ text }: { text: DownloadableText }) {
   return (
     <Document title={text.title} author={text.author?.name ?? undefined}>
-      <Page size="A4" style={styles.page}>
-        <TextSection text={text} showColophon />
-        <Footer />
-      </Page>
+      <TextPages text={text} showColophon />
     </Document>
   )
 }
@@ -237,12 +266,9 @@ export function CollectionDocument({
         <Footer />
       </Page>
 
-      {/* One page-break-delimited section per text */}
+      {/* One or more page-break-delimited pages per text */}
       {texts.map(text => (
-        <Page key={text.slug} size="A4" style={styles.page}>
-          <TextSection text={text} showColophon={false} />
-          <Footer />
-        </Page>
+        <TextPages key={text.slug} text={text} showColophon={false} />
       ))}
     </Document>
   )
