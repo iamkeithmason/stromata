@@ -101,9 +101,11 @@ export default async function TextPage({ params }: Props) {
   // Era label without the parenthetical span, e.g. "Nicene & Post-Nicene".
   const eraName = author?.era?.label?.replace(/\s*\(.*?\)/, '') ?? null
 
-  // Frontispiece kicker: "Author • Location • Collection", omitting any part
-  // that's absent.
-  const kickerParts = [author?.name, author?.loc?.name, collection?.title].filter(Boolean) as string[]
+  // Frontispiece kicker: the accession label, e.g. "STROMATA № 65". Falls back
+  // to the author name when a text has no accession number yet.
+  const heroKicker = text.accession_number
+    ? `Stromata № ${String(text.accession_number).padStart(2, '0')}`
+    : author?.name ?? null
 
   // Extract headings for the TOC sidebar. Only show TOC if 3+ headings exist —
   // short letters and prayers are flowing prose with no meaningful structure to navigate.
@@ -111,9 +113,12 @@ export default async function TextPage({ params }: Props) {
   const hasToc = headings.length >= 3
 
   // If this text belongs to a collection, fetch siblings for prev/next navigation
+  // and for the frontispiece's "Part N of M" position marker.
   type Sibling = { id: string; title: string; slug: string; collection_order: number | null; author: { name: string } | null }
   let prevText: Sibling | null = null
   let nextText: Sibling | null = null
+  let collectionPart: number | null = null
+  let collectionTotal: number | null = null
 
   if (collection && text.collection_id) {
     const { data: siblings } = await supabase
@@ -129,6 +134,10 @@ export default async function TextPage({ params }: Props) {
       const idx = rows.findIndex(s => s.id === text.id)
       if (idx > 0) prevText = rows[idx - 1]
       if (idx < rows.length - 1) nextText = rows[idx + 1]
+      if (idx >= 0 && rows.length > 1) {
+        collectionPart = idx + 1
+        collectionTotal = rows.length
+      }
     }
   }
 
@@ -153,7 +162,7 @@ export default async function TextPage({ params }: Props) {
             }
             {author.tradition?.name && (
               <span className="hidden sm:inline" style={{ color: 'var(--ink-faint)' }}>
-                {' '}
+                <span aria-hidden className="px-2" style={{ color: 'var(--ink-faint)' }}>·</span>
                 <Link href={`/traditions/${author.tradition.slug}`} className="hover:opacity-70 transition-opacity">
                   {author.tradition.name}
                 </Link>
@@ -161,7 +170,7 @@ export default async function TextPage({ params }: Props) {
             )}
             {eraName && author.era?.slug && (
               <span className="hidden sm:inline" style={{ color: 'var(--ink-faint)' }}>
-                {' '}
+                <span aria-hidden className="px-2" style={{ color: 'var(--ink-faint)' }}>·</span>
                 <Link href={`/eras/${author.era.slug}`} className="hover:opacity-70 transition-opacity">
                   {eraName}
                 </Link>
@@ -191,16 +200,17 @@ export default async function TextPage({ params }: Props) {
 
           {/* Title block — aligned with the main reading column below */}
           <div className="margin-body flex flex-col items-center gap-6 text-center lg:items-start lg:gap-8 lg:text-left">
-            {kickerParts.length > 0 && (
+            {heroKicker && (
               <p
-                className="font-serif uppercase"
-                style={{ fontSize: 'var(--text-label)', letterSpacing: '0.18em', color: 'rgba(250,246,236,0.7)' }}
+                className="font-mono uppercase"
+                style={{ fontSize: 'var(--text-sm)', letterSpacing: '0.22em', color: 'rgba(250,246,236,0.55)' }}
               >
-                {kickerParts.join(' • ')}
+                {heroKicker}
               </p>
             )}
 
-            <div className="flex flex-col items-center gap-3 lg:items-start">
+            {/* Title + summary — grouped tightly */}
+            <div className="flex flex-col items-center gap-4 lg:items-start">
               <h1
                 style={{
                   fontFamily: 'var(--serif-display)',
@@ -212,13 +222,27 @@ export default async function TextPage({ params }: Props) {
               >
                 {text.title}
               </h1>
-              <p
-                className="font-serif italic"
-                style={{ fontSize: 'var(--text-base)', color: 'rgba(250,246,236,0.7)' }}
-              >
-                Approx. {readingTime(body)} min read
-              </p>
+              {summary && (
+                <p
+                  className="font-serif"
+                  style={{
+                    fontSize: 'var(--text-base)',
+                    lineHeight: 1.5,
+                    color: 'rgba(250,246,236,0.72)',
+                    maxWidth: '30rem',
+                  }}
+                >
+                  {summary}
+                </p>
+              )}
             </div>
+
+            <p
+              className="font-serif italic"
+              style={{ fontSize: 'var(--text-base)', color: 'rgba(250,246,236,0.6)' }}
+            >
+              Approx. {readingTime(body)} min read
+            </p>
 
             {themes.length > 0 && (
               <div className="flex flex-wrap justify-center gap-2 lg:justify-start">
@@ -227,33 +251,36 @@ export default async function TextPage({ params }: Props) {
                 ))}
               </div>
             )}
+
+            {collection && collectionPart && collectionTotal && (
+              <Link
+                href={`/collections/${collection.slug}`}
+                className="font-serif hover:opacity-70 transition-opacity"
+                style={{ fontSize: 'var(--text-base)', color: 'rgba(250,246,236,0.7)', textDecoration: 'none' }}
+                data-umami-event="collection-open"
+                data-umami-event-from="text-page"
+                data-umami-event-collection={collection.slug}
+              >
+                {collection.title} (Part {collectionPart} of {collectionTotal}) →
+              </Link>
+            )}
           </div>
         </div>
       </section>
 
       {/* ─── Reading container — marginalia rail + main reading column ─── */}
       <div className="margin-cols py-12 lg:py-16">
-          {/* Left margin rail: summary · author · provenance */}
+          {/* Left margin rail: author · provenance (the summary now leads the
+              frontispiece, so the author block sits at the top of the rail) */}
           <aside className="margin-rail">
-            <div className="flex flex-col gap-10">
-              {summary && (
-                <section>
-                  <p className="kicker" style={{ marginBottom: '0.75rem' }}>Summary</p>
-                  <p
-                    className="font-serif"
-                    style={{ color: 'var(--ink-soft)', fontSize: 'var(--text-label)', lineHeight: 1.6 }}
-                  >
-                    {summary}
-                  </p>
-                </section>
-              )}
-
+            <div className="flex flex-col gap-8">
               {author && (
                 <AuthorAside
                   name={author.name}
                   slug={author.slug}
                   birthYear={author.birth_year}
                   deathYear={author.death_year}
+                  locationName={author.loc?.name ?? null}
                   eraName={eraName}
                   tradition={author.tradition}
                   bio={author.bio}

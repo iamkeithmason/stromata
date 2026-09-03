@@ -306,6 +306,21 @@ html {
   }
 }
 
+/* Author-rail bio teaser — clamp to ~6 lines and let it trail off with an
+   ellipsis (the full bio lives on the author page, one "Read More" away).
+   Line-clamp only truncates when the text actually overflows, so short bios
+   render in full with no artefact. */
+.author-bio-clamp {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 6;
+  line-clamp: 6;
+  overflow: hidden;
+}
+.author-bio-clamp p {
+  margin-bottom: 0;
+}
+
 /* Content shells that align to the same grid but carry no rail. */
 .content-shell {
   max-width: var(--content-max);

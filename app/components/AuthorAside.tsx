@@ -8,49 +8,53 @@ type Props = {
   slug: string | null
   birthYear: number | null
   deathYear: number | null
+  locationName: string | null
   eraName: string | null
   tradition: { name: string; slug: string } | null
   bio: string | null
 }
 
 /**
- * The "About the author" block in the reading page's left margin: a lancet-arch
- * initial, the author's name / dates / tradition, their biography, and a link
- * through to the full author page.
+ * The "The Author" block at the top of the reading page's left margin rail: a
+ * lancet-arch initial, the author's name / dates / place / era / tradition, a
+ * short biography clamped to a few lines, and a link through to the full author
+ * page.
  */
-export function AuthorAside({ name, slug, birthYear, deathYear, eraName, tradition, bio }: Props) {
+export function AuthorAside({ name, slug, birthYear, deathYear, locationName, eraName, tradition, bio }: Props) {
   const initial = name.trim().charAt(0).toUpperCase() || '·'
-  // Dates line: "354–430 · Nicene & Post-Nicene". Fall back gracefully when a
-  // year is missing.
+  // Dates line: "354–430", falling back gracefully when a year is missing.
   const years = birthYear && deathYear
     ? `${birthYear}–${deathYear}`
     : deathYear
       ? (deathYear < 600 ? `c. ${deathYear}` : `d. ${deathYear}`)
       : null
-  const datesLine = [years, eraName].filter(Boolean).join(' · ')
 
   return (
     <section>
-      <p className="kicker" style={{ marginBottom: '1.5rem' }}>About the Author</p>
+      <p className="kicker" style={{ marginBottom: '1rem' }}>The Author</p>
 
-      <div style={{ aspectRatio: '200 / 380', maxWidth: '208px', margin: '0 0 1.5rem' }}>
+      <div style={{ aspectRatio: '200 / 380', maxWidth: '200px', margin: '0 0 1.25rem' }}>
         <LancetArch initial={initial} label={`Initial ${initial} for ${name}`} />
       </div>
 
       <p
         className="font-serif"
-        style={{ fontSize: '1.125rem', color: 'var(--ink)', lineHeight: 1.3 }}
+        style={{ fontSize: '1.125rem', color: 'var(--ink)', lineHeight: 1.25 }}
       >
         {name}
       </p>
-      {datesLine && (
-        <p
+
+      {(years || locationName || eraName) && (
+        <div
           className="font-serif"
-          style={{ fontSize: 'var(--text-label)', color: 'var(--ink-mute)', marginTop: '0.25rem' }}
+          style={{ fontSize: 'var(--text-label)', color: 'var(--ink-mute)', lineHeight: 1.5, marginTop: '0.4rem' }}
         >
-          {datesLine}
-        </p>
+          {years && <p>{years}</p>}
+          {locationName && <p>{locationName}</p>}
+          {eraName && <p>{eraName}</p>}
+        </div>
       )}
+
       {tradition && (
         <p
           className="font-serif uppercase"
@@ -58,7 +62,7 @@ export function AuthorAside({ name, slug, birthYear, deathYear, eraName, traditi
             fontSize: 'var(--text-sm)',
             letterSpacing: '0.14em',
             color: traditionColor(tradition.slug),
-            marginTop: '0.35rem',
+            marginTop: '0.5rem',
           }}
         >
           {tradition.name}
@@ -66,7 +70,7 @@ export function AuthorAside({ name, slug, birthYear, deathYear, eraName, traditi
       )}
 
       {bio && (
-        <div style={{ color: 'var(--ink-soft)', marginTop: '1.25rem' }}>
+        <div className="author-bio-clamp" style={{ color: 'var(--ink-soft)', marginTop: '1.1rem' }}>
           <MarkdownBody content={bio} numbered={false} size="small" />
         </div>
       )}
@@ -75,9 +79,9 @@ export function AuthorAside({ name, slug, birthYear, deathYear, eraName, traditi
         <Link
           href={`/authors/${slug}`}
           className="kicker inline-block hover:opacity-70 transition-opacity"
-          style={{ marginTop: '1rem', textDecoration: 'none' }}
+          style={{ marginTop: '0.85rem', textDecoration: 'none' }}
         >
-          Read more by the author →
+          Read More →
         </Link>
       )}
     </section>
