@@ -41,6 +41,8 @@ export default async function EditAuthorPage({ params }: Props) {
           initialFeastDay={author.feast_day ?? ''}
           initialFeastDayNote={author.feast_day_note ?? ''}
           initialDraft={author.draft ?? false}
+          initialImageUrl={author.image_url ?? null}
+          initialImageSource={author.image_source ?? null}
         />
       </div>
     </main>

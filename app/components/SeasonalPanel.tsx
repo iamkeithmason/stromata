@@ -30,6 +30,8 @@ type SeasonPick = {
   title: string
   author: string
   href: string
+  /** Optional author portrait for the arch; falls back to the initial when unset. */
+  imageUrl?: string | null
 }
 
 type SeasonConfig = {
@@ -244,6 +246,7 @@ export function SeasonalPanel() {
                   <LancetArch
                     initial={s.pick.author.charAt(0)}
                     label={`${s.pick.title} by ${s.pick.author}`}
+                    imageUrl={s.pick.imageUrl}
                   />
                   <div className="mt-2 text-center">
                     <p style={{ fontFamily: 'var(--serif)', fontStyle: 'italic', fontSize: 'var(--text-sm)', color: R.title, lineHeight: 1.3 }}>

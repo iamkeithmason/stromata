@@ -22,7 +22,7 @@ export async function PATCH(request: NextRequest, { params }: Params) {
   const { id } = await params
   const body = await request.json()
   const { name, slug, tradition_slug, birth_year, death_year, era_slug, bio, bio_source,
-    location_id, location, feast_day, feast_day_note, draft } = body
+    location_id, location, feast_day, feast_day_note, draft, image_url, image_source } = body
 
   if (!name || !tradition_slug) {
     return NextResponse.json({ error: 'Name and tradition are required.' }, { status: 400 })
@@ -66,6 +66,8 @@ export async function PATCH(request: NextRequest, { params }: Params) {
       feast_day: feast_day || null,
       feast_day_note: feast_day_note || null,
       draft: draft ?? false,
+      image_url: image_url || null,
+      image_source: image_source || null,
     })
     .eq('id', id)
 

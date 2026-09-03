@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { TRADITIONS, ERAS } from '@/lib/constants'
 import { fetchWikipediaSuggestions } from '@/lib/authors/wikipedia'
+import { AuthorImageField } from '../../AuthorImageField'
 
 const input = 'w-full px-3 py-2 border border-stone-300 rounded text-stone-800 focus:outline-none focus:ring-2 focus:ring-stone-400 bg-white'
 const label = 'block text-sm font-medium text-stone-700 mb-1'
@@ -25,6 +26,8 @@ type Props = {
   initialFeastDay: string
   initialFeastDayNote: string
   initialDraft: boolean
+  initialImageUrl: string | null
+  initialImageSource: string | null
 }
 
 export default function EditAuthorForm({
@@ -42,6 +45,8 @@ export default function EditAuthorForm({
   initialFeastDay,
   initialFeastDayNote,
   initialDraft,
+  initialImageUrl,
+  initialImageSource,
 }: Props) {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
@@ -59,6 +64,10 @@ export default function EditAuthorForm({
   const [traditionSlug, setTraditionSlug] = useState(initialTraditionSlug)
   const [bio, setBio] = useState(initialBio)
   const [bioSource, setBioSource] = useState(initialBioSource)
+
+  const [imageUrl, setImageUrl] = useState<string | null>(initialImageUrl)
+  const [imageSource, setImageSource] = useState<string | null>(initialImageSource)
+  const [wikiImageUrl, setWikiImageUrl] = useState<string | null>(null)
 
   const [wikiLoading, setWikiLoading] = useState(false)
   const [wikiNote, setWikiNote] = useState<{ type: 'success' | 'warn'; text: string } | null>(null)
@@ -89,6 +98,7 @@ export default function EditAuthorForm({
     }
 
     const s = result.suggestions
+    setWikiImageUrl(s.imageUrl)
     const filled: string[] = []
     const skipped: string[] = []
 
@@ -135,6 +145,8 @@ export default function EditAuthorForm({
       feast_day: (data.get('feast_day') as string) || null,
       feast_day_note: (data.get('feast_day_note') as string) || null,
       draft,
+      image_url: imageUrl,
+      image_source: imageSource,
     }
 
     setLoading(true)
@@ -236,6 +248,14 @@ export default function EditAuthorForm({
         <label className={label}>Bio source</label>
         <input type="text" value={bioSource} onChange={e => setBioSource(e.target.value)} className={input} />
       </div>
+
+      {/* Portrait */}
+      <AuthorImageField
+        slug={initialSlug}
+        value={{ imageUrl, imageSource }}
+        candidateUrl={wikiImageUrl}
+        onChange={v => { setImageUrl(v.imageUrl); setImageSource(v.imageSource) }}
+      />
 
       {/* Location */}
       <div className="pt-2 border-t border-stone-200">
