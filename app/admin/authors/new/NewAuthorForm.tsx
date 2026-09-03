@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { TRADITIONS, ERAS } from '@/lib/constants'
 import { slugify, fetchWikipediaSuggestions } from '@/lib/authors/wikipedia'
+import { AuthorImageField } from '../AuthorImageField'
 
 const input = 'w-full px-3 py-2 border border-stone-300 rounded text-stone-800 focus:outline-none focus:ring-2 focus:ring-stone-400 bg-white'
 const label = 'block text-sm font-medium text-stone-700 mb-1'
@@ -25,6 +26,10 @@ export default function NewAuthorForm() {
   const [bioSource, setBioSource] = useState('')
   const [locationId, setLocationId] = useState('')
   const [locationOptions, setLocationOptions] = useState<LocationOption[]>([])
+
+  const [imageUrl, setImageUrl] = useState<string | null>(null)
+  const [imageSource, setImageSource] = useState<string | null>(null)
+  const [wikiImageUrl, setWikiImageUrl] = useState<string | null>(null)
 
   const [wikiLoading, setWikiLoading] = useState(false)
   const [wikiNote, setWikiNote] = useState<{ type: 'success' | 'warn'; text: string } | null>(null)
@@ -63,6 +68,7 @@ export default function NewAuthorForm() {
     setTraditionSlug(s.traditionSlug)
     setBio(s.bio)
     setBioSource(s.bioSource)
+    setWikiImageUrl(s.imageUrl)
 
     setWikiNote({ type: 'success', text: `Suggestions loaded from Wikipedia: "${s.title}". Review every field before saving.` })
   }
@@ -81,6 +87,8 @@ export default function NewAuthorForm() {
       bio_source: bioSource || null,
       location_id: locationId ? Number(locationId) : null,
       location: (data.get('location') as string) || null,
+      image_url: imageUrl,
+      image_source: imageSource,
     }
     setLoading(true)
     setError('')
@@ -194,6 +202,14 @@ export default function NewAuthorForm() {
         <label className={label}>Bio source</label>
         <input type="text" value={bioSource} onChange={e => setBioSource(e.target.value)} className={input} placeholder="e.g. Wikipedia, cached 2026-04-17" />
       </div>
+
+      {/* Portrait */}
+      <AuthorImageField
+        slug={slug}
+        value={{ imageUrl, imageSource }}
+        candidateUrl={wikiImageUrl}
+        onChange={v => { setImageUrl(v.imageUrl); setImageSource(v.imageSource) }}
+      />
 
       {/* Location */}
       <div className="pt-2 border-t border-stone-200">

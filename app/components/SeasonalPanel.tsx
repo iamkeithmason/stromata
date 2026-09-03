@@ -24,12 +24,15 @@
  */
 
 import Link from 'next/link'
+import { createServerClient } from '@/lib/supabase/server'
 import { LancetArch } from './LancetArch'
 
 type SeasonPick = {
   title: string
   author: string
   href: string
+  /** Optional author portrait for the arch; falls back to the initial when unset. */
+  imageUrl?: string | null
 }
 
 type SeasonConfig = {
@@ -78,13 +81,29 @@ const LABEL_STYLE: React.CSSProperties = {
 // Concave corner radius — increase for more dramatic plaque cut, decrease to soften
 const CORNER_R = 14
 
-export function SeasonalPanel() {
+export async function SeasonalPanel() {
   const s = CURRENT_SEASON
   const hasNoPick = s.pick === null
 
   // Slug for analytics — derived from the href rather than hardcoded, so it
   // stays correct if CURRENT_SEASON.pick.href ever changes.
   const pickSlug = s.pick ? s.pick.href.split('/').filter(Boolean).pop() : undefined
+
+  // Portrait for the arch. A config `imageUrl` wins (manual override); otherwise
+  // resolve the pick text's author from the DB and use their stored portrait,
+  // falling back to the author initial when there is none.
+  let pickImageUrl: string | null = s.pick?.imageUrl ?? null
+  if (s.pick && !pickImageUrl && pickSlug) {
+    const supabase = createServerClient()
+    const { data } = await supabase
+      .from('texts')
+      .select('author:authors(image_url)')
+      .eq('slug', pickSlug)
+      .eq('published', true)
+      .single()
+    const author = data?.author as unknown as { image_url: string | null } | null
+    pickImageUrl = author?.image_url ?? null
+  }
 
   const panelHref = s.pick ? s.pick.href : '/texts'
   const panelUmamiProps = s.pick
@@ -244,6 +263,7 @@ export function SeasonalPanel() {
                   <LancetArch
                     initial={s.pick.author.charAt(0)}
                     label={`${s.pick.title} by ${s.pick.author}`}
+                    imageUrl={pickImageUrl}
                   />
                   <div className="mt-2 text-center">
                     <p style={{ fontFamily: 'var(--serif)', fontStyle: 'italic', fontSize: 'var(--text-sm)', color: R.title, lineHeight: 1.3 }}>
