@@ -25,7 +25,7 @@ type Props = {
 
 export function ChurchYearRow({ currentSeason }: Props) {
   return (
-    <section className="max-w-5xl mx-auto px-6 pb-10">
+    <section className="content-shell pb-10">
       <div
         className="flex flex-wrap items-center justify-center gap-x-3 gap-y-2"
         style={{ fontFamily: 'var(--serif)', fontSize: 'var(--text-base)' }}

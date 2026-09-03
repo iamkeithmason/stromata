@@ -40,7 +40,7 @@ export default async function ScriptureIndexPage() {
     <div style={{ background: 'var(--paper)', paddingTop: '4rem' }} className="min-h-screen">
       <SiteHeader breadcrumb={null} />
 
-      <main className="max-w-2xl mx-auto px-6 py-12">
+      <main className="content-shell py-12">
         <div className="mb-6">
           <h1 className="font-serif text-3xl mb-3" style={{ color: '#1b1b1b' }}>Scripture</h1>
           <p className="font-serif leading-relaxed" style={{ color: '#1b1b1b' }}>
