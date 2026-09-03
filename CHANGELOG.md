@@ -7,6 +7,55 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-09-03 — Fix: the *actual* PDF 500 — pdfkit's standard-font files missing from the Vercel bundle
+
+The previous entry's `ERR_REQUIRE_ESM` diagnosis was **wrong**. It shipped, deployed cleanly to
+production (confirmed via the Vercel dashboard — deployment `9mF8ihyzS`, commit `5470cb6`, Ready),
+and `/texts/national-apostasy/download/pdf` still 500'd. Got Keith to export the deployment's
+runtime logs (Vercel's Logs → export) rather than guess a third time, and the real error was sitting
+right there:
+
+```
+Error: Cannot find module '/var/task/node_modules/pdfkit/js/standard-fonts/Helvetica.cjs'
+    code: 'MODULE_NOT_FOUND'
+```
+
+**Root cause:** `pdfkit` (a transitive dep of `@react-pdf/renderer`) resolves its 14 standard PDF
+fonts through Node's package `"imports"` map — `pdfkit/package.json` maps `#standard-fonts/*` to
+`./js/standard-fonts/*.cjs`, and the font loader calls `require('#standard-fonts/Helvetica')` via a
+`createRequire(import.meta.url)` indirection. Vercel's build-time file tracer (`@vercel/nft`, which
+decides which `node_modules` files actually get packed into each deployed serverless function) can't
+follow that indirection statically, so `node_modules/pdfkit/js/standard-fonts/` was silently absent
+from the deployed function entirely — confirmed locally by inspecting the generated
+`.next/server/app/texts/[slug]/download/pdf/route.js.nft.json`: it listed `pdfkit/js/pdfkit.node.mjs`
+and `pdfkit/package.json` but not one file under `standard-fonts/`. `@react-pdf/renderer` registers
+all 14 standard fonts on `Font` at load time regardless of which ones a document actually uses, so
+this broke **every** PDF render, matching both bug reports exactly.
+
+This is exactly the class of bug the previous two "verified locally, still broke in prod" misses
+couldn't have caught: `next build` + `next start` (what was used to "verify in production mode" both
+earlier times today) runs directly off the full `node_modules` on disk — file tracing only applies to
+Vercel's actual packaged serverless function, so a local prod-mode test can never surface a missing-
+traced-file bug like this one, no matter how faithfully it's run.
+
+**Fix:** `next.config.ts` — added `outputFileTracingIncludes`, forcing
+`node_modules/pdfkit/js/standard-fonts/**` into both `/texts/[slug]/download/pdf` and
+`/collections/[slug]/download/pdf`'s traced file sets. This is the standard, documented mechanism for
+exactly this situation (Next 15 top-level config, not experimental). Left the ERR_REQUIRE_ESM dynamic-
+import refactor from the previous entry in place — it's harmless, still a reasonable defensive
+practice, just not what was actually broken here.
+
+Verified: rebuilt locally and inspected `route.js.nft.json` for both PDF routes directly — all 30
+`standard-fonts/*.{cjs,mjs}` files (plus the glyph-name chunk files) now present in the trace, where
+before there were zero. `tsc --noEmit`, `next lint`, `next build` all clean. Also worth recording:
+mid-session, direct network access to `www.thestromata.com` and Vercel preview URLs started working
+from this environment when it hadn't earlier (Keith had `*.thestromata.com`/`*.vercel.app`
+allow-listed) — that's what let this round pull the real production logs and confirm the diagnosis
+against the live site directly, instead of guessing from local reasoning again. Will confirm the
+deployed fix against the live URL once this merges.
+
+---
+
 ## 2026-09-03 — Fix: PDF downloads still 500ing after the pagination fix (ERR_REQUIRE_ESM)
 
 Keith reported `/texts/national-apostasy/download/pdf` still throwing a 500 on production
