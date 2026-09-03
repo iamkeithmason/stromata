@@ -6,6 +6,7 @@ export const dynamic = 'force-dynamic'
 
 export default async function SourcerPage() {
   const bundles = await listStagedBundles()
+  const isDev = process.env.NODE_ENV !== 'production'
 
   return (
     <main>
@@ -17,13 +18,18 @@ export default async function SourcerPage() {
       </div>
       <p className="text-xs text-stone-400 mb-6">
         Draft bundles the Sourcer staged under <code>content/staging/</code> for editorial review — nothing here is
-        published or in the database. Getting a reviewed bundle into{' '}
-        <Link href="/admin/drafts" className="underline hover:text-stone-700">Drafts</Link> still needs the manual
-        bridge step (<code>scripts/sourcer/stage-to-output.mjs</code> → <code>scripts/pipeline-import.mjs</code>)
-        described in each bundle&rsquo;s SOURCER.md.
+        published or in the database until you bridge &amp; import a bundle below, which lands it in{' '}
+        <Link href="/admin/drafts" className="underline hover:text-stone-700">Drafts</Link> as{' '}
+        <span className="font-medium">unpublished</span>.
       </p>
 
-      <SourcerClient bundles={bundles} />
+      {!isDev && (
+        <p className="text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded px-3 py-2 mb-6">
+          The bridge &amp; import runner is disabled outside local development. You can still review bundles here.
+        </p>
+      )}
+
+      <SourcerClient bundles={bundles} isDev={isDev} />
     </main>
   )
 }

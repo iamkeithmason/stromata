@@ -379,7 +379,7 @@ function ActionBtn({ label, busy, disabled, onClick }: { label: string; busy: bo
   )
 }
 
-function Field({ label, children }: { label: string; children: React.ReactNode }) {
+export function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <label className="block">
       <span className="text-xs text-stone-500">{label}</span>
@@ -388,9 +388,9 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
   )
 }
 
-const inputCls = 'w-full text-sm border border-stone-300 rounded px-2 py-1 focus:outline-none focus:border-stone-500'
+export const inputCls = 'w-full text-sm border border-stone-300 rounded px-2 py-1 focus:outline-none focus:border-stone-500'
 
-function ThemePicker({ themes, onToggle, grouped }: { themes: string[]; onToggle: (t: string) => void; grouped?: boolean }) {
+export function ThemePicker({ themes, onToggle, grouped }: { themes: string[]; onToggle: (t: string) => void; grouped?: boolean }) {
   const chip = (t: string) => {
     const on = themes.includes(t)
     const full = !on && themes.length >= MAX_THEMES

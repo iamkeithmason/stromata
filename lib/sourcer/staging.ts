@@ -4,6 +4,7 @@
 
 import { promises as fs } from 'fs'
 import path from 'path'
+import { readQueue } from '@/lib/pipeline/queue'
 
 export const STAGING_ROOT = path.join(process.cwd(), 'content', 'staging')
 
@@ -22,6 +23,11 @@ export interface StagedBundleSummary {
   collectionShape: string | null
   flags: string[]
   stagedAt: string | null
+  /**
+   * Status of this bundle's entry in the pipeline queue (scripts/ingestion/prospect-queue.json),
+   * keyed by slug — null until the bridge step (stage-to-output.mjs --write-queue) runs.
+   */
+  bridgeStatus: string | null
 }
 
 const SLUG_RE = /^[a-z0-9-]+$/
@@ -45,7 +51,7 @@ function blockList(yaml: string, key: string): string[] {
 }
 
 /** Minimal reader for the flat/list shape `renderMetadataYaml` (scripts/sourcer/metadata.ts) emits. */
-export function parseStagedMetadata(yaml: string): Omit<StagedBundleSummary, 'stagedAt'> {
+export function parseStagedMetadata(yaml: string): Omit<StagedBundleSummary, 'stagedAt' | 'bridgeStatus'> {
   const collectionBlock = yaml.match(/^proposed_collection:\s*\n([\s\S]*?)(?=\n\S|\n*$)/m)?.[1] ?? '';
   return {
     slug: scalar(yaml, 'slug') ?? '',
@@ -68,6 +74,19 @@ export async function listStagedBundles(): Promise<StagedBundleSummary[]> {
     return [];
   }
 
+  // Cross-reference the pipeline queue so a bridged/imported bundle shows its
+  // real progress instead of always looking un-actioned.
+  const bridgeStatusBySlug = new Map<string, string>();
+  try {
+    const queue = await readQueue();
+    for (const p of queue.prospects) {
+      const key = p.collection_slug || p.id;
+      if (key) bridgeStatusBySlug.set(key, p.status);
+    }
+  } catch {
+    /* queue unreadable — leave every bridgeStatus null */
+  }
+
   const bundles = await Promise.all(
     entries.filter(e => SLUG_RE.test(e)).map(async (slug): Promise<StagedBundleSummary | null> => {
       const dir = path.join(STAGING_ROOT, slug);
@@ -76,7 +95,12 @@ export async function listStagedBundles(): Promise<StagedBundleSummary[]> {
         if (!stat.isDirectory()) return null;
         const metaPath = path.join(dir, 'metadata.yml');
         const [yaml, metaStat] = await Promise.all([fs.readFile(metaPath, 'utf8'), fs.stat(metaPath)]);
-        return { ...parseStagedMetadata(yaml), slug, stagedAt: metaStat.mtime.toISOString() };
+        return {
+          ...parseStagedMetadata(yaml),
+          slug,
+          stagedAt: metaStat.mtime.toISOString(),
+          bridgeStatus: bridgeStatusBySlug.get(slug) ?? null,
+        };
       } catch {
         return null; // an in-progress or malformed bundle — skip rather than crash the page
       }
