@@ -7,6 +7,55 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-09-03 — Fix: PDF downloads still 500ing after the pagination fix (ERR_REQUIRE_ESM)
+
+Keith reported `/texts/national-apostasy/download/pdf` still throwing a 500 on production
+*after* the same-day pagination fix (previous entry) shipped. National Apostasy is ~40
+paragraphs / 12 rendered pages — comfortably under that fix's ~9-page failure threshold — so
+this was never explained by the bug just fixed. Couldn't reproduce against the live site or a
+Vercel preview directly: this environment's egress policy blocks `www.thestromata.com` outright,
+and Vercel preview deployments sit behind SSO. Pulled the real text + metadata via the Supabase
+MCP tools instead and rendered it locally against the merged code — it rendered cleanly (Node 22
+here), which means the discrepancy is specific to whatever Node runtime Vercel's production
+serverless functions actually use, not to this text's content.
+
+**Root cause:** `@react-pdf/renderer` v4 ships as an ESM-only package (`"type": "module"`, no
+CommonJS entry at all). Next.js compiles route handlers to a CommonJS bundle; `serverExternalPackages`
+(already set, needed so the package's native-ish font/stream code isn't webpack-bundled) leaves a
+plain `require('@react-pdf/renderer')` in that output rather than inlining it. `require()`-ing a
+pure-ESM package throws `ERR_REQUIRE_ESM` unless the Node runtime supports the newer
+CJS-requiring-ESM interop (stable only from Node 22.12 / backported to 20.19+) — and Vercel's
+configured serverless Node runtime for this project isn't guaranteed to be one of those. This is a
+well-documented failure class for `@react-pdf/renderer` + Next.js App Router specifically (matches
+diegomura/react-pdf#3017, #2992, #2913 — same "Instead change the require... to a dynamic import()"
+error), and unlike the pagination bug, it would fail on *every* PDF request regardless of length —
+consistent with both this report and the original one.
+
+**Fix:** `lib/pdf/TextDocument.tsx` no longer imports `@react-pdf/renderer` statically. `Document`,
+`Page`, `Text`, `View`, `StyleSheet` are now module-level `let` bindings populated once by
+`ensureReactPdf()`, an `await import('@react-pdf/renderer')` memoized behind a promise; `styles` is
+built lazily the same way (`buildStyles(StyleSheet)`) since it can no longer be computed at module
+load. `TextDocument` and `CollectionDocument` — the two entry points called directly (not as JSX) by
+the route handlers — are now `async` and `await ensureReactPdf()` before building their element tree;
+everything downstream (`TextPages`, `Blocks`, `Runs`, `Footer`) is unchanged, since those are real JSX
+children only evaluated later by react-pdf's own reconciler, by which point the dynamic import has
+already resolved. Both `app/*/download/pdf/route.ts` files drop their static `renderToBuffer` import
+for the same reason (`const { renderToBuffer } = await import('@react-pdf/renderer')` inside the
+handler) and now `await` the now-async `TextDocument`/`CollectionDocument` calls. Dynamic `import()`
+works from a CommonJS caller on any Node version — it doesn't depend on `require(esm)` support at
+all — so this fix doesn't depend on knowing or pinning Vercel's exact Node runtime.
+
+Verified: `tsc --noEmit`, `next lint`, `next build` all clean. Rebuilt in production mode and
+re-rendered every fixture from the previous fix's verification (a short text, 75- and 600-paragraph
+bodies) plus the real National Apostasy body/metadata pulled from Supabase — all render correctly,
+same page counts and layout as before. **Still not verifiable against the actual Vercel production
+runtime** — no network access to `thestromata.com` or the Vercel API from this environment, so the
+`ERR_REQUIRE_ESM` diagnosis rests on the error class matching known reports, not a captured stack
+trace from this deployment. Keith to confirm the same URL on prod once deployed; if it still 500s,
+the next step is pulling the actual Vercel function logs for the real stack trace.
+
+---
+
 ## 2026-09-03 — Fix: PDF downloads 500ing on any text past ~9 pages
 
 Keith reported PDF downloads (from #42, shipped 2026-09-02) throwing HTTP 500 while the Markdown
