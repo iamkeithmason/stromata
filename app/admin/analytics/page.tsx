@@ -1,10 +1,12 @@
 import Link from 'next/link'
 import {
   getDashboardData,
+  recentMonths,
   RANGES,
   type Range,
   type Ranked,
   type Kpi,
+  type SelectionMode,
 } from '@/lib/analytics/dashboard'
 
 // Live data — never statically cached; the numbers change and the fetch can fail.
@@ -80,20 +82,34 @@ function KpiTile({ kpi }: { kpi: Kpi }) {
   )
 }
 
-function RangeSelector({ current }: { current: Range }) {
+const chip = (active: boolean) =>
+  `text-xs px-2.5 py-1 rounded border transition-colors ${
+    active
+      ? 'border-stone-800 bg-stone-800 text-white'
+      : 'border-stone-200 text-stone-600 hover:border-stone-400'
+  }`
+
+// Preset rolling windows (highlighted only when a range — not a month — is active).
+function RangeSelector({ current, mode }: { current: Range; mode: SelectionMode }) {
   return (
     <div className="flex flex-wrap gap-1.5">
       {RANGES.map((r) => (
-        <Link
-          key={r}
-          href={`/admin/analytics?range=${r}`}
-          className={`text-xs px-2.5 py-1 rounded border transition-colors ${
-            r === current
-              ? 'border-stone-800 bg-stone-800 text-white'
-              : 'border-stone-200 text-stone-600 hover:border-stone-400'
-          }`}
-        >
+        <Link key={r} href={`/admin/analytics?range=${r}`} className={chip(mode === 'range' && r === current)}>
           {RANGE_LABEL[r]}
+        </Link>
+      ))}
+    </div>
+  )
+}
+
+// Calendar months (newest first); a month link carries no range so month mode wins.
+function MonthSelector({ activeMonth }: { activeMonth: string | null }) {
+  const months = recentMonths(12)
+  return (
+    <div className="flex flex-wrap gap-1.5">
+      {months.map((m) => (
+        <Link key={m.value} href={`/admin/analytics?month=${m.value}`} className={chip(m.value === activeMonth)}>
+          {m.label}
         </Link>
       ))}
     </div>
@@ -132,11 +148,11 @@ function RankList({ title, ranked, max = 12 }: { title: string; ranked: Ranked[]
   )
 }
 
-type Props = { searchParams: Promise<{ range?: string }> }
+type Props = { searchParams: Promise<{ range?: string; month?: string }> }
 
 export default async function AnalyticsDashboard({ searchParams }: Props) {
-  const { range: rawRange } = await searchParams
-  const data = await getDashboardData(rawRange)
+  const { range: rawRange, month: rawMonth } = await searchParams
+  const data = await getDashboardData({ range: rawRange, month: rawMonth })
 
   return (
     <main>
@@ -152,15 +168,19 @@ export default async function AnalyticsDashboard({ searchParams }: Props) {
         from and land, then reader demand joined to the corpus (the view Umami can’t produce).
       </p>
 
-      <div className="mb-8">
-        <RangeSelector current={data.range} />
+      <div className="mb-8 space-y-2">
+        <RangeSelector current={data.range} mode={data.mode} />
+        <div>
+          <div className="text-[11px] text-stone-400 uppercase tracking-wide mb-1.5">By month</div>
+          <MonthSelector activeMonth={data.month} />
+        </div>
       </div>
 
       {!data.ok ? (
         <section className="border border-amber-300 bg-amber-50 rounded px-4 py-4">
           <h3 className="text-sm font-semibold text-amber-800 mb-1">Analytics unavailable</h3>
           <p className="text-xs text-amber-800 mb-3">
-            Couldn’t load the demand digest for this range. Umami may be unreachable — it’s blocked
+            Couldn’t load the demand digest for this window. Umami may be unreachable — it’s blocked
             by common ad/tracking blockers (including Keith’s own Chrome) and can’t be reached from
             CI/build environments — or the Supabase read credentials aren’t configured. The page
             itself is fine; nothing was written.
@@ -183,7 +203,7 @@ function Digest({ data }: { data: Extract<Awaited<ReturnType<typeof getDashboard
   return (
     <div className="space-y-10">
       <p className="text-xs text-stone-400">
-        Window {fmtDate(win.startAt)} → {fmtDate(win.endAt)} · deltas vs the previous {RANGE_LABEL[data.range].toLowerCase()} · Umami access: {data.umamiMode}
+        <span className="text-stone-600 font-medium">{data.label}</span> · {fmtDate(win.startAt)} → {fmtDate(win.endAt)} · deltas vs the previous period · Umami access: {data.umamiMode}
       </p>
 
       {/* Growth — North Star first */}
