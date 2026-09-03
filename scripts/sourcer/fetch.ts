@@ -15,7 +15,7 @@
 
 import fs from 'fs';
 import { FETCH_DELAY_MS, MAX_FETCH_BYTES, BUNDLE_FILES } from './config';
-import { allowlistedDomain, resolveAllowlistedFetchUrls } from './contract';
+import { allowlistedDomain, isArchiveOrgHost, resolveAllowlistedFetchUrls } from './contract';
 import { bundlePath, writeStaged } from './staging';
 import type { ClearedProspect } from './types';
 
@@ -46,6 +46,34 @@ function hostOf(url: string): string {
 /** Sleep for the politeness delay between fetches. */
 export function politenessDelay(ms = FETCH_DELAY_MS): Promise<void> {
   return new Promise((r) => setTimeout(r, ms));
+}
+
+/**
+ * Archive.org's `_djvu.txt` URL (see contract.preferDjvuTxt) sometimes serves its
+ * HTML text-reader page instead of the raw text file — observed for at least one
+ * identifier, same class of source-side drift as the New Advent breakage
+ * documented in CLAUDE.md. That reader page always embeds the exact djvu.txt
+ * content inside one `<pre>` tag, with the rest of the page being Archive.org's
+ * own site chrome (nav, scripts, footer) — chrome clean.ts has no stripper for,
+ * since it isn't part of any source's actual text. Recovering the `<pre>`
+ * content here means raw.txt still holds the genuine djvu.txt text as documented
+ * (`fetch.ts`'s "raw.txt is never edited again" invariant), and clean.ts's
+ * htmlToText() never sees — and can't mis-render — the wrapper at all.
+ */
+export function looksLikeDjvuHtmlWrapper(text: string): boolean {
+  return /^\s*<!doctype html/i.test(text);
+}
+
+/** Pure — no network. Returns null if no `<pre>` block is found (caller decides how to fail). */
+export function extractDjvuPreText(html: string): string | null {
+  const m = html.match(/<pre[^>]*>([\s\S]*?)<\/pre>/i);
+  if (!m) return null;
+  return m[1]
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/&amp;/g, '&'); // decode &amp; last so it can't re-create another entity
 }
 
 /**
@@ -139,7 +167,21 @@ export async function fetchPinnedSource(
         `fetch for "${prospect.slug}" exceeds the ${MAX_FETCH_BYTES}-byte cap after ${i + 1} part(s)`,
       );
     }
-    fetched.push({ url: urls[i], text: part.text });
+
+    let text = part.text;
+    if (isArchiveOrgHost(hostOf(urls[i])) && looksLikeDjvuHtmlWrapper(text)) {
+      const extracted = extractDjvuPreText(text);
+      if (extracted === null) {
+        throw new Error(
+          `fetch for "${prospect.slug}" part ${i + 1} (${urls[i]}) got Archive.org's HTML text-reader page ` +
+            `instead of the raw djvu.txt, and it has no <pre> block to recover the text from — the page ` +
+            `structure may have changed. Refusing rather than staging the HTML chrome as raw.txt.`,
+        );
+      }
+      text = extracted;
+    }
+
+    fetched.push({ url: urls[i], text });
   }
 
   const raw = assembleRawParts(fetched);

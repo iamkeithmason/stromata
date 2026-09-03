@@ -3,7 +3,7 @@
 - **Author:** John Mason Neale
 - **Slug:** `hymns-of-the-eastern-church-neale`
 - **Pinned edition:** https://archive.org/details/hymnsofeasternch00neal_0
-- **Fetched:** https://archive.org/stream/hymnsofeasternch00neal_0/hymnsofeasternch00neal_0_djvu.txt (2026-09-01T12:13:07.286Z)
+- **Fetched:** https://archive.org/stream/hymnsofeasternch00neal_0/hymnsofeasternch00neal_0_djvu.txt (2026-09-01T12:27:00.026Z)
 - **Prospect:** https://app.notion.com/p/Hymns-of-the-Eastern-Church-3cdd9194805d81c9b172d281d3fa361d
 - **Staged by:** sourcer-agent v0
 

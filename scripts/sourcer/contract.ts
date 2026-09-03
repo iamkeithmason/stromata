@@ -124,6 +124,11 @@ export function allowlistedDomain(host: string | null): string | null {
   return SOURCE_ALLOWLIST.find((d) => host === d || host.endsWith(`.${d}`)) ?? null;
 }
 
+/** True for archive.org and its subdomains — shared by the djvu URL rewrite and the fetch-side HTML-wrapper unwrap. */
+export function isArchiveOrgHost(host: string | null): boolean {
+  return !!host && (host === 'archive.org' || host.endsWith('.archive.org'));
+}
+
 /**
  * Turn an Archive.org details/stream URL into its `_djvu.txt` derivative — the
  * preferred plain-text OCR form for scans. Idempotent for URLs already ending in
@@ -131,7 +136,7 @@ export function allowlistedDomain(host: string | null): string | null {
  */
 export function preferDjvuTxt(rawUrl: string): string {
   const host = hostOf(rawUrl);
-  if (!host || !(host === 'archive.org' || host.endsWith('.archive.org'))) return rawUrl;
+  if (!isArchiveOrgHost(host)) return rawUrl;
   let u: URL;
   try {
     u = new URL(rawUrl);

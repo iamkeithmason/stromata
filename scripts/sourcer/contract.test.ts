@@ -14,6 +14,7 @@ import {
   dedupeKey,
   extractClearanceRecord,
   isAllowlistedHost,
+  isArchiveOrgHost,
   isWithinStaging,
   pinnedUrls,
   preferCcelCacheTxt,
@@ -57,6 +58,14 @@ test('preferDjvuTxt rewrites an Archive.org details/stream URL to _djvu.txt (ide
   assert.equal(preferDjvuTxt(out), out); // idempotent
   // Non-archive URLs pass through untouched.
   assert.equal(preferDjvuTxt('https://en.wikisource.org/wiki/Foo'), 'https://en.wikisource.org/wiki/Foo');
+});
+
+test('isArchiveOrgHost matches archive.org and its subdomains only', () => {
+  assert.equal(isArchiveOrgHost('archive.org'), true);
+  assert.equal(isArchiveOrgHost('web.archive.org'), true);
+  assert.equal(isArchiveOrgHost('newadvent.org'), false);
+  assert.equal(isArchiveOrgHost('archive.org.evil.com'), false);
+  assert.equal(isArchiveOrgHost(null), false);
 });
 
 test('preferCcelCacheTxt handles the no-letter reading form (letter derived from author)', () => {
