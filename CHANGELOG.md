@@ -7,6 +7,44 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-09-03 — Fix: PDF downloads 500ing on any text past ~9 pages
+
+Keith reported PDF downloads (from #42, shipped 2026-09-02) throwing HTTP 500 while the Markdown
+download worked fine — that PR's own note said the PDF path was only rendered and eyeballed with a
+short sample, never wire-verified against a real long text, and this is exactly the gap that bit.
+
+**Root cause**, reproduced locally by building the app in production mode and rendering fixture
+bodies of increasing length through the actual compiled route: `@react-pdf/renderer`'s automatic
+pagination (one flowing `<Page>` measured by Yoga and sliced into physical pages at render time)
+corrupts its own layout math once a single `<Page>` element auto-overflows past roughly 10–13
+physical pages — every time, with the exact same garbage float (`unsupported number:
+-2.3077999639892748e+21`), thrown from pdfkit's `transform`/`translate` call. Bisected the failure
+threshold: a ~50-paragraph body (9 auto-generated pages) rendered fine, a ~55-paragraph body (past
+that threshold) failed every time, regardless of how much further past it the content went. This is
+an open, unresolved upstream bug (github.com/diegomura/react-pdf#3277 has the same error at a
+different magnitude) with no newer release to pull in — 4.9.0 is already latest.
+
+**Fix** (`lib/pdf/TextDocument.tsx`): stopped relying on react-pdf's automatic within-a-Page overflow
+pagination for the whole text. `TextSection` (rendered content for one caller-provided `<Page>`) is
+now `TextPages`, which chunks the text's parsed blocks (intro + body) into groups of 8 and renders
+one explicit `<Page>` per chunk — title/meta/colophon/introduction-label only on the first chunk,
+provenance footer only on the last, running page-number `Footer` on all. Each individual `<Page>`
+node's own overflow now stays small (at most a page or two), well under the ~10-page threshold where
+the bug triggers, so the automatic-pagination bug never gets exercised. `CollectionDocument` reuses
+the same `TextPages` per text instead of the old single-`<Page>`-per-text wrapping.
+
+Verified by building `next build`/`next start` in production mode (dummy Supabase env — no creds
+available in this environment) and rendering fixture bodies through both `TextDocument` and
+`CollectionDocument` directly: a ~9,000-word body that reliably 500'd before the fix now renders
+cleanly (19 pages); a 96,000-word body renders 201 pages in ~1.7s (previously crashed at page 9 in
+~1s). A short document still renders as a single page with unchanged layout/ordering (title → author
+→ meta → accession → colophon → rule → Introduction label + blocks → rule → body blocks → provenance
+→ URL), confirmed by inflating and reading the PDF's text-showing operators directly. `tsc --noEmit`,
+`next lint`, and `next build` all clean. **Not wire-verified against real Supabase texts** (no DB
+creds in this environment, per CLAUDE.md) — Keith to confirm a real long text downloads once deployed.
+
+---
+
 ## 2026-09-02 — Reader dark mode (completes the typography-settings card)
 
 The light/dark preference deferred out of the reader-cluster PR, now built. Adds a **Theme (Light/Dark)**
