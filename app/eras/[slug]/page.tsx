@@ -72,7 +72,7 @@ export default async function EraPage({ params }: Props) {
     <div style={{ background: 'var(--paper)', paddingTop: '4rem' }} className="min-h-screen">
       <SiteHeader breadcrumb={null} />
 
-      <main className="max-w-2xl mx-auto px-6 py-12">
+      <main className="content-shell py-12">
         <div className="mb-10">
           <h1 className="font-serif text-3xl mb-2" style={{ color: '#1b1b1b' }}>{era.label}</h1>
           {yearRange && (

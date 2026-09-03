@@ -307,7 +307,7 @@ export default async function Home() {
 
       {/* ── Recently added ───────────────────────────────────────────────── */}
       {feed.length > 0 && (
-        <section className="max-w-5xl mx-auto px-6 pb-24">
+        <section className="content-shell pb-24">
           <SectionHeader
             title="Recently added"
             aside="All texts →"
@@ -329,7 +329,7 @@ export default async function Home() {
       )}
 
       {/* ── Browse by theme ──────────────────────────────────────────────── */}
-      <section className="max-w-5xl mx-auto px-6 pb-20">
+      <section className="content-shell pb-20">
         <SectionHeader title="Browse by theme" aside="Five rooms of the library" />
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-8">
           {THEME_CLUSTERS.map(cluster => (
@@ -372,7 +372,7 @@ export default async function Home() {
 
       {/* ── Dark footer ──────────────────────────────────────────────────── */}
       <footer style={{ background: 'var(--dark)' }}>
-        <div className="max-w-5xl mx-auto px-6 py-16">
+        <div className="content-shell py-16">
           <div
             style={{
               display: 'flex',

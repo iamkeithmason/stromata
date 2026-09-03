@@ -71,7 +71,7 @@ export default async function TraditionPage({ params }: Props) {
     <div style={{ background: 'var(--paper)', paddingTop: '4rem' }} className="min-h-screen">
       <SiteHeader breadcrumb={null} />
 
-      <main className="max-w-2xl mx-auto px-6 py-12">
+      <main className="content-shell py-12">
         <div className="mb-10">
           <p className="text-xs uppercase tracking-widest mb-3 font-serif" style={{ color: 'var(--ink-mute)' }}>
             Tradition

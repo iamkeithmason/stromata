@@ -71,7 +71,7 @@ export async function FeaturedAuthors() {
   if (authors.length === 0) return null
 
   return (
-    <section className="max-w-5xl mx-auto px-6 pb-20">
+    <section className="content-shell pb-20">
       {/* Section header */}
       <div className="mb-10">
         <div className="flex items-baseline justify-between mb-3">

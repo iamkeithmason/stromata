@@ -37,7 +37,7 @@ export function ReadingHistorySection() {
   if (history.length === 0) return null
 
   return (
-    <section className="max-w-5xl mx-auto px-6 pb-20">
+    <section className="content-shell pb-20">
       <SectionHeader title="Reading history" aside="Recently read" />
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         {history.map((entry, i) => {

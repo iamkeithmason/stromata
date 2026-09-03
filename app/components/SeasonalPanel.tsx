@@ -127,7 +127,7 @@ export async function SeasonalPanel() {
   ].join(', ')
 
   return (
-    <section className="max-w-5xl mx-auto px-6">
+    <section className="content-shell">
       {/* ── Outer panel: concave-corner plaque shape ── */}
       <div
         style={{

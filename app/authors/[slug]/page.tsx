@@ -231,7 +231,7 @@ export default async function AuthorPage({ params }: Props) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
-      <main className="max-w-2xl mx-auto px-6 py-12">
+      <main className="content-shell py-12">
 
         {/* ── Author header ─────────────────────────────────────────────── */}
         <div className="mb-10 flex items-start gap-6">

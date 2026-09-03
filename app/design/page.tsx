@@ -76,7 +76,7 @@ function ColourSwatch({ token, value, label }: { token: string; value: string; l
 export default function DesignPage() {
   return (
     <div style={{ background: 'var(--paper)', minHeight: '100vh', paddingTop: '4rem' }}>
-      <div className="max-w-5xl mx-auto px-6 py-16">
+      <div className="content-shell py-16">
 
         {/* Header */}
         <div className="mb-16">

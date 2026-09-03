@@ -211,7 +211,7 @@ export default async function SearchPage({ searchParams }: Props) {
     <div style={{ background: 'var(--paper)', paddingTop: '4rem' }} className="min-h-screen">
       <SiteHeader breadcrumb={<span>Search</span>} />
 
-      <main className="max-w-2xl mx-auto px-6 py-12">
+      <main className="content-shell py-12">
         {/* Search form */}
         <form method="GET" action="/search" className="mb-10">
           <div
