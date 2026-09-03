@@ -31,6 +31,8 @@ type Prospect = {
   _hasOutput?: boolean
   _verdict?: string
   _reasoning?: string
+  _liveStatus?: 'live' | 'draft' | 'unknown'
+  _liveHref?: string | null
 }
 
 const STATUS_COLOR: Record<string, string> = {
@@ -224,6 +226,9 @@ export default function PipelineClient({
             <div className="min-w-0">
               <div className="flex items-center gap-2 flex-wrap">
                 <span className={`text-xs px-1.5 py-0.5 rounded border ${STATUS_COLOR[p.status] ?? 'bg-stone-100 text-stone-600 border-stone-200'}`}>{p.status}</span>
+                {p.status === 'imported' && p._liveStatus === 'live' && (
+                  <span className="text-xs px-1.5 py-0.5 rounded border bg-green-50 text-green-700 border-green-200">● Live</span>
+                )}
                 <span className="text-stone-800 text-sm font-medium truncate">{p.title || p.id}</span>
               </div>
               <p className="text-stone-400 text-xs mt-1">
@@ -231,6 +236,14 @@ export default function PipelineClient({
                 {p.genre ? ` · ${p.genre}` : ''}
                 {p.source_type ? ` · ${p.source_type}` : ''}
                 {p.stage_3_themes?.length ? ` · ${p.stage_3_themes.join(', ')}` : ''}
+                {p.source_url && (
+                  <>
+                    {' · '}
+                    <a href={p.source_url} target="_blank" rel="noopener noreferrer" className="underline hover:text-stone-700">
+                      source ↗
+                    </a>
+                  </>
+                )}
               </p>
               {p.status === 'rejected' && p.rejection_reason && <p className="text-red-500 text-xs mt-1">✕ {p.rejection_reason}</p>}
             </div>
@@ -355,8 +368,11 @@ function RowActions({
     )
   }
 
-  // Imported — lives in Drafts now.
+  // Imported — either published (live) or still sitting in Drafts.
   if (p.status === 'imported') {
+    if (p._liveStatus === 'live' && p._liveHref) {
+      return <a href={p._liveHref} target="_blank" rel="noopener noreferrer" className="text-green-700 hover:underline">● Live ↗</a>
+    }
     return <a href="/admin/drafts" className="text-green-700 hover:underline">In Drafts →</a>
   }
 

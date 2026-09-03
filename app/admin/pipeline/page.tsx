@@ -4,18 +4,31 @@ import path from 'path'
 import { readQueue } from '@/lib/pipeline/queue'
 import { availableActions } from '@/lib/pipeline/runner'
 import { hasOutput } from '@/lib/pipeline/outputs'
+import { resolveLiveStatuses } from '@/lib/pipeline/liveStatus'
 import PipelineClient from './PipelineClient'
 
 export const dynamic = 'force-dynamic'
 
 export default async function PipelinePage() {
   const queue = await readQueue()
+
+  // Only an "imported" prospect can possibly be live — checking the rest
+  // would just be wasted Supabase round-trips. Batched to 2 queries total.
+  const liveStatuses = await resolveLiveStatuses(
+    queue.prospects.filter(p => p.status === 'imported').map(p => p.collection_slug || p.id)
+  )
+
   const prospects = await Promise.all(
-    queue.prospects.map(async p => ({
-      ...p,
-      _actions: availableActions(p),
-      _hasOutput: await hasOutput(p.collection_slug || p.id),
-    }))
+    queue.prospects.map(async p => {
+      const live = liveStatuses.get(p.collection_slug || p.id)
+      return {
+        ...p,
+        _actions: availableActions(p),
+        _hasOutput: await hasOutput(p.collection_slug || p.id),
+        _liveStatus: live?.status ?? ('unknown' as const),
+        _liveHref: live?.href ?? null,
+      }
+    })
   )
 
   // Recent run-log filenames, newest first.

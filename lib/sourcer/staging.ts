@@ -28,6 +28,8 @@ export interface StagedBundleSummary {
    * keyed by slug — null until the bridge step (stage-to-output.mjs --write-queue) runs.
    */
   bridgeStatus: string | null
+  /** The editor-pinned edition (provenance.yml `cleared_edition_url`) — the source to compare body.md against. */
+  sourceUrl: string | null
 }
 
 const SLUG_RE = /^[a-z0-9-]+$/
@@ -51,7 +53,7 @@ function blockList(yaml: string, key: string): string[] {
 }
 
 /** Minimal reader for the flat/list shape `renderMetadataYaml` (scripts/sourcer/metadata.ts) emits. */
-export function parseStagedMetadata(yaml: string): Omit<StagedBundleSummary, 'stagedAt' | 'bridgeStatus'> {
+export function parseStagedMetadata(yaml: string): Omit<StagedBundleSummary, 'stagedAt' | 'bridgeStatus' | 'sourceUrl'> {
   const collectionBlock = yaml.match(/^proposed_collection:\s*\n([\s\S]*?)(?=\n\S|\n*$)/m)?.[1] ?? '';
   return {
     slug: scalar(yaml, 'slug') ?? '',
@@ -95,11 +97,18 @@ export async function listStagedBundles(): Promise<StagedBundleSummary[]> {
         if (!stat.isDirectory()) return null;
         const metaPath = path.join(dir, 'metadata.yml');
         const [yaml, metaStat] = await Promise.all([fs.readFile(metaPath, 'utf8'), fs.stat(metaPath)]);
+        // provenance.yml is optional here — a bundle missing it (shouldn't happen
+        // for a complete bundle) still shows, just without a source link.
+        const sourceUrl = await fs
+          .readFile(path.join(dir, 'provenance.yml'), 'utf8')
+          .then(p => scalar(p, 'cleared_edition_url'))
+          .catch(() => null);
         return {
           ...parseStagedMetadata(yaml),
           slug,
           stagedAt: metaStat.mtime.toISOString(),
           bridgeStatus: bridgeStatusBySlug.get(slug) ?? null,
+          sourceUrl,
         };
       } catch {
         return null; // an in-progress or malformed bundle — skip rather than crash the page
