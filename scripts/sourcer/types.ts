@@ -87,6 +87,7 @@ export interface CorpusView {
 
 /** Every reason a prospect can be refused or flagged. */
 export type RefusalReason =
+  | 'already-live' // Notion Status is already "Live" — the editor has published this
   | 'rights-not-cleared'
   | 'no-cleared-edition'
   | 'source-not-allowlisted'

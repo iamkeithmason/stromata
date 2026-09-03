@@ -14,6 +14,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const RUN_LOG_DIR = path.join(__dirname, 'run-log');
 
 const SKIP_ORDER: RefusalReason[] = [
+  'already-live',
   'rights-not-cleared',
   'no-cleared-edition',
   'source-not-allowlisted',

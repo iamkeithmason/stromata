@@ -67,6 +67,7 @@ failure is a discriminated refusal, logged, with no side effect:
 
 | Check | Refusal reason |
 |---|---|
+| `Status` is not already `Live` | `already-live` |
 | `Rights cleared` is true | `rights-not-cleared` |
 | `Cleared edition URL` present and on the source allowlist | `no-cleared-edition` / `source-not-allowlisted` |
 | `Translation notes` carries a non-empty provenance basis | `no-provenance-basis` |

@@ -119,6 +119,8 @@ export const NOTION = {
   },
   /** Status the Sourcer bumps a prospect to once staged — only when explicitly enabled. */
   inProgressStatus: 'In progress',
+  /** Status meaning the editor has already published this prospect — the gate refuses it. */
+  liveStatus: 'Live',
 } as const;
 
 // ---------------------------------------------------------------------------

@@ -11,7 +11,7 @@
 
 import fs from 'fs';
 import path from 'path';
-import { DEFAULT_MAX_PROSPECTS, STAGING_ROOT, AUTHOR_COPYRIGHT_CUTOFF_YEAR } from './config';
+import { DEFAULT_MAX_PROSPECTS, STAGING_ROOT, AUTHOR_COPYRIGHT_CUTOFF_YEAR, NOTION } from './config';
 import {
   authorKey,
   dedupeKey,
@@ -76,6 +76,16 @@ export function gateOne(
   seenSlugs: Set<string>,
 ): GateDecision {
   const isStaged = opts.isStaged ?? defaultIsStaged(opts.repoRoot);
+
+  // 0. Already published (Notion Status is "Live"). Checked before anything
+  // else — a live prospect is done, regardless of what its other fields say.
+  // The corpus dedupe check below (#5) is a fuzzy backstop, not a substitute:
+  // it can only catch a live text that still matches by dedupe key or slug, so
+  // this explicit Status check is the reliable guard against re-processing
+  // (and re-fetching from) an already-published prospect.
+  if (prospect.status.trim().toLowerCase() === NOTION.liveStatus.toLowerCase()) {
+    return decision(prospect, 'refused', 'already-live', `Notion Status is "${NOTION.liveStatus}"`);
+  }
 
   // 1. Rights cleared (a HUMAN sets this true).
   if (!prospect.rightsCleared) {

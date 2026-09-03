@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { createServerClient } from '@/lib/supabase/server'
 import { readQueue } from '@/lib/pipeline/queue'
+import { listStagedBundles } from '@/lib/sourcer/staging'
 import AgentSchedule from './AgentSchedule'
 
 type TextRow = {
@@ -64,6 +65,14 @@ export default async function AdminDashboard({ searchParams }: Props) {
     pendingCount = queue.prospects.filter(p => p.status === 'pending').length
   } catch {
     /* queue file unreadable — show 0 */
+  }
+
+  // Count staged Sourcer bundles for the Sourcer nav card.
+  let sourcerCount = 0
+  try {
+    sourcerCount = (await listStagedBundles()).length
+  } catch {
+    /* content/staging unreadable — show 0 */
   }
 
   // ── Integrity alerts ──────────────────────────────────────────────────────
@@ -153,6 +162,7 @@ export default async function AdminDashboard({ searchParams }: Props) {
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             {[
               { label: 'Pipeline', href: '/admin/pipeline', count: pendingCount ?? 0 },
+              { label: 'Sourcer', href: '/admin/sourcer', count: sourcerCount ?? 0 },
               { label: 'Analytics', href: '/admin/analytics', count: '→' as number | string },
               { label: 'Drafts', href: '/admin/drafts', count: draftCount ?? 0 },
               { label: 'Authors', href: '/admin/authors', count: authorCount ?? 0 },

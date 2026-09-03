@@ -8,14 +8,11 @@ author: Thomas Aquinas
 
 proposed_genre: Treatise
 proposed_themes:
-  - contemplation
   - desire
-  - virtue
   - salvation
+  - virtue
   - eschatology
-proposed_ocr_quality: high
-
-proposed_collection:
+  - contemplation
 proposed_ocr_quality: high
 
 proposed_collection:

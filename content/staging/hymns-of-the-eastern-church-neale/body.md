@@ -1,532 +1,4 @@
-    Full text of "Hymns of the Eastern Church"
-
-
-    Skip to main content
-
-
-        Keep the news in the Wayback Machine. Sign Fight for the Future's letter.
-
-
-              Hamburger icon
-              An icon used to represent a menu that can be
-                toggled by interacting with this icon.
-
-
-              Internet Archive logo
-              A line drawing of the Internet Archive headquarters
-                building façade.
-
-
-                          Web icon
-                          An illustration of a computer
-                            application window
-
-
-                       Wayback Machine
-
-
-                          Texts icon
-                          An illustration of an open book.
-
-
-                       Texts
-
-
-                          Video icon
-                          An illustration of two cells of a film
-                            strip.
-
-
-                       Video
-
-
-                          Audio icon
-                          An illustration of an audio speaker.
-
-
-                       Audio
-
-
-                          Software icon
-                          An illustration of a 3.5" floppy
-                            disk.
-
-
-                       Software
-
-
-                          Images icon
-                          An illustration of two photographs.
-
-
-                       Images
-
-
-                          Donate icon
-                          An illustration of a heart shape
-
-
-                       Donate
-
-
-                          Ellipses icon
-                          An illustration of text ellipses.
-
-
-                       More
-
-
-              Donate icon
-              An illustration of a heart shape
-
-
-            "Donate to the archive"
-
-
-                    User icon
-                    An illustration of a person's head and chest.
-
-
-                  Sign up
-                  |
-                  Log in
-
-
-              Upload icon
-              An illustration of a horizontal line over an up
-                pointing arrow.
-
-
-            Upload
-
-
-              Search icon
-              An illustration of a magnifying glass.
-
-###  Internet Archive Audio
-
-                   Live Music
-                    Archive
-
-                   Librivox
-                    Free Audio
-
-#### Featured
-
-                     All Audio
-
-
-                     Grateful Dead
-
-
-                     Netlabels
-
-
-                     Old Time Radio
-
-
-                     78 RPMs
-                        and Cylinder Recordings
-
-#### Top
-
-                     Audio Books
-                        & Poetry
-
-
-                     Computers,
-                        Technology and Science
-
-
-                     Music, Arts
-                        & Culture
-
-
-                     News &
-                        Public Affairs
-
-
-                     Spirituality
-                        & Religion
-
-
-                     Podcasts
-
-
-                     Radio News
-                        Archive
-
-###  Images
-
-                   Metropolitan Museum
-
-                   Cleveland
-                    Museum of Art
-
-#### Featured
-
-                     All Images
-
-
-                     Flickr Commons
-
-
-                     Occupy Wall
-                        Street Flickr
-
-
-                     Cover Art
-
-
-                     USGS Maps
-
-#### Top
-
-                     NASA Images
-
-
-                     Solar System
-                        Collection
-
-
-                     Ames Research
-                        Center
-
-###  Software
-
-                   Internet
-                    Arcade
-
-                   Console Living Room
-
-#### Featured
-
-                     All Software
-
-
-                     Old School
-                        Emulation
-
-
-                     MS-DOS Games
-
-
-                     Historical
-                        Software
-
-
-                     Classic PC
-                        Games
-
-
-                     Software
-                        Library
-
-#### Top
-
-                     Kodi
-                        Archive and Support File
-
-
-                     Vintage
-                        Software
-
-
-                     APK
-
-
-                     MS-DOS
-
-
-                     CD-ROM
-                        Software
-
-
-                     CD-ROM
-                        Software Library
-
-
-                     Software Sites
-
-
-                     Tucows
-                        Software Library
-
-
-                     Shareware
-                        CD-ROMs
-
-
-                     Software
-                        Capsules Compilation
-
-
-                     CD-ROM Images
-
-
-                     ZX Spectrum
-
-
-                     DOOM Level CD
-
-###  Texts
-
-                   Open Library
-
-                   American
-                    Libraries
-
-#### Featured
-
-                     All Texts
-
-
-                     Smithsonian
-                        Libraries
-
-
-                     FEDLINK (US)
-
-
-                     Genealogy
-
-
-                     Lincoln
-                        Collection
-
-#### Top
-
-                     American
-                        Libraries
-
-
-                     Canadian
-                        Libraries
-
-
-                     Universal
-                        Library
-
-
-                     Project
-                        Gutenberg
-
-
-                     Children's
-                        Library
-
-
-                     Biodiversity
-                        Heritage Library
-
-
-                     Books by
-                        Language
-
-
-                     Folkscanomy
-
-
-                     Government Documents
-
-###  Video
-
-                   TV News
-
-                   Understanding
-                    9/11
-
-#### Featured
-
-                     All Video
-
-
-                     Prelinger
-                        Archives
-
-
-                     Democracy Now!
-
-
-                     Occupy Wall
-                        Street
-
-
-                     TV NSA Clip
-                        Library
-
-#### Top
-
-                     Animation
-                        & Cartoons
-
-
-                     Arts & Music
-
-
-                     Computers
-                        & Technology
-
-
-                     Cultural
-                        & Academic Films
-
-
-                     Ephemeral Films
-
-
-                     Movies
-
-
-                     News &
-                        Public Affairs
-
-
-                     Spirituality
-                        & Religion
-
-
-                     Sports Videos
-
-
-                     Television
-
-
-                     Videogame
-                        Videos
-
-
-                     Vlogs
-
-
-                     Youth Media
-
-
-                          Search the history of more than  1 trillion
-                          web pages.
-
-
-                            Search the Wayback Machine
-
-
-                              Search icon
-                              An illustration of a magnifying
-                                glass.
-
-#### Mobile Apps
-
-                             Wayback Machine (iOS)
-
-
-                             Wayback Machine (Android)
-
-#### Browser Extensions
-
-                             Chrome
-
-
-                             Firefox
-
-
-                             Safari
-
-
-                             Edge
-
-#### Archive-It Subscription
-
-                             Explore the Collections
-
-
-                             Learn More
-
-
-                             Build Collections
-
-### Save Page Now
-
-                        Capture a web page as it appears now for use as a trusted
-                          citation in the future.
-
-
-                          Enter a URL to save
-
-
-                          Please enter a valid web address
-
-
-                     About
-
-
-                     Blog
-
-
-                     Events
-
-
-                     Projects
-
-
-                     Help
-
-
-                     Donate
-
-
-                     Contact
-
-
-                     Jobs
-
-
-                     Volunteer
-
-
-               Sign up for free
-
-
-               Log in
-
-
-         About
-
-
-         Blog
-
-
-         Events
-
-
-         Projects
-
-
-         Help
-
-
-         Donate
-
-            Donate icon
-            An illustration of a heart shape
-
-
-         Contact
-
-
-         Jobs
-
-
-         Volunteer
-
-#
-
-          Full text of "Hymns of the Eastern Church"
-
-##
-
-          See other formats
-
-
-      OF  THE
+OF  THE
 
 UNIVERSITY
 
@@ -608,9 +80,7 @@ CLEWER,
 
 WITH  THANKFULNESS  FOR  THEIR  PAST,
 
-AND  PRAYERS  FOR  THEIR  FUTURE,
-
-i
+AND  PRAYERS  FOR  THEIR  FUTURE, i
 
 MV
 
@@ -662,15 +132,11 @@ Page
 
 S.  John  Damascene— (circ.  a.d.  780)  ...  31
 
-Canon  for  Easter  Day,  called  the  “ Queen
-
-of  Canons  " — 33
+Canon  for  Easter  Day,  called  the  “ Queen of  Canons  " — 33
 
 Ode  I. — “ ’Tis  the  Day  of  Resurrection  " 36
 
-Ode  III. — “ Come  and  let  us  drink  of
-
-that  New  River'  ...  38
+Ode  III. — “ Come  and  let  us  drink  of that  New  River'  ...  38
 
 Ode  IV. — “ Stand  on  thy  watch-tower,
 
@@ -678,21 +144,13 @@ Habakkuk  the  Seer  " . 39
 
 Ode  V.—  “Let  us  rise  in  early  morning"  40
 
-Ode  VI.-  “Into  the  dim  earth’s  lowest
+Ode  VI.-  “Into  the  dim  earth’s  lowest parts  descending  ” . . . 41
 
-parts  descending  ” . . . 41
+Ode  VII.— “ Who  from  the  fiery  furnace saved  the  Three  "...  42
 
-Ode  VII.— “ Who  from  the  fiery  furnace
+Ode  VIII.— “Thou  hallowed  chosen  morn of  praise " ....  44
 
-saved  the  Three  "...  42
-
-Ode  VIII.— “Thou  hallowed  chosen  morn
-
-of  praise " ....  44
-
-Ode  IX. -“Thou  New  Jerusalem,  arise
-
-and  shine  *'  ....  46
+Ode  IX. -“Thou  New  Jerusalem,  arise and  shine  *'  ....  46
 
 The  Stichera  of  the  Last  Kiss 47
 
@@ -700,9 +158,7 @@ Idiomela  for  All  Saints  .......  53
 
 Canon  for  S.  Thomas’s  Sunday: —
 
-Ode  I.—  “ Come,  ye  faithful,  raise  the
-
-strain " 55
+Ode  I.—  “ Come,  ye  faithful,  raise  the strain " 55
 
 Ode  III.— “On  the  rock  of  Thy  Com-
 
@@ -712,9 +168,7 @@ Ode  IV.— “Christ,  we  turn  our  eyes  to
 
 Thee " 56
 
-Ode  V,— “Thee,  O Christ,  we,  very
-
-early  rising " . . . . 61
+Ode  V,— “Thee,  O Christ,  we,  very early  rising " . . . . 61
 
 CONTENTS.
 
@@ -740,21 +194,13 @@ Ode  Y. — “ Father  of  Peace,  and  God  of
 
 Consolation  ” ....  70
 
-OdeYI.— “As  Jonah,  issuing  from  his
+OdeYI.— “As  Jonah,  issuing  from  his three  days’ tomb  ” ...  71
 
-three  days’ tomb  ” ...  71
+Ode  Y1I.— The  Holy  Children  boldly stand  ” 73
 
-Ode  Y1I.— The  Holy  Children  boldly
+Ode  YI 1 1. — “ The  dewy  freshness  that the  furnace  flings  ” . . 75
 
-stand  ” 73
-
-Ode  YI 1 1. — “ The  dewy  freshness  that
-
-the  furnace  flings  ” . . 75
-
-Ode  IX. — “ O wond’rous  mystery,  full  of
-
-passing  grace  !”  ....  77
+Ode  IX. — “ O wond’rous  mystery,  full  of passing  grace  !”  ....  77
 
 Cento  on  the  Transfiguration 79
 
@@ -831,9 +277,7 @@ Cento  from  the  Canon  of  the  Bodiless  Ones,
 
 Canon  for  Ascension  Day ; —
 
-Ode  I.— “ After  three  days  Thou  didst
-
-rise” 136
+Ode  I.— “ After  three  days  Thou  didst rise” 136
 
 Ode  III. — “ Exalt,  exalt,  the  Heavenly
 
@@ -841,27 +285,19 @@ Gates” 138
 
 Ode  IV.— “Jesus,  Lord  of  Life  Eternal”  140
 
-Ode  V.— “Now  that  Death  by  death  hath
+Ode  V.— “Now  that  Death  by  death  hath found  its  ending  ” ...  142
 
-found  its  ending  ” ...  142
-
-Ode  VI.— “Rain  down,  ye  heav’ns,  eternal
-
-bliss” 144
+Ode  VI.— “Rain  down,  ye  heav’ns,  eternal bliss” 144
 
 Ode  VII.— “Wafting  Him  up  on  high”  . 146
 
-Ode  VIII.— “Of  twofold  natures,  Christ,
-
-the  Giver” 148
+Ode  VIII.— “Of  twofold  natures,  Christ, the  Giver” 148
 
 Ode  IX. — “ Holy  gift,  surpassing  com-
 
 prehension ” 150
 
-CONTENTS,
-
-xii
+CONTENTS, xii
 
 Page
 
@@ -1298,9 +734,7 @@ II.  xxi.  523.
 
 06  [A.ev  yap  pie^ov  K\eo<;  avepog,  o<ppa  Kev
 
-r
-
-vjcriv
+r vjcriv
 
 H o n irocra-lv  re  pe^ei  Ka)  %epcr)  F er,ariv,
 
@@ -1324,9 +758,7 @@ r/i/,  v}§'  ’Otivcrri'i.
 
 piye&Gtv.
 
-iii.  84.  cO  €(paOc‘  oi  ea-y^ovTO  pd%Y)$,
-
-aveccr  eyevovro,
+iii.  84.  cO  €(paOc‘  oi  ea-y^ovTO  pd%Y)$, aveccr  eyevovro,
 
 v.  529.  ’O  <j>t'Xot,  avepec;  ecrre , koli
 aXKtpov  Tjrop  eXecrBe.
@@ -1341,9 +773,7 @@ sATpeF/&ao.
 
 'iiperepoto.
 
-iv.  121.  ’Ek  S’  ‘EXevvj  OaXapoto  Bvdo'beoq
-
-i\lopo(pQio.
+iv.  121.  ’Ek  S’  ‘EXevvj  OaXapoto  Bvdo'beoq i\lopo(pQio.
 
 xiv.  371.  9 Ag'tt , ocraat  aptG'icct  ev)
 
@@ -1434,9 +864,7 @@ KXeTtTaflfiddat;,
 
 Xacrobg,  eyKheicrrovg,  eXKOUTat;  O^pta,
 
-<TTeX0jSaTa$,
-
-navTai;  Ocroi  irccpa,  roc,  vQ[U[t.ot.  tipvcri  tov
+<TTeX0jSaTa$, navTai;  Ocroi  irccpa,  roc,  vQ[U[t.ot.  tipvcri  tov
 
 piov,
 
@@ -1481,9 +909,7 @@ Undoubtedly  the  fragment  of  a hymn,
 
 iigain : —
 
-I
-
-ipoc.  iv.  8.  yeyaKa  kom  6avy.cx.aTa,  t a
+I ipoc.  iv.  8.  yeyaKa  kom  6avy.cx.aTa,  t a
 
 epya  aov ,
 
@@ -1577,9 +1003,7 @@ arms,  of  Moses  the  might  of  Amalek,  in  the
 
 wilderness.”
 
-A
-
-xxxiv
+A xxxiv
 
 INTRODUCTION.
 
@@ -1825,13 +1249,9 @@ Kvtaivu'
 
 and
 
-T ifAoOeov  t ov  3 Attoo-toXov  ola-pouri  roicde
+T ifAoOeov  t ov  3 Attoo-toXov  ola-pouri  roicde yepalpo)*
 
-yepalpo)*
-
-and
-
-t ov  Oeop'^ova  Tprjyopiov  tov  aol^iuov  olftco.
+and t ov  Oeop'^ova  Tprjyopiov  tov  aol^iuov  olftco.
 
 I shall  more  than  once  have  occasion  to
 observe  that,  while  the  earlier  Odes,  which
@@ -1969,9 +1389,7 @@ A Canon  of  the  Trinity.
 
 Cross  and  Resurrection.
 
-Mother  of  God  (one  or
-
-more.)
+Mother  of  God  (one  or more.)
 
 On  Monday :
 
@@ -2005,9 +1423,7 @@ On  Friday :
 
 of  the  Passion.
 
-of  the  Mother  of  God
-
-(two.)
+of  the  Mother  of  God (two.)
 
 On  Saturday  :
 
@@ -3034,9 +2450,7 @@ As  Adam  and  the  Thief,  we  cry :
 
 “ Victor  o’er  all  things,  think  of  me ! ”
 
-i
-
-r Thou,  after  three  appointed  days,
+i r Thou,  after  three  appointed  days,
 
 Thy  Body’s  Temple  did’st  upraise :
 
@@ -5455,9 +4869,7 @@ That  fearful  Day,  that  Day  of  speechless
 
 dread,
 
-When  Thou  shalt  come  to  judge  the  quick
-
-and  dead
+When  Thou  shalt  come  to  judge  the  quick and  dead
 
 I shudder  to  foresee,
 
