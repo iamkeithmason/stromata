@@ -17,7 +17,7 @@ function bridgeBadge(status: string | null) {
 
 export default function SourcerClient({ bundles, isDev }: { bundles: StagedBundleSummary[]; isDev: boolean }) {
   const router = useRouter()
-  const [open, setOpen] = useState<{ slug: string; title: string; files: { name: string; content: string }[] } | null>(null)
+  const [open, setOpen] = useState<{ slug: string; title: string; sourceUrl: string | null; files: { name: string; content: string }[] } | null>(null)
   const [bridging, setBridging] = useState<StagedBundleSummary | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState<string | null>(null)
@@ -29,7 +29,7 @@ export default function SourcerClient({ bundles, isDev }: { bundles: StagedBundl
       const res = await fetch(`/api/admin/sourcer/bundle?slug=${encodeURIComponent(b.slug)}`)
       const json = await res.json()
       if (!res.ok) { setError(json.error ?? 'Failed to read bundle'); return }
-      setOpen({ slug: b.slug, title: b.title || b.slug, files: json.files })
+      setOpen({ slug: b.slug, title: b.title || b.slug, sourceUrl: b.sourceUrl, files: json.files })
     } finally {
       setLoading(null)
     }
@@ -63,6 +63,14 @@ export default function SourcerClient({ bundles, isDev }: { bundles: StagedBundl
                 {b.genre ? ` · ${b.genre}` : ''}
                 {b.collectionShape ? ` · ${b.collectionShape}` : ''}
                 {b.ocrQuality ? ` · OCR ${b.ocrQuality}` : ''}
+                {b.sourceUrl && (
+                  <>
+                    {' · '}
+                    <a href={b.sourceUrl} target="_blank" rel="noopener noreferrer" className="underline hover:text-stone-700">
+                      source ↗
+                    </a>
+                  </>
+                )}
               </p>
               {b.themes.length > 0 && (
                 <p className="text-stone-400 text-xs mt-1">{b.themes.join(', ')}</p>
@@ -109,7 +117,7 @@ export default function SourcerClient({ bundles, isDev }: { bundles: StagedBundl
 function BundlePanel({
   bundle, onClose,
 }: {
-  bundle: { slug: string; title: string; files: { name: string; content: string }[] }
+  bundle: { slug: string; title: string; sourceUrl: string | null; files: { name: string; content: string }[] }
   onClose: () => void
 }) {
   // Land on SOURCER.md (the human-readable summary) rather than the first file.
@@ -124,6 +132,15 @@ function BundlePanel({
           <h3 className="text-base font-semibold text-stone-800">Staged bundle · {bundle.title}</h3>
           <button onClick={onClose} className="text-sm text-stone-400 hover:text-stone-800">Close</button>
         </div>
+
+        {bundle.sourceUrl && (
+          <p className="text-xs mb-3">
+            <a href={bundle.sourceUrl} target="_blank" rel="noopener noreferrer" className="text-stone-500 underline hover:text-stone-800">
+              Open the source edition ↗
+            </a>
+            <span className="text-stone-400"> — compare against body.md below</span>
+          </p>
+        )}
 
         <p className="text-xs text-stone-400 mb-3">
           Read-only — nothing here is published or in the database until you run Bridge &amp; import. To confirm or

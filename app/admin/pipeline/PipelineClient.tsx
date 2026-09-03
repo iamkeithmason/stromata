@@ -231,6 +231,14 @@ export default function PipelineClient({
                 {p.genre ? ` · ${p.genre}` : ''}
                 {p.source_type ? ` · ${p.source_type}` : ''}
                 {p.stage_3_themes?.length ? ` · ${p.stage_3_themes.join(', ')}` : ''}
+                {p.source_url && (
+                  <>
+                    {' · '}
+                    <a href={p.source_url} target="_blank" rel="noopener noreferrer" className="underline hover:text-stone-700">
+                      source ↗
+                    </a>
+                  </>
+                )}
               </p>
               {p.status === 'rejected' && p.rejection_reason && <p className="text-red-500 text-xs mt-1">✕ {p.rejection_reason}</p>}
             </div>
