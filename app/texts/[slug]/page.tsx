@@ -287,8 +287,9 @@ export default async function TextPage({ params }: Props) {
                 />
               )}
 
-              {/* Provenance / accession — sourced metadata */}
-              {(text.source_attribution || text.provenance_notes || text.translation_notes || text.accession_number) && (
+              {/* Provenance — sourced metadata. The accession number is no longer
+                  repeated here: it now leads the frontispiece as the hero kicker. */}
+              {(text.source_attribution || text.provenance_notes || text.translation_notes) && (
                 <section
                   className="flex flex-col gap-3 text-xs"
                   style={{ color: 'var(--ink-mute)' }}
@@ -296,11 +297,6 @@ export default async function TextPage({ params }: Props) {
                   {text.source_attribution && <p>Source: {text.source_attribution}</p>}
                   {text.provenance_notes && <p>{text.provenance_notes}</p>}
                   {text.translation_notes && <p>Translation: {text.translation_notes}</p>}
-                  {text.accession_number && (
-                    <p className="font-mono" style={{ color: 'var(--ink-faint)', letterSpacing: '0.04em' }}>
-                      STROMATA № {String(text.accession_number).padStart(2, '0')}
-                    </p>
-                  )}
                 </section>
               )}
 
