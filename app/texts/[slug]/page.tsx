@@ -19,11 +19,6 @@ import { CitationButton } from '@/app/components/CitationButton'
 
 type Props = { params: Promise<{ slug: string }> }
 
-// Shared horizontal frame so the frontispiece hero and the reading container
-// stay in vertical alignment: the book cover lines up with the left margin
-// column, and the hero title lines up with the main reading column.
-const FRAME = 'mx-auto w-full max-w-[1200px] px-6 lg:px-12'
-
 export async function generateMetadata({ params }: Props) {
   const { slug } = await params
   const supabase = createServerClient()
@@ -178,21 +173,24 @@ export default async function TextPage({ params }: Props) {
 
       {/* ─── Frontispiece hero — book cover + title on the dark ink ground ─── */}
       <section style={{ background: 'var(--hero-ground)' }}>
-        <div className={`${FRAME} flex flex-col items-center gap-10 py-12 lg:flex-row lg:items-center lg:gap-16 lg:py-20`}>
-          {/* Book cover — aligns with the left margin column below */}
-          <div className="w-[200px] shrink-0 lg:w-[248px]">
-            <BookCover
-              title={text.title}
-              authorName={author?.name ?? null}
-              deathYear={author?.death_year ?? null}
-              accessionNumber={text.accession_number ?? null}
-              traditionSlug={author?.tradition?.slug ?? null}
-              index={0}
-            />
+        <div className="margin-cols rail-first py-12 lg:py-20">
+          {/* Book cover — sits in the left margin rail, aligned with the
+              author rail in the reading container below */}
+          <div className="margin-rail flex justify-center lg:justify-start">
+            <div className="w-[200px]">
+              <BookCover
+                title={text.title}
+                authorName={author?.name ?? null}
+                deathYear={author?.death_year ?? null}
+                accessionNumber={text.accession_number ?? null}
+                traditionSlug={author?.tradition?.slug ?? null}
+                index={0}
+              />
+            </div>
           </div>
 
-          {/* Title block */}
-          <div className="flex w-full min-w-0 flex-col items-center gap-6 text-center lg:items-start lg:gap-8 lg:text-left">
+          {/* Title block — aligned with the main reading column below */}
+          <div className="margin-body flex flex-col items-center gap-6 text-center lg:items-start lg:gap-8 lg:text-left">
             {kickerParts.length > 0 && (
               <p
                 className="font-serif uppercase"
@@ -233,11 +231,10 @@ export default async function TextPage({ params }: Props) {
         </div>
       </section>
 
-      {/* ─── Reading container — margin column + main reading column ─── */}
-      <div className={`${FRAME} py-12 lg:py-16`}>
-        <div className="flex flex-col-reverse gap-12 lg:flex-row lg:gap-16">
-          {/* Left margin column: summary · author · provenance */}
-          <aside className="w-full lg:w-[248px] lg:shrink-0">
+      {/* ─── Reading container — marginalia rail + main reading column ─── */}
+      <div className="margin-cols py-12 lg:py-16">
+          {/* Left margin rail: summary · author · provenance */}
+          <aside className="margin-rail">
             <div className="flex flex-col gap-10">
               {summary && (
                 <section>
@@ -291,7 +288,7 @@ export default async function TextPage({ params }: Props) {
           </aside>
 
           {/* Main reading column */}
-          <main id="reader-main" className="w-full min-w-0 lg:max-w-[800px] lg:flex-1">
+          <main id="reader-main" className="margin-body">
             {/* Mobile TOC disclosure — visible below xl where the fixed TOC is hidden */}
             {hasToc && (
               <div className="xl:hidden mb-8">
@@ -403,13 +400,13 @@ export default async function TextPage({ params }: Props) {
               </nav>
             )}
           </main>
-        </div>
+      </div>
 
-        {/* Footer — full width beneath both columns */}
-        <footer
-          className="mt-16 border-t pt-6 text-xs"
-          style={{ borderColor: 'var(--rule)', color: 'var(--ink-mute)' }}
-        >
+      {/* Footer — aligned to the reading column measure */}
+      <footer
+        className="measure-shell mt-4 border-t pt-6 pb-12 text-xs"
+        style={{ borderColor: 'var(--rule)', color: 'var(--ink-mute)' }}
+      >
           <p>
             The Stromata is free to read and always will be.{' '}
             <a
@@ -432,8 +429,7 @@ export default async function TextPage({ params }: Props) {
               accessionNumber={text.accession_number ?? null}
             />
           </p>
-        </footer>
-      </div>
+      </footer>
 
       {/* Desktop TOC — fixed in right viewport margin, hover to expand.
           Renders outside the reading container so it doesn't affect column width.
