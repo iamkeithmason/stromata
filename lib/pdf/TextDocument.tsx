@@ -1,5 +1,5 @@
 import React from 'react'
-import { Document, Page, Text, View, StyleSheet } from '@react-pdf/renderer'
+import type { Document as DocumentT, Page as PageT, Text as TextT, View as ViewT, StyleSheet as StyleSheetT } from '@react-pdf/renderer'
 import { SITE_URL } from '@/lib/metadata'
 import { COLOPHON, type DownloadableText, type DownloadableCollection } from '@/lib/downloads'
 import { parseMarkdownBlocks, type Block, type Run } from '@/lib/pdf/markdown'
@@ -8,84 +8,112 @@ import { parseMarkdownBlocks, type Block, type Run } from '@/lib/pdf/markdown'
 // files to bundle). Aims for a plain, printable book page — the majority-world
 // print/redistribution use case that justified this feature.
 
+// @react-pdf/renderer ships as an ESM-only package (no CommonJS entry point).
+// Next.js compiles route handlers to a CommonJS bundle, and `serverExternalPackages`
+// (needed so its native-ish font/stream code isn't webpack-bundled) leaves a
+// plain `require('@react-pdf/renderer')` in that output — which throws
+// `ERR_REQUIRE_ESM` on any Node runtime that doesn't support CJS-requiring ESM
+// (Vercel's serverless Lambda runtime is not guaranteed to). A dynamic
+// `import()` sidesteps that entirely, on any Node version, so the whole
+// module is loaded lazily here instead of via a static top-level import.
+let Document: typeof DocumentT
+let Page: typeof PageT
+let Text: typeof TextT
+let View: typeof ViewT
+let StyleSheet: typeof StyleSheetT
+let styles: ReturnType<typeof buildStyles>
+let loaded: Promise<void> | null = null
+
+async function ensureReactPdf(): Promise<void> {
+  if (!loaded) {
+    loaded = import('@react-pdf/renderer').then(mod => {
+      ;({ Document, Page, Text, View, StyleSheet } = mod)
+      styles = buildStyles(StyleSheet)
+    })
+  }
+  return loaded
+}
+
 const FOOTER = 'The Stromata · thestromata.com — freely reproducible for personal, educational, and ministry use.'
 
-const styles = StyleSheet.create({
-  page: {
-    paddingTop: 64,
-    paddingBottom: 56,
-    paddingHorizontal: 64,
-    fontFamily: 'Times-Roman',
-    fontSize: 11.5,
-    lineHeight: 1.5,
-    color: '#1b1b1b',
-  },
-  kicker: {
-    fontFamily: 'Times-Italic',
-    fontSize: 9,
-    color: '#6f6a60',
-    textTransform: 'uppercase',
-    letterSpacing: 1.5,
-    marginBottom: 6,
-  },
-  title: { fontFamily: 'Times-Bold', fontSize: 22, lineHeight: 1.15, marginBottom: 6 },
-  author: { fontFamily: 'Times-Italic', fontSize: 13, color: '#3a3a3a', marginBottom: 4 },
-  meta: { fontSize: 9, color: '#6f6a60', marginBottom: 2 },
-  accession: { fontSize: 8, color: '#9c9589', letterSpacing: 1 },
-  colophon: {
-    fontFamily: 'Times-Italic',
-    fontSize: 9,
-    color: '#6f6a60',
-    marginTop: 14,
-    paddingTop: 10,
-    borderTopWidth: 0.5,
-    borderTopColor: '#d8d2c6',
-  },
-  rule: { borderBottomWidth: 0.5, borderBottomColor: '#d8d2c6', marginVertical: 14 },
-  h1: { fontFamily: 'Times-Bold', fontSize: 16, marginTop: 16, marginBottom: 6 },
-  h2: { fontFamily: 'Times-Bold', fontSize: 13.5, marginTop: 14, marginBottom: 5 },
-  h3: { fontFamily: 'Times-Bold', fontSize: 12, marginTop: 12, marginBottom: 4 },
-  p: { marginBottom: 9, textAlign: 'justify' },
-  blockquote: {
-    fontFamily: 'Times-Italic',
-    color: '#3a3a3a',
-    marginBottom: 9,
-    marginLeft: 16,
-    paddingLeft: 10,
-    borderLeftWidth: 1,
-    borderLeftColor: '#d8d2c6',
-  },
-  li: { marginBottom: 5, marginLeft: 14, flexDirection: 'row' },
-  liBullet: { width: 12 },
-  liBody: { flex: 1 },
-  sectionLabel: {
-    fontFamily: 'Times-Italic',
-    fontSize: 9,
-    color: '#6f6a60',
-    textTransform: 'uppercase',
-    letterSpacing: 1.5,
-    marginTop: 10,
-    marginBottom: 6,
-  },
-  provenance: {
-    fontSize: 8.5,
-    color: '#6f6a60',
-    marginTop: 18,
-    paddingTop: 10,
-    borderTopWidth: 0.5,
-    borderTopColor: '#d8d2c6',
-  },
-  footer: {
-    position: 'absolute',
-    bottom: 28,
-    left: 64,
-    right: 64,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    fontSize: 7.5,
-    color: '#9c9589',
-  },
-})
+function buildStyles(StyleSheet: typeof StyleSheetT) {
+  return StyleSheet.create({
+    page: {
+      paddingTop: 64,
+      paddingBottom: 56,
+      paddingHorizontal: 64,
+      fontFamily: 'Times-Roman',
+      fontSize: 11.5,
+      lineHeight: 1.5,
+      color: '#1b1b1b',
+    },
+    kicker: {
+      fontFamily: 'Times-Italic',
+      fontSize: 9,
+      color: '#6f6a60',
+      textTransform: 'uppercase',
+      letterSpacing: 1.5,
+      marginBottom: 6,
+    },
+    title: { fontFamily: 'Times-Bold', fontSize: 22, lineHeight: 1.15, marginBottom: 6 },
+    author: { fontFamily: 'Times-Italic', fontSize: 13, color: '#3a3a3a', marginBottom: 4 },
+    meta: { fontSize: 9, color: '#6f6a60', marginBottom: 2 },
+    accession: { fontSize: 8, color: '#9c9589', letterSpacing: 1 },
+    colophon: {
+      fontFamily: 'Times-Italic',
+      fontSize: 9,
+      color: '#6f6a60',
+      marginTop: 14,
+      paddingTop: 10,
+      borderTopWidth: 0.5,
+      borderTopColor: '#d8d2c6',
+    },
+    rule: { borderBottomWidth: 0.5, borderBottomColor: '#d8d2c6', marginVertical: 14 },
+    h1: { fontFamily: 'Times-Bold', fontSize: 16, marginTop: 16, marginBottom: 6 },
+    h2: { fontFamily: 'Times-Bold', fontSize: 13.5, marginTop: 14, marginBottom: 5 },
+    h3: { fontFamily: 'Times-Bold', fontSize: 12, marginTop: 12, marginBottom: 4 },
+    p: { marginBottom: 9, textAlign: 'justify' },
+    blockquote: {
+      fontFamily: 'Times-Italic',
+      color: '#3a3a3a',
+      marginBottom: 9,
+      marginLeft: 16,
+      paddingLeft: 10,
+      borderLeftWidth: 1,
+      borderLeftColor: '#d8d2c6',
+    },
+    li: { marginBottom: 5, marginLeft: 14, flexDirection: 'row' },
+    liBullet: { width: 12 },
+    liBody: { flex: 1 },
+    sectionLabel: {
+      fontFamily: 'Times-Italic',
+      fontSize: 9,
+      color: '#6f6a60',
+      textTransform: 'uppercase',
+      letterSpacing: 1.5,
+      marginTop: 10,
+      marginBottom: 6,
+    },
+    provenance: {
+      fontSize: 8.5,
+      color: '#6f6a60',
+      marginTop: 18,
+      paddingTop: 10,
+      borderTopWidth: 0.5,
+      borderTopColor: '#d8d2c6',
+    },
+    footer: {
+      position: 'absolute',
+      bottom: 28,
+      left: 64,
+      right: 64,
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      fontSize: 7.5,
+      color: '#9c9589',
+    },
+  })
+}
 
 const eraName = (label?: string | null) => label?.replace(/\s*\(.*?\)/, '').trim() || null
 const accession = (n?: number | null) => (n == null ? null : `STROMATA № ${String(n).padStart(2, '0')}`)
@@ -225,7 +253,8 @@ function TextPages({ text, showColophon }: { text: DownloadableText; showColopho
   )
 }
 
-export function TextDocument({ text }: { text: DownloadableText }) {
+export async function TextDocument({ text }: { text: DownloadableText }) {
+  await ensureReactPdf()
   return (
     <Document title={text.title} author={text.author?.name ?? undefined}>
       <TextPages text={text} showColophon />
@@ -233,13 +262,14 @@ export function TextDocument({ text }: { text: DownloadableText }) {
   )
 }
 
-export function CollectionDocument({
+export async function CollectionDocument({
   collection,
   texts,
 }: {
   collection: DownloadableCollection
   texts: DownloadableText[]
 }) {
+  await ensureReactPdf()
   const authorName = collection.author?.name ?? null
   return (
     <Document title={collection.title} author={authorName ?? undefined}>
