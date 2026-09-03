@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { createServerClient } from '@/lib/supabase/server'
 import { readQueue } from '@/lib/pipeline/queue'
 import { listStagedBundles } from '@/lib/sourcer/staging'
+import { resolveLiveStatuses } from '@/lib/pipeline/liveStatus'
 import AgentSchedule from './AgentSchedule'
 
 type TextRow = {
@@ -67,12 +68,18 @@ export default async function AdminDashboard({ searchParams }: Props) {
     /* queue file unreadable — show 0 */
   }
 
-  // Count staged Sourcer bundles for the Sourcer nav card.
+  // Count active (not yet live) staged Sourcer bundles for the Sourcer nav card
+  // — one that's already published has nothing left to do, so it shouldn't
+  // keep inflating this count forever.
   let sourcerCount = 0
   try {
-    sourcerCount = (await listStagedBundles()).length
+    const bundles = await listStagedBundles()
+    const liveStatuses = await resolveLiveStatuses(
+      bundles.filter(b => b.bridgeStatus === 'imported').map(b => b.slug)
+    )
+    sourcerCount = bundles.filter(b => liveStatuses.get(b.slug)?.status !== 'live').length
   } catch {
-    /* content/staging unreadable — show 0 */
+    /* content/staging or Supabase unreadable — show 0 */
   }
 
   // ── Integrity alerts ──────────────────────────────────────────────────────

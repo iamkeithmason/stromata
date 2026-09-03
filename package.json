@@ -17,6 +17,7 @@
     "pipeline:import": "node scripts/pipeline-import.mjs && tsx scripts/backfill-scripture-refs.ts",
     "backfill:scripture": "tsx scripts/backfill-scripture-refs.ts",
     "test:scripture": "tsx --test lib/scripture/scripture.test.ts",
+    "test:pipeline": "tsx --test lib/pipeline/*.test.ts",
     "scout": "tsx scripts/scout/scout.ts",
     "scout:apply": "tsx scripts/scout/scout.ts --apply",
     "test:scout": "tsx --test scripts/scout/*.test.ts",

@@ -3,8 +3,11 @@
 import { useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import type { StagedBundleSummary } from '@/lib/sourcer/staging'
+import type { LiveStatus } from '@/lib/pipeline/liveStatus'
 import { TRADITIONS, ERAS, GENRES, MAX_THEMES } from '@/lib/pipeline/vocab'
 import { Field, inputCls, ThemePicker } from '@/app/admin/pipeline/PipelineClient'
+
+type Bundle = StagedBundleSummary & { liveStatus: LiveStatus; liveHref: string | null }
 
 function bridgeBadge(status: string | null) {
   if (!status) return null
@@ -15,14 +18,18 @@ function bridgeBadge(status: string | null) {
   return <span className={`text-xs px-1.5 py-0.5 rounded border ${cls}`}>{status}</span>
 }
 
-export default function SourcerClient({ bundles, isDev }: { bundles: StagedBundleSummary[]; isDev: boolean }) {
+export default function SourcerClient({ bundles, isDev }: { bundles: Bundle[]; isDev: boolean }) {
   const router = useRouter()
   const [open, setOpen] = useState<{ slug: string; title: string; sourceUrl: string | null; files: { name: string; content: string }[] } | null>(null)
-  const [bridging, setBridging] = useState<StagedBundleSummary | null>(null)
+  const [bridging, setBridging] = useState<Bundle | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState<string | null>(null)
+  const [showAll, setShowAll] = useState(false)
 
-  async function viewBundle(b: StagedBundleSummary) {
+  const liveCount = bundles.filter(b => b.liveStatus === 'live').length
+  const visible = showAll ? bundles : bundles.filter(b => b.liveStatus !== 'live')
+
+  async function viewBundle(b: Bundle) {
     setError(null)
     setLoading(b.slug)
     try {
@@ -39,19 +46,43 @@ export default function SourcerClient({ bundles, isDev }: { bundles: StagedBundl
     <div className="space-y-6">
       {error && <p className="text-sm text-red-700 bg-red-50 border border-red-200 rounded px-3 py-2">{error}</p>}
 
+      <div className="flex items-center gap-1.5">
+        <button
+          onClick={() => setShowAll(false)}
+          className={`text-xs px-2 py-1 rounded border ${!showAll ? 'bg-stone-800 text-white border-stone-800' : 'bg-white text-stone-600 border-stone-200 hover:border-stone-400'}`}
+        >
+          active <span className={!showAll ? 'text-stone-300' : 'text-stone-400'}>{bundles.length - liveCount}</span>
+        </button>
+        <button
+          onClick={() => setShowAll(true)}
+          className={`text-xs px-2 py-1 rounded border ${showAll ? 'bg-stone-800 text-white border-stone-800' : 'bg-white text-stone-600 border-stone-200 hover:border-stone-400'}`}
+        >
+          all <span className={showAll ? 'text-stone-300' : 'text-stone-400'}>{bundles.length}</span>
+        </button>
+        {liveCount > 0 && !showAll && (
+          <span className="text-xs text-stone-400">· {liveCount} live bundle{liveCount === 1 ? '' : 's'} hidden</span>
+        )}
+      </div>
+
       <div className="border border-stone-200 rounded divide-y divide-stone-100">
-        {bundles.length === 0 && (
+        {visible.length === 0 && (
           <p className="px-4 py-6 text-sm text-stone-400">
-            No staged bundles right now. The Sourcer opens a draft PR with new ones once a month (or on demand); once
-            merged to <code>main</code>, they show up here.
+            {bundles.length === 0
+              ? <>No staged bundles right now. The Sourcer opens a draft PR with new ones once a month (or on demand); once
+                merged to <code>main</code>, they show up here.</>
+              : 'Nothing active — every staged bundle is live. Switch to "all" to see them.'}
           </p>
         )}
-        {bundles.map(b => (
+        {visible.map(b => (
           <div key={b.slug} className="px-4 py-3 flex items-start justify-between gap-4">
             <div className="min-w-0">
               <div className="flex items-center gap-2 flex-wrap">
                 <span className="text-stone-800 text-sm font-medium truncate">{b.title || b.slug}</span>
-                {bridgeBadge(b.bridgeStatus)}
+                {b.liveStatus === 'live' ? (
+                  <span className="text-xs px-1.5 py-0.5 rounded border bg-green-50 text-green-700 border-green-200">● Live</span>
+                ) : (
+                  bridgeBadge(b.bridgeStatus)
+                )}
                 {b.flags.length > 0 && (
                   <span className="text-xs px-1.5 py-0.5 rounded border bg-amber-50 text-amber-700 border-amber-200" title={b.flags.join('; ')}>
                     ⚑ {b.flags.length} flag{b.flags.length === 1 ? '' : 's'}
@@ -84,7 +115,11 @@ export default function SourcerClient({ bundles, isDev }: { bundles: StagedBundl
               >
                 {loading === b.slug ? 'Loading…' : 'Review'}
               </button>
-              {isDev && (
+              {b.liveStatus === 'live' && b.liveHref ? (
+                <a href={b.liveHref} target="_blank" rel="noopener noreferrer" className="text-green-700 hover:underline">
+                  View live ↗
+                </a>
+              ) : isDev ? (
                 b.bridgeStatus === 'imported' ? (
                   <a href="/admin/drafts" className="text-green-700 hover:underline">In Drafts →</a>
                 ) : (
@@ -96,7 +131,7 @@ export default function SourcerClient({ bundles, isDev }: { bundles: StagedBundl
                     {b.bridgeStatus === 'rejected' ? 'Retry bridge & import' : 'Bridge & import'}
                   </button>
                 )
-              )}
+              ) : null}
             </div>
           </div>
         ))}

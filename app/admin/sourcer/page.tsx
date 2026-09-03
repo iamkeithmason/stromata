@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { listStagedBundles } from '@/lib/sourcer/staging'
+import { resolveLiveStatuses } from '@/lib/pipeline/liveStatus'
 import SourcerClient from './SourcerClient'
 
 export const dynamic = 'force-dynamic'
@@ -7,6 +8,16 @@ export const dynamic = 'force-dynamic'
 export default async function SourcerPage() {
   const bundles = await listStagedBundles()
   const isDev = process.env.NODE_ENV !== 'production'
+
+  // Only an "imported" bundle can possibly be live — checking the rest would
+  // just be wasted Supabase round-trips.
+  const liveStatuses = await resolveLiveStatuses(
+    bundles.filter(b => b.bridgeStatus === 'imported').map(b => b.slug)
+  )
+  const bundlesWithLiveStatus = bundles.map(b => {
+    const live = liveStatuses.get(b.slug)
+    return { ...b, liveStatus: live?.status ?? ('unknown' as const), liveHref: live?.href ?? null }
+  })
 
   return (
     <main>
@@ -29,7 +40,7 @@ export default async function SourcerPage() {
         </p>
       )}
 
-      <SourcerClient bundles={bundles} isDev={isDev} />
+      <SourcerClient bundles={bundlesWithLiveStatus} isDev={isDev} />
     </main>
   )
 }
