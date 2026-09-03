@@ -182,18 +182,43 @@ function Footer() {
 // layout math once a single <Page> element overflows past roughly ten to
 // thirteen physical pages — it throws `unsupported number: -2.3e+21` from
 // pdfkit's transform call, reliably, on any long text (reproduced locally: a
-// ~9,000-word body already fails). Splitting the content into many explicit
-// <Page> elements up front — each holding a small, bounded slice of blocks —
-// keeps every individual Page's own overflow small enough to dodge the bug,
-// and rendered a 96,000-word body across 114 pages without error where the
-// single-Page version failed at 9 pages. Chunk size is deliberately well
-// under the observed ~10-page failure threshold.
-const BLOCKS_PER_PAGE = 8
+// ~9,000-word body already fails, at a bisected boundary of roughly 39,600
+// characters of body content in one <Page>). Splitting the content into many
+// explicit <Page> elements up front — each holding a bounded slice of blocks —
+// keeps every individual Page's own overflow small enough to dodge the bug.
+//
+// Chunking by a fixed block count first shipped this way and worked, but every
+// chunk boundary forces a hard page break regardless of how much room was left
+// on the physical page, which reads as an arbitrary break with wasted
+// whitespace whenever paragraph lengths vary (reported against the live site:
+// a chunk ending after a short paragraph left most of the page blank). Chunking
+// by an estimated character budget instead — accumulate blocks until the next
+// one would cross the budget, then break — lets short paragraphs pack more
+// densely onto a page and only forces a break near where content would need to
+// flow onward anyway. CHARS_PER_CHUNK is a 3x-plus safety margin under the
+// ~39,600-character crash boundary, so estimation error can't reopen the bug.
+const CHARS_PER_CHUNK = 12000
 
-function chunkBlocks(blocks: Block[], size: number): Block[][] {
+function blockChars(b: Block): number {
+  return b.type === 'hr' ? 40 : b.runs.reduce((sum, r) => sum + r.text.length, 0)
+}
+
+function chunkBlocks(blocks: Block[], charBudget: number): Block[][] {
   if (blocks.length === 0) return [[]]
   const chunks: Block[][] = []
-  for (let i = 0; i < blocks.length; i += size) chunks.push(blocks.slice(i, i + size))
+  let current: Block[] = []
+  let currentChars = 0
+  for (const b of blocks) {
+    const chars = blockChars(b)
+    if (current.length > 0 && currentChars + chars > charBudget) {
+      chunks.push(current)
+      current = []
+      currentChars = 0
+    }
+    current.push(b)
+    currentChars += chars
+  }
+  if (current.length > 0) chunks.push(current)
   return chunks
 }
 
@@ -215,7 +240,7 @@ function TextPages({ text, showColophon }: { text: DownloadableText; showColopho
   const introBlocks = text.editorial_introduction ? parseMarkdownBlocks(text.editorial_introduction) : []
   const bodyBlocks = parseMarkdownBlocks(text.body)
   const contentBlocks: Block[] = [...introBlocks, ...(introBlocks.length > 0 ? [{ type: 'hr' } as Block] : []), ...bodyBlocks]
-  const pages = chunkBlocks(contentBlocks, BLOCKS_PER_PAGE)
+  const pages = chunkBlocks(contentBlocks, CHARS_PER_CHUNK)
 
   return (
     <>
