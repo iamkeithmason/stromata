@@ -1,4 +1,3 @@
-import { renderToBuffer } from '@react-pdf/renderer'
 import { createServerClient } from '@/lib/supabase/server'
 import { markdownFilename, type DownloadableText, type DownloadableCollection } from '@/lib/downloads'
 import { CollectionDocument } from '@/lib/pdf/TextDocument'
@@ -38,8 +37,13 @@ export async function GET(_req: Request, { params }: { params: Promise<{ slug: s
     .order('collection_order', { ascending: true, nullsFirst: false })
     .order('title')
 
+  // @react-pdf/renderer is ESM-only; a static top-level import compiles to a
+  // `require()` in Next's CommonJS route bundle, which throws ERR_REQUIRE_ESM
+  // on Node runtimes without CJS-requiring-ESM support. Dynamic import avoids
+  // that on any Node version.
+  const { renderToBuffer } = await import('@react-pdf/renderer')
   const buffer = await renderToBuffer(
-    CollectionDocument({
+    await CollectionDocument({
       collection: collection as unknown as DownloadableCollection,
       texts: (texts ?? []) as unknown as DownloadableText[],
     })

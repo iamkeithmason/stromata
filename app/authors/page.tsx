@@ -11,6 +11,7 @@ type AuthorRow = {
   slug: string
   birth_year: number | null
   death_year: number | null
+  image_url: string | null
   tradition: { name: string; slug: string } | null
   era: { label: string; slug: string; year_start: number | null } | null
 }
@@ -33,7 +34,7 @@ export default async function AuthorsPage({ searchParams }: Props) {
     supabase
       .from('authors')
       .select(
-        'id, name, slug, birth_year, death_year, tradition:traditions(name, slug), era:eras(label, slug, year_start)',
+        'id, name, slug, birth_year, death_year, image_url, tradition:traditions(name, slug), era:eras(label, slug, year_start)',
       )
       .not('slug', 'is', null)
       .eq('draft', false)
@@ -57,6 +58,7 @@ export default async function AuthorsPage({ searchParams }: Props) {
     slug: a.slug,
     birth_year: a.birth_year,
     death_year: a.death_year,
+    imageUrl: a.image_url,
     tradition: a.tradition,
     era: a.era ? { slug: a.era.slug, label: a.era.label } : null,
     textCount: textCounts[a.id] ?? 0,

@@ -60,7 +60,7 @@ export default async function TextPage({ params }: Props) {
     .from('texts')
     .select(`
       *,
-      author:authors(name, slug, bio, birth_year, death_year, loc:locations(name, slug), tradition:traditions(slug, name), era:eras(label, slug)),
+      author:authors(name, slug, bio, birth_year, death_year, image_url, loc:locations(name, slug), tradition:traditions(slug, name), era:eras(label, slug)),
       genre:genres(name),
       text_themes(theme:themes(name, slug)),
       collection:collections(id, title, slug, published)
@@ -78,6 +78,7 @@ export default async function TextPage({ params }: Props) {
     bio: string | null
     birth_year: number | null
     death_year: number | null
+    image_url: string | null
     loc: { name: string; slug: string } | null
     tradition: { slug: string; name: string } | null
     era: { label: string; slug: string } | null
@@ -284,6 +285,7 @@ export default async function TextPage({ params }: Props) {
                   eraName={eraName}
                   tradition={author.tradition}
                   bio={author.bio}
+                  imageUrl={author.image_url}
                 />
               )}
 

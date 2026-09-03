@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
 import { FilterPill } from './FilterPill'
+import { LancetArch } from './LancetArch'
 
 declare global {
   interface Window {
@@ -18,6 +19,7 @@ export type AuthorItem = {
   slug: string
   birth_year: number | null
   death_year: number | null
+  imageUrl: string | null
   tradition: { slug: string; name: string } | null
   era: { slug: string; label: string } | null
   textCount: number
@@ -143,20 +145,27 @@ export function AuthorsBrowser({
             <li key={a.id}>
               {/* Stretched-link pattern: author row is the base, tradition link sits above */}
               <div className="relative flex items-start justify-between py-4 group">
-                <div>
-                  <span
-                    className="font-serif group-hover:opacity-70 transition-opacity"
-                    style={{ color: '#1b1b1b' }}
-                  >
-                    {a.name}
-                  </span>
-                  <span className="text-sm ml-3" style={{ color: '#6f6a60' }}>
-                    {a.birth_year && a.death_year
-                      ? `${a.birth_year}–${a.death_year}`
-                      : a.death_year
-                        ? `d. ${a.death_year}`
-                        : ''}
-                  </span>
+                <div className="flex items-center gap-3 min-w-0">
+                  {a.imageUrl && (
+                    <div className="shrink-0" style={{ width: 30, aspectRatio: '200 / 380' }}>
+                      <LancetArch initial={a.name.charAt(0)} label={a.name} imageUrl={a.imageUrl} />
+                    </div>
+                  )}
+                  <div>
+                    <span
+                      className="font-serif group-hover:opacity-70 transition-opacity"
+                      style={{ color: '#1b1b1b' }}
+                    >
+                      {a.name}
+                    </span>
+                    <span className="text-sm ml-3" style={{ color: '#6f6a60' }}>
+                      {a.birth_year && a.death_year
+                        ? `${a.birth_year}–${a.death_year}`
+                        : a.death_year
+                          ? `d. ${a.death_year}`
+                          : ''}
+                    </span>
+                  </div>
                 </div>
                 <div className="text-right ml-4 shrink-0">
                   {a.tradition?.slug ? (

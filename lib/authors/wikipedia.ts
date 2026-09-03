@@ -47,6 +47,8 @@ export type WikipediaSuggestions = {
   traditionSlug: string
   bio: string
   bioSource: string
+  /** Portrait URL from the summary (originalimage preferred over thumbnail), or null. */
+  imageUrl: string | null
 }
 
 export type WikipediaLookupResult =
@@ -71,6 +73,16 @@ export async function fetchWikipediaSuggestions(name: string): Promise<Wikipedia
     const { birth, death } = extractYears(extract)
     const sentences = extract.replace(/\n+/g, ' ').split(/(?<=[.!?])\s+/)
 
+    // Prefer the full-resolution image; fall back to the thumbnail. Both are
+    // upload.wikimedia.org URLs. The field is already returned by this call —
+    // pre-1900 author portraits (engravings, icons, manuscript illustrations)
+    // are almost universally public domain, but this is not guaranteed, so the
+    // editor confirms and a source is always recorded before display.
+    const imageUrl: string | null =
+      (typeof data.originalimage?.source === 'string' && data.originalimage.source) ||
+      (typeof data.thumbnail?.source === 'string' && data.thumbnail.source) ||
+      null
+
     return {
       ok: true,
       suggestions: {
@@ -80,6 +92,7 @@ export async function fetchWikipediaSuggestions(name: string): Promise<Wikipedia
         traditionSlug: suggestTradition(extract + ' ' + description),
         bio: sentences.slice(0, 3).join(' '),
         bioSource: `Wikipedia, cached ${new Date().toISOString().split('T')[0]}`,
+        imageUrl,
       },
     }
   } catch {

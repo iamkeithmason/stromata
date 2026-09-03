@@ -7,6 +7,18 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 }
 
+// Self-contained placeholder portrait (no external dependency) used only to
+// demonstrate how a real author photo clips into the LancetArch opening.
+const DEMO_PORTRAIT =
+  'data:image/svg+xml;utf8,' +
+  encodeURIComponent(
+    '<svg xmlns="http://www.w3.org/2000/svg" width="200" height="280" viewBox="0 0 200 280">' +
+      '<rect width="200" height="280" fill="#6b5b3e"/>' +
+      '<circle cx="100" cy="104" r="50" fill="#d8c39a"/>' +
+      '<path d="M32 280 C32 206 168 206 168 280 Z" fill="#c9b487"/>' +
+      '</svg>',
+  )
+
 // ── Helpers ────────────────────────────────────────────────────────────────
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
@@ -267,9 +279,21 @@ export default function DesignPage() {
 
           <SubSection title="LancetArch — featured author arches">
             <div className="grid grid-cols-4 sm:grid-cols-6 gap-6">
-              {['A', 'B', 'J', 'T', 'C', '§'].map((initial, i) => (
+              {['A', 'B', 'J', 'T', 'C', '§'].map(initial => (
                 <div key={initial} style={{ maxWidth: 100, aspectRatio: '200 / 380' }}>
                   <LancetArch initial={initial} label={`Initial ${initial}`} />
+                </div>
+              ))}
+            </div>
+            {/* With a portrait: the photo is clipped to the arch, the gold
+                keyline framing it. Self-contained placeholder image. */}
+            <p className="mt-6 mb-2 text-sm" style={{ color: 'var(--ink-mute)' }}>
+              With an author portrait (initial fallback shown last):
+            </p>
+            <div className="grid grid-cols-4 sm:grid-cols-6 gap-6">
+              {[DEMO_PORTRAIT, DEMO_PORTRAIT, null].map((src, i) => (
+                <div key={i} style={{ maxWidth: 100, aspectRatio: '200 / 380' }}>
+                  <LancetArch initial="P" label="Portrait demo" imageUrl={src} />
                 </div>
               ))}
             </div>

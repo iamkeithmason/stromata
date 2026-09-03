@@ -5,6 +5,7 @@ import { notFound } from 'next/navigation'
 import { createServerClient } from '@/lib/supabase/server'
 import { readingTime } from '@/lib/reading-time'
 import MarkdownBody from '@/app/components/MarkdownBody'
+import { LancetArch } from '@/app/components/LancetArch'
 import { OG_IMAGE } from '@/lib/metadata'
 
 const SITE_URL = 'https://www.thestromata.com'
@@ -185,6 +186,8 @@ export default async function AuthorPage({ params }: Props) {
   const locationObj = author.loc as { name: string; slug: string } | null
   const locationCity = author.location as string | null
   const dates = formatDates(author.birth_year, author.death_year)
+  const imageUrl = author.image_url as string | null
+  const initial = author.name.trim().charAt(0).toUpperCase() || '·'
   const canonicalUrl = `${SITE_URL}/authors/${slug}`
 
   // Top themes for JSON-LD
@@ -231,7 +234,16 @@ export default async function AuthorPage({ params }: Props) {
       <main className="max-w-2xl mx-auto px-6 py-12">
 
         {/* ── Author header ─────────────────────────────────────────────── */}
-        <div className="mb-10">
+        <div className="mb-10 flex items-start gap-6">
+          {imageUrl && (
+            <div
+              className="shrink-0 order-last"
+              style={{ width: 128, aspectRatio: '200 / 380' }}
+            >
+              <LancetArch initial={initial} label={author.name} imageUrl={imageUrl} />
+            </div>
+          )}
+          <div className="flex-1 min-w-0">
           <h1 className="font-serif text-3xl mb-2" style={{ color: 'var(--ink)' }}>
             {author.name}
           </h1>
@@ -277,6 +289,7 @@ export default async function AuthorPage({ params }: Props) {
               {locationCity}
             </p>
           )}
+          </div>
         </div>
 
         {/* ── Bio ──────────────────────────────────────────────────────────── */}
