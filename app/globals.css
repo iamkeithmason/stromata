@@ -110,6 +110,25 @@
   --notice-bg:     #fffbeb;
   --notice-text:   #92400e;
   --notice-border: #fcd34d;
+
+  /* ---------------------------------------------------------------
+     Layout grid — the site-wide 12-column system (from the Figma
+     design-system variables). A 976px content area of 12 columns
+     (52px) separated by 32px gutters:  12·52 + 11·32 = 976. This is
+     the same measure the rest of the site already gets from
+     `max-w-5xl` (1024px) minus `px-6` (24px each side), now named so
+     the reading page can share it and future pages can lean on it.
+     --------------------------------------------------------------- */
+  --grid-column:      52px;     /* one of 12 columns */
+  --grid-gutter:      32px;     /* space between columns */
+  --content-area:     976px;    /* 12 columns — the readable content width */
+  --content-max:      1024px;   /* the centred card (max-w-5xl); inner = 976 */
+  --content-pad:      1.5rem;   /* px-6 — trims the 1024 card to a 976 inner */
+  --reading-measure:  808px;    /* 10 columns — the long-form reading column */
+  --frame-max:        1440px;   /* the wide page frame the marginalia lives in */
+  --rail-width:       200px;    /* marginalia rail (matches the book-cover width) */
+  --rail-inset:       1.5rem;   /* rail gap from the page/frame edge */
+  --rail-breakpoint:  1400px;   /* below this there is no room to pull the rail out */
 }
 
 /* =============================================================
@@ -195,6 +214,132 @@ html {
     --bc-mid-margin: 5px 7px;
     --bc-mid-pad: 0.6rem 0.875rem;
     --bc-rule-margin: 0.5rem auto;
+  }
+}
+
+/* =============================================================
+   Marginalia layout — reading column + a rail that lives in the margin
+   =============================================================
+
+   Shared by the frontispiece hero (book cover + title) and the reading
+   container (author/provenance rail + body) so the two stay in one
+   vertical column. Three tiers:
+
+     • < 1024px            stacked, reading body first, rail beneath.
+     • 1024px – <1400px    inline: rail (200px) left, body right, both
+                           within the 976px content area.
+     • ≥ 1400px            the rail lifts out into the left page margin
+                           (24px from the frame edge) and the reading
+                           body centres at its 808px measure — the page
+                           margin is now wide enough to hold the rail as
+                           true marginalia, matching the design. */
+.margin-cols {
+  max-width: var(--content-max);
+  margin-inline: auto;
+  padding-inline: var(--content-pad);
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+}
+
+.margin-cols > .margin-rail {
+  order: 2;            /* rail beneath the reading body when stacked */
+  width: 100%;
+  min-width: 0;
+}
+
+.margin-cols > .margin-body {
+  order: 1;
+  width: 100%;
+  min-width: 0;
+}
+
+/* rail-first: keep the rail above the body when stacked (the frontispiece
+   hero wants the book cover over the title, not beneath it). Higher
+   specificity than the tier rules below, so it holds at every width — at
+   1024px+ rail-before-body still reads as rail-left, and at 1400px+ the grid
+   places by column, so order is moot there. */
+.margin-cols.rail-first > .margin-rail { order: 1; }
+.margin-cols.rail-first > .margin-body { order: 2; }
+
+@media (min-width: 1024px) {
+  .margin-cols {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: var(--grid-gutter);
+  }
+  .margin-cols > .margin-rail {
+    order: 0;
+    flex: 0 0 var(--rail-width);
+    width: var(--rail-width);
+  }
+  .margin-cols > .margin-body {
+    order: 0;
+    flex: 1 1 0;
+    max-width: var(--reading-measure);
+  }
+}
+
+@media (min-width: 1400px) {
+  .margin-cols {
+    max-width: var(--frame-max);
+    padding-inline: 0;
+    display: grid;
+    grid-template-columns:
+      minmax(var(--rail-inset), 1fr)
+      minmax(0, var(--reading-measure))
+      minmax(var(--rail-inset), 1fr);
+    gap: 0;
+    align-items: start;
+  }
+  .margin-cols > .margin-rail {
+    grid-column: 1;
+    justify-self: start;
+    width: var(--rail-width);
+    margin-left: var(--rail-inset);
+  }
+  .margin-cols > .margin-body {
+    grid-column: 2;
+    width: 100%;
+    max-width: var(--reading-measure);
+    margin-inline: auto;
+  }
+}
+
+/* Author-rail bio teaser — clamp to ~6 lines and let it trail off with an
+   ellipsis (the full bio lives on the author page, one "Read More" away).
+   Line-clamp only truncates when the text actually overflows, so short bios
+   render in full with no artefact. */
+.author-bio-clamp {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 6;
+  line-clamp: 6;
+  overflow: hidden;
+}
+.author-bio-clamp p {
+  margin-bottom: 0;
+}
+
+/* Content shells that align to the same grid but carry no rail. */
+.content-shell {
+  max-width: var(--content-max);
+  margin-inline: auto;
+  padding-inline: var(--content-pad);
+}
+
+/* Aligns a rail-less block (e.g. the reading footer) to the reading
+   body: within the content area below the breakpoint, centred on the
+   808px measure once the body itself centres. */
+.measure-shell {
+  max-width: var(--content-max);
+  margin-inline: auto;
+  padding-inline: var(--content-pad);
+}
+@media (min-width: 1400px) {
+  .measure-shell {
+    max-width: var(--reading-measure);
+    padding-inline: 0;
   }
 }
 
