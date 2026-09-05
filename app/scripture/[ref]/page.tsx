@@ -106,7 +106,7 @@ export default async function ScriptureLookupPage({ params }: Props) {
   let collectionTotals: Record<string, number> = {}
   if (collectionIds.length > 0) {
     const [{ data: collectionsData }, { data: allCollectionTexts }] = await Promise.all([
-      supabase.from('collections').select('id, title, slug').in('id', collectionIds),
+      supabase.from('collections').select('id, title, slug').eq('published', true).in('id', collectionIds),
       supabase.from('texts').select('id, collection_id').eq('published', true).in('collection_id', collectionIds),
     ])
     collectionMeta = Object.fromEntries(

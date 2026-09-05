@@ -145,6 +145,7 @@ export default async function SearchPage({ searchParams }: Props) {
         .select('id, name, slug, tradition:traditions(name)')
         .ilike('name', pattern)
         .not('slug', 'is', null)
+        .eq('draft', false)
         .order('name')
         .limit(10),
     ])
