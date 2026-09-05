@@ -74,15 +74,24 @@ Notion property's purpose:
    For any analytics change, wire-verify the outgoing beacon (CLAUDE.md's verification
    rule) — the attribute being in the JSX is not "done".
 
-8. **Open a draft PR.** `git push -u origin claude/<card-slug>`, then create a **draft**
-   PR (mirror any PR template), and `subscribe_pr_activity`. Never mark ready, never
+8. **Review gate (required — never skip).** Before pushing, run **`/security-review`**
+   and then **`/code-review`** on the working diff. Treat every finding as a bug report:
+   fix anything real, take the *safer* fix for a security finding, re-verify (step 7),
+   and keep going until both come back clean or with only findings you can justify
+   leaving. This is the safety net that lets these PRs be merged with little oversight,
+   so it is mandatory — do not skip it to save time.
+
+9. **Open a draft PR.** `git push -u origin claude/<card-slug>`, then create a **draft**
+   PR (mirror any PR template), and `subscribe_pr_activity`. In the PR body, record that
+   the review gate ran and what it surfaced (or "clean"). Never mark ready, never
    merge — Keith does that. Drive its CI to green per the babysit rules.
 
-9. **Update the card.** Add a note to the card *body* (never overwrite the `Notes`
-   property) linking the PR and stating what was verified. Set `Status` → `Planned`.
-   Do **not** set `Built` — that is Keith's call after merge. Leave `Agent-ready` ticked.
+10. **Update the card.** Add a note to the card *body* (never overwrite the `Notes`
+    property) linking the PR and stating what was verified (including the review-gate
+    outcome). Set `Status` → `Planned`. Do **not** set `Built` — that is Keith's call
+    after merge. Leave `Agent-ready` ticked.
 
-10. **Stop for review.** One card per run. Under `/loop`, the next iteration picks the
+11. **Stop for review.** One card per run. Under `/loop`, the next iteration picks the
     next card only after this one's PR exists.
 
 ## Never
