@@ -7,6 +7,32 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-09-05 — Close the record-keeping loop: CHANGELOG + backlog stay current automatically
+
+Follow-up to the same-day autonomous-lane work. The gap: the backlog and CHANGELOG only stayed
+current because a session updated them by hand — nothing made the automated routines keep the
+record in step with what they shipped. `/next-agent-card` flipped a card to `Planned` and left a
+PR note, but wrote no CHANGELOG entry and never reconciled `Built` after merge (merge is Keith's
+action, off-PR, and no webhook writes Notion), so cards silently stuck at `Planned` and the log
+lagged.
+
+Fix — a **soft, self-healing layer** (chosen over a CI hard-gate / real-time Notion sync; the
+convention is enough and doesn't block Keith's own manual PRs):
+
+- **`/next-agent-card` step 9 (new):** the CHANGELOG entry is written *into the PR branch* and
+  committed alongside the code, so merging the change and updating the log is one atomic act —
+  there's no separate step to forget.
+- **`/next-agent-card` step 0 (new):** a reconciliation sweep at the start of each run flips any
+  `Planned` card whose PR has since merged to `Built`, and backfills a missing CHANGELOG entry.
+  This closes the merge-time gap without wiring GitHub→Notion.
+- **CLAUDE.md "Keeping the record current":** a table mapping each change type to its one
+  authoritative record (code → CHANGELOG-in-PR; content import → `run-log/`; analytics → Growth
+  Digest; card lifecycle `Agent-ready`→`Planned`→`Built`), so routines don't cross-post noise and
+  every future session knows the convention — including that a by-hand code change owns the same
+  two acts (CHANGELOG-in-PR, flip to `Built` after merge).
+
+No new infrastructure, no secrets, no CI change. Docs/process only — no runtime code touched.
+
 ## 2026-09-05 — Autonomous agent lane + seven shipped features (SEO, performance, source URL, digests)
 
 A long session that did two things at once: shipped a batch of long-standing backlog features, and
