@@ -642,6 +642,15 @@ exactly the same kind of independent per-item lookup, and it caught two wrong au
 first use (a "Jerome (unconfirmed)" letter that was actually Gregory the Great; a
 "Cyprian (unconfirmed)" letter that was actually Augustine).
 
+**Generalizes beyond Drive batches — reach for this by default, not only when asked.** Adopted as a
+standing convention 5 Sep 2026: any task here that decomposes into N independent items with one
+shared write at the end fits this shape. Concretely: a Sourcer prospect batch's per-item
+copyright/provenance research, a wire-verification pass across several analytics events and pages
+(each event↔page pair is independent), or a backlog↔changelog reconciliation pass once the ranked
+list is large enough that checking tickets one at a time is the bottleneck. The boundary stays the
+same as above — don't force this onto sequential or judgment-chained work (a copyright verdict that
+depends on a prior one, a design decision, anything needing Keith's own call).
+
 ### Multi-file collections
 
 The single-file root of `_READY TO PUBLISH` is a finite, now-exhausted category (confirmed
