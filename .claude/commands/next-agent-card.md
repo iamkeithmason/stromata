@@ -26,6 +26,13 @@ Notion property's purpose:
    needs user accounts you must design, nothing that edits an external site.
 3. **Self-contained and low-ambiguity.** A clear definition of done from the card alone.
 
+**The approval gate — read the `Agent` select property.** The Feature Backlog's `Agent`
+property has two values: **`Pending approval`** = a candidate (identified by analytics or
+an audit) that Keith has NOT yet approved — do **not** build these; and **`Agent-ready`**
+= Keith has reviewed and approved it for the pipeline. This command builds **only**
+`Agent = 'Agent-ready'` cards. New candidates are logged as `Pending approval` for Keith
+to promote — never promote a card to `Agent-ready` yourself.
+
 ## Steps
 
 1. **Pull the queue.** Query the Feature Backlog data source
@@ -35,7 +42,7 @@ Notion property's purpose:
    SELECT url, Feature, Impact, Confidence, Ease, (Impact*Confidence*Ease) AS ICE,
           "Recommended Phase", Status, "Stack Context"
    FROM "collection://00686889-855b-424e-8af1-1fe31062648e"
-   WHERE "Agent-ready" = '__YES__' AND Status IN ('Idea','Under Consideration','Planned')
+   WHERE "Agent" = 'Agent-ready' AND Status IN ('Idea','Under Consideration','Planned')
    ORDER BY ICE DESC
    ```
 
@@ -51,7 +58,8 @@ Notion property's purpose:
 3. **Read it fully.** `notion-fetch` the card page and read `Summary`,
    `Implementation Suggestion`, `Stack Context`, and `Notes`. If, on reading, the card
    fails an Agent-ready test above, do NOT build it: post one line on the card body
-   explaining why, leave `Agent-ready` for Keith to reconsider, and stop.
+   explaining why, set its `Agent` back to `Pending approval` for Keith to reconsider,
+   and stop.
 
 4. **Branch off latest main.**
    ```bash
@@ -89,7 +97,7 @@ Notion property's purpose:
 10. **Update the card.** Add a note to the card *body* (never overwrite the `Notes`
     property) linking the PR and stating what was verified (including the review-gate
     outcome). Set `Status` → `Planned`. Do **not** set `Built` — that is Keith's call
-    after merge. Leave `Agent-ready` ticked.
+    after merge. Leave `Agent` = `Agent-ready`.
 
 11. **Stop for review.** One card per run. Under `/loop`, the next iteration picks the
     next card only after this one's PR exists.
