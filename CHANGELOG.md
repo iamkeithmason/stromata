@@ -7,6 +7,61 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-09-05 — Autonomous agent lane + seven shipped features (SEO, performance, source URL, digests)
+
+A long session that did two things at once: shipped a batch of long-standing backlog features, and
+stood up the scaffolding for Claude to keep working the backlog semi-autonomously between sessions.
+
+**Features shipped to prod (all squash-merged, wire-verified where the surface allowed):**
+
+- **Source-document link on the text edit form** (#67) — the original ask. Keith wanted to switch
+  between a text and its source while reviewing. First pass linkified any URL already present in the
+  attribution/provenance/translation notes; that turned into a proper first-class field. Migration
+  `017_text_source_url.sql` adds a nullable `texts.source_url`, applied to prod via the Supabase MCP
+  and backfilled across 32 existing rows. Threaded through `lib/types.ts`, both admin API routes
+  (POST + PATCH), `NewTextForm.tsx`, `EditTextForm.tsx` (new "Source document" panel that also
+  surfaces any URLs found in the notes fields), and `scripts/pipeline-import.mjs` so pipeline imports
+  carry the prospect's source URL forward automatically.
+- **`llms.txt`** (#60) — dynamic curated `app/llms.txt/route.ts` generated from the live DB.
+- **`sitemap.xml` + `robots.txt`** (#61) — `app/sitemap.ts` (force-dynamic, 531 URLs from Supabase)
+  and `app/robots.ts` (disallows `/admin`, `/api/`; points at the sitemap).
+- **SEO metadata + JSON-LD** (#64) — shared `app/components/JsonLd.tsx` (escapes `<`→`<`) plus
+  canonicals, descriptions, and Book / CollectionPage / ItemList / BreadcrumbList / Person structured
+  data across ~16 route files.
+- **ISR on reader pages** (#65) — `revalidate = 3600` on the home page, text / author / collection /
+  theme / tradition / era detail pages; scripture page moved from force-dynamic to revalidate.
+- **Draft/unpublished leak fix** (#62) — added the missing `.eq('draft', false)` /
+  `.eq('published', true)` filters to search, locations (index + country), FeaturedAuthors, and the
+  scripture-ref collections query. The service-role key bypasses RLS, so these filters live in app
+  code and each missing one was a quiet leak of draft content into public pages.
+
+**Autonomous scaffold (the more interesting half):**
+
+- **Review-gated agent lane** — `.claude/commands/next-agent-card.md` (#59, hardened by #63/#66): a
+  `/next-agent-card` mechanic that pulls the top-scoring backlog card, builds it on a fresh branch off
+  `origin/main`, and **must** run `/security-review` + `/code-review` before opening a draft PR. Lesson
+  banked mid-session: a subagent reporting "done" is not done — one stalled with edits uncommitted and
+  no PR, so the mechanic now treats verified artifacts (branch pushed, PR open, reviews run) as the
+  only completion signal.
+- **Two-stage approval gate** — backlog cards carry an `Agent` status of *Pending approval* →
+  *Agent-ready*. The mechanic only ever queries `WHERE "Agent" = 'Agent-ready'`, so a candidate can be
+  identified without being auto-pipelined; Keith flips it to Agent-ready after his own review.
+- **Growth Digest history** — new Notion database capturing the weekly analytics digest with
+  week-over-week deltas, including the growth model's "what to record each month" metrics tracked
+  weekly. North Star aligned to the admin dashboard's proxy (repeat visits = visits − visitors), since
+  Umami's stats endpoint gives no unique-returning-visitor split. The digest may annotate and adjust
+  ICE scores within guardrails (logged rationale, ≤2 cards/week, never touches Status / Agent-ready /
+  reject).
+- **Three weekly Routines** (Mon UTC) — pipeline run 06:00, analytics digest 08:00, agent-card build
+  10:00. Notion + Supabase connectors attached via the claude.ai routines UI (the `connectors` param
+  isn't available to this org through the MCP).
+
+**Verification note:** previews are SSO-gated and `/admin` needs Keith's login, so everything was
+verified via `tsc --noEmit` / `next lint` / `next build`, direct Supabase queries, and prod `curl`
+wire-checks rather than by eye. The five shipped backlog cards are now marked **Built** in Notion;
+**Accessibility** (ICE 240) and **Chronicle** remain the only open Agent-ready cards — Accessibility
+is what the first Monday agent-card routine will pick up.
+
 ## 2026-09-03 — Fix: PDF page breaks landing mid-page with wasted whitespace
 
 Keith downloaded `national-apostasy.pdf` right after the previous fix confirmed working and spotted
