@@ -18,6 +18,11 @@ import { DownloadLinks } from '@/app/components/DownloadLinks'
 import { ReaderSettings } from '@/app/components/ReaderSettings'
 import { CitationButton } from '@/app/components/CitationButton'
 
+// Incremental Static Regeneration: cache the rendered page and revalidate
+// hourly. Safe given the manual publish cadence — a newly published or edited
+// text appears within the window rather than requiring a redeploy.
+export const revalidate = 3600
+
 type Props = { params: Promise<{ slug: string }> }
 
 export async function generateMetadata({ params }: Props) {

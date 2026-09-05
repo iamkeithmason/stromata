@@ -8,6 +8,11 @@ import { JsonLd } from '@/app/components/JsonLd'
 import { readingTime } from '@/lib/reading-time'
 import { OG_IMAGE, SITE_URL } from '@/lib/metadata'
 
+// Incremental Static Regeneration: cache the rendered page and revalidate
+// hourly. Safe given the manual publish cadence — a newly published or edited
+// collection appears within the window rather than requiring a redeploy.
+export const revalidate = 3600
+
 type Props = { params: Promise<{ slug: string }> }
 
 export async function generateMetadata({ params }: Props) {

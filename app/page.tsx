@@ -11,6 +11,11 @@ import { ChurchYearRow } from './components/ChurchYearRow'
 import { readingTime } from '@/lib/reading-time'
 import { ThemeChip } from './components/ThemeChip'
 
+// Incremental Static Regeneration: cache the rendered home page and revalidate
+// hourly. Safe given the manual publish cadence — newly published texts appear
+// within the window rather than requiring a redeploy.
+export const revalidate = 3600
+
 // ── Types ──────────────────────────────────────────────────────────────────
 
 type AuthorRef = {
