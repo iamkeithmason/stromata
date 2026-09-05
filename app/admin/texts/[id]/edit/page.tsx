@@ -39,6 +39,7 @@ export default async function EditTextPage({ params }: Props) {
           initialThemeSlugs={themeSlugs}
           initialCollectionId={text.collection_id ?? ''}
           initialCollectionOrder={text.collection_order ?? null}
+          initialSourceUrl={text.source_url ?? ''}
           initialSourceAttribution={text.source_attribution ?? ''}
           initialProvenanceNotes={text.provenance_notes ?? ''}
           initialTranslationNotes={text.translation_notes ?? ''}
