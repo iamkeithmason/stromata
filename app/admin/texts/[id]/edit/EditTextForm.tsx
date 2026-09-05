@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import { GENRES, THEME_CLUSTERS } from '@/lib/constants'
 import MarkdownEditor from '@/app/components/MarkdownEditor'
@@ -10,6 +10,29 @@ type Collection = { id: string; title: string }
 
 const input = 'w-full px-3 py-2 border border-stone-300 rounded text-stone-800 focus:outline-none focus:ring-2 focus:ring-stone-400 bg-white'
 const label = 'block text-sm font-medium text-stone-700 mb-1'
+
+// Pull any http(s) URLs out of the free-text source/provenance/translation notes so
+// they can be offered as clickable "open the original in a new tab" links.
+function extractSourceLinks(...fields: string[]): string[] {
+  const urlPattern = /https?:\/\/[^\s<>"')\]]+/g
+  const seen = new Set<string>()
+  for (const field of fields) {
+    for (const match of field.matchAll(urlPattern)) {
+      // Trim trailing punctuation that commonly rides along in prose (e.g. a full stop).
+      const url = match[0].replace(/[.,;:]+$/, '')
+      if (!seen.has(url)) seen.add(url)
+    }
+  }
+  return [...seen]
+}
+
+function linkLabel(url: string): string {
+  try {
+    return new URL(url).hostname.replace(/^www\./, '')
+  } catch {
+    return url
+  }
+}
 
 type Props = {
   id: string
@@ -65,6 +88,9 @@ export default function EditTextForm({
   const [genreSlug, setGenreSlug] = useState(initialGenreSlug)
   const [selectedThemes, setSelectedThemes] = useState<string[]>(initialThemeSlugs)
   const [collectionId, setCollectionId] = useState(initialCollectionId)
+  const [sourceAttribution, setSourceAttribution] = useState(initialSourceAttribution)
+  const [provenanceNotes, setProvenanceNotes] = useState(initialProvenanceNotes)
+  const [translationNotes, setTranslationNotes] = useState(initialTranslationNotes)
   const [editorialIntroduction, setEditorialIntroduction] = useState(initialEditorialIntroduction)
   const [noteDraft, setNoteDraft] = useState(initialNoteDraft)
   const [summary, setSummary] = useState(initialSummary)
@@ -72,6 +98,11 @@ export default function EditTextForm({
   const [generateError, setGenerateError] = useState('')
   const [generatingSummary, setGeneratingSummary] = useState(false)
   const [generateSummaryError, setGenerateSummaryError] = useState('')
+
+  const sourceLinks = useMemo(
+    () => extractSourceLinks(sourceAttribution, provenanceNotes, translationNotes),
+    [sourceAttribution, provenanceNotes, translationNotes]
+  )
 
   useEffect(() => {
     fetch('/api/admin/authors').then(r => r.json()).then(setAuthors)
@@ -257,19 +288,48 @@ export default function EditTextForm({
         </div>
       </div>
 
+      {sourceLinks.length > 0 && (
+        <div className="border border-stone-200 rounded p-3 bg-stone-50">
+          <p className="text-xs font-semibold text-stone-500 uppercase tracking-wide mb-2">
+            Source document
+          </p>
+          <ul className="space-y-1">
+            {sourceLinks.map(url => (
+              <li key={url}>
+                <a
+                  href={url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  title={url}
+                  className="text-sm text-stone-700 underline decoration-stone-300 hover:decoration-stone-600 break-all"
+                >
+                  {linkLabel(url)} ↗
+                </a>
+              </li>
+            ))}
+          </ul>
+          <p className="text-xs text-stone-400 mt-2">
+            Opens in a new tab, so you can compare against the original while you review. Detected from the fields below.
+          </p>
+        </div>
+      )}
+
       <div>
         <label className={label}>Source attribution</label>
-        <input name="source_attribution" type="text" defaultValue={initialSourceAttribution} className={input} />
+        <input name="source_attribution" type="text" value={sourceAttribution}
+          onChange={e => setSourceAttribution(e.target.value)} className={input} />
       </div>
 
       <div>
         <label className={label}>Provenance notes</label>
-        <textarea name="provenance_notes" rows={3} defaultValue={initialProvenanceNotes} className={input} />
+        <textarea name="provenance_notes" rows={3} value={provenanceNotes}
+          onChange={e => setProvenanceNotes(e.target.value)} className={input} />
       </div>
 
       <div>
         <label className={label}>Translation notes</label>
-        <textarea name="translation_notes" rows={3} defaultValue={initialTranslationNotes} className={input}
+        <textarea name="translation_notes" rows={3} value={translationNotes}
+          onChange={e => setTranslationNotes(e.target.value)} className={input}
           placeholder="Note if the translation is not independently public domain…" />
       </div>
 
