@@ -328,6 +328,7 @@ async function importTextFile(filePath, prospect, authorId, collectionId) {
       body: repairedBody,
       collection_id: collectionId,
       collection_order: data.collection_order ?? null,
+      source_url: data.source_url || prospect.source_url || null,
       source_attribution: data.source_attribution || null,
       provenance_notes: data.provenance_notes || null,
       translation_notes: data.translation_notes || null,

@@ -40,6 +40,7 @@ function NewTextFormInner() {
   const [selectedThemes, setSelectedThemes] = useState<string[]>([])
   const [collectionId, setCollectionId] = useState('')
   const [collectionOrder, setCollectionOrder] = useState('')
+  const [sourceUrl, setSourceUrl] = useState('')
   const [sourceAttribution, setSourceAttribution] = useState('')
   const [provenanceNotes, setProvenanceNotes] = useState('')
   const [translationNotes, setTranslationNotes] = useState('')
@@ -74,6 +75,7 @@ function NewTextFormInner() {
         if (src.collection_order) {
           setCollectionOrder(String(src.collection_order + 1))
         }
+        setSourceUrl(src.source_url ?? '')
         setSourceAttribution(src.source_attribution ?? '')
         setProvenanceNotes(src.provenance_notes ?? '')
         setTranslationNotes(src.translation_notes ?? '')
@@ -103,6 +105,7 @@ function NewTextFormInner() {
       theme_slugs: selectedThemes,
       collection_id: collectionId || null,
       collection_order: collectionId && collectionOrder ? Number(collectionOrder) : null,
+      source_url: sourceUrl || null,
       source_attribution: sourceAttribution || null,
       provenance_notes: provenanceNotes || null,
       translation_notes: translationNotes || null,
@@ -264,6 +267,17 @@ function NewTextFormInner() {
             </div>
           ))}
         </div>
+      </div>
+
+      <div>
+        <label className={label}>Source URL</label>
+        <input
+          type="url"
+          value={sourceUrl}
+          onChange={e => setSourceUrl(e.target.value)}
+          className={input}
+          placeholder="https://… (link to the original source document)"
+        />
       </div>
 
       <div>

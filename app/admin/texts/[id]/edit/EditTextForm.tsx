@@ -43,6 +43,7 @@ type Props = {
   initialThemeSlugs: string[]
   initialCollectionId: string
   initialCollectionOrder: number | null
+  initialSourceUrl: string
   initialSourceAttribution: string
   initialProvenanceNotes: string
   initialTranslationNotes: string
@@ -66,6 +67,7 @@ export default function EditTextForm({
   initialThemeSlugs,
   initialCollectionId,
   initialCollectionOrder,
+  initialSourceUrl,
   initialSourceAttribution,
   initialProvenanceNotes,
   initialTranslationNotes,
@@ -88,6 +90,7 @@ export default function EditTextForm({
   const [genreSlug, setGenreSlug] = useState(initialGenreSlug)
   const [selectedThemes, setSelectedThemes] = useState<string[]>(initialThemeSlugs)
   const [collectionId, setCollectionId] = useState(initialCollectionId)
+  const [sourceUrl, setSourceUrl] = useState(initialSourceUrl)
   const [sourceAttribution, setSourceAttribution] = useState(initialSourceAttribution)
   const [provenanceNotes, setProvenanceNotes] = useState(initialProvenanceNotes)
   const [translationNotes, setTranslationNotes] = useState(initialTranslationNotes)
@@ -100,8 +103,8 @@ export default function EditTextForm({
   const [generateSummaryError, setGenerateSummaryError] = useState('')
 
   const sourceLinks = useMemo(
-    () => extractSourceLinks(sourceAttribution, provenanceNotes, translationNotes),
-    [sourceAttribution, provenanceNotes, translationNotes]
+    () => extractSourceLinks(sourceUrl, sourceAttribution, provenanceNotes, translationNotes),
+    [sourceUrl, sourceAttribution, provenanceNotes, translationNotes]
   )
 
   useEffect(() => {
@@ -153,6 +156,7 @@ export default function EditTextForm({
       theme_slugs: selectedThemes,
       collection_id: collectionId || null,
       collection_order: collectionId ? (Number(data.get('collection_order')) || null) : null,
+      source_url: sourceUrl || null,
       source_attribution: (data.get('source_attribution') as string) || null,
       provenance_notes: (data.get('provenance_notes') as string) || null,
       translation_notes: (data.get('translation_notes') as string) || null,
@@ -309,10 +313,20 @@ export default function EditTextForm({
             ))}
           </ul>
           <p className="text-xs text-stone-400 mt-2">
-            Opens in a new tab, so you can compare against the original while you review. Detected from the fields below.
+            Opens in a new tab, so you can compare against the original while you review. From the Source URL field and any links in the source / provenance / translation notes below.
           </p>
         </div>
       )}
+
+      <div>
+        <label className={label}>
+          Source URL{' '}
+          <span className="text-stone-400 font-normal">(link to the original — appears as the source document link above)</span>
+        </label>
+        <input name="source_url" type="url" value={sourceUrl}
+          onChange={e => setSourceUrl(e.target.value)} className={input}
+          placeholder="https://…" />
+      </div>
 
       <div>
         <label className={label}>Source attribution</label>

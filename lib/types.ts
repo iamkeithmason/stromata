@@ -60,6 +60,7 @@ export type Text = {
   author_id: string
   genre_id: number
   body: string
+  source_url: string | null
   source_attribution: string | null
   provenance_notes: string | null
   translation_notes: string | null
