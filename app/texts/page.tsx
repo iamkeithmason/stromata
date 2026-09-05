@@ -26,6 +26,11 @@ type Props = {
 
 export const metadata = {
   title: 'Library — The Stromata',
+  description:
+    'Browse the full library of freely readable public-domain Christian texts — homilies, letters, treatises, and more, organised by author, tradition, era, and genre.',
+  // Canonical to the bare path so the ?tradition / ?era / ?genre / ?sort
+  // filter variants fold into one indexed URL.
+  alternates: { canonical: '/texts' },
 }
 
 const SORT_KEYS = ['title', 'author', 'length'] as const

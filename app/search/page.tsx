@@ -100,7 +100,11 @@ function Highlight({ text, query }: { text: string; query: string }) {
 
 export async function generateMetadata({ searchParams }: Props) {
   const { q } = await searchParams
-  return { title: q ? `"${q}" — The Stromata` : 'Search — The Stromata' }
+  return {
+    title: q ? `"${q}" — The Stromata` : 'Search — The Stromata',
+    // Canonical to the bare path so per-query result pages fold into one URL.
+    alternates: { canonical: '/search' },
+  }
 }
 
 export default async function SearchPage({ searchParams }: Props) {

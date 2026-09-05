@@ -36,7 +36,12 @@ export async function generateMetadata({ params }: Props) {
   const slug = (await params)['country-slug']
   const supabase = createServerClient()
   const { data } = await supabase.from('locations').select('name').eq('slug', slug).single()
-  return { title: data ? `${data.name} — The Stromata` : 'Locations — The Stromata' }
+  if (!data) return { title: 'Locations — The Stromata' }
+  return {
+    title: `${data.name} — The Stromata`,
+    description: `Christian authors from ${data.name} and their freely readable works in The Stromata.`,
+    alternates: { canonical: `/locations/${slug}` },
+  }
 }
 
 export default async function CountryPage({ params }: Props) {

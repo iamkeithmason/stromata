@@ -30,7 +30,12 @@ export async function generateMetadata({ params }: Props) {
   const { ref } = await params
   const q = parseReferenceQuery(decodeURIComponent(ref))
   const label = q ? referenceLabel(q.bookName, q.chapter, q.verse) : decodeURIComponent(ref)
-  return { title: `${label} — The Stromata` }
+  return {
+    title: `${label} — The Stromata`,
+    // Canonical to the normalised reference label so aliases (e.g. "Rom. 8:28"
+    // and "Romans 8:28") fold into one indexed URL.
+    alternates: { canonical: `/scripture/${encodeURIComponent(label)}` },
+  }
 }
 
 export default async function ScriptureLookupPage({ params }: Props) {

@@ -22,6 +22,11 @@ type Props = {
 
 export const metadata = {
   title: 'Authors — The Stromata',
+  description:
+    'Browse every author in The Stromata — theologians, pastors, monks, and divines from across Christian history, each with their freely readable works.',
+  // Canonical to the bare path so the ?tradition / ?era / ?sort filter
+  // variants fold into one indexed URL.
+  alternates: { canonical: '/authors' },
 }
 
 const SORT_KEYS = ['name', 'texts', 'chronological'] as const

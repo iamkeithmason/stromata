@@ -5,6 +5,8 @@ import { SiteHeader } from '@/app/components/SiteHeader'
 import { TrackPageEvent } from '@/app/components/TrackPageEvent'
 import { TRADITIONS } from '@/lib/constants'
 import { readingTime } from '@/lib/reading-time'
+import { JsonLd } from '@/app/components/JsonLd'
+import { SITE_URL } from '@/lib/metadata'
 
 type Props = { params: Promise<{ slug: string }> }
 
@@ -32,6 +34,7 @@ export async function generateMetadata({ params }: Props) {
   return {
     title: `${tradition.seoTitle} | The Stromata`,
     description: `Browse texts from the ${tradition.name} tradition in the Stromata library — freely accessible writings from Christian history.`,
+    alternates: { canonical: `/traditions/${slug}` },
   }
 }
 
@@ -67,8 +70,34 @@ export default async function TraditionPage({ params }: Props) {
 
   const traditionMeta = TRADITIONS.find(t => t.slug === slug)
 
+  // ── Structured data — CollectionPage + ItemList of the tradition's texts ────
+  const canonicalUrl = `${SITE_URL}/traditions/${tradition.slug}`
+  const collectionJsonLd: Record<string, unknown> = {
+    '@context': 'https://schema.org',
+    '@type': 'CollectionPage',
+    name: tradition.name,
+    url: canonicalUrl,
+    mainEntityOfPage: { '@type': 'WebPage', '@id': canonicalUrl },
+    ...(tradition.description ? { description: tradition.description as string } : {}),
+    ...(texts.length > 0
+      ? {
+          mainEntity: {
+            '@type': 'ItemList',
+            numberOfItems: texts.length,
+            itemListElement: texts.map((t, i) => ({
+              '@type': 'ListItem',
+              position: i + 1,
+              url: `${SITE_URL}/texts/${t.slug}`,
+              name: t.title,
+            })),
+          },
+        }
+      : {}),
+  }
+
   return (
     <div style={{ background: 'var(--paper)', paddingTop: '4rem' }} className="min-h-screen">
+      <JsonLd data={collectionJsonLd} />
       <SiteHeader breadcrumb={null} />
 
       <main className="content-shell py-12">
