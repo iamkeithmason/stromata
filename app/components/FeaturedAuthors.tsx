@@ -57,6 +57,7 @@ export async function FeaturedAuthors() {
     .from('authors')
     .select('id, name, slug, birth_year, death_year, image_url, tradition:traditions(name), era:eras(label)')
     .in('slug', CURATED_SLUGS)
+    .eq('draft', false)
 
   const authorsMap = new Map<string, AuthorRow>()
   for (const a of (raw ?? []) as unknown as AuthorRow[]) {

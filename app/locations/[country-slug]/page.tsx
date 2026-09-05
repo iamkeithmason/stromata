@@ -56,6 +56,7 @@ export default async function CountryPage({ params }: Props) {
     .select('id, name, slug, birth_year, death_year, tradition:traditions(name), era:eras(label)')
     .eq('location_id', location.id)
     .not('slug', 'is', null)
+    .eq('draft', false)
     .order('name')
 
   const authors = (authorsData ?? []) as unknown as AuthorRow[]

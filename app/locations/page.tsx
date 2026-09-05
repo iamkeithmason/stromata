@@ -12,7 +12,7 @@ export default async function LocationsPage() {
 
   const [{ data: locations }, { data: authorCounts }] = await Promise.all([
     supabase.from('locations').select('id, name, slug').order('name'),
-    supabase.from('authors').select('location_id').not('location_id', 'is', null).not('slug', 'is', null),
+    supabase.from('authors').select('location_id').not('location_id', 'is', null).not('slug', 'is', null).eq('draft', false),
   ])
 
   const countMap: Record<number, number> = {}
