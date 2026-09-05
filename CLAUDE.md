@@ -183,6 +183,35 @@ Rules:
 
 ---
 
+## Keeping the record current — which change goes where
+
+Every automated routine produces a change; each one has exactly one authoritative record,
+and the record must land in the *same act* as the change wherever possible, so the two can't
+drift. Don't cross-post — a text import in CHANGELOG.md is noise; a code change buried only
+in a run-log is invisible.
+
+| Change | Authoritative record | When it's written |
+|---|---|---|
+| **Code / product change** (a `/next-agent-card` build, a bug fix, an infra change) | `CHANGELOG.md`, newest entry on top | **Inside the same PR** — the entry is committed on the branch and merges atomically with the code. A code PR should always touch CHANGELOG.md; this is enforced by convention (the mechanic + this doc), not a CI gate. |
+| **Content import** (pipeline stages, Sourcer bundles) | `scripts/ingestion/run-log/YYYY-MM-DD.md` | At the end of the run. **Not** CHANGELOG.md. |
+| **Analytics digest** | Notion Growth Digest DB (+ committed report under `scripts/analytics/reports/`) | Weekly, by the digest routine/workflow. |
+| **Backlog card lifecycle** | Notion Feature Backlog `Status` | `Agent-ready` → `Planned` (at PR open, by the builder) → `Built` (after merge, by the next `/next-agent-card` run's reconciliation sweep — step 0 — or by whoever merges). |
+
+**The two loop-closers that make this self-healing:**
+
+1. **The CHANGELOG rides in the PR.** Because the entry is part of the merged diff, the log
+   can never lag behind what shipped — there is no separate "remember to update the log" step
+   to forget.
+2. **The weekly reconciliation sweep** (`/next-agent-card` step 0) flips `Planned` → `Built`
+   for any card whose PR has since merged, and backfills a CHANGELOG entry if one is somehow
+   missing. This closes the merge-time gap without wiring a webhook from GitHub into Notion:
+   `Built` is Keith's merge made visible, reconciled on the next run, not guessed at PR time.
+
+If you ship a code change by hand (not via a routine), you own the same two acts: a CHANGELOG
+entry in the PR, and flipping the backlog card to `Built` after merge.
+
+---
+
 ## Pipeline Purpose
 
 **Driver 3 — content breadth.** The pipeline finds, fetches, cleans, and stages new texts from public-domain sources. It does not discover authors or handle user-facing SEO — those are separate concerns.

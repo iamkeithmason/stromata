@@ -35,6 +35,20 @@ to promote — never promote a card to `Agent-ready` yourself.
 
 ## Steps
 
+0. **Reconcile the ledger first (close last week's loop).** Before starting new work,
+   make the backlog reflect what actually shipped. List Feature Backlog cards at
+   `Status = 'Planned'` that carry a linked PR in their body, and check each PR's state
+   via `mcp__github__pull_request_read`:
+   - **Merged** → set the card `Status` → `Built`. (This is the only place a routine sets
+     `Built` — it does so *after* merge, never at PR time. It reconciles Keith's merge,
+     it does not pre-empt his review.) Confirm the merged PR added a CHANGELOG entry; if
+     for some reason it didn't, add one now describing the shipped change.
+   - **Closed unmerged** → leave `Status` as-is and add one line to the card body noting
+     the PR was closed without merging.
+   - **Still open** → leave it; it's in flight.
+   Then continue to the new card below. This sweep is what keeps `Built` and the CHANGELOG
+   current between runs without any merge-time webhook into Notion.
+
 1. **Pull the queue.** Query the Feature Backlog data source
    (`collection://00686889-855b-424e-8af1-1fe31062648e`), Agent-ready cards first:
 
@@ -89,17 +103,28 @@ to promote — never promote a card to `Agent-ready` yourself.
    leaving. This is the safety net that lets these PRs be merged with little oversight,
    so it is mandatory — do not skip it to save time.
 
-9. **Open a draft PR.** `git push -u origin claude/<card-slug>`, then create a **draft**
+9. **Write the CHANGELOG entry into the same branch (required — never skip).** Before
+   pushing, add a dated entry to the top of `CHANGELOG.md` (below the header `---`)
+   describing the change this PR makes and why, in the plain-prose house style of the
+   existing entries. Commit it on the same branch as the code. This is deliberate: the
+   entry rides *inside* the PR, so merging the code and updating the record is one atomic
+   act — it is impossible to ship the change without the CHANGELOG catching up. Content
+   imports are the one exception (their record is `scripts/ingestion/run-log/`, not
+   CHANGELOG — see CLAUDE.md "Keeping the record current"), but a `/next-agent-card` PR is
+   a code/product change, so it always gets a CHANGELOG entry.
+
+10. **Open a draft PR.** `git push -u origin claude/<card-slug>`, then create a **draft**
    PR (mirror any PR template), and `subscribe_pr_activity`. In the PR body, record that
    the review gate ran and what it surfaced (or "clean"). Never mark ready, never
    merge — Keith does that. Drive its CI to green per the babysit rules.
 
-10. **Update the card.** Add a note to the card *body* (never overwrite the `Notes`
+11. **Update the card.** Add a note to the card *body* (never overwrite the `Notes`
     property) linking the PR and stating what was verified (including the review-gate
-    outcome). Set `Status` → `Planned`. Do **not** set `Built` — that is Keith's call
-    after merge. Leave `Agent` = `Agent-ready`.
+    outcome). Set `Status` → `Planned`. Do **not** set `Built` here — that happens in
+    step 0 of the next run, once Keith has merged (or is set by whoever merges, per
+    CLAUDE.md). Leave `Agent` = `Agent-ready`.
 
-11. **Stop for review.** One card per run. Under `/loop`, the next iteration picks the
+12. **Stop for review.** One card per run. Under `/loop`, the next iteration picks the
     next card only after this one's PR exists.
 
 ## Never
