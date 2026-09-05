@@ -6,6 +6,7 @@ import { createServerClient } from '@/lib/supabase/server'
 import { readingTime } from '@/lib/reading-time'
 import MarkdownBody from '@/app/components/MarkdownBody'
 import { LancetArch } from '@/app/components/LancetArch'
+import { JsonLd } from '@/app/components/JsonLd'
 import { OG_IMAGE } from '@/lib/metadata'
 
 const SITE_URL = 'https://www.thestromata.com'
@@ -226,10 +227,7 @@ export default async function AuthorPage({ params }: Props) {
       <SiteHeader breadcrumb={<Link href="/authors" className="hover:opacity-70 transition-opacity">Authors</Link>} />
 
       {/* JSON-LD structured data */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
+      <JsonLd data={jsonLd} />
 
       <main className="content-shell py-12">
 

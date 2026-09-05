@@ -5,6 +5,7 @@ export const metadata = {
   title: 'About — The Stromata',
   description:
     'The Stromata is a freely accessible library of out-of-print Christian texts, organised by author, tradition, era, and theme.',
+  alternates: { canonical: '/about' },
 }
 
 export default function AboutPage() {

@@ -5,6 +5,8 @@ import { SiteHeader } from '@/app/components/SiteHeader'
 import { TrackPageEvent } from '@/app/components/TrackPageEvent'
 import { THEME_CLUSTERS } from '@/lib/constants'
 import { readingTime } from '@/lib/reading-time'
+import { JsonLd } from '@/app/components/JsonLd'
+import { SITE_URL } from '@/lib/metadata'
 
 type Props = { params: Promise<{ slug: string }> }
 
@@ -71,7 +73,12 @@ export async function generateMetadata({ params }: Props) {
   const { slug } = await params
   const supabase = createServerClient()
   const { data } = await supabase.from('themes').select('name').eq('slug', slug).single()
-  return { title: data ? `${data.name} — The Stromata` : 'Theme — The Stromata' }
+  if (!data) return { title: 'Theme — The Stromata' }
+  return {
+    title: `${data.name} — The Stromata`,
+    description: `Texts on ${data.name} from across Christian history — freely readable in The Stromata.`,
+    alternates: { canonical: `/themes/${slug}` },
+  }
 }
 
 export default async function ThemePage({ params }: Props) {
@@ -152,8 +159,34 @@ export default async function ThemePage({ params }: Props) {
     return titleA.localeCompare(titleB)
   })
 
+  // ── Structured data — CollectionPage + ItemList of the visible entries ──────
+  const canonicalUrl = `${SITE_URL}/themes/${theme.slug}`
+  const collectionJsonLd: Record<string, unknown> = {
+    '@context': 'https://schema.org',
+    '@type': 'CollectionPage',
+    name: theme.name,
+    url: canonicalUrl,
+    mainEntityOfPage: { '@type': 'WebPage', '@id': canonicalUrl },
+    ...(theme.description ? { description: theme.description as string } : {}),
+    ...(entries.length > 0
+      ? {
+          mainEntity: {
+            '@type': 'ItemList',
+            numberOfItems: entries.length,
+            itemListElement: entries.map((e, i) => ({
+              '@type': 'ListItem',
+              position: i + 1,
+              url: e.kind === 'text' ? `${SITE_URL}/texts/${e.text.slug}` : `${SITE_URL}/collections/${e.slug}`,
+              name: e.kind === 'text' ? e.text.title : e.title,
+            })),
+          },
+        }
+      : {}),
+  }
+
   return (
     <div style={{ background: 'var(--paper)', paddingTop: '4rem' }} className="min-h-screen">
+      <JsonLd data={collectionJsonLd} />
       <SiteHeader breadcrumb={null} />
 
       <main className="content-shell py-12">

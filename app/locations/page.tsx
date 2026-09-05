@@ -5,6 +5,9 @@ import { TrackPageEvent } from '@/app/components/TrackPageEvent'
 
 export const metadata = {
   title: 'Locations — The Stromata',
+  description:
+    'Browse the authors of The Stromata by the places they lived and worked — a geography of Christian writing across the centuries.',
+  alternates: { canonical: '/locations' },
 }
 
 export default async function LocationsPage() {

@@ -5,6 +5,8 @@ import { SiteHeader } from '@/app/components/SiteHeader'
 import { TrackPageEvent } from '@/app/components/TrackPageEvent'
 import { ERAS } from '@/lib/constants'
 import { readingTime } from '@/lib/reading-time'
+import { JsonLd } from '@/app/components/JsonLd'
+import { SITE_URL } from '@/lib/metadata'
 
 type Props = { params: Promise<{ slug: string }> }
 
@@ -29,7 +31,12 @@ export async function generateMetadata({ params }: Props) {
   const { slug } = await params
   const supabase = createServerClient()
   const { data } = await supabase.from('eras').select('label').eq('slug', slug).single()
-  return { title: data ? `${data.label} — The Stromata` : 'Era — The Stromata' }
+  if (!data) return { title: 'Era — The Stromata' }
+  return {
+    title: `${data.label} — The Stromata`,
+    description: `Christian texts from the ${data.label} era, freely readable in The Stromata.`,
+    alternates: { canonical: `/eras/${slug}` },
+  }
 }
 
 export default async function EraPage({ params }: Props) {
@@ -68,8 +75,34 @@ export default async function EraPage({ params }: Props) {
       ? `to ${era.year_end}`
       : null
 
+  // ── Structured data — CollectionPage + ItemList of the era's texts ──────────
+  const canonicalUrl = `${SITE_URL}/eras/${era.slug}`
+  const collectionJsonLd: Record<string, unknown> = {
+    '@context': 'https://schema.org',
+    '@type': 'CollectionPage',
+    name: era.label,
+    url: canonicalUrl,
+    mainEntityOfPage: { '@type': 'WebPage', '@id': canonicalUrl },
+    ...(era.description ? { description: era.description as string } : {}),
+    ...(texts.length > 0
+      ? {
+          mainEntity: {
+            '@type': 'ItemList',
+            numberOfItems: texts.length,
+            itemListElement: texts.map((t, i) => ({
+              '@type': 'ListItem',
+              position: i + 1,
+              url: `${SITE_URL}/texts/${t.slug}`,
+              name: t.title,
+            })),
+          },
+        }
+      : {}),
+  }
+
   return (
     <div style={{ background: 'var(--paper)', paddingTop: '4rem' }} className="min-h-screen">
+      <JsonLd data={collectionJsonLd} />
       <SiteHeader breadcrumb={null} />
 
       <main className="content-shell py-12">

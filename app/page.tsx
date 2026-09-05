@@ -83,6 +83,7 @@ type FeedEntry =
 
 export const metadata = {
   title: 'The Stromata — A reading room for the works of the ages',
+  alternates: { canonical: '/' },
 }
 
 

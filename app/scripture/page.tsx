@@ -4,7 +4,12 @@ import { createServerClient } from '@/lib/supabase/server'
 import { displayBookName } from '@/lib/scripture'
 import ScriptureSearch from './ScriptureSearch'
 
-export const metadata = { title: 'Scripture — The Stromata' }
+export const metadata = {
+  title: 'Scripture — The Stromata',
+  description:
+    'Look up a Bible verse to see which texts in The Stromata cite it — a scriptural index across the whole library.',
+  alternates: { canonical: '/scripture' },
+}
 
 // Render per request so "Most cited" always reflects the current corpus
 // (new texts appear as soon as they're published and indexed, not on redeploy).

@@ -9,7 +9,8 @@ import { TrackPageEvent } from '@/app/components/TrackPageEvent'
 import TableOfContents from '@/app/components/TableOfContents'
 import { readingTime } from '@/lib/reading-time'
 import { extractHeadings } from '@/lib/headings'
-import { OG_IMAGE } from '@/lib/metadata'
+import { OG_IMAGE, SITE_URL } from '@/lib/metadata'
+import { JsonLd } from '@/app/components/JsonLd'
 import { ThemeChip } from '@/app/components/ThemeChip'
 import { BookCover } from '@/app/components/BookCover'
 import { AuthorAside } from '@/app/components/AuthorAside'
@@ -40,15 +41,21 @@ export async function generateMetadata({ params }: Props) {
     ? `${author} — ${data.title} | The Stromata`
     : `${data.title} — The Stromata`
 
-  const description = (data.summary as string | null) ?? undefined
+  // Description is unconditional: prefer the editorial summary, else a sensible
+  // author + title fallback so every text page carries a description and per-page
+  // OG/Twitter cards.
+  // `||` (not `??`) so an empty-string summary also falls back to the template.
+  const description = (data.summary as string | null) || (author
+    ? `${author}'s ${data.title}, freely readable at The Stromata.`
+    : `${data.title}, freely readable at The Stromata.`)
+  const canonical = `/texts/${slug}`
 
   return {
     title,
-    ...(description && {
-      description,
-      openGraph: { title, description, images: [OG_IMAGE] },
-      twitter: { title, description, images: [OG_IMAGE.url] },
-    }),
+    description,
+    alternates: { canonical },
+    openGraph: { title, description, url: canonical, images: [OG_IMAGE] },
+    twitter: { card: 'summary_large_image', title, description, images: [OG_IMAGE.url] },
   }
 }
 
@@ -142,8 +149,46 @@ export default async function TextPage({ params }: Props) {
     }
   }
 
+  // ── Structured data — built from real fields only (no null values) ──────────
+  const canonicalUrl = `${SITE_URL}/texts/${slug}`
+  const bookJsonLd: Record<string, unknown> = {
+    '@context': 'https://schema.org',
+    '@type': 'Book',
+    name: text.title,
+    url: canonicalUrl,
+    mainEntityOfPage: { '@type': 'WebPage', '@id': canonicalUrl },
+    inLanguage: 'en',
+    isAccessibleForFree: true,
+    ...(author
+      ? {
+          author: {
+            '@type': 'Person',
+            name: author.name,
+            ...(author.slug ? { url: `${SITE_URL}/authors/${author.slug}` } : {}),
+          },
+        }
+      : {}),
+    ...(genre?.name ? { genre: genre.name } : {}),
+    ...(themes.length > 0 ? { about: themes.map(t => t.name) } : {}),
+  }
+
+  // BreadcrumbList mirrors the SiteHeader breadcrumb chain: Home → author → text.
+  const breadcrumbJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'The Stromata', item: SITE_URL },
+      ...(author?.slug
+        ? [{ '@type': 'ListItem', position: 2, name: author.name, item: `${SITE_URL}/authors/${author.slug}` }]
+        : []),
+      { '@type': 'ListItem', position: author?.slug ? 3 : 2, name: text.title, item: canonicalUrl },
+    ],
+  }
+
   return (
     <div id="reader-page" style={{ background: 'var(--paper)', paddingTop: '4rem' }} className="min-h-screen">
+      <JsonLd data={bookJsonLd} />
+      <JsonLd data={breadcrumbJsonLd} />
       {/* Apply the reader's saved dark-theme preference before paint, to avoid a
           light flash. Runs during HTML parse and sets the attribute on this
           same #reader-page element (its parent). */}

@@ -4,7 +4,9 @@ import { createServerClient } from '@/lib/supabase/server'
 import { SiteHeader } from '@/app/components/SiteHeader'
 import { TrackPageEvent } from '@/app/components/TrackPageEvent'
 import { DownloadLinks } from '@/app/components/DownloadLinks'
+import { JsonLd } from '@/app/components/JsonLd'
 import { readingTime } from '@/lib/reading-time'
+import { OG_IMAGE, SITE_URL } from '@/lib/metadata'
 
 type Props = { params: Promise<{ slug: string }> }
 
@@ -27,7 +29,18 @@ export async function generateMetadata({ params }: Props) {
     ? `${data.title} — ${author} | The Stromata`
     : `${data.title} | The Stromata`
 
-  return { title }
+  const description = author
+    ? `${data.title} by ${author} — a collection of freely readable texts at The Stromata.`
+    : `${data.title} — a collection of freely readable texts at The Stromata.`
+  const canonical = `/collections/${slug}`
+
+  return {
+    title,
+    description,
+    alternates: { canonical },
+    openGraph: { title, description, url: canonical, images: [OG_IMAGE] },
+    twitter: { card: 'summary_large_image', title, description, images: [OG_IMAGE.url] },
+  }
 }
 
 export default async function CollectionPage({ params }: Props) {
@@ -54,8 +67,49 @@ export default async function CollectionPage({ params }: Props) {
 
   const author = collection.author as { name: string; slug: string | null } | null
 
+  // ── Structured data — built from real fields only (no null values) ──────────
+  const canonicalUrl = `${SITE_URL}/collections/${slug}`
+  const orderedTexts = (texts ?? []) as { id: string; title: string; slug: string }[]
+  const collectionJsonLd: Record<string, unknown> = {
+    '@context': 'https://schema.org',
+    '@type': 'CollectionPage',
+    name: collection.title,
+    url: canonicalUrl,
+    mainEntityOfPage: { '@type': 'WebPage', '@id': canonicalUrl },
+    ...(collection.description ? { description: collection.description as string } : {}),
+    ...(orderedTexts.length > 0
+      ? {
+          mainEntity: {
+            '@type': 'ItemList',
+            numberOfItems: orderedTexts.length,
+            itemListElement: orderedTexts.map((t, i) => ({
+              '@type': 'ListItem',
+              position: i + 1,
+              url: `${SITE_URL}/texts/${t.slug}`,
+              name: t.title,
+            })),
+          },
+        }
+      : {}),
+  }
+
+  // BreadcrumbList mirrors the SiteHeader breadcrumb chain: Home → author → collection.
+  const breadcrumbJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'The Stromata', item: SITE_URL },
+      ...(author?.slug
+        ? [{ '@type': 'ListItem', position: 2, name: author.name, item: `${SITE_URL}/authors/${author.slug}` }]
+        : []),
+      { '@type': 'ListItem', position: author?.slug ? 3 : 2, name: collection.title, item: canonicalUrl },
+    ],
+  }
+
   return (
     <div style={{ background: 'var(--paper)', paddingTop: '4rem' }} className="min-h-screen">
+      <JsonLd data={collectionJsonLd} />
+      <JsonLd data={breadcrumbJsonLd} />
       <SiteHeader breadcrumb={author?.slug
         ? <Link href={`/authors/${author.slug}`} className="hover:opacity-70 transition-opacity">{author.name}</Link>
         : undefined}
