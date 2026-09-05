@@ -8,6 +8,11 @@ import { readingTime } from '@/lib/reading-time'
 import { JsonLd } from '@/app/components/JsonLd'
 import { SITE_URL } from '@/lib/metadata'
 
+// Incremental Static Regeneration: these pages are prerendered via
+// generateStaticParams, so without a revalidate window newly published texts
+// wouldn't appear here until the next redeploy. Revalidate hourly for freshness.
+export const revalidate = 3600
+
 type Props = { params: Promise<{ slug: string }> }
 
 type TextRow = {
