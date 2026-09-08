@@ -1,5 +1,5 @@
 'use client'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
 
 const LINKS = [
@@ -12,12 +12,22 @@ const LINKS = [
 export function MobileNav() {
   const [open, setOpen] = useState(false)
 
+  useEffect(() => {
+    if (!open) return
+    function handleKeydown(e: KeyboardEvent) {
+      if (e.key === 'Escape') setOpen(false)
+    }
+    window.addEventListener('keydown', handleKeydown)
+    return () => window.removeEventListener('keydown', handleKeydown)
+  }, [open])
+
   return (
     <div className="sm:hidden">
       <button
         type="button"
         aria-label={open ? 'Close menu' : 'Open menu'}
         aria-expanded={open}
+        aria-controls="mobile-nav-menu"
         onClick={() => setOpen(o => !o)}
         className="flex flex-col justify-center items-end gap-1.5 p-2 -mr-2"
       >
@@ -28,6 +38,7 @@ export function MobileNav() {
 
       {open && (
         <nav
+          id="mobile-nav-menu"
           className="fixed left-0 right-0 flex flex-col text-sm font-serif"
           style={{
             top: '61px',

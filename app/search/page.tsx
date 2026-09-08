@@ -216,14 +216,18 @@ export default async function SearchPage({ searchParams }: Props) {
     <div style={{ background: 'var(--paper)', paddingTop: '4rem' }} className="min-h-screen">
       <SiteHeader breadcrumb={<span>Search</span>} />
 
-      <main className="content-shell py-12">
+      <main id="main-content" className="content-shell py-12">
+        <h1 className="font-serif italic text-xl mb-6" style={{ color: '#1b1b1b' }}>Search</h1>
+
         {/* Search form */}
-        <form method="GET" action="/search" className="mb-10">
+        <form method="GET" action="/search" role="search" aria-label="Site search" className="mb-10">
           <div
             className="flex items-center gap-3 px-4 py-3 rounded border shadow-sm"
             style={{ background: 'white', borderColor: '#d6d0c8' }}
           >
             <svg
+              aria-hidden="true"
+              focusable="false"
               style={{ color: '#6f6a60' }}
               className="shrink-0"
               width="18"
@@ -241,7 +245,8 @@ export default async function SearchPage({ searchParams }: Props) {
               name="q"
               defaultValue={query}
               placeholder="Search authors, titles, ideas…"
-              className="flex-1 bg-transparent outline-none font-serif text-base"
+              aria-label="Search authors, titles, ideas"
+              className="field-input flex-1 bg-transparent outline-none font-serif text-base"
               style={{ color: '#1b1b1b' }}
               autoFocus
             />

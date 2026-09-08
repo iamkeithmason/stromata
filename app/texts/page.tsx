@@ -91,7 +91,7 @@ export default async function TextsPage({ searchParams }: Props) {
   return (
     <div style={{ background: 'var(--paper)', paddingTop: '4rem' }} className="min-h-screen">
       <SiteHeader />
-      <main className="content-shell py-12">
+      <main id="main-content" className="content-shell py-12">
         <TextsBrowser
           items={items}
           facets={{ traditions, eras, genres }}

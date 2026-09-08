@@ -36,7 +36,7 @@ export default function SearchBar() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="relative max-w-2xl mx-auto">
+    <form onSubmit={handleSubmit} role="search" aria-label="Site search" className="relative max-w-2xl mx-auto">
       {/* Open underline field — focus thickens the gold hairline */}
       <div
         className="flex items-center gap-3 px-0 py-3"
@@ -47,6 +47,8 @@ export default function SearchBar() {
       >
         {/* Gold search icon — brightens on focus */}
         <svg
+          aria-hidden="true"
+          focusable="false"
           className="shrink-0"
           style={{
             color: 'var(--gold)',
@@ -74,7 +76,8 @@ export default function SearchBar() {
           onFocus={() => setFocused(true)}
           onBlur={() => setFocused(false)}
           placeholder="Find an author, a text, a tradition…"
-          className="flex-1 outline-none"
+          aria-label="Find an author, a text, a tradition"
+          className="field-input flex-1 outline-none"
           style={{
             background: 'transparent',
             fontFamily: 'var(--serif-cormorant)',

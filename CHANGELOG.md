@@ -7,6 +7,43 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-09-08 — Accessibility (WCAG 2.1 AA) fixes
+
+Built via the autonomous next-agent-card lane, from the 2026-09-05 read-only accessibility audit.
+Three high-priority gaps and several medium/low ones, all verifiable without the admin login.
+
+- **Contrast.** Gold text (`--gold`, 2.38:1 on `--paper`) failed AA wherever it was used for small
+  body text — `.kicker-gold`, the scripture-popover reference/link, the FeaturedAuthors tradition
+  label, the Clear-filters buttons on `/texts` and `/authors`, and (found while re-checking the
+  same failure mode) the homepage's "Begin reading" / "Browse collection" lead links. Added a
+  dedicated `--gold-ink` token (`#8A5F1E`, ≥4.5:1 on `--paper`/`--vellum`) for text, keeping `--gold`
+  for rules and decorative glyphs; in the reader's dark theme `--gold-ink` just aliases `--gold`,
+  since the base gold already has ample contrast against dark surfaces. Also darkened `--ink-mute`
+  (`#6B7280` → `#61697A`) which sat just under AA (4.26:1) for small text.
+- **Skip link + landmarks.** Added a focus-visible "Skip to content" link in the root layout,
+  targeting `#main-content`. Every public page's `<main>` now carries that id (homepage, search,
+  texts/authors indexes and detail pages, collections, themes, traditions, eras, locations, about,
+  scripture) except the text-reader page, which keeps its existing `id="reader-main"` — that id is
+  load-bearing for `ReaderSettings`' live font-scale/measure controls, so it was left alone rather
+  than risk that feature for a skip-link target.
+- **Search inputs.** The site search bar, scripture lookup, and `/search` page's search form now
+  carry `role="search"` + an accessible `aria-label` on the input (previously placeholder-only);
+  decorative magnifying-glass icons are `aria-hidden`. `/search` also gained a page `<h1>` (it had
+  none) and a visible focus ring (`.field-input:focus-visible`) on all three search inputs, which
+  previously relied only on a subtle border-color change.
+- **Motion & interaction.** A site-wide `prefers-reduced-motion` rule; a real focus outline on
+  `.scripture-anchor` (previously outline-suppressed with only an underline-color change as
+  feedback); `MobileNav`'s toggle button now has `aria-controls` pointing at the menu, and the menu
+  closes on Escape.
+
+Verified: `tsc --noEmit` and `next lint` clean; `next build` compiles and type-checks (page-data
+collection needs Supabase env, absent locally). Contrast ratios for the new tokens computed by hand
+against the WCAG relative-luminance formula. Review gate: `/security-review` — no findings (purely
+presentational diff, no new input handling or attack surface). `/code-review` — three findings, all
+fixed: the skip-link-target gap above, the two lead-link contrast misses above, and this entry.
+
+---
+
 ## 2026-09-05 — Close the record-keeping loop: CHANGELOG + backlog stay current automatically
 
 Follow-up to the same-day autonomous-lane work. The gap: the backlog and CHANGELOG only stayed

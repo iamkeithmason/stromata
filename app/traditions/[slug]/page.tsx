@@ -105,7 +105,7 @@ export default async function TraditionPage({ params }: Props) {
       <JsonLd data={collectionJsonLd} />
       <SiteHeader breadcrumb={null} />
 
-      <main className="content-shell py-12">
+      <main id="main-content" className="content-shell py-12">
         <div className="mb-10">
           <p className="text-xs uppercase tracking-widest mb-3 font-serif" style={{ color: 'var(--ink-mute)' }}>
             Tradition

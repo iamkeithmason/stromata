@@ -95,7 +95,7 @@ export default async function CountryPage({ params }: Props) {
         <Link href="/locations" className="hover:opacity-70 transition-opacity">Locations</Link>
       } />
 
-      <main className="content-shell py-12">
+      <main id="main-content" className="content-shell py-12">
         <div className="mb-10">
           <div className="flex items-baseline justify-between mb-3">
             <h1 className="font-serif italic text-xl" style={{ color: '#1b1b1b' }}>{location.name}</h1>
