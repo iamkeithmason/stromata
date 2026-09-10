@@ -3,12 +3,12 @@ title: "The Pilgrim's Progress (Every Child Can Read edition)"
 slug: "the-pilgrims-progress-every-child-can-read-edition"
 author: "John Bunyan"
 genre: "Treatise"
-themes: [prayer, repentance, humility, suffering, liturgy]
+themes: [prayer, repentance, humility, suffering, spiritual-warfare]
 collection: "the-pilgrims-progress-every-bunyan"
 collection_order: 1
-source_attribution: "Sourced from Project Gutenberg."
+source_attribution: "Sourced from Project Gutenberg. 'Every Child Can Read' abridged edition, The John C. Winston Co., 1909; editor uncredited."
 provenance_notes: "Text sourced from Project Gutenberg. Accessed 2026-08."
-translation_notes: "# TODO — confirm translator death date and translation copyright status"
+translation_notes: "Bunyan (d. 1688) is public domain outright. The abridgment itself is the 1909 'Every Child Can Read' edition (The John C. Winston Co., Philadelphia) — publication predates 1929, so under US law it is unconditionally public domain regardless of the uncredited editor's dates; no translator/adapter death-year lookup is needed."
 ocr_quality: "high"
 published: false
 copyright_safe: true
