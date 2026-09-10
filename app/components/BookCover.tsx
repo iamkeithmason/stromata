@@ -53,7 +53,7 @@ export function BookCover({
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
-          padding: 'var(--bc-band-pad, 1.5rem 1rem)',
+          padding: 'min(1.5rem, 12cqi) min(1rem, 8cqi)',
           borderBottom: '1px solid rgba(245,240,230,.18)',
           flexShrink: 0,
         }}
@@ -62,7 +62,7 @@ export function BookCover({
           className="book-cover-band-label"
           style={{
             fontFamily: 'var(--serif-display)',
-            fontSize: '0.5rem',
+            fontSize: 'min(0.5rem, 4cqi)',
             letterSpacing: '0.24em',
             color: 'rgba(245,240,230,0.70)',
             textTransform: 'uppercase',
@@ -75,7 +75,7 @@ export function BookCover({
             className="book-cover-band-label"
             style={{
               fontFamily: 'monospace',
-              fontSize: '0.5rem',
+              fontSize: 'min(0.5rem, 4cqi)',
               color: 'rgba(245,240,230,0.60)',
               letterSpacing: '0.04em',
             }}
@@ -91,13 +91,13 @@ export function BookCover({
         style={{
           flex: 1,
           background: '#F5F0E6',
-          margin: 'var(--bc-mid-margin, 8px 10px)',
+          margin: 'min(8px, 4cqi) min(10px, 5cqi)',
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'center',
           alignItems: 'center',
           textAlign: 'center',
-          padding: 'var(--bc-mid-pad, 1rem 1.25rem)',
+          padding: 'min(1rem, 8cqi) min(1.25rem, 10cqi)',
           overflow: 'hidden',
           minHeight: 0,
         }}
@@ -106,7 +106,7 @@ export function BookCover({
           className="book-cover-title"
           style={{
             fontFamily: 'var(--serif)',
-            fontSize: 'var(--bc-title-size, 1rem)',
+            fontSize: 'min(1rem, 8cqi)',
             fontStyle: 'italic',
             fontWeight: 500,
             lineHeight: 1.15,
@@ -123,11 +123,11 @@ export function BookCover({
         </p>
         <div
           style={{
-            width: 20,
+            width: 'min(20px, 10cqi)',
             height: 1,
             background: 'var(--ink)',
             opacity: 0.35,
-            margin: 'var(--bc-rule-margin, 1rem auto)',
+            margin: 'min(1rem, 8cqi) auto',
             flexShrink: 0,
           }}
         />
@@ -136,7 +136,7 @@ export function BookCover({
             className="book-cover-author"
             style={{
               fontFamily: 'var(--serif)',
-              fontSize: 'var(--bc-author-size, 0.8rem)',
+              fontSize: 'min(0.8rem, 6.4cqi)',
               letterSpacing: '0.14em',
               textTransform: 'uppercase',
               color: 'var(--ink-soft)',
@@ -152,9 +152,9 @@ export function BookCover({
             style={{
               fontFamily: 'var(--serif)',
               fontStyle: 'italic',
-              fontSize: 'var(--bc-year-size, 0.8rem)',
+              fontSize: 'min(0.8rem, 6.4cqi)',
               color: 'var(--ink-mute)',
-              margin: '5px 0 0',
+              margin: 'min(5px, 2.5cqi) 0 0',
             }}
           >
             {year}
@@ -167,8 +167,8 @@ export function BookCover({
         style={{
           textAlign: 'center',
           padding: readingMinutes
-            ? 'var(--bc-band-pad-compact, 0.6rem 1rem)'
-            : 'var(--bc-bottom-band-pad, 1rem 1rem)',
+            ? 'min(0.6rem, 4.8cqi) min(1rem, 8cqi)'
+            : 'min(1rem, 8cqi) min(1rem, 8cqi)',
           borderTop: '1px solid rgba(245,240,230,.18)',
           display: 'flex',
           flexDirection: 'column',
@@ -181,7 +181,7 @@ export function BookCover({
           className="book-cover-s"
           style={{
             fontFamily: 'var(--serif-display)',
-            fontSize: 'var(--bc-s-size, 1.25rem)',
+            fontSize: 'min(1.25rem, 10cqi)',
             color: 'rgba(245,240,230,0.70)',
             lineHeight: 1,
           }}
@@ -192,7 +192,7 @@ export function BookCover({
           <span
             style={{
               fontFamily: 'var(--serif-display)',
-              fontSize: '0.45rem',
+              fontSize: 'min(0.45rem, 3.6cqi)',
               letterSpacing: '0.2em',
               textTransform: 'uppercase',
               color: 'rgba(245,240,230,0.55)',

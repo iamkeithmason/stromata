@@ -7,6 +7,30 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-09-10 — Book-cover title clipping on narrow (mobile) covers
+
+Reported from mobile: long titles on the text-page frontispiece cover were clipped through the
+middle of a line (e.g. *Ælfric's Pastoral Epistle to Wulfstan, Archbishop of York* lost most of its
+third line), while the same component on the homepage looked fine. Root cause was two things
+compounding: (1) the vellum mid-panel is a fixed 2:3 ratio, but the top/bottom bands used fixed
+`rem` padding that didn't scale with the cover, so on a narrow cover the bands ate a larger share
+and starved the panel — a title needing a 4th line then overflowed the centred `overflow:hidden`
+panel and was cut mid-glyph; (2) the `@container (max-width:200px)` block in `globals.css` that was
+*meant* to shrink type/padding on small covers was dead CSS — a `@container` condition resolves
+against an *ancestor* container, and `.book-cover` is its own container with no container ancestor,
+so it never matched. That's why the text page (fixed `w-[200px]`, right at the boundary on real
+phones) clipped while the wider homepage cards didn't.
+
+Fix: `BookCover` now expresses every dimension as `min(<fixed>, <N>cqi)`, tuned so the `cqi` term
+equals the fixed value at a 200px-wide cover. At ≥200px the fixed value wins, so the homepage,
+desktop, and the 200px frontispiece are pixel-identical to before; below 200px the whole cover —
+bands, padding, and type — scales down together, keeping the layout self-similar so the title always
+fits. Removed the dead `@container` block (kept `container-type: inline-size`, now documented, since
+the `cqi` units depend on it). Verified by rendering the real EB Garamond metrics across 140–260px:
+the long Ælfric title renders in full at every width, with no change at ≥200px. (`tsc`/`next build`
+not run — dependencies aren't installed in this environment; the change is inline-style values only,
+with no type surface.)
+
 ## 2026-09-10 — Draft/live dedup tool (`scripts/dedup-draft-texts.mjs`)
 
 Keith noticed texts sitting in `/admin/drafts` that are also live on the site — the John of
