@@ -7,6 +7,34 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-09-10 — Dedup follow-ups: import-time guard + admin GUI button
+
+Follow-ups to the dedup tool (PR #73), on a separate PR at Keith's request. Two changes that stop
+the duplicates at the source and make the report one click away, plus a shared match module so the
+guard and the tool can't drift apart.
+
+- **`scripts/lib/dedup-match.mjs` (new)** — extracted the normalisation, body-confidence grading
+  and title-similarity helpers out of `dedup-draft-texts.mjs` into a shared module. Both the tool
+  and the new import guard import from it, so "same work by the same person" means exactly one
+  thing across the pipeline. `dedup-draft-texts.mjs` now imports these instead of defining its own.
+- **`pipeline-import.mjs` — title + author-name skip guard.** The import was idempotent only by
+  slug, which is why the same work could land a draft next to a live copy under a different slug
+  (the draft-author-stub case splits them across two `author_id`s too). After the slug check it now
+  also skips when a text with the same normalised title already exists under an author whose name
+  normalises the same — regardless of slug, `author_id`, or published state. Curly-quote/whitespace
+  title variants remain the CLI tool's backstop; this catches the common case at the source.
+- **Admin pipeline GUI — "Find duplicate drafts" button.** New dev-only toolbar action next to
+  "Run import" that streams `dedup-draft-texts.mjs --fuzzy` into the log pane. **Report only — no
+  `--write`**, so the GUI stays incapable of deleting a text (mirrors the existing "no write that
+  could publish or promote" rule); actual removal is still a deliberate CLI `--write` run. Wired
+  through the same fixed-whitelist runner (`lib/pipeline/runner.ts` → `run` route → `PipelineClient`)
+  as the other one-click actions — the action is an enum, args are fixed, never free text.
+
+Verified: `node --check` on all changed scripts; the offline match harness (8 assertions) re-run
+against the shared module to confirm the extraction is behaviour-preserving; `tsc --noEmit` + `next
+lint` for the GUI/route/runner TypeScript changes. Not run against the live DB from this session (no
+creds here) — the guard and button are exercised locally.
+
 ## 2026-09-10 — Draft/live dedup tool (`scripts/dedup-draft-texts.mjs`)
 
 Keith noticed texts sitting in `/admin/drafts` that are also live on the site — the John of

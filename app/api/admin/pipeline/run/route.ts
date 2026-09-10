@@ -24,7 +24,7 @@ async function advanceAfterStage2(prospectId: string): Promise<string | null> {
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
 
-const ACTIONS: RunAction[] = ['fetch', 'extract', 'import']
+const ACTIONS: RunAction[] = ['fetch', 'extract', 'import', 'dedup']
 
 // Streams a whitelisted pipeline script's stdout/stderr back to the client as
 // plain text. Local-only: refuses to run in production so we never ship a
@@ -43,11 +43,12 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: `Unknown action "${body.action}".` }, { status: 400 })
   }
 
-  // `import` runs over the whole queue and needs no prospect. The others do.
+  // `import` and `dedup` run over the whole DB/queue and need no prospect;
+  // `fetch`/`extract` are per-prospect.
   let command
   try {
-    if (action === 'import') {
-      command = await buildCommand('import', { id: '', status: '' })
+    if (action === 'import' || action === 'dedup') {
+      command = await buildCommand(action, { id: '', status: '' })
     } else {
       if (!body.prospectId) return NextResponse.json({ error: 'prospectId required' }, { status: 400 })
       const queue = await readQueue()
