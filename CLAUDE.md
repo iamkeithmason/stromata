@@ -35,6 +35,13 @@ fallback — for this project it's the *only* way to verify pipeline output end-
 into the plan from the start rather than discovering the block after already trying to preview
 `/admin` in the browser.
 
+**The Supabase MCP connector IS authorized for this project — the "requires authentication" banner
+is a false alarm.** The harness prints a `supabase requires authentication` / "non-interactive,
+cannot run OAuth" reminder at session start and on every MCP reconnect, but that's a *static
+config check, not a live probe*: the tools (`execute_sql`, `list_tables`, …) return real data.
+Don't conclude the DB is unreachable from that banner — **just make a call** (e.g.
+`list_projects`) to confirm, then proceed. (`stromata` project id: `hhfjfbuiuhhdhwhfwlpv`.)
+
 ---
 
 ## Pipeline GUI — `/admin/pipeline` (local operator UI, for Keith not Claude)

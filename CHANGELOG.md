@@ -7,6 +7,30 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-09-10 — Supabase MCP access confirmed + John of Damascus duplicate removed
+
+Two related things while working the dedup thread with live DB access.
+
+- **Supabase MCP works in-session — the "requires authentication" banner is a false alarm.** The
+  Supabase connector is authorized for this project and its tools (`list_projects`, `execute_sql`,
+  etc.) return live data. The harness still prints a `supabase requires authentication` /
+  "non-interactive, cannot run OAuth" banner at session start and on every MCP reconnect, but that
+  is a **static config-based check, not a live probe** — it does not mean the connector is broken.
+  Confirmed by querying the live `stromata` project (`hhfjfbuiuhhdhwhfwlpv`) directly. So future
+  sessions should **just try a Supabase call** rather than treating the banner as a blocker — which
+  is exactly what CLAUDE.md's "verify via Supabase" note has always assumed is possible.
+- **Removed a real duplicate: John of Damascus, *Exposition of the Orthodox Faith*.** The live DB
+  held **two complete copies** of this 4-book work, both as draft texts under *published*
+  collections (which is why the collection pages read as "live" while the texts sat in Drafts).
+  Kept the clean copy — collection `an-exact-exposition-of-the-damascus` (author correctly linked,
+  5 themes per book, imported 2026-08-30) — and deleted the older half-finished copy — collection
+  `exposition-orthodox-faith` (author NULL, no themes, imported 2026-06-30) and its 4 texts.
+  Preserved the one editorial `note_draft` (on the old Book 1) by copying it onto the kept Book 1
+  first. Done as one atomic transaction via Supabase MCP; text_themes/scripture_references cascaded.
+  Note: the shipped `dedup-draft-texts.mjs` would *not* have caught this on its own — the duplicate
+  is at the **collection** level and the two copies' titles differ ("An Exposition…" vs
+  "Exposition…"), so extending the tool to collection-level duplicates is a genuine follow-up.
+
 ## 2026-09-10 — Dedup follow-ups: import-time guard + admin GUI button
 
 Follow-ups to the dedup tool (PR #73), on a separate PR at Keith's request. Two changes that stop
