@@ -14,6 +14,48 @@ import { createServerClient } from '@/lib/supabase/server'
 const BUCKET = 'authors'
 const MAX_BYTES = 5 * 1024 * 1024 // 5 MB
 
+// Width we ask Wikimedia to resize a portrait down to before fetching. Author
+// portraits are never displayed larger than a single column, so ~1024px is
+// generous — and it keeps a JPEG comfortably under a few hundred KB, well below
+// MAX_BYTES, so full-resolution museum scans no longer trip the size guard.
+const WIKIMEDIA_THUMB_WIDTH = 1024
+
+// Rewrite an upload.wikimedia.org file URL to a bounded-width thumbnail, so we
+// never download the multi-megabyte original. Returns null when the URL isn't a
+// Wikimedia upload URL or isn't a shape we recognise — the caller then falls
+// back to fetching the source as given (the MAX_BYTES guard still applies).
+//
+//   original:  /wikipedia/commons/a/ab/File.jpg
+//              → /wikipedia/commons/thumb/a/ab/File.jpg/1024px-File.jpg
+//   thumbnail: /wikipedia/commons/thumb/a/ab/File.jpg/320px-File.jpg
+//              → …/1024px-File.jpg   (just swap the width prefix)
+function boundedWikimediaUrl(raw: string, width: number): string | null {
+  let url: URL
+  try {
+    url = new URL(raw)
+  } catch {
+    return null
+  }
+  if (url.hostname.toLowerCase() !== 'upload.wikimedia.org') return null
+
+  const parts = url.pathname.split('/') // ['', 'wikipedia', 'commons', 'a', 'ab', 'File.jpg', …]
+  if (parts[1] !== 'wikipedia' || parts.length < 6) return null
+  const filename = parts[parts.length - 1]
+  if (!filename) return null
+
+  if (parts.includes('thumb')) {
+    // Already a thumbnail: the last segment is `<n>px-<suffix>` — swap the width.
+    if (!/^\d+px-/.test(filename)) return null
+    parts[parts.length - 1] = filename.replace(/^\d+px-/, `${width}px-`)
+  } else {
+    // Original: insert `thumb` after the project segment, append the sized name.
+    parts.splice(3, 0, 'thumb')
+    parts.push(`${width}px-${filename}`)
+  }
+  url.pathname = parts.join('/')
+  return url.toString()
+}
+
 // Only fetch remote images from Wikimedia/Wikipedia — a basic SSRF guard so this
 // route can't be pointed at internal hosts.
 function isAllowedSource(raw: string): boolean {
@@ -105,10 +147,19 @@ export async function POST(request: NextRequest) {
     )
   }
 
-  let res: Response
-  try {
-    res = await fetch(sourceUrl, { headers: { 'User-Agent': 'TheStromata/1.0 (author portraits)' } })
-  } catch {
+  const fetchImage = (u: string): Promise<Response | null> =>
+    fetch(u, { headers: { 'User-Agent': 'TheStromata/1.0 (author portraits)' } }).catch(() => null)
+
+  // Prefer a bounded-width thumbnail so an oversized original never trips the
+  // size guard; fall back to the source as given if the thumbnail can't be
+  // built or doesn't resolve (e.g. an SVG original, whose vector file is small).
+  const bounded = boundedWikimediaUrl(sourceUrl, WIKIMEDIA_THUMB_WIDTH)
+  let res = bounded ? await fetchImage(bounded) : null
+  if (!res || !res.ok) {
+    res = await fetchImage(sourceUrl)
+  }
+
+  if (!res) {
     return NextResponse.json({ error: 'Could not reach the image source.' }, { status: 502 })
   }
   if (!res.ok) {
@@ -117,5 +168,6 @@ export async function POST(request: NextRequest) {
 
   const fetchedType = res.headers.get('content-type')?.split(';')[0]?.trim() || 'image/jpeg'
   const bytes = await res.arrayBuffer()
+  // Record the original file as the provenance source, not the thumbnail URL.
   return store(bytes, fetchedType, slug, sourceUrl)
 }

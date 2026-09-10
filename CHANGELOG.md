@@ -7,6 +7,31 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-09-10 — Wikipedia author portraits no longer blocked by the 5 MB limit
+
+The "Use this Wikipedia portrait" button sends Wikipedia's `originalimage.source` — the
+full-resolution master file — to `/api/admin/authors/image`, which downloads it and rejects anything
+over `MAX_BYTES` (5 MB). For well-photographed figures (Augustine's Champaigne portrait, etc.) that
+original is a multi-megabyte museum scan, so the import was blocked purely by the size of the
+original, not by anything wrong with the portrait.
+
+Fix: don't download the original. `boundedWikimediaUrl()` rewrites any `upload.wikimedia.org` file
+URL to a bounded-width thumbnail (`WIKIMEDIA_THUMB_WIDTH`, 1024px) using Wikimedia's standard
+`…/thumb/<h1>/<h2>/<File>/<width>px-<File>` scheme — handling both the original form (insert `thumb`,
+append the sized name) and the already-thumbnailed form (swap the width prefix). The Wikimedia fetch
+now pulls that thumbnail (a few hundred KB) and only falls back to the source as given if the
+thumbnail can't be built or doesn't resolve — e.g. an SVG original, whose vector file is small
+anyway. The `MAX_BYTES` guard stays as a backstop, and the recorded `image_source` is still the
+original file, not the thumbnail URL. Portraits are never displayed larger than a single column, so
+1024px is generous. Manual file uploads keep the 5 MB limit unchanged (that path can't be resized
+server-side without an image library; the operator picks a smaller file).
+
+Touches only `app/api/admin/authors/image/route.ts`. Verified: `tsc --noEmit` clean, `next lint`
+clean on the route, `next build` compiles the route successfully (page-data collection still needs
+Supabase env, absent locally). The URL transform was unit-checked on sample original/thumbnail/SVG/
+non-Wikimedia inputs; a live end-to-end fetch against Wikimedia wasn't possible from the build
+sandbox (egress allowlist), so confirm one real portrait import in `/admin` once deployed.
+
 ## 2026-09-10 — Book-cover title clipping on narrow (mobile) covers
 
 Reported from mobile: long titles on the text-page frontispiece cover were clipped through the
