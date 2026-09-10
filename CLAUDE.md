@@ -706,6 +706,7 @@ still apply per-file, still parallelize the same way. What changes is Stage 2/5a
 | `scripts/lib/note-prompt.mjs` | Shared NOTE_PROMPT constant | Stage 4 fallback |
 | `scripts/pipeline-import.mjs` | Import staged output into Supabase as `published: false` | Stage 5a |
 | `scripts/rejoin-text-paragraphs.mjs` | Heal mid-sentence page-break splits in already-imported Supabase texts (dry-run default, `--write` to apply; `--slug=`/`--id=` to scope) | Maintenance only |
+| `scripts/dedup-draft-texts.mjs` | Find draft texts that duplicate a published text (matches on title + author *name*, so it catches the draft-author-stub case) and optionally delete the redundant draft (dry-run default, `--write` deletes HIGH-confidence body matches, `--force` includes lower-confidence, `--slug=` to scope, `--fuzzy` lists near-title matches). Never touches published rows, authors, or collections. | Maintenance only |
 | `scripts/generate-note-drafts.mjs` | Backfill note_draft in Supabase for existing texts | Maintenance only |
 | `scripts/generate-summaries.mjs` | Backfill summaries in Supabase | Maintenance only |
 | `scripts/repair-summaries.mjs` | Repair truncated summaries | Maintenance only |
