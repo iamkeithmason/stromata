@@ -59,6 +59,55 @@ against the shared module to confirm the extraction is behaviour-preserving; `ts
 lint` for the GUI/route/runner TypeScript changes. Not run against the live DB from this session (no
 creds here) — the guard and button are exercised locally.
 
+## 2026-09-10 — Wikipedia author portraits no longer blocked by the 5 MB limit
+
+The "Use this Wikipedia portrait" button sends Wikipedia's `originalimage.source` — the
+full-resolution master file — to `/api/admin/authors/image`, which downloads it and rejects anything
+over `MAX_BYTES` (5 MB). For well-photographed figures (Augustine's Champaigne portrait, etc.) that
+original is a multi-megabyte museum scan, so the import was blocked purely by the size of the
+original, not by anything wrong with the portrait.
+
+Fix: don't download the original. `boundedWikimediaUrl()` rewrites any `upload.wikimedia.org` file
+URL to a bounded-width thumbnail (`WIKIMEDIA_THUMB_WIDTH`, 1024px) using Wikimedia's standard
+`…/thumb/<h1>/<h2>/<File>/<width>px-<File>` scheme — handling both the original form (insert `thumb`,
+append the sized name) and the already-thumbnailed form (swap the width prefix). The Wikimedia fetch
+now pulls that thumbnail (a few hundred KB) and only falls back to the source as given if the
+thumbnail can't be built or doesn't resolve — e.g. an SVG original, whose vector file is small
+anyway. The `MAX_BYTES` guard stays as a backstop, and the recorded `image_source` is still the
+original file, not the thumbnail URL. Portraits are never displayed larger than a single column, so
+1024px is generous. Manual file uploads keep the 5 MB limit unchanged (that path can't be resized
+server-side without an image library; the operator picks a smaller file).
+
+Touches only `app/api/admin/authors/image/route.ts`. Verified: `tsc --noEmit` clean, `next lint`
+clean on the route, `next build` compiles the route successfully (page-data collection still needs
+Supabase env, absent locally). The URL transform was unit-checked on sample original/thumbnail/SVG/
+non-Wikimedia inputs; a live end-to-end fetch against Wikimedia wasn't possible from the build
+sandbox (egress allowlist), so confirm one real portrait import in `/admin` once deployed.
+
+## 2026-09-10 — Book-cover title clipping on narrow (mobile) covers
+
+Reported from mobile: long titles on the text-page frontispiece cover were clipped through the
+middle of a line (e.g. *Ælfric's Pastoral Epistle to Wulfstan, Archbishop of York* lost most of its
+third line), while the same component on the homepage looked fine. Root cause was two things
+compounding: (1) the vellum mid-panel is a fixed 2:3 ratio, but the top/bottom bands used fixed
+`rem` padding that didn't scale with the cover, so on a narrow cover the bands ate a larger share
+and starved the panel — a title needing a 4th line then overflowed the centred `overflow:hidden`
+panel and was cut mid-glyph; (2) the `@container (max-width:200px)` block in `globals.css` that was
+*meant* to shrink type/padding on small covers was dead CSS — a `@container` condition resolves
+against an *ancestor* container, and `.book-cover` is its own container with no container ancestor,
+so it never matched. That's why the text page (fixed `w-[200px]`, right at the boundary on real
+phones) clipped while the wider homepage cards didn't.
+
+Fix: `BookCover` now expresses every dimension as `min(<fixed>, <N>cqi)`, tuned so the `cqi` term
+equals the fixed value at a 200px-wide cover. At ≥200px the fixed value wins, so the homepage,
+desktop, and the 200px frontispiece are pixel-identical to before; below 200px the whole cover —
+bands, padding, and type — scales down together, keeping the layout self-similar so the title always
+fits. Removed the dead `@container` block (kept `container-type: inline-size`, now documented, since
+the `cqi` units depend on it). Verified by rendering the real EB Garamond metrics across 140–260px:
+the long Ælfric title renders in full at every width, with no change at ≥200px. (`tsc`/`next build`
+not run — dependencies aren't installed in this environment; the change is inline-style values only,
+with no type surface.)
+
 ## 2026-09-10 — Draft/live dedup tool (`scripts/dedup-draft-texts.mjs`)
 
 Keith noticed texts sitting in `/admin/drafts` that are also live on the site — the John of
