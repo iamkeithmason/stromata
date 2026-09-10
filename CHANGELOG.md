@@ -32,6 +32,67 @@ Supabase env, absent locally). The URL transform was unit-checked on sample orig
 non-Wikimedia inputs; a live end-to-end fetch against Wikimedia wasn't possible from the build
 sandbox (egress allowlist), so confirm one real portrait import in `/admin` once deployed.
 
+## 2026-09-10 — Book-cover title clipping on narrow (mobile) covers
+
+Reported from mobile: long titles on the text-page frontispiece cover were clipped through the
+middle of a line (e.g. *Ælfric's Pastoral Epistle to Wulfstan, Archbishop of York* lost most of its
+third line), while the same component on the homepage looked fine. Root cause was two things
+compounding: (1) the vellum mid-panel is a fixed 2:3 ratio, but the top/bottom bands used fixed
+`rem` padding that didn't scale with the cover, so on a narrow cover the bands ate a larger share
+and starved the panel — a title needing a 4th line then overflowed the centred `overflow:hidden`
+panel and was cut mid-glyph; (2) the `@container (max-width:200px)` block in `globals.css` that was
+*meant* to shrink type/padding on small covers was dead CSS — a `@container` condition resolves
+against an *ancestor* container, and `.book-cover` is its own container with no container ancestor,
+so it never matched. That's why the text page (fixed `w-[200px]`, right at the boundary on real
+phones) clipped while the wider homepage cards didn't.
+
+Fix: `BookCover` now expresses every dimension as `min(<fixed>, <N>cqi)`, tuned so the `cqi` term
+equals the fixed value at a 200px-wide cover. At ≥200px the fixed value wins, so the homepage,
+desktop, and the 200px frontispiece are pixel-identical to before; below 200px the whole cover —
+bands, padding, and type — scales down together, keeping the layout self-similar so the title always
+fits. Removed the dead `@container` block (kept `container-type: inline-size`, now documented, since
+the `cqi` units depend on it). Verified by rendering the real EB Garamond metrics across 140–260px:
+the long Ælfric title renders in full at every width, with no change at ≥200px. (`tsc`/`next build`
+not run — dependencies aren't installed in this environment; the change is inline-style values only,
+with no type surface.)
+
+## 2026-09-10 — Draft/live dedup tool (`scripts/dedup-draft-texts.mjs`)
+
+Keith noticed texts sitting in `/admin/drafts` that are also live on the site — the John of
+Damascus *Exposition of the Orthodox Faith* books being the visible case. Root cause: `pipeline-
+import.mjs` is idempotent only *by slug*, so the same work imported under a different slug slips
+past the skip. The usual mechanism is a **draft author stub** — when the pipeline can't resolve an
+author it creates a fresh `draft: true` author row and hangs the new texts off it, so the published
+copy and the draft copy point at two different `author_id`s for the same person. Matching on
+`author_id` would miss exactly that; the tool matches on the author's normalised **name** instead,
+and keeps the id difference as a signal that there's probably an orphaned draft-author stub to
+clear too.
+
+New maintenance script, built to the same shape as `rejoin-text-paragraphs.mjs`:
+
+- Clusters every `texts` row by (normalised title + normalised author name). Distinguishing
+  parentheticals are preserved, so "(Book I)" and "(Book II)" never collapse into one work.
+- A cluster holding both a published and a draft row is a dedup candidate — the published row is
+  canonical and kept, the draft is the removable one. Bodies are fetched only for candidate
+  clusters and compared (length ratio + normalised opening) to grade the match HIGH/MEDIUM/LOW, so
+  a coincidental title collision between two genuinely different works isn't deleted.
+- **Dry-run by default.** `--write` deletes only HIGH-confidence duplicate drafts; `--force`
+  includes lower-confidence ones; `--slug=` scopes to one draft; `--fuzzy` additionally lists
+  near-title matches (e.g. "Exposition" vs "Exact Exposition") for manual review; `--json` for
+  machine output.
+- Safety, per HARD CONSTRAINTS: never touches published rows, only ever deletes `published:false`
+  rows that have a published twin, and never touches authors or collections — orphaned draft-author
+  stubs and now-empty draft collections are only *reported* for Keith to clear in the admin UI.
+  Deleting a text cascades its `text_themes` / `scripture_references` rows via the existing
+  `ON DELETE CASCADE`, so no manual join cleanup is needed.
+
+Verified: `node --check` clean, and an offline unit harness (8 assertions) covering the tricky bits
+— Book I ≠ Book II keys, honorific/case/whitespace author variants matching, curly-quote
+normalisation, the body-confidence grades, and the fuzzy near-title threshold. Not run against the
+live DB from this session (no `.env.local` / Supabase creds here) — it's a local maintenance run:
+`node scripts/dedup-draft-texts.mjs --fuzzy` for the report, then `--write` once the report looks
+right.
+
 ## 2026-09-08 — Accessibility (WCAG 2.1 AA) fixes
 
 Built via the autonomous next-agent-card lane, from the 2026-09-05 read-only accessibility audit.
