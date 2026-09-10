@@ -55,7 +55,7 @@
 
   --ink:          #1E2D3D;
   --ink-soft:     #3D4B5C;
-  --ink-mute:     #6B7280;
+  --ink-mute:     #61697A;   /* darkened from #6B7280 — AA compliant (≥4.5:1) vs --paper */
   --ink-faint:    #6E6A5C;   /* warm grey — AA compliant (≥4.5:1) vs --paper */
 
   --rule:         #C9BFA8;
@@ -67,6 +67,7 @@
 
   --gold:         #C9943A;
   --gold-rule:    rgba(201, 148, 58, 0.45);   /* hairline rules, softer */
+  --gold-ink:     #8A5F1E;   /* darker gold for TEXT (≥4.5:1 vs --paper/--vellum); keep --gold for rules/large glyphs */
 
   --dark:         #1C1814;                    /* footer ground */
   --dark-surface: #241F1A;                    /* slightly lifted dark surface */
@@ -152,6 +153,8 @@
   --rule:       #3A342B;
   --rule-soft:  #2C2720;
 
+  --gold-ink:   var(--gold);  /* the base gold already has ample contrast against dark surfaces */
+
   --reader-text:       #E6E0D2;
   --reader-quote:      #A8A08F;
   --reader-quote-rule: #3A342B;
@@ -183,6 +186,43 @@
    plus a small breathing gap. Applies to all #fragment navigation. */
 html {
   scroll-padding-top: 5.5rem;
+}
+
+/* Respect a reader's reduced-motion preference site-wide. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Skip link — offscreen until keyboard-focused, then jumps above the fixed
+   header so keyboard/screen-reader users can bypass repeated nav to #main-content. */
+.skip-link {
+  position: absolute;
+  top: -3rem;
+  left: 1rem;
+  z-index: 100;
+  padding: 0.6rem 1rem;
+  background: var(--paper);
+  color: var(--ink);
+  border: 1px solid var(--rule);
+  font-family: var(--serif);
+  font-size: var(--text-sm);
+  text-decoration: none;
+  transition: top var(--dur) var(--ease);
+}
+.skip-link:focus {
+  top: 1rem;
+}
+
+/* Visible focus ring for text inputs that suppress the browser default
+   outline in favour of their own (subtler) focus treatment. */
+.field-input:focus-visible {
+  outline: 2px solid var(--gold-ink);
+  outline-offset: 2px;
 }
 
 /* Reader typography settings (app/components/ReaderSettings.tsx): the reading
@@ -365,7 +405,7 @@ html {
     @apply font-serif uppercase;
     font-size: var(--text-sm);
     letter-spacing: 0.18em;
-    color: var(--gold);
+    color: var(--gold-ink);
   }
 
   /* caption — card metadata beneath book covers (reading time, book count, progress) */
@@ -411,6 +451,11 @@ article.prose-body > div:first-of-type > p::first-letter {
   cursor: help;
   outline: none;
 }
+.scripture-anchor:focus-visible {
+  outline: 2px solid var(--gold-ink);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
 .scripture-ref {
   text-decoration: underline;
   text-decoration-style: dotted;
@@ -444,7 +489,7 @@ article.prose-body > div:first-of-type > p::first-letter {
   font-size: var(--text-sm);
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: var(--gold);
+  color: var(--gold-ink);
   margin-bottom: 0.3rem;
 }
 .scripture-popover-text {
@@ -460,7 +505,7 @@ article.prose-body > div:first-of-type > p::first-letter {
   font-family: var(--serif);
   font-size: var(--text-sm);
   letter-spacing: 0.03em;
-  color: var(--gold);
+  color: var(--gold-ink);
   text-decoration: none;
   border-bottom: 1px solid var(--gold-rule);
   transition: border-color var(--dur) var(--ease);

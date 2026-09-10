@@ -110,7 +110,7 @@ export default async function EraPage({ params }: Props) {
       <JsonLd data={collectionJsonLd} />
       <SiteHeader breadcrumb={null} />
 
-      <main className="content-shell py-12">
+      <main id="main-content" className="content-shell py-12">
         <div className="mb-10">
           <h1 className="font-serif text-3xl mb-2" style={{ color: '#1b1b1b' }}>{era.label}</h1>
           {yearRange && (

@@ -13,7 +13,7 @@ export default function AboutPage() {
     <div style={{ background: 'var(--paper)', paddingTop: '4rem' }} className="min-h-screen">
       <SiteHeader />
 
-      <main className="max-w-2xl mx-auto px-6 py-16">
+      <main id="main-content" className="max-w-2xl mx-auto px-6 py-16">
 
         <h1 className="font-serif text-3xl mb-10" style={{ color: '#1b1b1b' }}>
           About The Stromata

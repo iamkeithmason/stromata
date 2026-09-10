@@ -144,7 +144,7 @@ export function TextsBrowser({
               type="button"
               onClick={() => setFilters(f => ({ tradition: '', era: '', genre: '', sort: f.sort }))}
               className="text-xs hover:opacity-70 transition-opacity ml-auto"
-              style={{ color: 'var(--gold)', background: 'transparent', cursor: 'pointer' }}
+              style={{ color: 'var(--gold-ink)', background: 'transparent', cursor: 'pointer' }}
             >
               Clear filters
             </button>

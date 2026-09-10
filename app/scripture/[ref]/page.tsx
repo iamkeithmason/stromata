@@ -46,7 +46,7 @@ export default async function ScriptureLookupPage({ params }: Props) {
   const shell = (children: React.ReactNode) => (
     <div style={{ background: 'var(--paper)', paddingTop: '4rem' }} className="min-h-screen">
       <SiteHeader breadcrumb={null} />
-      <main className="content-shell py-12">{children}</main>
+      <main id="main-content" className="content-shell py-12">{children}</main>
     </div>
   )
 

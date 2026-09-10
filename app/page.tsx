@@ -222,6 +222,7 @@ export default async function Home() {
 
       <SiteHeader />
 
+      <main id="main-content">
       {/* ── Hero ─────────────────────────────────────────────────────────── */}
       <section className="text-center px-6 pt-16 pb-14">
         <h1
@@ -375,6 +376,7 @@ export default async function Home() {
           ))}
         </div>
       </section>
+      </main>
 
       {/* ── Dark footer ──────────────────────────────────────────────────── */}
       <footer style={{ background: 'var(--dark)' }}>
@@ -478,7 +480,7 @@ function TextLead({ text }: { text: TextRow }) {
           {truncateAtWord(editorialPara, 280)}
         </LeadPara>
         <div className="flex flex-wrap items-center gap-3">
-          <Link href={`/texts/${text.slug}`} style={{ fontFamily: 'var(--serif)', fontSize: 'var(--text-label)', color: 'var(--gold)', textDecoration: 'none', borderBottom: '1px solid var(--gold-rule)', paddingBottom: '1px' }} className="hover:opacity-70 transition-opacity" data-umami-event="text-open" data-umami-event-from="featured-lead" data-umami-event-text={text.slug}>
+          <Link href={`/texts/${text.slug}`} style={{ fontFamily: 'var(--serif)', fontSize: 'var(--text-label)', color: 'var(--gold-ink)', textDecoration: 'none', borderBottom: '1px solid var(--gold-rule)', paddingBottom: '1px' }} className="hover:opacity-70 transition-opacity" data-umami-event="text-open" data-umami-event-from="featured-lead" data-umami-event-text={text.slug}>
             Begin reading →
           </Link>
           <span style={{ color: 'var(--ink-faint)', fontSize: 'var(--text-sm)', fontFamily: 'var(--serif)' }}>
@@ -532,7 +534,7 @@ function CollectionLead({ entry }: { entry: Extract<FeedEntry, { kind: 'collecti
           {truncateAtWord(editorialPara, 280)}
         </LeadPara>
         <div className="flex flex-wrap items-center gap-3">
-          <Link href={`/collections/${collection.slug}`} style={{ fontFamily: 'var(--serif)', fontSize: 'var(--text-label)', color: 'var(--gold)', textDecoration: 'none', borderBottom: '1px solid var(--gold-rule)', paddingBottom: '1px' }} className="hover:opacity-70 transition-opacity" data-umami-event="collection-open" data-umami-event-from="featured-lead" data-umami-event-collection={collection.slug}>
+          <Link href={`/collections/${collection.slug}`} style={{ fontFamily: 'var(--serif)', fontSize: 'var(--text-label)', color: 'var(--gold-ink)', textDecoration: 'none', borderBottom: '1px solid var(--gold-rule)', paddingBottom: '1px' }} className="hover:opacity-70 transition-opacity" data-umami-event="collection-open" data-umami-event-from="featured-lead" data-umami-event-collection={collection.slug}>
             Browse collection →
           </Link>
           <span style={{ color: 'var(--ink-faint)', fontSize: 'var(--text-sm)', fontFamily: 'var(--serif)' }}>

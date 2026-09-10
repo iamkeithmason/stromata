@@ -234,7 +234,7 @@ export default async function AuthorPage({ params }: Props) {
       {/* JSON-LD structured data */}
       <JsonLd data={jsonLd} />
 
-      <main className="content-shell py-12">
+      <main id="main-content" className="content-shell py-12">
 
         {/* ── Author header ─────────────────────────────────────────────── */}
         <div className="mb-10 flex items-start gap-6">

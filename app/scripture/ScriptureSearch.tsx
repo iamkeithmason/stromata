@@ -27,7 +27,7 @@ export default function ScriptureSearch({ initialValue = '' }: { initialValue?: 
   }
 
   return (
-    <form onSubmit={handleSubmit} className="relative max-w-2xl mx-auto">
+    <form onSubmit={handleSubmit} role="search" aria-label="Scripture lookup" className="relative max-w-2xl mx-auto">
       <div
         className="flex items-center gap-3 px-0 py-3"
         style={{
@@ -36,6 +36,8 @@ export default function ScriptureSearch({ initialValue = '' }: { initialValue?: 
         }}
       >
         <svg
+          aria-hidden="true"
+          focusable="false"
           className="shrink-0"
           style={{ color: 'var(--gold)', opacity: focused ? 1 : 0.75, transition: 'opacity 150ms ease', flexShrink: 0 }}
           width="18"
@@ -57,7 +59,8 @@ export default function ScriptureSearch({ initialValue = '' }: { initialValue?: 
           onFocus={() => setFocused(true)}
           onBlur={() => setFocused(false)}
           placeholder="Look up a verse — e.g. John 3:16"
-          className="flex-1 outline-none"
+          aria-label="Look up a Bible verse, e.g. John 3:16"
+          className="field-input flex-1 outline-none"
           style={{
             background: 'transparent',
             fontFamily: 'var(--serif-cormorant)',

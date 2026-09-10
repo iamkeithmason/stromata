@@ -29,7 +29,7 @@ export default async function LocationsPage() {
     <div style={{ background: 'var(--paper)', paddingTop: '4rem' }} className="min-h-screen">
       <SiteHeader />
 
-      <main className="content-shell py-12">
+      <main id="main-content" className="content-shell py-12">
         <div className="mb-8">
           <div className="flex items-baseline justify-between mb-3">
             <h1 className="font-serif italic text-xl" style={{ color: '#1b1b1b' }}>Locations</h1>

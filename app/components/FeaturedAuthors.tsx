@@ -151,7 +151,7 @@ export async function FeaturedAuthors() {
                       fontSize: 'var(--text-sm)',
                       letterSpacing: '0.15em',
                       textTransform: 'uppercase',
-                      color: 'var(--gold)',
+                      color: 'var(--gold-ink)',
                       fontFamily: 'var(--serif)',
                     }}
                   >
