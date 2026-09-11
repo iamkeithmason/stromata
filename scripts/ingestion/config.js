@@ -1,25 +1,24 @@
-// AUTO-GENERATED (ORB-trawl multi-chapter validation) for prospect "on-first-principles-origen".
+// AUTO-GENERATED (ORB-trawl multi-chapter) for prospect "on-christian-doctrine-hippo".
 export default {
   collection: {
-    name: "On First Principles (De Principiis)",
-    slug: "on-first-principles-origen",
-    author: "Origen",
+    name: "On Christian Doctrine (De Doctrina Christiana)",
+    slug: "on-christian-doctrine-hippo",
+    author: "Augustine of Hippo",
     description: "",
   },
-  // Four books — New Advent page titles verified against live <title>:
-  //   04121 = "De Principiis, Book I" … 04124 = "Book IV". (0412.htm is the work landing.)
+  // 4 books — New Advent titles verified: 12021–12024 = On Christian Doctrine, Books I–IV.
   urls: [
-    "https://www.newadvent.org/fathers/04121.htm",
-    "https://www.newadvent.org/fathers/04122.htm",
-    "https://www.newadvent.org/fathers/04123.htm",
-    "https://www.newadvent.org/fathers/04124.htm",
+    "https://www.newadvent.org/fathers/12021.htm",
+    "https://www.newadvent.org/fathers/12022.htm",
+    "https://www.newadvent.org/fathers/12023.htm",
+    "https://www.newadvent.org/fathers/12024.htm",
   ],
   source: "newadvent",
   knownFields: {
     genre: "Treatise",
-    sourceAttribution: "Translated by Frederick Crombie (ANF, Vol. IV).",
+    sourceAttribution: "Translated by J. F. Shaw (NPNF, Series I, Vol. II).",
     provenanceNotes: "Text sourced from New Advent (newadvent.org). Accessed September 2026.",
-    translationNotes: "Ante-Nicene Fathers Vol. 4 translation by Frederick Crombie, 1885; long public domain. Author d. 253. — copyright pre-verified (author pre-1900; PD English translation identified).",
+    translationNotes: "NPNF1 vol. 2 translation by J. F. Shaw, pre-1900 public domain. Author d. 430. — copyright pre-verified (author pre-1900; PD English translation identified).",
     copyrightSafe: true,
   },
 };
