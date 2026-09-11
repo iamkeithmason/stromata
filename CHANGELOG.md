@@ -7,6 +7,52 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-09-11 — Fighting mean-reversion in note_drafts + a design-critic loop
+
+Prompted by Anshu Chimala's "How to turn your AI into a world-class designer" (Lenny's Newsletter).
+Its thesis — an LLM reverts to the most-likely token, so you get generic output unless you fight it
+— turned out to describe our own `note_draft` corpus almost exactly. A fresh-context critic pass
+over all 233 live notes scored the corpus **4/10**: the *"Expect X rather than Y"* closer template
+on **70%** of notes, the *"Written in [year]…"* dated-participle opener on **55%**, and whole
+single-author clusters (Cyril's 24 catechetical lectures, Hus's 23 `De Ecclesia` chapters)
+near-interchangeable because each independent API call regresses to the same shape with no memory of
+its siblings. Nine notes were also truncated mid-word by a `max_tokens` cap the old
+`trimToCompleteSentence` silently passed through.
+
+Changes, all landing in `scripts/lib/note-prompt.mjs` as the single source of truth:
+
+- **Reworked `NOTE_PROMPT`** — lead with the most concrete thing in *this* text, not date/place
+  metadata; a banned list of the templated openers, closers, and stock flourishes the audit found;
+  varied sentence rhythm; must end on a complete sentence.
+- **A critic-in-the-loop** (`generateNoteWithCritic` + `CRITIC_PROMPT`): a fresh-context reviewer
+  scores each draft against a top classics-imprint bar and feeds specific gaps back for a rewrite,
+  up to 3 attempts. A cheap regex guard (`findBannedPhrases`) rejects the loudest tells before
+  spending a critic call.
+- **Sibling de-clustering** — the generator is shown the other notes by the same author and told not
+  to echo their openings/closings. This is the fix aimed straight at the Cyril/Hus clusters.
+- **Truncation guard** — raised `max_tokens`, and `trimToCompleteSentence` now heals a cut note back
+  to its last complete sentence (or reports failure) so no note ships mid-word. Unit-tested in
+  `scripts/lib/note-prompt.test.mjs` (no API key needed).
+- **De-duplicated four copies of the generation logic** onto the shared helper: the backfill script,
+  the Stage 2 ingestion path (`fetch-texts.mjs`), and the admin "regenerate note" API route all now
+  call it. The backfill script gained `--all` / `--truncated` / `--slug=` / `--dry-run` /
+  `--no-critic` flags so existing notes (including the 9 truncated ones) can be healed without
+  nulling them first: `node scripts/generate-note-drafts.mjs --truncated`.
+
+Healing the live corpus is a local run (needs `ANTHROPIC_API_KEY`), not part of this PR — the code
+change is what ships here.
+
+Also, a small **design workshop** off the same article:
+
+- **`/design/liturgical-wheel`** — a NOINDEX exploration (Concept III from the "Stromata, Four Ways"
+  workshop), not linked in nav and not a homepage change. The whole ground wears the current
+  liturgical season and the church year is a wheel with today lit. Built entirely on existing tokens
+  (the reversed-out `--on-dark-*` family), so it clears the no-raw-colour lint rule.
+- **`scripts/design/critic-loop.mjs`** — the honest, budget-free half of Chimala's Technique 3:
+  screenshot a live route (Playwright if installed, else pass `--screenshot`) and run a Claude vision
+  critic against a studio bar, iterating on the score. **No image or video generation** — deliberately
+  omitted for now on cost grounds; the critic loop needs neither.
+
 ## 2026-09-11 — LLM-safe design system: colour tokens + an enforced no-raw-colour rule
 
 Prompted by Polar's "Building an LLM safe design system" (Orbit) and the fact that most UI here is

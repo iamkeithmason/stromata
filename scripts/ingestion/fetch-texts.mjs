@@ -24,7 +24,7 @@ import fs from "fs/promises";
 import path from "path";
 import { fileURLToPath } from "url";
 import Anthropic from "@anthropic-ai/sdk";
-import { NOTE_PROMPT } from "../lib/note-prompt.mjs";
+import { generateNoteWithCritic } from "../lib/note-prompt.mjs";
 
 // Load config from same directory
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -43,30 +43,21 @@ async function generateNoteDraft(title, authorName, markdown) {
     console.warn("  ⚠ ANTHROPIC_API_KEY not set — skipping note_draft generation");
     return "";
   }
-  const userMessage = [
-    `Title: ${title}`,
-    `Author: ${authorName}`,
-    "",
-    markdown.slice(0, 3000),
-  ].join("\n");
   try {
-    const message = await anthropic.messages.create({
-      model: "claude-opus-4-7",
-      max_tokens: 400,
-      system: NOTE_PROMPT,
-      messages: [{ role: "user", content: userMessage }],
+    // Shared critic loop + anti-formula + truncation guards (scripts/lib/note-prompt.mjs).
+    // No sibling notes at ingestion time — the batch backfill de-clusters later.
+    const { note } = await generateNoteWithCritic({
+      anthropic,
+      title,
+      author: authorName,
+      body: markdown,
+      log: (msg) => console.log(msg),
     });
-    return trimToCompleteSentence(message.content[0].text.trim());
+    return note;
   } catch (err) {
     console.warn(`  ⚠ Claude API error for "${title}": ${err.message} — note_draft left empty`);
     return "";
   }
-}
-
-function trimToCompleteSentence(text) {
-  const lastEnd = Math.max(text.lastIndexOf("."), text.lastIndexOf("!"), text.lastIndexOf("?"));
-  if (lastEnd === -1) return text;
-  return text.slice(0, lastEnd + 1).trim();
 }
 
 // ---------------------------------------------------------------------------

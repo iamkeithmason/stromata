@@ -1,15 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import Anthropic from '@anthropic-ai/sdk'
 import { createServerClient } from '@/lib/supabase/server'
-import { NOTE_PROMPT } from '@/scripts/lib/note-prompt.mjs'
+import { generateNoteWithCritic } from '@/scripts/lib/note-prompt.mjs'
 
 type Params = { params: Promise<{ id: string }> }
-
-function trimToCompleteSentence(text: string): string {
-  const lastEnd = Math.max(text.lastIndexOf('.'), text.lastIndexOf('!'), text.lastIndexOf('?'))
-  if (lastEnd === -1) return text
-  return text.slice(0, lastEnd + 1).trim()
-}
 
 export async function POST(_request: NextRequest, { params }: Params) {
   const { id } = await params
@@ -17,7 +11,7 @@ export async function POST(_request: NextRequest, { params }: Params) {
 
   const { data: text } = await supabase
     .from('texts')
-    .select('title, body, author:authors(name)')
+    .select('title, body, author_id, author:authors(name)')
     .eq('id', id)
     .single()
 
@@ -25,27 +19,41 @@ export async function POST(_request: NextRequest, { params }: Params) {
 
   const authorName = (text.author as unknown as { name: string } | null)?.name ?? 'Unknown'
 
-  const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
+  // Sibling notes by the same author, so the critic loop can steer this note
+  // away from repeating a cluster's shared openings/closings.
+  let siblingNotes: string[] = []
+  if (text.author_id) {
+    const { data: siblings } = await supabase
+      .from('texts')
+      .select('note_draft')
+      .eq('author_id', text.author_id)
+      .neq('id', id)
+      .not('note_draft', 'is', null)
+    siblingNotes = (siblings ?? [])
+      .map((s) => (s as { note_draft: string | null }).note_draft ?? '')
+      .filter(Boolean)
+  }
 
-  const userMessage = [
-    `Title: ${text.title}`,
-    `Author: ${authorName}`,
-    '',
-    (text.body as string).slice(0, 3000),
-  ].join('\n')
+  const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
 
   let draft: string
   try {
-    const message = await anthropic.messages.create({
-      model: 'claude-opus-4-7',
-      max_tokens: 400,
-      system: NOTE_PROMPT,
-      messages: [{ role: 'user', content: userMessage }],
+    // Shared prompt + critic loop + truncation guard (scripts/lib/note-prompt.mjs).
+    const result = await generateNoteWithCritic({
+      anthropic,
+      title: text.title as string,
+      author: authorName,
+      body: (text.body as string) ?? '',
+      siblingNotes,
     })
-    draft = trimToCompleteSentence((message.content[0] as { text: string }).text.trim())
+    draft = result.note
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Unknown error'
     return NextResponse.json({ error: `Claude API error: ${message}` }, { status: 502 })
+  }
+
+  if (!draft) {
+    return NextResponse.json({ error: 'No usable note was produced. Try again.' }, { status: 502 })
   }
 
   const { error: writeError } = await supabase
