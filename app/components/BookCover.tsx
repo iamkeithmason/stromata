@@ -54,7 +54,7 @@ export function BookCover({
           justifyContent: 'space-between',
           alignItems: 'center',
           padding: 'min(1.5rem, 12cqi) min(1rem, 8cqi)',
-          borderBottom: '1px solid rgba(245,240,230,.18)',
+          borderBottom: '1px solid var(--on-dark-rule)',
           flexShrink: 0,
         }}
       >
@@ -64,7 +64,7 @@ export function BookCover({
             fontFamily: 'var(--serif-display)',
             fontSize: 'min(0.5rem, 4cqi)',
             letterSpacing: '0.24em',
-            color: 'rgba(245,240,230,0.70)',
+            color: 'var(--on-dark-soft)',
             textTransform: 'uppercase',
           }}
         >
@@ -76,7 +76,7 @@ export function BookCover({
             style={{
               fontFamily: 'monospace',
               fontSize: 'min(0.5rem, 4cqi)',
-              color: 'rgba(245,240,230,0.60)',
+              color: 'var(--on-dark-soft)',
               letterSpacing: '0.04em',
             }}
           >
@@ -90,7 +90,7 @@ export function BookCover({
         className="book-cover-mid"
         style={{
           flex: 1,
-          background: '#F5F0E6',
+          background: 'var(--cover-mid)',
           margin: 'min(8px, 4cqi) min(10px, 5cqi)',
           display: 'flex',
           flexDirection: 'column',
@@ -169,7 +169,7 @@ export function BookCover({
           padding: readingMinutes
             ? 'min(0.6rem, 4.8cqi) min(1rem, 8cqi)'
             : 'min(1rem, 8cqi) min(1rem, 8cqi)',
-          borderTop: '1px solid rgba(245,240,230,.18)',
+          borderTop: '1px solid var(--on-dark-rule)',
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
@@ -182,7 +182,7 @@ export function BookCover({
           style={{
             fontFamily: 'var(--serif-display)',
             fontSize: 'min(1.25rem, 10cqi)',
-            color: 'rgba(245,240,230,0.70)',
+            color: 'var(--on-dark-soft)',
             lineHeight: 1,
           }}
         >
@@ -195,7 +195,7 @@ export function BookCover({
               fontSize: 'min(0.45rem, 3.6cqi)',
               letterSpacing: '0.2em',
               textTransform: 'uppercase',
-              color: 'rgba(245,240,230,0.55)',
+              color: 'var(--on-dark-mute)',
               lineHeight: 1,
             }}
           >

@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { BookCover } from '@/app/components/BookCover'
 import { LancetArch } from '@/app/components/LancetArch'
+import { ColourSwatch } from './LiveToken'
 
 export const metadata: Metadata = {
   title: 'Design Reference — The Stromata',
@@ -58,19 +59,6 @@ function TokenRow({ name, value, children }: { name: string; value: string; chil
   )
 }
 
-function ColourSwatch({ token, value, label }: { token: string; value: string; label?: string }) {
-  return (
-    <div className="flex flex-col gap-1">
-      <div
-        className="w-full rounded-sm"
-        style={{ height: 48, background: `var(${token})`, border: '1px solid rgba(0,0,0,0.07)' }}
-      />
-      <code style={{ fontSize: 'var(--text-sm)', color: 'var(--ink-mute)', fontFamily: 'monospace' }}>{token}</code>
-      {label && <span style={{ fontSize: 'var(--text-sm)', color: 'var(--ink-faint)' }}>{label}</span>}
-    </div>
-  )
-}
-
 // ── Page ──────────────────────────────────────────────────────────────────
 
 export default function DesignPage() {
@@ -91,46 +79,80 @@ export default function DesignPage() {
         {/* ── 1. Colour Tokens ─────────────────────────────────────────── */}
         <Section title="Colour tokens">
 
+          <p className="font-serif mb-8" style={{ fontSize: 'var(--text-sm)', color: 'var(--ink-faint)', maxWidth: '60ch' }}>
+            Every value below is read live from the computed CSS custom property, so this
+            page cannot drift from <code className="font-mono">globals.css</code>. Add or change
+            a token there and the swatch here follows.
+          </p>
+
           <SubSection title="Paper & ground">
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-              <ColourSwatch token="--paper" value="#F5F0E6" label="Primary background" />
-              <ColourSwatch token="--paper-deep" value="#EDE6D6" label="Inset / deeper" />
-              <ColourSwatch token="--paper-edge" value="#E2D9C4" label="Borders, card edges" />
-              <ColourSwatch token="--vellum" value="#FAF6EC" label="Lifted surfaces" />
+              <ColourSwatch token="--paper" label="Primary background" />
+              <ColourSwatch token="--paper-deep" label="Inset / deeper" />
+              <ColourSwatch token="--paper-edge" label="Borders, card edges" />
+              <ColourSwatch token="--vellum" label="Lifted surfaces" />
             </div>
           </SubSection>
 
           <SubSection title="Ink">
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-              <ColourSwatch token="--ink" value="#1E2D3D" label="Primary text" />
-              <ColourSwatch token="--ink-soft" value="#3D4B5C" label="Slightly softened" />
-              <ColourSwatch token="--ink-mute" value="#6B7280" label="Secondary text" />
-              <ColourSwatch token="--ink-faint" value="#6E6A5C" label="Tertiary / labels" />
+              <ColourSwatch token="--ink" label="Primary text" />
+              <ColourSwatch token="--ink-soft" label="Slightly softened" />
+              <ColourSwatch token="--ink-mute" label="Secondary text (AA)" />
+              <ColourSwatch token="--ink-faint" label="Tertiary / labels (AA)" />
             </div>
           </SubSection>
 
           <SubSection title="Gold">
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-              <ColourSwatch token="--gold" value="#C9943A" label="Accent, kicker-gold" />
-              <ColourSwatch token="--gold-rule" value="rgba(201,148,58,0.45)" label="Hairline rules" />
+              <ColourSwatch token="--gold" label="Accent, rules, large glyphs" />
+              <ColourSwatch token="--gold-ink" label="Gold TEXT (AA)" />
+              <ColourSwatch token="--gold-rule" label="Hairline rules" />
+              <ColourSwatch token="--gold-border" label="Keyline (rest)" />
+              <ColourSwatch token="--gold-border-strong" label="Keyline (hover/focus)" />
             </div>
           </SubSection>
 
           <SubSection title="Rules & structure">
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-              <ColourSwatch token="--rule" value="#C9BFA8" label="Standard borders" />
-              <ColourSwatch token="--rule-soft" value="#DDD3BD" label="Soft dividers" />
-              <ColourSwatch token="--accent" value="#2C4A6B" label="Accent blue" />
-              <ColourSwatch token="--accent-soft" value="#B8C4D2" label="Soft accent" />
+              <ColourSwatch token="--rule" label="Standard borders" />
+              <ColourSwatch token="--rule-soft" label="Soft dividers" />
+              <ColourSwatch token="--accent" label="Accent blue" />
+              <ColourSwatch token="--accent-soft" label="Soft accent" />
             </div>
           </SubSection>
 
           <SubSection title="Dark & highlights">
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-              <ColourSwatch token="--dark" value="#1C1814" label="Footer ground" />
-              <ColourSwatch token="--dark-surface" value="#241F1A" label="Lifted dark" />
-              <ColourSwatch token="--highlight" value="#F4E4A9" label="Yellow highlight" />
-              <ColourSwatch token="--highlight-2" value="#D4E8D0" label="Green highlight" />
+              <ColourSwatch token="--dark" label="Footer ground" />
+              <ColourSwatch token="--dark-surface" label="Lifted dark" />
+              <ColourSwatch token="--hero-ground" label="Frontispiece hero (stable)" />
+              <ColourSwatch token="--highlight" label="Yellow highlight" />
+              <ColourSwatch token="--highlight-2" label="Green highlight" />
+              <ColourSwatch token="--highlight-3" label="Pink highlight" />
+            </div>
+          </SubSection>
+
+          <SubSection title="Reversed-out — cream text/rules on a dark or liturgical ground">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+              <ColourSwatch token="--on-dark" backdrop="--season-trinitytide" label="Primary reversed heading" />
+              <ColourSwatch token="--on-dark-body" backdrop="--season-trinitytide" label="Reversed body" />
+              <ColourSwatch token="--on-dark-soft" backdrop="--season-trinitytide" label="Reversed labels, marks" />
+              <ColourSwatch token="--on-dark-mute" backdrop="--season-trinitytide" label="Reversed metadata / dim" />
+              <ColourSwatch token="--on-dark-border" backdrop="--season-trinitytide" label="Reversed border" />
+              <ColourSwatch token="--on-dark-rule" backdrop="--season-trinitytide" label="Reversed hairline" />
+              <ColourSwatch token="--on-dark-gold" backdrop="--season-trinitytide" label="Reversed gold" />
+              <ColourSwatch token="--on-dark-gold-soft" backdrop="--season-trinitytide" label="Reversed gold, faint" />
+              <ColourSwatch token="--cover-mid" label="Book-cover inner panel" />
+            </div>
+          </SubSection>
+
+          <SubSection title="Liturgical season grounds">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+              <ColourSwatch token="--season-advent-lent" label="Advent / Lent (violet)" />
+              <ColourSwatch token="--season-eastertide" label="Eastertide (gold-ochre)" />
+              <ColourSwatch token="--season-trinitytide" label="Trinitytide (green) — current" />
+              <ColourSwatch token="--season-feast" label="Feast days (dark ochre)" />
             </div>
           </SubSection>
         </Section>
@@ -145,6 +167,7 @@ export default function DesignPage() {
               { token: '--text-prose',   value: '1.25rem',  label: 'Long-form reading body' },
               { token: '--text-xl',      value: '1.5rem',   label: 'Seasonal panel, prominent links' },
               { token: '--text-display', value: '3rem',     label: 'Text reader title heading' },
+              { token: '--text-hero',    value: 'clamp(2.75rem, 5vw, 4rem)', label: 'Frontispiece hero title (text reader)' },
             ].map(({ token, value, label }) => (
               <TokenRow key={token} name={token} value={value}>
                 <span

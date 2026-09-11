@@ -68,6 +68,8 @@
   --gold:         #C9943A;
   --gold-rule:    rgba(201, 148, 58, 0.45);   /* hairline rules, softer */
   --gold-ink:     #8A5F1E;   /* darker gold for TEXT (≥4.5:1 vs --paper/--vellum); keep --gold for rules/large glyphs */
+  --gold-border:        rgba(201, 148, 58, 0.32);   /* faint gold keyline at rest (on a dark/liturgical ground) */
+  --gold-border-strong: rgba(201, 148, 58, 0.60);   /* gold keyline on hover / focus */
 
   --dark:         #1C1814;                    /* footer ground */
   --dark-surface: #241F1A;                    /* slightly lifted dark surface */
@@ -75,6 +77,41 @@
   --highlight:    #F4E4A9;
   --highlight-2:  #D4E8D0;
   --highlight-3:  #E8D0E0;
+
+  /* ---------------------------------------------------------------
+     Reversed-out palette — light cream text/rules for content sitting
+     ON a dark or liturgical colour ground (book covers, the seasonal
+     panel, dark-tone chips). The cream is --paper's RGB (245,240,230)
+     at varying alpha. Defined only here and deliberately NOT flipped by
+     the reader dark theme below: these always sit on their own dark
+     ground, independent of the page theme.
+     --------------------------------------------------------------- */
+  --on-dark:         rgba(245, 240, 230, 0.95);   /* primary reversed heading */
+  --on-dark-body:    rgba(245, 240, 230, 0.88);   /* reversed body text */
+  --on-dark-soft:    rgba(245, 240, 230, 0.70);   /* reversed labels, marks, band text */
+  --on-dark-mute:    rgba(245, 240, 230, 0.55);   /* reversed metadata / dim */
+  --on-dark-border:  rgba(245, 240, 230, 0.45);   /* reversed visible border (chip) */
+  --on-dark-rule:    rgba(245, 240, 230, 0.18);   /* reversed hairline rule */
+  --on-dark-gold:      rgb(224, 200, 134);         /* gold legible on a dark/liturgical ground (lighter than --gold) */
+  --on-dark-gold-soft: rgba(224, 200, 134, 0.55);  /* faint reversed gold (underlines) */
+
+  --cover-mid:  #F5F0E6;   /* book-cover inner panel — a stable cream, NOT theme-flipped */
+
+  /* ---------------------------------------------------------------
+     Liturgical season grounds. One is active at a time, selected by
+     CURRENT_SEASON in app/components/SeasonalPanel.tsx.
+     --------------------------------------------------------------- */
+  --season-advent-lent:  #4A3F6B;   /* violet — Advent / Lent */
+  --season-eastertide:   #7A6020;   /* gold-ochre — Eastertide */
+  --season-trinitytide:  #3F5A43;   /* green — the long season after Pentecost (current) */
+  --season-feast:        #5A3020;   /* dark ochre — feast days */
+
+  /* ---------------------------------------------------------------
+     Elevation — composite shadows kept as whole tokens so components
+     never hand-author shadow rgba() values inline.
+     --------------------------------------------------------------- */
+  --shadow-panel:      0px 2px 0px rgba(30, 30, 25, 0.05), 0px 22px 50px -28px rgba(30, 30, 25, 0.45);
+  --shadow-panel-drop: drop-shadow(0px 2px 0px rgba(30, 30, 25, 0.05)) drop-shadow(0px 22px 40px rgba(30, 30, 25, 0.35));
 
   --serif:         "EB Garamond", "Garamond", Georgia, serif;
   --serif-display: "IM Fell English", "EB Garamond", Georgia, serif;

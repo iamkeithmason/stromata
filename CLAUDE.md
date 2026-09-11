@@ -192,6 +192,74 @@ Rules:
 
 ---
 
+## Design system — tokens and the LLM-safe colour rule
+
+The site's visual design is **token-driven**. `app/globals.css` `:root` is the single source of
+truth for colour, the type scale (`--text-*`), the layout grid (`--grid-*`, `--content-*`,
+`--reading-measure`, …), and motion (`--ease`, `--dur*`). Components consume these through inline
+`style={{ … color: 'var(--token)' }}` — the dominant styling surface here; Tailwind is used for
+**layout** (flex/grid/spacing), not for colour. There is **no `components/ui` primitives library**;
+reuse happens through tokens plus the semantic `@layer components` classes (`.kicker`,
+`.kicker-gold`, `.caption`, `.rule-gold`, `.rule-muted`).
+
+### Colour token families
+
+- **Surface / ink / rule / accent / gold / highlights** — the parchment-surface palette. Gold has
+  three text-vs-rule variants: `--gold` (rules, large glyphs), `--gold-ink` (text, AA-compliant),
+  `--gold-rule` (hairlines), plus `--gold-border` / `--gold-border-strong` (keylines at rest /
+  hover).
+- **Reversed-out** (`--on-dark`, `--on-dark-body`, `--on-dark-soft`, `--on-dark-mute`,
+  `--on-dark-border`, `--on-dark-rule`, `--on-dark-gold`, `--on-dark-gold-soft`) — cream text/rules
+  for content sitting **on a dark or liturgical ground** (book covers, the seasonal panel,
+  dark-tone chips). The cream is `--paper`'s RGB at varying alpha.
+- **`--cover-mid`** — the book-cover inner panel cream.
+- **Liturgical seasons** (`--season-advent-lent`, `--season-eastertide`, `--season-trinitytide`,
+  `--season-feast`) — SeasonalPanel selects one via `CURRENT_SEASON.colour`.
+- **Elevation** (`--shadow-panel`, `--shadow-panel-drop`) — composite shadows as whole tokens so
+  components never hand-author shadow `rgba()` inline.
+
+**Theme note:** the reader dark theme (`[data-reader-theme="dark"]`, opt-in per reader — the only
+dark mode) flips the surface/ink tokens through the cascade. The reversed-out, season, cover, and
+`--hero-ground` tokens are deliberately **not** flipped there — they always sit on their own dark
+ground, independent of page theme. When adding a token that sits on a dark ground, add it to `:root`
+only; do **not** add it to the reader-dark override block.
+
+### The reference page — `/design` (can't drift)
+
+`/admin`-free internal page at **`/design`** (`noindex`). Its swatches read each token's value
+**live from the computed CSS** (`app/design/LiveToken.tsx`), so the page can never disagree with
+`globals.css` — add or change a token and the gallery follows. (It used to hand-type values and
+drifted: `--ink-mute` showed its pre-AA value long after the token was darkened. Fixed.) To surface
+a new token there, add a `<ColourSwatch token="--your-token" />` — the value renders itself.
+
+### The rule that matters — no raw colour literals in `style`
+
+Colours in a `style` prop **must** be a token (`var(--token)`), never a hex/`rgb(a)`/`hsl(a)`
+literal. This is enforced, not just documented: **`.eslintrc.cjs`** encodes it as a
+`no-restricted-syntax` rule and **`.github/workflows/ci.yml`** runs `npm run lint` (+ `tsc`) on every
+PR. A documented convention is a probability an LLM follows most of the time; a lint rule in CI is a
+contract — a green PR carries no new off-palette colour, with no hand-review of every colour needed.
+This matters precisely because most UI here is now written with an LLM in the loop, and LLMs reach
+for reasonable-but-off-palette values (a second slightly-different gold, `rgba(245,240,230,…)`,
+`bg-gray-100`).
+
+- **Scope / limits:** it targets colour literals inside `style` JSX attributes — the dominant
+  surface. It does **not** catch colours in Tailwind arbitrary classes (`bg-[#…]`; use
+  `[color:var(--token)]` arbitrary syntax instead) or in style objects declared as separate
+  `const`s — those stay a convention. Shadows/gradients get a token too (`--shadow-*`, `--season-*`).
+- **The ratchet:** `.eslintrc.cjs` carries a `legacyRawColour` list — files that still hold pre-rule
+  literals, where the rule is OFF. The rule is ON everywhere else, so new and freshly-migrated files
+  are protected immediately while the list only shrinks. **To retire an entry:** replace its `style`
+  colour literals with tokens (add a token to `globals.css` if none fits), confirm `npm run lint` is
+  clean, then delete the file from the list. **Never add to it** — a new violation is a bug, not an
+  exemption.
+
+Relevant files: `app/globals.css` (tokens), `app/design/{page.tsx,LiveToken.tsx}` (reference),
+`.eslintrc.cjs` (the rule + ratchet), `.github/workflows/ci.yml` (CI gate), `lib/tradition-colors.ts`
+(the separate maroon/ink book-cover ground map — its own TS source of truth).
+
+---
+
 ## Keeping the record current — which change goes where
 
 Every automated routine produces a change; each one has exactly one authoritative record,

@@ -1,0 +1,42 @@
+name: CI — lint & types
+
+# The design-system contract. `npm run lint` enforces the no-raw-colour-literal
+# rule (see .eslintrc.cjs) alongside Next's defaults, so a green PR means no new
+# off-palette colour has slipped into a `style` prop — no hand-review of every
+# colour needed. Typecheck runs alongside it. A full `next build` is out of
+# scope here: it collects page data and so needs Supabase credentials, which
+# this gate deliberately doesn't carry (it stays secret-free and fast).
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  # New push to a PR supersedes its in-flight run; main runs stay isolated.
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  lint-and-types:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint (design tokens + Next defaults)
+        run: npm run lint
+
+      - name: Typecheck
+        run: npx tsc --noEmit
