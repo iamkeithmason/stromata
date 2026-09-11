@@ -35,6 +35,13 @@ fallback — for this project it's the *only* way to verify pipeline output end-
 into the plan from the start rather than discovering the block after already trying to preview
 `/admin` in the browser.
 
+**The Supabase MCP connector IS authorized for this project — the "requires authentication" banner
+is a false alarm.** The harness prints a `supabase requires authentication` / "non-interactive,
+cannot run OAuth" reminder at session start and on every MCP reconnect, but that's a *static
+config check, not a live probe*: the tools (`execute_sql`, `list_tables`, …) return real data.
+Don't conclude the DB is unreachable from that banner — **just make a call** (e.g.
+`list_projects`) to confirm, then proceed. (`stromata` project id: `hhfjfbuiuhhdhwhfwlpv`.)
+
 ---
 
 ## Pipeline GUI — `/admin/pipeline` (local operator UI, for Keith not Claude)
@@ -64,9 +71,11 @@ What it exposes:
   `NODE_ENV === 'production'`**): per-prospect **Fetch** (generates `scripts/ingestion/config.js`
   from the prospect, then runs `fetch-texts.mjs`) and **Extract** (`extract-docx.mjs --slug=…`,
   needs the prospect's `docx_path` field); a toolbar **Run import** runs `pipeline-import.mjs` over
-  all `staged` prospects. `archive_ocr` prospects get no one-click button (they need manual
+  all `staged` prospects, and a toolbar **Find duplicate drafts** runs `dedup-draft-texts.mjs
+  --fuzzy` (**report only — no `--write`**, so the GUI can never delete a text; removal stays a
+  deliberate CLI run). `archive_ocr` prospects get no one-click button (they need manual
   landmarks) — the row shows an "OCR · manual" tag. Script stdout/stderr streams live into a log
-  pane. The runner is a fixed 3-script whitelist — the action is an enum and args come from the
+  pane. The runner is a fixed script whitelist — the action is an enum and args come from the
   queue, never free text.
 - **Staged-output review** (`/api/admin/pipeline/output`) — renders the output markdown
   (single-file or multi-chapter dir) and edits **title / genre / themes** in the frontmatter before
@@ -454,7 +463,7 @@ node scripts/pipeline-import.mjs
 - Inserts each text with `published: false` and `note_draft` populated. **Never writes `editorial_introduction`** — that field stays null until Keith fills it in himself.
 - Rejoins mid-sentence **page-break splits** in the body before insert (only the OCR page-break artifact where a printed page ended mid-sentence; a body with none is stored unchanged). The join count is recorded in the prospect's notes. Verse and scanno checks stay flag-only.
 - For multi-chapter digital sources, creates/reuses a `collections` row (also `published: false`).
-- Skips any text whose slug already exists (idempotent, safe to re-run).
+- Skips any text whose slug already exists **or** whose normalised title already exists under an author whose name normalises the same — so the same work isn't re-imported under a fresh slug, even when a draft author stub would give it a different `author_id` (the normalisation is shared with `dedup-draft-texts.mjs` via `scripts/lib/dedup-match.mjs`). Idempotent, safe to re-run.
 - Sets the prospect's `status` to `"imported"` (or `"rejected"` if the copyright re-check fails).
 
 ---

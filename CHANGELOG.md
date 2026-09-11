@@ -7,6 +7,58 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-09-10 — Supabase MCP access confirmed + John of Damascus duplicate removed
+
+Two related things while working the dedup thread with live DB access.
+
+- **Supabase MCP works in-session — the "requires authentication" banner is a false alarm.** The
+  Supabase connector is authorized for this project and its tools (`list_projects`, `execute_sql`,
+  etc.) return live data. The harness still prints a `supabase requires authentication` /
+  "non-interactive, cannot run OAuth" banner at session start and on every MCP reconnect, but that
+  is a **static config-based check, not a live probe** — it does not mean the connector is broken.
+  Confirmed by querying the live `stromata` project (`hhfjfbuiuhhdhwhfwlpv`) directly. So future
+  sessions should **just try a Supabase call** rather than treating the banner as a blocker — which
+  is exactly what CLAUDE.md's "verify via Supabase" note has always assumed is possible.
+- **Removed a real duplicate: John of Damascus, *Exposition of the Orthodox Faith*.** The live DB
+  held **two complete copies** of this 4-book work, both as draft texts under *published*
+  collections (which is why the collection pages read as "live" while the texts sat in Drafts).
+  Kept the clean copy — collection `an-exact-exposition-of-the-damascus` (author correctly linked,
+  5 themes per book, imported 2026-08-30) — and deleted the older half-finished copy — collection
+  `exposition-orthodox-faith` (author NULL, no themes, imported 2026-06-30) and its 4 texts.
+  Preserved the one editorial `note_draft` (on the old Book 1) by copying it onto the kept Book 1
+  first. Done as one atomic transaction via Supabase MCP; text_themes/scripture_references cascaded.
+  Note: the shipped `dedup-draft-texts.mjs` would *not* have caught this on its own — the duplicate
+  is at the **collection** level and the two copies' titles differ ("An Exposition…" vs
+  "Exposition…"), so extending the tool to collection-level duplicates is a genuine follow-up.
+
+## 2026-09-10 — Dedup follow-ups: import-time guard + admin GUI button
+
+Follow-ups to the dedup tool (PR #73), on a separate PR at Keith's request. Two changes that stop
+the duplicates at the source and make the report one click away, plus a shared match module so the
+guard and the tool can't drift apart.
+
+- **`scripts/lib/dedup-match.mjs` (new)** — extracted the normalisation, body-confidence grading
+  and title-similarity helpers out of `dedup-draft-texts.mjs` into a shared module. Both the tool
+  and the new import guard import from it, so "same work by the same person" means exactly one
+  thing across the pipeline. `dedup-draft-texts.mjs` now imports these instead of defining its own.
+- **`pipeline-import.mjs` — title + author-name skip guard.** The import was idempotent only by
+  slug, which is why the same work could land a draft next to a live copy under a different slug
+  (the draft-author-stub case splits them across two `author_id`s too). After the slug check it now
+  also skips when a text with the same normalised title already exists under an author whose name
+  normalises the same — regardless of slug, `author_id`, or published state. Curly-quote/whitespace
+  title variants remain the CLI tool's backstop; this catches the common case at the source.
+- **Admin pipeline GUI — "Find duplicate drafts" button.** New dev-only toolbar action next to
+  "Run import" that streams `dedup-draft-texts.mjs --fuzzy` into the log pane. **Report only — no
+  `--write`**, so the GUI stays incapable of deleting a text (mirrors the existing "no write that
+  could publish or promote" rule); actual removal is still a deliberate CLI `--write` run. Wired
+  through the same fixed-whitelist runner (`lib/pipeline/runner.ts` → `run` route → `PipelineClient`)
+  as the other one-click actions — the action is an enum, args are fixed, never free text.
+
+Verified: `node --check` on all changed scripts; the offline match harness (8 assertions) re-run
+against the shared module to confirm the extraction is behaviour-preserving; `tsc --noEmit` + `next
+lint` for the GUI/route/runner TypeScript changes. Not run against the live DB from this session (no
+creds here) — the guard and button are exercised locally.
+
 ## 2026-09-10 — Wikipedia author portraits no longer blocked by the 5 MB limit
 
 The "Use this Wikipedia portrait" button sends Wikipedia's `originalimage.source` — the

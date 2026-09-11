@@ -3,7 +3,7 @@
 import { useState, useMemo, useRef, useCallback, useEffect } from 'react'
 import { TRADITIONS, ERAS, GENRES, THEME_CLUSTERS, ALL_THEMES, MAX_THEMES, SOURCE_TYPES, STATUSES } from '@/lib/pipeline/vocab'
 
-type RunAction = 'fetch' | 'extract' | 'import'
+type RunAction = 'fetch' | 'extract' | 'import' | 'dedup'
 
 type Prospect = {
   id: string
@@ -201,6 +201,16 @@ export default function PipelineClient({
               title={stagedCount === 0 ? 'No staged prospects — Mark one staged first' : `Import ${stagedCount} staged prospect(s) → Drafts`}
             >
               {running === 'import:all' ? 'Importing…' : `Run import (${stagedCount} staged)`}
+            </button>
+          )}
+          {isDev && (
+            <button
+              onClick={() => run('dedup')}
+              disabled={!!running}
+              className="text-sm px-3 py-1.5 rounded border border-stone-300 text-stone-700 hover:border-stone-500 disabled:opacity-40 disabled:cursor-not-allowed"
+              title="Report drafts that duplicate a published text (read-only — remove them with `node scripts/dedup-draft-texts.mjs --write`)"
+            >
+              {running === 'dedup:all' ? 'Scanning…' : 'Find duplicate drafts'}
             </button>
           )}
           <button

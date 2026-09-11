@@ -10,7 +10,7 @@ import type { Prospect } from './queue'
 const INGEST_DIR = path.join(process.cwd(), 'scripts', 'ingestion')
 const CONFIG_PATH = path.join(INGEST_DIR, 'config.js')
 
-export type RunAction = 'fetch' | 'extract' | 'import'
+export type RunAction = 'fetch' | 'extract' | 'import' | 'dedup'
 
 // source_type -> fetch-texts.mjs `source` value (see fetch-texts.mjs header).
 const FETCH_SOURCE_MAP: Record<string, string> = {
@@ -100,6 +100,17 @@ export default {
 export async function buildCommand(action: RunAction, prospect: Prospect): Promise<Command> {
   if (action === 'import') {
     return { cmd: 'node', args: [path.join(process.cwd(), 'scripts', 'pipeline-import.mjs')], cwd: process.cwd() }
+  }
+
+  if (action === 'dedup') {
+    // Report only — no --write. The GUI must never delete a text (mirrors the
+    // "no write that could publish or promote" constraint); actual removal
+    // stays a deliberate CLI run: `node scripts/dedup-draft-texts.mjs --write`.
+    return {
+      cmd: 'node',
+      args: [path.join(process.cwd(), 'scripts', 'dedup-draft-texts.mjs'), '--fuzzy'],
+      cwd: process.cwd(),
+    }
   }
 
   if (action === 'fetch') {

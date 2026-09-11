@@ -25,6 +25,7 @@ import { createClient } from '@supabase/supabase-js';
 import dotenv from 'dotenv';
 import { normaliseMarkdown, rejoinSpuriousBreaks, overrideForFile } from './normalise-markdown.mjs';
 import { detectScannos, loadCorpus, loadAllowlist } from './detect-scannos.mjs';
+import { normaliseTitle, normaliseName } from './lib/dedup-match.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 dotenv.config({ path: path.join(__dirname, '..', '.env.local') });
@@ -269,6 +270,30 @@ async function importTextFile(filePath, prospect, authorId, collectionId) {
   if (existing) {
     console.log(`  · ${data.slug} already imported — skipped`);
     return { skipped: true, reason: 'already_exists' };
+  }
+
+  // Title + author-name duplicate guard. The slug check above makes the import
+  // idempotent, but the SAME work can already be live under a *different* slug —
+  // and, when a draft author stub shadows the real author, under a different
+  // author_id too. So also skip when a text with the same normalised title
+  // already exists under an author whose name normalises the same, regardless
+  // of slug/author_id/published. (Shares normalisation with dedup-draft-texts.mjs.)
+  // A title differing only by curly quotes or whitespace is the CLI dedup tool's
+  // backstop; this catches the common draft-author-stub case at the source.
+  const { data: sameTitle } = await supabase
+    .from('texts')
+    .select('slug, published, title, authors(name)')
+    .ilike('title', data.title);
+  if (sameTitle && sameTitle.length > 0) {
+    const wantTitle = normaliseTitle(data.title);
+    const wantAuthor = normaliseName(prospect.author);
+    const dup = sameTitle.find(
+      t => normaliseTitle(t.title) === wantTitle && normaliseName(t.authors?.name) === wantAuthor
+    );
+    if (dup) {
+      console.log(`  · "${data.title}" already exists as ${dup.slug} (${dup.published ? 'published' : 'draft'}) — skipped duplicate`);
+      return { skipped: true, reason: 'already_exists' };
+    }
   }
 
   const genreId = await resolveGenreId(data.genre);
