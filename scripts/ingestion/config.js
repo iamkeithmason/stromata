@@ -1,19 +1,20 @@
-// AUTO-GENERATED (ORB-trawl multi-chapter) for prospect "the-divine-institutes-lactantius".
+// AUTO-GENERATED (ORB-trawl multi-chapter) for prospect "church-history-caesarea".
 export default {
-  collection: { name: "The Divine Institutes", slug: "the-divine-institutes-lactantius", author: "Lactantius", description: "" },
-  // 7 books — New Advent titles verified: 07011–07017 = Divine Institutes, Books I–VII.
+  collection: { name: "Church History (Historia Ecclesiastica)", slug: "church-history-caesarea", author: "Eusebius of Caesarea", description: "" },
+  // 10 books — New Advent titles verified: 250101–250110 = Church History, Books I–X.
   urls: [
-    "https://www.newadvent.org/fathers/07011.htm","https://www.newadvent.org/fathers/07012.htm",
-    "https://www.newadvent.org/fathers/07013.htm","https://www.newadvent.org/fathers/07014.htm",
-    "https://www.newadvent.org/fathers/07015.htm","https://www.newadvent.org/fathers/07016.htm",
-    "https://www.newadvent.org/fathers/07017.htm",
+    "https://www.newadvent.org/fathers/250101.htm","https://www.newadvent.org/fathers/250102.htm",
+    "https://www.newadvent.org/fathers/250103.htm","https://www.newadvent.org/fathers/250104.htm",
+    "https://www.newadvent.org/fathers/250105.htm","https://www.newadvent.org/fathers/250106.htm",
+    "https://www.newadvent.org/fathers/250107.htm","https://www.newadvent.org/fathers/250108.htm",
+    "https://www.newadvent.org/fathers/250109.htm","https://www.newadvent.org/fathers/250110.htm",
   ],
   source: "newadvent",
   knownFields: {
-    genre: "Apology",
-    sourceAttribution: "Translated by William Fletcher (ANF, Vol. VII).",
+    genre: "Treatise",
+    sourceAttribution: "Translated by Arthur Cushman McGiffert (NPNF, Series II, Vol. I).",
     provenanceNotes: "Text sourced from New Advent (newadvent.org). Accessed September 2026.",
-    translationNotes: "Ante-Nicene Fathers Vol. 7 translation by William Fletcher, 1886; long public domain. Author d. c. 325. — copyright pre-verified (author pre-1900; PD English translation identified).",
+    translationNotes: "NPNF2 vol. 1 translation by Arthur Cushman McGiffert, 1890; public domain. Author d. c. 339. — copyright pre-verified (author pre-1900; PD English translation identified).",
     copyrightSafe: true,
   },
 };
