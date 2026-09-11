@@ -5894,7 +5894,7 @@
     },
     {
       "id": "eranistes-cyrrhus",
-      "status": "pending",
+      "status": "imported",
       "added": "2026-09-11",
       "author": "Theodoret of Cyrrhus",
       "death_year": 458,
@@ -5908,12 +5908,15 @@
       "translation_copyright_clear": true,
       "translator": "Blomfield Jackson",
       "translator_death_year": null,
-      "stage_1_notes": "Blomfield Jackson's translation in NPNF Series II, Vol. 3 (1892), public domain. — copyright pre-verified (author pre-1900; PD English translation identified).",
-      "stage_2_output": "",
+      "stage_1_notes": "NPNF2 vol. 3 translation by Blomfield Jackson, 1892; public domain. Author d. 458 (NEW AUTHOR — draft stub on import). — copyright pre-verified (author pre-1900; PD English translation identified). MULTI-CHAPTER collection: 3 dialogues from New Advent (27031–27033), each URL title-verified. Dialogue 2 (27032) needed retries past transient Cloudflare 520/522. Imported 3 text(s) on 2026-09-11.",
+      "stage_2_output": "scripts/ingestion/output/eranistes-cyrrhus/",
       "stage_3_themes": [
         "christology",
         "salvation",
-        "trinity"
+        "scripture",
+        "tradition",
+        "trinity",
+        "suffering"
       ],
       "rejection_reason": "",
       "notes": "From On the Ruin of Britain blog trawl (posts 140). NEW AUTHOR — import will create a draft author stub. MULTI-CHAPTER: import as a collection (output dir, one file per book/chapter). Verified SAFE by ORB-trawl verification pass 2026-09-11."

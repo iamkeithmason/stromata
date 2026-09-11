@@ -1,24 +1,18 @@
-// AUTO-GENERATED (ORB-trawl multi-chapter) for prospect "on-christian-doctrine-hippo".
+// TEMP single re-fetch of Eranistes Dialogue 2 (27032) after a transient HTTP 522.
 export default {
   collection: {
-    name: "On Christian Doctrine (De Doctrina Christiana)",
-    slug: "on-christian-doctrine-hippo",
-    author: "Augustine of Hippo",
+    name: "Eranistes (Dialogues)",
+    slug: "eranistes-cyrrhus",
+    author: "Theodoret of Cyrrhus",
     description: "",
   },
-  // 4 books — New Advent titles verified: 12021–12024 = On Christian Doctrine, Books I–IV.
-  urls: [
-    "https://www.newadvent.org/fathers/12021.htm",
-    "https://www.newadvent.org/fathers/12022.htm",
-    "https://www.newadvent.org/fathers/12023.htm",
-    "https://www.newadvent.org/fathers/12024.htm",
-  ],
+  urls: ["https://www.newadvent.org/fathers/27032.htm"],
   source: "newadvent",
   knownFields: {
-    genre: "Treatise",
-    sourceAttribution: "Translated by J. F. Shaw (NPNF, Series I, Vol. II).",
+    genre: "Dialogue",
+    sourceAttribution: "Translated by Blomfield Jackson (NPNF, Series II, Vol. III).",
     provenanceNotes: "Text sourced from New Advent (newadvent.org). Accessed September 2026.",
-    translationNotes: "NPNF1 vol. 2 translation by J. F. Shaw, pre-1900 public domain. Author d. 430. — copyright pre-verified (author pre-1900; PD English translation identified).",
+    translationNotes: "NPNF2 vol. 3 translation by Blomfield Jackson, 1892; public domain. Author d. 458. — copyright pre-verified (author pre-1900; PD English translation identified).",
     copyrightSafe: true,
   },
 };
