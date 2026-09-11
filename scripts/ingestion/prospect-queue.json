@@ -3446,7 +3446,7 @@
     },
     {
       "id": "against-celsus-origen",
-      "status": "pending",
+      "status": "imported",
       "added": "2026-09-11",
       "author": "Origen",
       "death_year": 253,
@@ -3460,15 +3460,15 @@
       "translation_copyright_clear": true,
       "translator": "Frederick Crombie (ANF)",
       "translator_death_year": null,
-      "stage_1_notes": "Ante-Nicene Fathers Vol. 4 translation, 1885; long public domain. — copyright pre-verified (author pre-1900; PD English translation identified).",
-      "stage_2_output": "",
+      "stage_1_notes": "ANF vol. 4 translation by Frederick Crombie, 1885; long public domain. Author d. 253. — copyright pre-verified (author pre-1900; PD English translation identified). MULTI-CHAPTER collection: 8 books from New Advent (04161–04168), each URL title-verified. Book IV (04164) needed retries past transient Cloudflare 520. Imported 8 text(s) on 2026-09-11.",
+      "stage_2_output": "scripts/ingestion/output/against-celsus-origen/",
       "stage_3_themes": [
         "christology",
-        "creation",
         "scripture",
         "providence",
         "salvation",
-        "virtue"
+        "creation",
+        "eschatology"
       ],
       "rejection_reason": "",
       "notes": "From On the Ruin of Britain blog trawl (posts ~8 (books)). MULTI-CHAPTER: import as a collection (output dir, one file per book/chapter). Verified SAFE by ORB-trawl verification pass 2026-09-11."
