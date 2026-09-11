@@ -23,8 +23,8 @@ export function ThemeChip({
       style={{
         fontFamily: 'var(--serif)',
         fontSize: 'var(--text-sm)',
-        color: dark ? 'rgba(250,246,236,0.75)' : 'var(--ink-mute)',
-        border: `1px solid ${dark ? 'rgba(250,246,236,0.45)' : 'var(--rule)'}`,
+        color: dark ? 'var(--on-dark-soft)' : 'var(--ink-mute)',
+        border: `1px solid ${dark ? 'var(--on-dark-border)' : 'var(--rule)'}`,
         letterSpacing: '0.1em',
         textTransform: 'uppercase',
         padding: '2px 8px',

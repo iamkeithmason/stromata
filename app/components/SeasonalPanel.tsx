@@ -44,29 +44,31 @@ type SeasonConfig = {
 }
 
 // ── Liturgical colours ───────────────────────────────────────────────────────
-//   Advent / Lent:   #4A3F6B  (violet)
-//   Eastertide:      #7A6020  (gold-ochre)
-//   Trinitytide:     #3F5A43  (green)
-//   Feast days:      #5A3020  (dark ochre)
-// ── Update this config to change the active season ──────────────────────────
+//   The four season grounds live in globals.css as design tokens:
+//     Advent / Lent  → var(--season-advent-lent)   (violet)
+//     Eastertide     → var(--season-eastertide)    (gold-ochre)
+//     Trinitytide    → var(--season-trinitytide)   (green)
+//     Feast days     → var(--season-feast)         (dark ochre)
+// ── Update `colour` to the token for the active season ──────────────────────
 const CURRENT_SEASON: SeasonConfig = {
   name: 'Trinitytide',
   subtitle: 'The season after Pentecost · Green',
-  colour: '#3F5A43',
+  colour: 'var(--season-trinitytide)',
   note: 'We are in the long green season after Pentecost — the weeks after Trinity in which the Church tends its life in the world. A season for wisdom literature, for letters of counsel, for texts on the daily practice of virtue.',
   pick: { title: 'A Short Rule of Life', author: 'John Wycliffe', href: '/texts/a-short-rule-of-life' },
 }
 // ────────────────────────────────────────────────────────────────────────────
 
-// Reversed-out palette on the liturgical colour ground
+// Reversed-out palette on the liturgical colour ground — the cream-on-dark
+// tokens from globals.css. See the "Reversed-out palette" block there.
 const R = {
-  title:      'rgba(245,240,230,0.95)',
-  note:       'rgba(245,240,230,0.88)',
-  rule:       'rgba(245,240,230,0.16)',
-  dim:        'rgba(245,240,230,0.55)',
-  gold:       'rgb(224,200,134)',
-  goldFaint:  'rgba(224,200,134,0.55)',
-  cta:        'rgb(224,200,134)',
+  title:      'var(--on-dark)',
+  note:       'var(--on-dark-body)',
+  rule:       'var(--on-dark-rule)',
+  dim:        'var(--on-dark-mute)',
+  gold:       'var(--on-dark-gold)',
+  goldFaint:  'var(--on-dark-gold-soft)',
+  cta:        'var(--on-dark-gold)',
 }
 
 // Small-caps label style — reused for "THE CHRISTIAN YEAR" and "READ FOR THE SEASON"
@@ -136,17 +138,17 @@ export async function SeasonalPanel() {
           backgroundRepeat: 'no-repeat',
           backgroundPosition: 'top left, top right, bottom left, bottom right',
           padding: '28px',
-          filter: 'drop-shadow(0px 2px 0px rgba(30,30,25,0.05)) drop-shadow(0px 22px 40px rgba(30,30,25,0.35))',
+          filter: 'var(--shadow-panel-drop)',
         }}
       >
         {/* ── Inset gold keyline border — the whole panel's click target ── */}
         <Link
           href={panelHref}
           {...panelUmamiProps}
-          className="block no-underline border border-[rgba(201,148,58,0.32)] transition-[border-color,transform,box-shadow] duration-200 ease-out hover:border-[rgba(201,148,58,0.6)] hover:-translate-y-0.5 focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#C9943A] focus-visible:border-[rgba(201,148,58,0.6)]"
+          className="block no-underline border border-[color:var(--gold-border)] transition-[border-color,transform,box-shadow] duration-200 ease-out hover:border-[color:var(--gold-border-strong)] hover:-translate-y-0.5 focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--gold)] focus-visible:border-[color:var(--gold-border-strong)]"
           style={{
             padding: '1.75rem 2rem',
-            boxShadow: 'rgba(30,30,25,0.05) 0px 2px 0px, rgba(30,30,25,0.45) 0px 22px 50px -28px',
+            boxShadow: 'var(--shadow-panel)',
           }}
         >
           <div

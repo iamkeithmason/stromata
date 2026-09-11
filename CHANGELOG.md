@@ -7,6 +7,44 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-09-11 — LLM-safe design system: colour tokens + an enforced no-raw-colour rule
+
+Prompted by Polar's "Building an LLM safe design system" (Orbit) and the fact that most UI here is
+now written with an LLM in the loop. The design system was already token-driven on the parchment
+surface but drifted wherever content sat on a dark/liturgical ground — components invented local
+palettes (SeasonalPanel had a whole forked `R` object, and its gold didn't even match `--gold`).
+Three changes, smallest blast radius first, plus a CI gate so the fix can't silently rot.
+
+- **New colour token families in `app/globals.css`.** A **reversed-out** family (`--on-dark`,
+  `--on-dark-body`, `--on-dark-soft`, `--on-dark-mute`, `--on-dark-border`, `--on-dark-rule`,
+  `--on-dark-gold`, `--on-dark-gold-soft`) for cream-on-dark content; **`--cover-mid`**; **liturgical
+  seasons** (`--season-advent-lent/eastertide/trinitytide/feast`); **gold keylines**
+  (`--gold-border`, `--gold-border-strong`); and **elevation** (`--shadow-panel`,
+  `--shadow-panel-drop`). These are theme-stable — deliberately not flipped by the reader dark theme,
+  since they sit on their own ground. `SeasonalPanel`, `BookCover` and `ThemeChip` refactored onto
+  them (the forked palettes and the mismatched gold are gone; values preserved to within an
+  imperceptible alpha).
+- **`/design` can no longer drift.** Its swatches now read each token's value **live from the
+  computed CSS** (`app/design/LiveToken.tsx`) instead of hand-typed strings — the root cause of the
+  pre-existing drift (it showed `--ink-mute`'s pre-AA value long after the token was darkened).
+  Added the previously-undocumented families + `--gold-ink`, `--hero-ground`, `--text-hero`.
+- **The rule that matters: no raw colour literals in `style` props.** `.eslintrc.cjs` (migrated from
+  `.eslintrc.json` so the ratchet list is self-documenting) encodes a `no-restricted-syntax` rule
+  banning hex/`rgb(a)`/`hsl(a)` in `style` JSX attributes — colours must be `var(--token)`. A
+  **ratchet** (`legacyRawColour`) exempts the 17 files that still hold pre-rule literals; the rule is
+  ON everywhere else, so new/migrated files are protected immediately and the list only shrinks.
+  Migrate a file, lint clean, delete it from the list — never add.
+- **New CI gate `.github/workflows/ci.yml`** runs `npm run lint` + `tsc --noEmit` on every PR — the
+  first lint/type CI in the repo (the other workflows are content jobs). Green PR = no new
+  off-palette colour, no hand-review of every colour. A full `next build` stays out of this gate (it
+  needs Supabase credentials at page-data collection; the gate is deliberately secret-free).
+- **CLAUDE.md** gains a "Design system" section documenting the token families, the `/design`
+  reference, the enforced rule, its scope/limits, and how to add a token or retire a ratchet entry.
+
+Verified: `npm run lint` clean (only a pre-existing unused-import warning), `tsc --noEmit` clean,
+`next build` compiles + type-checks clean (page-data collection then fails only on missing Supabase
+env in the sandbox, unrelated to this diff).
+
 ## 2026-09-10 — Supabase MCP access confirmed + John of Damascus duplicate removed
 
 Two related things while working the dedup thread with live DB access.
