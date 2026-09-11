@@ -12,6 +12,7 @@
     "test:analytics": "node --test scripts/analytics/*.test.mjs",
     "generate:note-drafts": "node scripts/generate-note-drafts.mjs",
     "generate:summaries": "node scripts/generate-summaries.mjs",
+    "backfill:author-images": "node scripts/backfill-author-images.mjs",
     "repair:summaries": "node scripts/repair-summaries.mjs",
     "pipeline:status": "node -e \"import('./scripts/ingestion/prospect-queue.json', {assert:{type:'json'}}).then(m=>m.default.prospects.forEach(p=>console.log(p.status.padEnd(16), p.id)))\"",
     "pipeline:import": "node scripts/pipeline-import.mjs && tsx scripts/backfill-scripture-refs.ts",
