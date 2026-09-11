@@ -7,6 +7,31 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-09-11 — Batch author-portrait backfill from Wikipedia
+
+All 68 authors were imageless (the `image_url`/`image_source` columns from migration 016 had never
+been populated at scale — portraits were only ever added one author at a time in the admin form).
+Added `scripts/backfill-author-images.mjs` to do the whole set in one run: for every author with no
+portrait, look the name up on Wikipedia's REST summary endpoint, copy the returned image into the
+`authors` Storage bucket, and set `image_url`/`image_source`.
+
+- **Reuses the existing rules, in bulk.** The lookup mirrors `lib/authors/wikipedia.ts` (prefer
+  `originalimage`, fall back to `thumbnail`); the store mirrors `app/api/admin/authors/image/route.ts`
+  (rewrite to a bounded 1024px thumbnail, Wikimedia-only SSRF allowlist, 5 MB guard, provenance
+  recorded as the original file URL). If either source changes, mirror it in the script.
+- **"Auto-apply, fix on site" posture.** It stores a best-match portrait for every name it can
+  confidently resolve and *skips* the ones a machine shouldn't guess: anonymous/unknown attributions,
+  composite names (e.g. *Bucer, Capito, and Hedio*), Wikipedia disambiguation pages, and authors with
+  no portrait on their page. It prints the matched article title + URL for every author it touches so
+  a wrong face is easy to spot and correct afterwards in the admin form.
+- **House-style safety.** Dry-run by default (report only); `--write` applies. `--limit=N`, `--slug=`
+  (scope to one author, handy for a re-do), and `--force` (overwrite an existing image) for the
+  fix-ups. Touches only `image_url`/`image_source` — no HARD CONSTRAINT surface. Idempotent: only
+  authors with a null `image_url` unless scoped/forced.
+- **Runs locally, not in a web session.** Wikipedia and `upload.wikimedia.org` must be reachable; the
+  cloud agent egress policy blocks both, so this is a `node scripts/…` run on Keith's machine (like
+  the other pipeline fetch scripts). Added `npm run backfill:author-images`.
+
 ## 2026-09-11 — LLM-safe design system: colour tokens + an enforced no-raw-colour rule
 
 Prompted by Polar's "Building an LLM safe design system" (Orbit) and the fact that most UI here is
