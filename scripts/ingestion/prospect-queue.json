@@ -1818,7 +1818,7 @@
     },
     {
       "id": "apology-tertullian",
-      "status": "staged",
+      "status": "imported",
       "added": "2026-09-11",
       "author": "Tertullian",
       "death_year": 240,
@@ -1832,7 +1832,7 @@
       "translation_copyright_clear": true,
       "translator": "S. Thelwall",
       "translator_death_year": null,
-      "stage_1_notes": "ANF Vol. 3, trans. S. Thelwall, 1885, public domain — copyright pre-verified (author pre-1900; PD English translation identified).",
+      "stage_1_notes": "ANF Vol. 3, trans. S. Thelwall, 1885, public domain — copyright pre-verified (author pre-1900; PD English translation identified). Imported 1 text(s) on 2026-09-11.",
       "stage_2_output": "scripts/ingestion/output/apology-tertullian/",
       "stage_3_themes": [
         "justice",
@@ -1845,7 +1845,7 @@
     },
     {
       "id": "on-the-shows-tertullian",
-      "status": "staged",
+      "status": "imported",
       "added": "2026-09-11",
       "author": "Tertullian",
       "death_year": 240,
@@ -1859,7 +1859,7 @@
       "translation_copyright_clear": true,
       "translator": "S. Thelwall",
       "translator_death_year": null,
-      "stage_1_notes": "ANF Vol. 3, trans. S. Thelwall, 1885, public domain — copyright pre-verified (author pre-1900; PD English translation identified).",
+      "stage_1_notes": "ANF Vol. 3, trans. S. Thelwall, 1885, public domain — copyright pre-verified (author pre-1900; PD English translation identified). Imported 1 text(s) on 2026-09-11.",
       "stage_2_output": "scripts/ingestion/output/on-the-shows-tertullian/",
       "stage_3_themes": [
         "vice",
@@ -1872,7 +1872,7 @@
     },
     {
       "id": "on-the-resurrection-of-the-flesh-tertullian",
-      "status": "staged",
+      "status": "imported",
       "added": "2026-09-11",
       "author": "Tertullian",
       "death_year": 240,
@@ -1886,7 +1886,7 @@
       "translation_copyright_clear": true,
       "translator": "Peter Holmes",
       "translator_death_year": null,
-      "stage_1_notes": "ANF Vol. 3, trans. Peter Holmes, 1885, public domain — copyright pre-verified (author pre-1900; PD English translation identified).",
+      "stage_1_notes": "ANF Vol. 3, trans. Peter Holmes, 1885, public domain — copyright pre-verified (author pre-1900; PD English translation identified). Imported 1 text(s) on 2026-09-11.",
       "stage_2_output": "scripts/ingestion/output/on-the-resurrection-of-the-flesh-tertullian/",
       "stage_3_themes": [
         "eschatology",
@@ -1899,7 +1899,7 @@
     },
     {
       "id": "on-idolatry-tertullian",
-      "status": "staged",
+      "status": "imported",
       "added": "2026-09-11",
       "author": "Tertullian",
       "death_year": 240,
@@ -1913,7 +1913,7 @@
       "translation_copyright_clear": true,
       "translator": "S. Thelwall",
       "translator_death_year": null,
-      "stage_1_notes": "ANF Vol. 3, trans. S. Thelwall, 1885, public domain — copyright pre-verified (author pre-1900; PD English translation identified).",
+      "stage_1_notes": "ANF Vol. 3, trans. S. Thelwall, 1885, public domain — copyright pre-verified (author pre-1900; PD English translation identified). Imported 1 text(s) on 2026-09-11.",
       "stage_2_output": "scripts/ingestion/output/on-idolatry-tertullian/",
       "stage_3_themes": [
         "vice",
@@ -1926,7 +1926,7 @@
     },
     {
       "id": "on-repentance-tertullian",
-      "status": "staged",
+      "status": "imported",
       "added": "2026-09-11",
       "author": "Tertullian",
       "death_year": 240,
@@ -1940,7 +1940,7 @@
       "translation_copyright_clear": true,
       "translator": "S. Thelwall",
       "translator_death_year": null,
-      "stage_1_notes": "ANF Vol. 3, trans. S. Thelwall, 1885, public domain — copyright pre-verified (author pre-1900; PD English translation identified).",
+      "stage_1_notes": "ANF Vol. 3, trans. S. Thelwall, 1885, public domain — copyright pre-verified (author pre-1900; PD English translation identified). Imported 1 text(s) on 2026-09-11.",
       "stage_2_output": "scripts/ingestion/output/on-repentance-tertullian/",
       "stage_3_themes": [
         "repentance",
@@ -1953,7 +1953,7 @@
     },
     {
       "id": "the-chaplet-on-the-soldier-s-crown-tertullian",
-      "status": "staged",
+      "status": "imported",
       "added": "2026-09-11",
       "author": "Tertullian",
       "death_year": 240,
@@ -1967,7 +1967,7 @@
       "translation_copyright_clear": true,
       "translator": "S. Thelwall",
       "translator_death_year": null,
-      "stage_1_notes": "ANF Vol. 3, trans. S. Thelwall, 1885, public domain — copyright pre-verified (author pre-1900; PD English translation identified).",
+      "stage_1_notes": "ANF Vol. 3, trans. S. Thelwall, 1885, public domain — copyright pre-verified (author pre-1900; PD English translation identified). Imported 1 text(s) on 2026-09-11.",
       "stage_2_output": "scripts/ingestion/output/the-chaplet-on-the-soldier-s-crown-tertullian/",
       "stage_3_themes": [
         "conscience",
@@ -1980,7 +1980,7 @@
     },
     {
       "id": "an-answer-to-the-jews-tertullian",
-      "status": "staged",
+      "status": "imported",
       "added": "2026-09-11",
       "author": "Tertullian",
       "death_year": 240,
@@ -1994,7 +1994,7 @@
       "translation_copyright_clear": true,
       "translator": "S. Thelwall",
       "translator_death_year": null,
-      "stage_1_notes": "ANF Vol. 3, trans. S. Thelwall, 1885, public domain — copyright pre-verified (author pre-1900; PD English translation identified).",
+      "stage_1_notes": "ANF Vol. 3, trans. S. Thelwall, 1885, public domain — copyright pre-verified (author pre-1900; PD English translation identified). Imported 1 text(s) on 2026-09-11.",
       "stage_2_output": "scripts/ingestion/output/an-answer-to-the-jews-tertullian/",
       "stage_3_themes": [
         "scripture",
@@ -2006,7 +2006,7 @@
     },
     {
       "id": "a-treatise-on-the-soul-tertullian",
-      "status": "staged",
+      "status": "imported",
       "added": "2026-09-11",
       "author": "Tertullian",
       "death_year": 240,
@@ -2020,7 +2020,7 @@
       "translation_copyright_clear": true,
       "translator": "Peter Holmes",
       "translator_death_year": null,
-      "stage_1_notes": "ANF Vol. 3, trans. Peter Holmes, 1885, public domain — copyright pre-verified (author pre-1900; PD English translation identified).",
+      "stage_1_notes": "ANF Vol. 3, trans. Peter Holmes, 1885, public domain — copyright pre-verified (author pre-1900; PD English translation identified). Imported 1 text(s) on 2026-09-11.",
       "stage_2_output": "scripts/ingestion/output/a-treatise-on-the-soul-tertullian/",
       "stage_3_themes": [
         "creation",
@@ -2033,7 +2033,7 @@
     },
     {
       "id": "on-the-apparel-of-women-tertullian",
-      "status": "staged",
+      "status": "imported",
       "added": "2026-09-11",
       "author": "Tertullian",
       "death_year": 240,
@@ -2047,7 +2047,7 @@
       "translation_copyright_clear": true,
       "translator": "S. Thelwall",
       "translator_death_year": null,
-      "stage_1_notes": "ANF Vol. 4, trans. S. Thelwall, 1885, public domain — copyright pre-verified (author pre-1900; PD English translation identified).",
+      "stage_1_notes": "ANF Vol. 4, trans. S. Thelwall, 1885, public domain — copyright pre-verified (author pre-1900; PD English translation identified). Imported 1 text(s) on 2026-09-11.",
       "stage_2_output": "scripts/ingestion/output/on-the-apparel-of-women-tertullian/",
       "stage_3_themes": [
         "humility",
@@ -2060,7 +2060,7 @@
     },
     {
       "id": "to-his-wife-tertullian",
-      "status": "staged",
+      "status": "imported",
       "added": "2026-09-11",
       "author": "Tertullian",
       "death_year": 240,
@@ -2074,7 +2074,7 @@
       "translation_copyright_clear": true,
       "translator": "S. Thelwall",
       "translator_death_year": null,
-      "stage_1_notes": "ANF Vol. 4, trans. S. Thelwall, 1885, public domain — copyright pre-verified (author pre-1900; PD English translation identified).",
+      "stage_1_notes": "ANF Vol. 4, trans. S. Thelwall, 1885, public domain — copyright pre-verified (author pre-1900; PD English translation identified). Imported 1 text(s) on 2026-09-11.",
       "stage_2_output": "scripts/ingestion/output/to-his-wife-tertullian/",
       "stage_3_themes": [
         "marriage",
@@ -2972,7 +2972,7 @@
     },
     {
       "id": "second-apology-martyr",
-      "status": "staged",
+      "status": "imported",
       "added": "2026-09-11",
       "author": "Justin Martyr",
       "death_year": 165,
@@ -2986,7 +2986,7 @@
       "translation_copyright_clear": true,
       "translator": "Marcus Dods & George Reith (ANF)",
       "translator_death_year": null,
-      "stage_1_notes": "d. c. 165; ANF vol. 1 translation (Dods & Reith, pre-1928) is public domain. — copyright pre-verified (author pre-1900; PD English translation identified).",
+      "stage_1_notes": "d. c. 165; ANF vol. 1 translation (Dods & Reith, pre-1928) is public domain. — copyright pre-verified (author pre-1900; PD English translation identified). Imported 1 text(s) on 2026-09-11.",
       "stage_2_output": "scripts/ingestion/output/second-apology-martyr/",
       "stage_3_themes": [
         "providence",
@@ -3000,7 +3000,7 @@
     },
     {
       "id": "first-apology-martyr",
-      "status": "staged",
+      "status": "imported",
       "added": "2026-09-11",
       "author": "Justin Martyr",
       "death_year": 165,
@@ -3014,7 +3014,7 @@
       "translation_copyright_clear": true,
       "translator": "Marcus Dods & George Reith (ANF)",
       "translator_death_year": null,
-      "stage_1_notes": "d. c. 165; ANF vol. 1 translation (Dods & Reith, pre-1928) is public domain. — copyright pre-verified (author pre-1900; PD English translation identified).",
+      "stage_1_notes": "d. c. 165; ANF vol. 1 translation (Dods & Reith, pre-1928) is public domain. — copyright pre-verified (author pre-1900; PD English translation identified). Imported 1 text(s) on 2026-09-11.",
       "stage_2_output": "scripts/ingestion/output/first-apology-martyr/",
       "stage_3_themes": [
         "christology",
@@ -3028,7 +3028,7 @@
     },
     {
       "id": "on-the-resurrection-martyr",
-      "status": "staged",
+      "status": "imported",
       "added": "2026-09-11",
       "author": "Justin Martyr",
       "death_year": 165,
@@ -3042,7 +3042,7 @@
       "translation_copyright_clear": true,
       "translator": "Roberts & Donaldson (ANF)",
       "translator_death_year": null,
-      "stage_1_notes": "Attributed to Justin (d. c. 165); ANF vol. 1 translation (pre-1928) is public domain. — copyright pre-verified (author pre-1900; PD English translation identified).",
+      "stage_1_notes": "Attributed to Justin (d. c. 165); ANF vol. 1 translation (pre-1928) is public domain. — copyright pre-verified (author pre-1900; PD English translation identified). Imported 1 text(s) on 2026-09-11.",
       "stage_2_output": "scripts/ingestion/output/on-the-resurrection-martyr/",
       "stage_3_themes": [
         "eschatology",
@@ -3616,7 +3616,7 @@
     },
     {
       "id": "epistle-73-to-jubaianus-carthage",
-      "status": "staged",
+      "status": "imported",
       "added": "2026-09-11",
       "author": "Cyprian of Carthage",
       "death_year": 258,
@@ -3630,7 +3630,7 @@
       "translation_copyright_clear": true,
       "translator": "Robert Ernest Wallis",
       "translator_death_year": null,
-      "stage_1_notes": "Author d. 258. ANF Vol. 5 translation (1868) long out of copyright. — copyright pre-verified (author pre-1900; PD English translation identified).",
+      "stage_1_notes": "Author d. 258. ANF Vol. 5 translation (1868) long out of copyright. — copyright pre-verified (author pre-1900; PD English translation identified). Imported 1 text(s) on 2026-09-11.",
       "stage_2_output": "scripts/ingestion/output/epistle-73-to-jubaianus-carthage/",
       "stage_3_themes": [
         "sacraments",
@@ -3643,7 +3643,7 @@
     },
     {
       "id": "the-seventh-council-of-carthage-under",
-      "status": "staged",
+      "status": "imported",
       "added": "2026-09-11",
       "author": "Cyprian of Carthage",
       "death_year": 258,
@@ -3657,7 +3657,7 @@
       "translation_copyright_clear": true,
       "translator": "Robert Ernest Wallis",
       "translator_death_year": null,
-      "stage_1_notes": "Council of 256; ANF Vol. 5 translation (1868) public domain. — copyright pre-verified (author pre-1900; PD English translation identified).",
+      "stage_1_notes": "Council of 256; ANF Vol. 5 translation (1868) public domain. — copyright pre-verified (author pre-1900; PD English translation identified). Imported 1 text(s) on 2026-09-11.",
       "stage_2_output": "scripts/ingestion/output/the-seventh-council-of-carthage-under/",
       "stage_3_themes": [
         "sacraments",
@@ -3669,7 +3669,7 @@
     },
     {
       "id": "epistle-64-to-fidus-carthage",
-      "status": "staged",
+      "status": "imported",
       "added": "2026-09-11",
       "author": "Cyprian of Carthage",
       "death_year": 258,
@@ -3683,7 +3683,7 @@
       "translation_copyright_clear": true,
       "translator": "Robert Ernest Wallis",
       "translator_death_year": null,
-      "stage_1_notes": "Author d. 258. ANF Vol. 5 translation public domain. — copyright pre-verified (author pre-1900; PD English translation identified).",
+      "stage_1_notes": "Author d. 258. ANF Vol. 5 translation public domain. — copyright pre-verified (author pre-1900; PD English translation identified). Imported 1 text(s) on 2026-09-11.",
       "stage_2_output": "scripts/ingestion/output/epistle-64-to-fidus-carthage/",
       "stage_3_themes": [
         "sacraments",
@@ -3695,7 +3695,7 @@
     },
     {
       "id": "on-the-lapsed-de-lapsis-carthage",
-      "status": "staged",
+      "status": "imported",
       "added": "2026-09-11",
       "author": "Cyprian of Carthage",
       "death_year": 258,
@@ -3709,7 +3709,7 @@
       "translation_copyright_clear": true,
       "translator": "Robert Ernest Wallis",
       "translator_death_year": null,
-      "stage_1_notes": "Author d. 258. ANF Vol. 5 translation public domain. — copyright pre-verified (author pre-1900; PD English translation identified).",
+      "stage_1_notes": "Author d. 258. ANF Vol. 5 translation public domain. — copyright pre-verified (author pre-1900; PD English translation identified). Imported 1 text(s) on 2026-09-11.",
       "stage_2_output": "scripts/ingestion/output/on-the-lapsed-de-lapsis-carthage/",
       "stage_3_themes": [
         "repentance",
@@ -3723,7 +3723,7 @@
     },
     {
       "id": "epistle-63-to-caecilius-carthage",
-      "status": "staged",
+      "status": "imported",
       "added": "2026-09-11",
       "author": "Cyprian of Carthage",
       "death_year": 258,
@@ -3737,7 +3737,7 @@
       "translation_copyright_clear": true,
       "translator": "Robert Ernest Wallis",
       "translator_death_year": null,
-      "stage_1_notes": "Author d. 258. ANF Vol. 5 translation public domain. — copyright pre-verified (author pre-1900; PD English translation identified).",
+      "stage_1_notes": "Author d. 258. ANF Vol. 5 translation public domain. — copyright pre-verified (author pre-1900; PD English translation identified). Imported 1 text(s) on 2026-09-11.",
       "stage_2_output": "scripts/ingestion/output/epistle-63-to-caecilius-carthage/",
       "stage_3_themes": [
         "sacraments",
@@ -3750,7 +3750,7 @@
     },
     {
       "id": "epistle-75-carthage",
-      "status": "staged",
+      "status": "imported",
       "added": "2026-09-11",
       "author": "Cyprian of Carthage",
       "death_year": 258,
@@ -3764,7 +3764,7 @@
       "translation_copyright_clear": true,
       "translator": "Robert Ernest Wallis",
       "translator_death_year": null,
-      "stage_1_notes": "Firmilian d. c.268; letter preserved in Cyprian's corpus. ANF Vol. 5 translation public domain. — copyright pre-verified (author pre-1900; PD English translation identified).",
+      "stage_1_notes": "Firmilian d. c.268; letter preserved in Cyprian's corpus. ANF Vol. 5 translation public domain. — copyright pre-verified (author pre-1900; PD English translation identified). Imported 1 text(s) on 2026-09-11.",
       "stage_2_output": "scripts/ingestion/output/epistle-75-carthage/",
       "stage_3_themes": [
         "sacraments",
@@ -3777,7 +3777,7 @@
     },
     {
       "id": "on-the-vanity-of-idols-quod-idola-dii-carthage",
-      "status": "staged",
+      "status": "imported",
       "added": "2026-09-11",
       "author": "Cyprian of Carthage",
       "death_year": 258,
@@ -3791,7 +3791,7 @@
       "translation_copyright_clear": true,
       "translator": "Robert Ernest Wallis",
       "translator_death_year": null,
-      "stage_1_notes": "Author d. 258. ANF Vol. 5 translation public domain. — copyright pre-verified (author pre-1900; PD English translation identified).",
+      "stage_1_notes": "Author d. 258. ANF Vol. 5 translation public domain. — copyright pre-verified (author pre-1900; PD English translation identified). Imported 1 text(s) on 2026-09-11.",
       "stage_2_output": "scripts/ingestion/output/on-the-vanity-of-idols-quod-idola-dii-carthage/",
       "stage_3_themes": [
         "christology",
@@ -3804,7 +3804,7 @@
     },
     {
       "id": "on-illustrious-men-de-viris-illustribu-jerome",
-      "status": "staged",
+      "status": "imported",
       "added": "2026-09-11",
       "author": "Jerome",
       "death_year": 420,
@@ -3818,7 +3818,7 @@
       "translation_copyright_clear": true,
       "translator": "Ernest Cushing Richardson (NPNF2 Vol. 3; series ed. W. H. Fremantle)",
       "translator_death_year": null,
-      "stage_1_notes": "Author d. 420. NPNF Series II Vol. 3 (Fremantle, 1892) public domain. — copyright pre-verified (author pre-1900; PD English translation identified).",
+      "stage_1_notes": "Author d. 420. NPNF Series II Vol. 3 (Fremantle, 1892) public domain. — copyright pre-verified (author pre-1900; PD English translation identified). Imported 1 text(s) on 2026-09-11.",
       "stage_2_output": "scripts/ingestion/output/on-illustrious-men-de-viris-illustribu-jerome/",
       "stage_3_themes": [
         "tradition",
@@ -3830,7 +3830,7 @@
     },
     {
       "id": "the-dialogue-against-the-luciferians-jerome",
-      "status": "staged",
+      "status": "imported",
       "added": "2026-09-11",
       "author": "Jerome",
       "death_year": 420,
@@ -3844,7 +3844,7 @@
       "translation_copyright_clear": true,
       "translator": "W. H. Fremantle (with G. Lewis & W. G. Martley)",
       "translator_death_year": null,
-      "stage_1_notes": "Author d. 420. NPNF Series II Vol. 6 (Fremantle, 1893) public domain. — copyright pre-verified (author pre-1900; PD English translation identified).",
+      "stage_1_notes": "Author d. 420. NPNF Series II Vol. 6 (Fremantle, 1893) public domain. — copyright pre-verified (author pre-1900; PD English translation identified). Imported 1 text(s) on 2026-09-11.",
       "stage_2_output": "scripts/ingestion/output/the-dialogue-against-the-luciferians-jerome/",
       "stage_3_themes": [
         "sacraments",
@@ -3856,7 +3856,7 @@
     },
     {
       "id": "against-vigilantius-jerome",
-      "status": "staged",
+      "status": "imported",
       "added": "2026-09-11",
       "author": "Jerome",
       "death_year": 420,
@@ -3870,7 +3870,7 @@
       "translation_copyright_clear": true,
       "translator": "W. H. Fremantle (with G. Lewis & W. G. Martley)",
       "translator_death_year": null,
-      "stage_1_notes": "Author d. 420. NPNF Series II Vol. 6 (Fremantle, 1893) public domain. — copyright pre-verified (author pre-1900; PD English translation identified).",
+      "stage_1_notes": "Author d. 420. NPNF Series II Vol. 6 (Fremantle, 1893) public domain. — copyright pre-verified (author pre-1900; PD English translation identified). Imported 1 text(s) on 2026-09-11.",
       "stage_2_output": "scripts/ingestion/output/against-vigilantius-jerome/",
       "stage_3_themes": [
         "tradition",

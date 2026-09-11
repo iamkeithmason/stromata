@@ -7,6 +7,25 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-09-11 — ORB-trawl pipeline: New Advent fetcher chrome-strip fix + shared frontmatter parser
+
+Two code changes that rode in with the ORB-trawl Batch-1 ingestion run (the content import itself
+is recorded in the run-log, not here).
+
+- **New Advent fetcher now strips site chrome by container, not by blind table position.**
+  The newadvent `extractFn` in `scripts/ingestion/fetch-texts.mjs` used to remove the first and last
+  `<table>` on the page, which on the current New Advent layout left the A–Z index, the logo, the
+  breadcrumb and the footer embedded in every fetched body. It now targets the actual chrome
+  containers by id/class — the desktop and mobile headers (`#capitalcity`, `#mobilecity`,
+  `.scrollmenu`, `#mi5`), the interspersed ad placeholders, the gumroad support paragraphs, and the
+  `CONTACT US` / `New Advent LLC` copyright footer — while explicitly preserving `#springfield2`,
+  the content column that holds the `<h1>` title and the chapter body. Removing by container also
+  survives wording changes in the footer, which the text-match approach did not.
+- **Shared frontmatter parser extracted to `scripts/lib/frontmatter.mjs`.** `parseFrontmatter` was
+  duplicated logic; it now lives in one module that `scripts/pipeline-import.mjs` imports, so the
+  ingestion and import sides read the staged-output frontmatter contract from a single source of
+  truth.
+
 ## 2026-09-11 — LLM-safe design system: colour tokens + an enforced no-raw-colour rule
 
 Prompted by Polar's "Building an LLM safe design system" (Orbit) and the fact that most UI here is
