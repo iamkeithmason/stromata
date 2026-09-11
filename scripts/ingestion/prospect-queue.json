@@ -5492,7 +5492,7 @@
     },
     {
       "id": "against-the-heathen-sicca",
-      "status": "pending",
+      "status": "imported",
       "added": "2026-09-11",
       "author": "Arnobius of Sicca",
       "death_year": 330,
@@ -5501,19 +5501,20 @@
       "title": "Against the Heathen (Adversus Nationes)",
       "genre": "Apology",
       "source_type": "newadvent",
-      "source_url": "https://www.newadvent.org/fathers/0645.htm",
+      "source_url": "https://www.newadvent.org/fathers/0631.htm",
       "collection_slug": "against-the-heathen-sicca",
       "translation_copyright_clear": true,
       "translator": "Hamilton Bryce & Hugh Campbell",
       "translator_death_year": null,
-      "stage_1_notes": "Ante-Nicene Fathers Vol. 6 (Hamilton Bryce & Hugh Campbell translation, 1871); public domain. — copyright pre-verified (author pre-1900; PD English translation identified).",
-      "stage_2_output": "",
+      "stage_1_notes": "ANF vol. 6 translation by Hamilton Bryce and Hugh Campbell, 1871/1886; long public domain. Author d. c. 330 (NEW AUTHOR — draft stub on import). — copyright pre-verified (author pre-1900; PD English translation identified). MULTI-CHAPTER collection: 7 books from New Advent (06311–06317, index 0631), each URL title-verified. Book VII first returned a truncated 13k body; re-fetched to full size (104k). Imported 7 text(s) on 2026-09-11.",
+      "stage_2_output": "scripts/ingestion/output/against-the-heathen-sicca/",
       "stage_3_themes": [
-        "creation",
         "providence",
-        "salvation",
+        "creation",
+        "scripture",
         "vice",
-        "virtue"
+        "christology",
+        "salvation"
       ],
       "rejection_reason": "",
       "notes": "From On the Ruin of Britain blog trawl (posts 067,068,071,098). NEW AUTHOR — import will create a draft author stub. MULTI-CHAPTER: import as a collection (output dir, one file per book/chapter). Verified SAFE by ORB-trawl verification pass 2026-09-11."

@@ -1,20 +1,7 @@
-// AUTO-GENERATED (ORB-trawl multi-chapter) for prospect "church-history-caesarea".
+// TEMP single re-fetch of Against the Heathen Book VII (06317) — first fetch truncated (13k).
 export default {
-  collection: { name: "Church History (Historia Ecclesiastica)", slug: "church-history-caesarea", author: "Eusebius of Caesarea", description: "" },
-  // 10 books — New Advent titles verified: 250101–250110 = Church History, Books I–X.
-  urls: [
-    "https://www.newadvent.org/fathers/250101.htm","https://www.newadvent.org/fathers/250102.htm",
-    "https://www.newadvent.org/fathers/250103.htm","https://www.newadvent.org/fathers/250104.htm",
-    "https://www.newadvent.org/fathers/250105.htm","https://www.newadvent.org/fathers/250106.htm",
-    "https://www.newadvent.org/fathers/250107.htm","https://www.newadvent.org/fathers/250108.htm",
-    "https://www.newadvent.org/fathers/250109.htm","https://www.newadvent.org/fathers/250110.htm",
-  ],
+  collection: { name: "Against the Heathen (Adversus Nationes)", slug: "against-the-heathen-sicca", author: "Arnobius of Sicca", description: "" },
+  urls: ["https://www.newadvent.org/fathers/06317.htm"],
   source: "newadvent",
-  knownFields: {
-    genre: "Treatise",
-    sourceAttribution: "Translated by Arthur Cushman McGiffert (NPNF, Series II, Vol. I).",
-    provenanceNotes: "Text sourced from New Advent (newadvent.org). Accessed September 2026.",
-    translationNotes: "NPNF2 vol. 1 translation by Arthur Cushman McGiffert, 1890; public domain. Author d. c. 339. — copyright pre-verified (author pre-1900; PD English translation identified).",
-    copyrightSafe: true,
-  },
+  knownFields: { genre: "Apology", sourceAttribution: "Translated by Hamilton Bryce and Hugh Campbell (ANF, Vol. VI).", provenanceNotes: "Text sourced from New Advent (newadvent.org). Accessed September 2026.", translationNotes: "ANF vol. 6 translation by Hamilton Bryce and Hugh Campbell, 1871/1886; long public domain. Author d. c. 330. — copyright pre-verified (author pre-1900; PD English translation identified).", copyrightSafe: true },
 };
