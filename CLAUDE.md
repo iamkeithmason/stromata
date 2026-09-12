@@ -258,6 +258,36 @@ Relevant files: `app/globals.css` (tokens), `app/design/{page.tsx,LiveToken.tsx}
 `.eslintrc.cjs` (the rule + ratchet), `.github/workflows/ci.yml` (CI gate), `lib/tradition-colors.ts`
 (the separate maroon/ink book-cover ground map — its own TS source of truth).
 
+### The design-critic loop — a repeatable taste check (after Chimala)
+
+`scripts/design/critic-loop.mjs` screenshots a live route and has Claude judge it against a
+studio-quality bar, per Anshu Chimala's "world-class designer" method (Technique 3: a fresh-context
+critic scores the screenshot; you iterate). It is for *executing* a design direction well, not
+choosing one. Run the app, then in a second terminal:
+
+```
+npm run design:critic -- --url=http://localhost:3000/<route> --aesthetic="<the look it's going for>"
+```
+
+It captures with Playwright (a devDependency — run `npx playwright install chromium` once), prints a
+score out of 10 plus specific gaps and the single highest-impact next change; you edit and re-run.
+`--screenshot=<path>` skips capture if Playwright isn't set up. **No image or video generation** —
+deliberately omitted on cost grounds; the loop needs neither. The matching prose-critic loop for
+`note_draft`s lives in `scripts/lib/note-prompt.mjs` (`generateNoteWithCritic`) — same idea, other
+medium. Both need `ANTHROPIC_API_KEY`.
+
+Two lessons the loop taught, worth keeping:
+
+- **The `--aesthetic` brief is load-bearing.** The critic optimises for the string you hand it, so a
+  brief describing the site's *default* look silently caps the score and drags the design back toward
+  that default. Brief it for the concept you are actually building, not the house style.
+- **Taste and direction stay human.** The loop sharpens craft; it cannot choose the concept. When the
+  critic starts arguing the concept rather than the execution — and the score stops climbing, usually
+  around 8 — that is the signal to stop and make a call, not to keep grinding.
+
+Relevant files: `scripts/design/critic-loop.mjs`; `app/design/liturgical-wheel/page.tsx` as a worked
+example (a NOINDEX exploration, not linked in nav).
+
 ---
 
 ## Keeping the record current — which change goes where
