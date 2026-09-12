@@ -2336,7 +2336,7 @@
     },
     {
       "id": "on-grace-and-free-will-hippo",
-      "status": "pending",
+      "status": "imported",
       "added": "2026-09-11",
       "author": "Augustine of Hippo",
       "death_year": 430,
@@ -2345,19 +2345,19 @@
       "title": "On Grace and Free Will (De Gratia et Libero Arbitrio)",
       "genre": "Treatise",
       "source_type": "newadvent",
-      "source_url": "https://ccel.org/ccel/schaff/npnf105",
+      "source_url": "https://www.newadvent.org/fathers/1510.htm",
       "collection_slug": "on-grace-and-free-will-hippo",
       "translation_copyright_clear": true,
       "translator": "Peter Holmes and Robert Ernest Wallis",
       "translator_death_year": null,
-      "stage_1_notes": "NPNF1 vol. 5 (Anti-Pelagian Writings), pre-1900 public domain. Author d. 430. — copyright pre-verified (author pre-1900; PD English translation identified).",
-      "stage_2_output": "",
+      "stage_1_notes": "NPNF1 vol. 5 translation by Holmes & Wallis, pre-1900 public domain. Author d. 430. — copyright pre-verified (author pre-1900; PD English translation identified). SINGLE TEXT (was mis-tagged MULTI-CHAPTER; New Advent 1510 is a single-page treatise, no sub-books). Imported as a single text. Imported 1 text(s) on 2026-09-12.",
+      "stage_2_output": "scripts/ingestion/output/on-grace-and-free-will-hippo/",
       "stage_3_themes": [
         "salvation",
         "providence",
-        "conscience",
         "virtue",
-        "scripture"
+        "scripture",
+        "conscience"
       ],
       "rejection_reason": "",
       "notes": "From On the Ruin of Britain blog trawl (posts 065). MULTI-CHAPTER: import as a collection (output dir, one file per book/chapter). Source noted as ccel: https://ccel.org/ccel/schaff/npnf105. Verified SAFE by ORB-trawl verification pass 2026-09-11."
@@ -2450,7 +2450,7 @@
     },
     {
       "id": "on-the-predestination-of-the-saints-hippo",
-      "status": "pending",
+      "status": "imported",
       "added": "2026-09-11",
       "author": "Augustine of Hippo",
       "death_year": 430,
@@ -2459,17 +2459,18 @@
       "title": "On the Predestination of the Saints (De Praedestinatione Sanctorum)",
       "genre": "Treatise",
       "source_type": "newadvent",
-      "source_url": "https://ccel.org/ccel/schaff/npnf105",
+      "source_url": "https://www.newadvent.org/fathers/1512.htm",
       "collection_slug": "on-the-predestination-of-the-saints-hippo",
       "translation_copyright_clear": true,
       "translator": "Peter Holmes and Robert Ernest Wallis",
       "translator_death_year": null,
-      "stage_1_notes": "NPNF1 vol. 5 (Anti-Pelagian Writings), pre-1900 public domain. Author d. 430. — copyright pre-verified (author pre-1900; PD English translation identified).",
-      "stage_2_output": "",
+      "stage_1_notes": "NPNF1 vol. 5 translation by Holmes & Wallis, pre-1900 public domain. Author d. 430. — copyright pre-verified (author pre-1900; PD English translation identified). MULTI-CHAPTER collection: 2 books from New Advent (15121, 15122) — Book II is On the Gift of Perseverance. Each URL title-verified. Imported 2 text(s) on 2026-09-12.",
+      "stage_2_output": "scripts/ingestion/output/on-the-predestination-of-the-saints-hippo/",
       "stage_3_themes": [
         "salvation",
         "providence",
         "scripture",
+        "humility",
         "conscience"
       ],
       "rejection_reason": "",
@@ -2477,7 +2478,7 @@
     },
     {
       "id": "on-the-holy-spirit-great",
-      "status": "pending",
+      "status": "imported",
       "added": "2026-09-11",
       "author": "Basil the Great",
       "death_year": 379,
@@ -2486,19 +2487,19 @@
       "title": "On the Holy Spirit (De Spiritu Sancto)",
       "genre": "Treatise",
       "source_type": "newadvent",
-      "source_url": "https://ccel.org/ccel/schaff/npnf208",
+      "source_url": "https://www.newadvent.org/fathers/3203.htm",
       "collection_slug": "on-the-holy-spirit-great",
       "translation_copyright_clear": true,
       "translator": "Blomfield Jackson",
       "translator_death_year": null,
-      "stage_1_notes": "NPNF2 vol. 8 translation by Blomfield Jackson, pre-1900 public domain. Author d. 379. — copyright pre-verified (author pre-1900; PD English translation identified).",
-      "stage_2_output": "",
+      "stage_1_notes": "NPNF2 vol. 8 translation by Blomfield Jackson, 1895; public domain. Author d. 379. — copyright pre-verified (author pre-1900; PD English translation identified). SINGLE TEXT (was mis-tagged MULTI-CHAPTER; New Advent 3203 is a single-page treatise, no sub-books). Imported as a single text. Imported 1 text(s) on 2026-09-12.",
+      "stage_2_output": "scripts/ingestion/output/on-the-holy-spirit-great/",
       "stage_3_themes": [
         "pneumatology",
         "trinity",
-        "liturgy",
-        "tradition",
-        "scripture"
+        "christology",
+        "scripture",
+        "tradition"
       ],
       "rejection_reason": "",
       "notes": "From On the Ruin of Britain blog trawl (posts 007,068). MULTI-CHAPTER: import as a collection (output dir, one file per book/chapter). Source noted as ccel: https://ccel.org/ccel/schaff/npnf208. Verified SAFE by ORB-trawl verification pass 2026-09-11."
@@ -2602,7 +2603,7 @@
       "translation_copyright_clear": true,
       "translator": "William Wilson",
       "translator_death_year": null,
-      "stage_1_notes": "ANF vol. 2 translation by William Wilson, pre-1900 public domain. Author d. c. 215. — copyright pre-verified (author pre-1900; PD English translation identified).",
+      "stage_1_notes": "ANF vol. 2 translation by William Wilson, pre-1900 public domain. Author d. c. 215. — copyright pre-verified (author pre-1900; PD English translation identified). [2026-09-12: New Advent 0208.htm is only a table-of-contents stub (no chapter sub-pages) — full text NOT available on New Advent; fetch from CCEL (anf02) in the CCEL phase.]",
       "stage_2_output": "",
       "stage_3_themes": [
         "salvation",
