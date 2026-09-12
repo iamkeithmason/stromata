@@ -7,6 +7,23 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-09-12 — Portrait download: robust downscale for non-web-format originals
+
+The 5 MB guard was still blocking some portraits (Augustine, Tertullian) even after the earlier
+bounded-thumbnail fix. Cause: `boundedWikimediaUrl` predicts the thumbnail URL by swapping the width
+into the original filename, which is wrong for non-web-format originals — a TIFF's generated
+thumbnail is `lossy-page1-<w>px-File.tif.jpg`, an SVG's is `<w>px-File.svg.png`, etc. The predicted
+URL 404s, the code falls back to the full-resolution original scan, and MAX_BYTES rejects it.
+
+Fix: download via Wikimedia's `Special:FilePath/<file>?width=` endpoint, which renders a
+width-bounded thumbnail server-side for *any* source format and 302-redirects to the correctly-named
+sized file — no filename guessing. It resolves both Commons-hosted and wiki-local files, so
+`en.wikipedia.org` works as the single host. New `wikimediaDownscaleUrl()` in both
+`app/api/admin/authors/image/route.ts` (the admin "Use this Wikipedia portrait" button) and
+`scripts/backfill-author-images.mjs`; the download now tries Special:FilePath → naive bounded
+thumbnail → source, all still under the 5 MB guard. `tsc` + `next lint` clean. (Couldn't verify
+against live Wikimedia from the cloud session — egress blocks it; confirmed on Keith's machine.)
+
 ## 2026-09-12 — Non-destructive author-portrait reframing (focal point + zoom)
 
 Follow-on from the Wikipedia backfill. Portraits are drawn `object-fit: cover` inside the tall

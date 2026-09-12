@@ -80,6 +80,38 @@ const EXT_BY_TYPE = {
 // never download a multi-megabyte original. Returns null when the URL isn't a
 // recognised Wikimedia upload URL — the caller then fetches the source as given
 // (the MAX_BYTES guard still applies). Copied from the image route; keep in sync.
+
+// Robust downscale via Special:FilePath?width=, which renders a width-bounded
+// thumbnail for ANY source format (TIFF/PNG/SVG originals included, whose
+// generated thumbnail filenames a naive width-swap can't produce — the case that
+// left large-scan authors like Augustine/Tertullian tripping MAX_BYTES). Give it
+// the file name and a width; it 302-redirects to the correctly-named sized file.
+// Copied from the image route; keep in sync.
+function wikimediaDownscaleUrl(raw, width) {
+  let url;
+  try {
+    url = new URL(raw);
+  } catch {
+    return null;
+  }
+  if (url.hostname.toLowerCase() !== 'upload.wikimedia.org') return null;
+
+  const parts = url.pathname.split('/').filter(Boolean);
+  if (parts[0] !== 'wikipedia') return null;
+
+  const thumbIdx = parts.indexOf('thumb');
+  const filename = thumbIdx !== -1 ? parts[thumbIdx + 3] : parts[parts.length - 1];
+  if (!filename) return null;
+
+  let name;
+  try {
+    name = encodeURIComponent(decodeURIComponent(filename));
+  } catch {
+    name = encodeURIComponent(filename);
+  }
+  return `https://en.wikipedia.org/wiki/Special:FilePath/${name}?width=${width}`;
+}
+
 function boundedWikimediaUrl(raw, width) {
   let url;
   try {
@@ -171,9 +203,19 @@ async function downloadPortrait(sourceUrl) {
   const fetchImage = (u) =>
     fetch(u, { headers: { 'User-Agent': USER_AGENT } }).catch(() => null);
 
-  const bounded = boundedWikimediaUrl(sourceUrl, WIKIMEDIA_THUMB_WIDTH);
-  let res = bounded ? await fetchImage(bounded) : null;
-  if (!res || !res.ok) res = await fetchImage(sourceUrl);
+  // Preferred → fallback: format-agnostic Special:FilePath render, naive
+  // filename-swap thumbnail, then the source as given (still guarded below).
+  const attempts = [
+    wikimediaDownscaleUrl(sourceUrl, WIKIMEDIA_THUMB_WIDTH),
+    boundedWikimediaUrl(sourceUrl, WIKIMEDIA_THUMB_WIDTH),
+    sourceUrl,
+  ].filter(Boolean);
+
+  let res = null;
+  for (const u of attempts) {
+    res = await fetchImage(u);
+    if (res && res.ok) break;
+  }
 
   if (!res) return { ok: false, reason: 'could not reach the image source' };
   if (!res.ok) return { ok: false, reason: `image source returned ${res.status}` };
