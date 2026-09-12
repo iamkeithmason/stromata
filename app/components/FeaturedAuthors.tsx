@@ -34,6 +34,9 @@ type AuthorRow = {
   birth_year: number | null
   death_year: number | null
   image_url: string | null
+  image_focus_x: number | null
+  image_focus_y: number | null
+  image_zoom: number | null
   tradition: { name: string } | null
   era: { label: string } | null
 }
@@ -55,7 +58,7 @@ export async function FeaturedAuthors() {
 
   const { data: raw } = await supabase
     .from('authors')
-    .select('id, name, slug, birth_year, death_year, image_url, tradition:traditions(name), era:eras(label)')
+    .select('id, name, slug, birth_year, death_year, image_url, image_focus_x, image_focus_y, image_zoom, tradition:traditions(name), era:eras(label)')
     .in('slug', CURATED_SLUGS)
     .eq('draft', false)
 
@@ -116,7 +119,7 @@ export async function FeaturedAuthors() {
                 className="mx-auto transition-opacity group-hover:opacity-80"
                 style={{ maxWidth: 140, aspectRatio: '200 / 380' }}
               >
-                <LancetArch initial={initial} label={author.name} imageUrl={author.image_url} />
+                <LancetArch initial={initial} label={author.name} imageUrl={author.image_url} focusX={author.image_focus_x} focusY={author.image_focus_y} zoom={author.image_zoom} />
               </div>
 
               {/* Caption */}

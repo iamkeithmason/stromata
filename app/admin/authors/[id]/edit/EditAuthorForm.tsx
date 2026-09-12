@@ -28,6 +28,9 @@ type Props = {
   initialDraft: boolean
   initialImageUrl: string | null
   initialImageSource: string | null
+  initialImageFocusX: number
+  initialImageFocusY: number
+  initialImageZoom: number
 }
 
 export default function EditAuthorForm({
@@ -47,6 +50,9 @@ export default function EditAuthorForm({
   initialDraft,
   initialImageUrl,
   initialImageSource,
+  initialImageFocusX,
+  initialImageFocusY,
+  initialImageZoom,
 }: Props) {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
@@ -67,6 +73,11 @@ export default function EditAuthorForm({
 
   const [imageUrl, setImageUrl] = useState<string | null>(initialImageUrl)
   const [imageSource, setImageSource] = useState<string | null>(initialImageSource)
+  const [framing, setFraming] = useState({
+    focusX: initialImageFocusX,
+    focusY: initialImageFocusY,
+    zoom: initialImageZoom,
+  })
   const [wikiImageUrl, setWikiImageUrl] = useState<string | null>(null)
 
   const [wikiLoading, setWikiLoading] = useState(false)
@@ -147,6 +158,9 @@ export default function EditAuthorForm({
       draft,
       image_url: imageUrl,
       image_source: imageSource,
+      image_focus_x: framing.focusX,
+      image_focus_y: framing.focusY,
+      image_zoom: framing.zoom,
     }
 
     setLoading(true)
@@ -252,9 +266,13 @@ export default function EditAuthorForm({
       {/* Portrait */}
       <AuthorImageField
         slug={initialSlug}
-        value={{ imageUrl, imageSource }}
+        value={{ imageUrl, imageSource, ...framing }}
         candidateUrl={wikiImageUrl}
-        onChange={v => { setImageUrl(v.imageUrl); setImageSource(v.imageSource) }}
+        onChange={v => {
+          setImageUrl(v.imageUrl)
+          setImageSource(v.imageSource)
+          setFraming({ focusX: v.focusX, focusY: v.focusY, zoom: v.zoom })
+        }}
       />
 
       {/* Location */}

@@ -7,6 +7,45 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-09-12 — Portrait download: robust downscale for non-web-format originals
+
+The 5 MB guard was still blocking some portraits (Augustine, Tertullian) even after the earlier
+bounded-thumbnail fix. Cause: `boundedWikimediaUrl` predicts the thumbnail URL by swapping the width
+into the original filename, which is wrong for non-web-format originals — a TIFF's generated
+thumbnail is `lossy-page1-<w>px-File.tif.jpg`, an SVG's is `<w>px-File.svg.png`, etc. The predicted
+URL 404s, the code falls back to the full-resolution original scan, and MAX_BYTES rejects it.
+
+Fix: download via Wikimedia's `Special:FilePath/<file>?width=` endpoint, which renders a
+width-bounded thumbnail server-side for *any* source format and 302-redirects to the correctly-named
+sized file — no filename guessing. It resolves both Commons-hosted and wiki-local files, so
+`en.wikipedia.org` works as the single host. New `wikimediaDownscaleUrl()` in both
+`app/api/admin/authors/image/route.ts` (the admin "Use this Wikipedia portrait" button) and
+`scripts/backfill-author-images.mjs`; the download now tries Special:FilePath → naive bounded
+thumbnail → source, all still under the 5 MB guard. `tsc` + `next lint` clean. (Couldn't verify
+against live Wikimedia from the cloud session — egress blocks it; confirmed on Keith's machine.)
+
+## 2026-09-12 — Non-destructive author-portrait reframing (focal point + zoom)
+
+Follow-on from the Wikipedia backfill. Portraits are drawn `object-fit: cover` inside the tall
+lancet arch, so a full-figure source (a seated statue, say) gets its head cropped off the top. Rather
+than re-cut the stored file, each author now carries how its portrait should be *framed*, applied at
+render — the image itself is never modified, so framing stays adjustable forever.
+
+- **Migration 017** adds `image_focus_x` / `image_focus_y` (object-position focal point, 0–100%) and
+  `image_zoom` (scale multiplier ≥ 1) to `authors`, all `NOT NULL` with defaults 50 / 50 / 1 — i.e.
+  dead-centre, no zoom, so every existing portrait renders identically after the backfill. Applied to
+  the live DB.
+- **`LancetArch` does the work in one place.** Every surface (reading-page aside, author page,
+  Featured Authors band, the authors browser) already renders portraits through this one component, so
+  it now takes `focusX` / `focusY` / `zoom` and applies them as `object-position` + a `scale()` at the
+  focal point. The clip-path moved to a wrapper so the zoomed image is clipped to the arch while the
+  gold tracery keyline stays unclipped. Nullish framing falls back to 50 / 50 / 1 — no visual change
+  for anything unframed.
+- **Admin reframing UI** in `AuthorImageField`: once a portrait is stored, a WYSIWYG arch-ratio
+  preview you drag to reposition, plus a zoom slider and a "Reset framing" button. Stored as three
+  numbers on the author; a fresh import/upload resets to the centred default. Wired through both the
+  new- and edit-author forms and their API routes.
+- No new colour literals; touches no HARD CONSTRAINT surface. `tsc` + `next lint` clean.
 ## 2026-09-12 — Ingestion fetcher: `CONFIG_PATH` override for concurrent fetches
 
 `scripts/ingestion/fetch-texts.mjs` loaded its config only from the hardcoded `./config.js` next to
@@ -80,7 +119,6 @@ Also, a small **design workshop** off the same article:
   screenshot a live route (Playwright if installed, else pass `--screenshot`) and run a Claude vision
   critic against a studio bar, iterating on the score. **No image or video generation** — deliberately
   omitted for now on cost grounds; the critic loop needs neither.
-
 ## 2026-09-11 — Batch author-portrait backfill from Wikipedia
 
 All 68 authors were imageless (the `image_url`/`image_source` columns from migration 016 had never

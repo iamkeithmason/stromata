@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { TRADITIONS, ERAS } from '@/lib/constants'
 import { slugify, fetchWikipediaSuggestions } from '@/lib/authors/wikipedia'
-import { AuthorImageField } from '../AuthorImageField'
+import { AuthorImageField, DEFAULT_FRAMING } from '../AuthorImageField'
 
 const input = 'w-full px-3 py-2 border border-stone-300 rounded text-stone-800 focus:outline-none focus:ring-2 focus:ring-stone-400 bg-white'
 const label = 'block text-sm font-medium text-stone-700 mb-1'
@@ -29,6 +29,7 @@ export default function NewAuthorForm() {
 
   const [imageUrl, setImageUrl] = useState<string | null>(null)
   const [imageSource, setImageSource] = useState<string | null>(null)
+  const [framing, setFraming] = useState({ ...DEFAULT_FRAMING })
   const [wikiImageUrl, setWikiImageUrl] = useState<string | null>(null)
 
   const [wikiLoading, setWikiLoading] = useState(false)
@@ -89,6 +90,9 @@ export default function NewAuthorForm() {
       location: (data.get('location') as string) || null,
       image_url: imageUrl,
       image_source: imageSource,
+      image_focus_x: framing.focusX,
+      image_focus_y: framing.focusY,
+      image_zoom: framing.zoom,
     }
     setLoading(true)
     setError('')
@@ -206,9 +210,13 @@ export default function NewAuthorForm() {
       {/* Portrait */}
       <AuthorImageField
         slug={slug}
-        value={{ imageUrl, imageSource }}
+        value={{ imageUrl, imageSource, ...framing }}
         candidateUrl={wikiImageUrl}
-        onChange={v => { setImageUrl(v.imageUrl); setImageSource(v.imageSource) }}
+        onChange={v => {
+          setImageUrl(v.imageUrl)
+          setImageSource(v.imageSource)
+          setFraming({ focusX: v.focusX, focusY: v.focusY, zoom: v.zoom })
+        }}
       />
 
       {/* Location */}
