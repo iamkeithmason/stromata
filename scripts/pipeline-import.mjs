@@ -26,6 +26,7 @@ import dotenv from 'dotenv';
 import { normaliseMarkdown, rejoinSpuriousBreaks, overrideForFile } from './normalise-markdown.mjs';
 import { detectScannos, loadCorpus, loadAllowlist } from './detect-scannos.mjs';
 import { normaliseTitle, normaliseName } from './lib/dedup-match.mjs';
+import { parseFrontmatter } from './lib/frontmatter.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 dotenv.config({ path: path.join(__dirname, '..', '.env.local') });
@@ -43,60 +44,6 @@ const OUTPUT_DIR = path.join(__dirname, 'ingestion', 'output');
 // (run scripts/build-corpus-index.mjs to enable it).
 const scannoCorpus = loadCorpus();
 const scannoAllowlist = loadAllowlist();
-
-// ---------------------------------------------------------------------------
-// Frontmatter parsing — the pipeline's frontmatter is flat key: value YAML,
-// no nesting, so a hand-rolled parser avoids adding a dependency.
-// ---------------------------------------------------------------------------
-
-function parseFrontmatter(raw) {
-  const match = raw.match(/^---\n([\s\S]*?)\n---\n?([\s\S]*)$/);
-  if (!match) return { data: {}, body: raw.trim() };
-
-  const [, frontmatterBlock, rest] = match;
-  const data = {};
-
-  for (const line of frontmatterBlock.split('\n')) {
-    const m = line.match(/^([a-zA-Z_]+):\s*(.*)$/);
-    if (!m) continue;
-    const [, key, rawValue] = m;
-    // Strip inline YAML comments (two or more spaces + # + rest of line).
-    // Two-space minimum avoids stripping # inside content like URLs.
-    const cleanValue = rawValue.trim().replace(/\s{2,}#.*$/, '').trim();
-    data[key] = parseValue(cleanValue);
-  }
-
-  const body = stripEditorialIntroPlaceholder(rest.trim());
-  return { data, body };
-}
-
-function parseValue(value) {
-  if (value === '') return null;
-  if (value === 'true') return true;
-  if (value === 'false') return false;
-  if (/^-?\d+$/.test(value)) return Number(value);
-
-  if (value.startsWith('[') && value.endsWith(']')) {
-    const inner = value.slice(1, -1).trim();
-    if (!inner) return [];
-    return inner.split(',').map(v => stripQuotes(v.trim()));
-  }
-
-  return stripQuotes(value);
-}
-
-function stripQuotes(value) {
-  if (value.startsWith('"') && value.endsWith('"')) {
-    return value.slice(1, -1).replace(/\\"/g, '"').replace(/\\\\/g, '\\');
-  }
-  return value;
-}
-
-function stripEditorialIntroPlaceholder(body) {
-  return body
-    .replace(/<!--\s*EDITORIAL INTRO[\s\S]*?-->\n?/, '')
-    .trim();
-}
 
 // ---------------------------------------------------------------------------
 // Author resolution — find by name, or create a draft stub.
