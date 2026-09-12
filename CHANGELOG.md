@@ -7,6 +7,34 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-09-12 — Pastoral Rule drafts re-fetched from New Advent (OCR bodies replaced)
+
+Gregory the Great's *Book of Pastoral Rule* (the four `pastoral-rule-gregory-part-1…4` drafts,
+still `published: false`) were imported 2026-06-30 from the Archive.org NPNF II:12 djvu.txt scan,
+because New Advent's `/fathers/` pages were redirecting to the homepage at the time. The OCR bodies
+carried damage no line-break/normalise pass can fix: letter-spacing (`T R A N S L A T E D`),
+char-level scannos (`N0TES`, `test` for `lest`), run-together words (`whenhehasaccomplishedallaright`),
+every chapter title flattened into a plain paragraph (1 `##` per part), and — worst — Part I opened
+with the *whole volume's* translator preface + index matter rather than Book I.
+
+New Advent's `/fathers/` serves again (recovered 2026-08-29; re-probed all four Book pages
+`36011–36014.htm` → 200, no redirect), so the fix was a clean re-fetch of the same Barmby translation
+rather than an attempt to repair OCR. `scripts/ingestion/fetch-texts.mjs` (source `newadvent`) pulled
+the four Books; a one-off transform stripped the leaked site chrome (alphabet nav, logo, breadcrumb,
+`CONTACT US | ADVERTISE` footer) and the redundant `# Pastoral Rule (Book X)` H1, merged each
+`## Chapter N` + bold title line into `## Chapter N. Title` to match the John-of-Damascus New Advent
+house style, then ran the shared `normaliseMarkdown`. Staged output refreshed in
+`scripts/ingestion/output/pastoral-rule-gregory/`.
+
+Delivery was the same generic `scripts/reformat-text-body.mjs` used for Boethius — matches each staged
+file to its `texts` row by slug, updates the **`body` column only** (idempotent; never touches
+`published`, `note_draft`, `editorial_introduction`, themes, genre, author or the collection). Applied
+this session (creds were in the process env). Verified against Supabase: headings 1→13 / 1→11 / 1→41 /
+1→0 (Books I–IV; Book IV is a single chapter, no `## Chapter`), Part I body 149,627→46,326 chars (the
+~100 KB of volume front-matter gone), all four still `published: false`, `editorial_introduction` null,
+collection + order intact. Note: `note_draft` is empty on all four (was already empty; no
+`ANTHROPIC_API_KEY` this session) — worth a `scripts/generate-note-drafts.mjs` backfill before publish.
+Stage 5b stays manual: review and publish in `/admin/drafts`.
 ## 2026-09-12 — Portrait download: robust downscale for non-web-format originals
 
 The 5 MB guard was still blocking some portraits (Augustine, Tertullian) even after the earlier
