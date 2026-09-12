@@ -19,6 +19,93 @@ fanning out several ingestion fetches at once a one-liner per fetch
 (`CONFIG_PATH=… node scripts/ingestion/fetch-texts.mjs &`) with no worktree gymnastics. Default
 behaviour (no `CONFIG_PATH` → `./config.js`) is unchanged.
 
+## 2026-09-12 — Normalise the design-critic loop as a standing tool
+
+Follow-up to the 2026-09-11 note_drafts/critic-loop work: make the design-critic loop a first-class,
+repeatable part of design work rather than a one-off script.
+
+- **`npm run design:critic`** — an alias for `scripts/design/critic-loop.mjs`.
+- **`playwright` is now a devDependency**, so the screenshot capture is reproducible for anyone who
+  clones, not just whoever installed it by hand. `npm ci` pulls the package but **not** the browsers
+  (~280 MB), so CI stays light; the browser download stays a one-time opt-in
+  (`npx playwright install chromium`). Playwright pulls in transitive dev-only advisories — left
+  as-is (dev tooling, not shipped); don't `npm audit fix` reflexively.
+- **CLAUDE.md** gains a "design-critic loop" subsection under the design system, documenting the
+  workflow and the two lessons the loop taught in practice: the `--aesthetic` brief is load-bearing
+  (a house-style brief caps the score and drags the design back to the default), and taste/direction
+  stay human (when the critic argues the concept rather than the craft, stop — usually ~8/10).
+
+## 2026-09-11 — Fighting mean-reversion in note_drafts + a design-critic loop
+
+Prompted by Anshu Chimala's "How to turn your AI into a world-class designer" (Lenny's Newsletter).
+Its thesis — an LLM reverts to the most-likely token, so you get generic output unless you fight it
+— turned out to describe our own `note_draft` corpus almost exactly. A fresh-context critic pass
+over all 233 live notes scored the corpus **4/10**: the *"Expect X rather than Y"* closer template
+on **70%** of notes, the *"Written in [year]…"* dated-participle opener on **55%**, and whole
+single-author clusters (Cyril's 24 catechetical lectures, Hus's 23 `De Ecclesia` chapters)
+near-interchangeable because each independent API call regresses to the same shape with no memory of
+its siblings. Nine notes were also truncated mid-word by a `max_tokens` cap the old
+`trimToCompleteSentence` silently passed through.
+
+Changes, all landing in `scripts/lib/note-prompt.mjs` as the single source of truth:
+
+- **Reworked `NOTE_PROMPT`** — lead with the most concrete thing in *this* text, not date/place
+  metadata; a banned list of the templated openers, closers, and stock flourishes the audit found;
+  varied sentence rhythm; must end on a complete sentence.
+- **A critic-in-the-loop** (`generateNoteWithCritic` + `CRITIC_PROMPT`): a fresh-context reviewer
+  scores each draft against a top classics-imprint bar and feeds specific gaps back for a rewrite,
+  up to 3 attempts. A cheap regex guard (`findBannedPhrases`) rejects the loudest tells before
+  spending a critic call.
+- **Sibling de-clustering** — the generator is shown the other notes by the same author and told not
+  to echo their openings/closings. This is the fix aimed straight at the Cyril/Hus clusters.
+- **Truncation guard** — raised `max_tokens`, and `trimToCompleteSentence` now heals a cut note back
+  to its last complete sentence (or reports failure) so no note ships mid-word. Unit-tested in
+  `scripts/lib/note-prompt.test.mjs` (no API key needed).
+- **De-duplicated four copies of the generation logic** onto the shared helper: the backfill script,
+  the Stage 2 ingestion path (`fetch-texts.mjs`), and the admin "regenerate note" API route all now
+  call it. The backfill script gained `--all` / `--truncated` / `--slug=` / `--dry-run` /
+  `--no-critic` flags so existing notes (including the 9 truncated ones) can be healed without
+  nulling them first: `node scripts/generate-note-drafts.mjs --truncated`.
+
+Healing the live corpus is a local run (needs `ANTHROPIC_API_KEY`), not part of this PR — the code
+change is what ships here.
+
+Also, a small **design workshop** off the same article:
+
+- **`/design/liturgical-wheel`** — a NOINDEX exploration (Concept III from the "Stromata, Four Ways"
+  workshop), not linked in nav and not a homepage change. The whole ground wears the current
+  liturgical season and the church year is a wheel with today lit. Built entirely on existing tokens
+  (the reversed-out `--on-dark-*` family), so it clears the no-raw-colour lint rule.
+- **`scripts/design/critic-loop.mjs`** — the honest, budget-free half of Chimala's Technique 3:
+  screenshot a live route (Playwright if installed, else pass `--screenshot`) and run a Claude vision
+  critic against a studio bar, iterating on the score. **No image or video generation** — deliberately
+  omitted for now on cost grounds; the critic loop needs neither.
+
+## 2026-09-11 — Batch author-portrait backfill from Wikipedia
+
+All 68 authors were imageless (the `image_url`/`image_source` columns from migration 016 had never
+been populated at scale — portraits were only ever added one author at a time in the admin form).
+Added `scripts/backfill-author-images.mjs` to do the whole set in one run: for every author with no
+portrait, look the name up on Wikipedia's REST summary endpoint, copy the returned image into the
+`authors` Storage bucket, and set `image_url`/`image_source`.
+
+- **Reuses the existing rules, in bulk.** The lookup mirrors `lib/authors/wikipedia.ts` (prefer
+  `originalimage`, fall back to `thumbnail`); the store mirrors `app/api/admin/authors/image/route.ts`
+  (rewrite to a bounded 1024px thumbnail, Wikimedia-only SSRF allowlist, 5 MB guard, provenance
+  recorded as the original file URL). If either source changes, mirror it in the script.
+- **"Auto-apply, fix on site" posture.** It stores a best-match portrait for every name it can
+  confidently resolve and *skips* the ones a machine shouldn't guess: anonymous/unknown attributions,
+  composite names (e.g. *Bucer, Capito, and Hedio*), Wikipedia disambiguation pages, and authors with
+  no portrait on their page. It prints the matched article title + URL for every author it touches so
+  a wrong face is easy to spot and correct afterwards in the admin form.
+- **House-style safety.** Dry-run by default (report only); `--write` applies. `--limit=N`, `--slug=`
+  (scope to one author, handy for a re-do), and `--force` (overwrite an existing image) for the
+  fix-ups. Touches only `image_url`/`image_source` — no HARD CONSTRAINT surface. Idempotent: only
+  authors with a null `image_url` unless scoped/forced.
+- **Runs locally, not in a web session.** Wikipedia and `upload.wikimedia.org` must be reachable; the
+  cloud agent egress policy blocks both, so this is a `node scripts/…` run on Keith's machine (like
+  the other pipeline fetch scripts). Added `npm run backfill:author-images`.
+
 ## 2026-09-11 — ORB-trawl pipeline: New Advent fetcher chrome-strip fix + shared frontmatter parser
 
 Two code changes that rode in with the ORB-trawl Batch-1 ingestion run (the content import itself

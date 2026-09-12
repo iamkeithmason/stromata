@@ -12,6 +12,7 @@
     "test:analytics": "node --test scripts/analytics/*.test.mjs",
     "generate:note-drafts": "node scripts/generate-note-drafts.mjs",
     "generate:summaries": "node scripts/generate-summaries.mjs",
+    "backfill:author-images": "node scripts/backfill-author-images.mjs",
     "repair:summaries": "node scripts/repair-summaries.mjs",
     "pipeline:status": "node -e \"import('./scripts/ingestion/prospect-queue.json', {assert:{type:'json'}}).then(m=>m.default.prospects.forEach(p=>console.log(p.status.padEnd(16), p.id)))\"",
     "pipeline:import": "node scripts/pipeline-import.mjs && tsx scripts/backfill-scripture-refs.ts",
@@ -25,7 +26,8 @@
     "sourcer:apply": "tsx scripts/sourcer/sourcer.ts --apply",
     "test:sourcer": "tsx --test scripts/sourcer/*.test.ts",
     "research": "tsx scripts/research/research.ts",
-    "test:research": "tsx --test scripts/research/*.test.ts"
+    "test:research": "tsx --test scripts/research/*.test.ts",
+    "design:critic": "node scripts/design/critic-loop.mjs"
   },
   "dependencies": {
     "@react-pdf/renderer": "^4.9.0",
@@ -50,6 +52,7 @@
     "dotenv": "^17.4.2",
     "eslint": "^9",
     "eslint-config-next": "^15.3.0",
+    "playwright": "^1.63.0",
     "postcss": "^8",
     "tailwindcss": "^3.4.0",
     "tsx": "^4.23.12",
