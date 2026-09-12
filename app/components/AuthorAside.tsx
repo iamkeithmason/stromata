@@ -13,6 +13,9 @@ type Props = {
   tradition: { name: string; slug: string } | null
   bio: string | null
   imageUrl?: string | null
+  imageFocusX?: number | null
+  imageFocusY?: number | null
+  imageZoom?: number | null
 }
 
 /**
@@ -21,7 +24,7 @@ type Props = {
  * short biography clamped to a few lines, and a link through to the full author
  * page.
  */
-export function AuthorAside({ name, slug, birthYear, deathYear, locationName, eraName, tradition, bio, imageUrl }: Props) {
+export function AuthorAside({ name, slug, birthYear, deathYear, locationName, eraName, tradition, bio, imageUrl, imageFocusX, imageFocusY, imageZoom }: Props) {
   const initial = name.trim().charAt(0).toUpperCase() || '·'
   // Dates line: "354–430", falling back gracefully when a year is missing.
   const years = birthYear && deathYear
@@ -35,7 +38,7 @@ export function AuthorAside({ name, slug, birthYear, deathYear, locationName, er
       <p className="kicker" style={{ marginBottom: '1rem' }}>The Author</p>
 
       <div style={{ aspectRatio: '200 / 380', maxWidth: '200px', margin: '0 0 1.25rem' }}>
-        <LancetArch initial={initial} label={`Initial ${initial} for ${name}`} imageUrl={imageUrl} />
+        <LancetArch initial={initial} label={`Initial ${initial} for ${name}`} imageUrl={imageUrl} focusX={imageFocusX} focusY={imageFocusY} zoom={imageZoom} />
       </div>
 
       <p

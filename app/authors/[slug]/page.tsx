@@ -243,7 +243,14 @@ export default async function AuthorPage({ params }: Props) {
               className="shrink-0 order-last"
               style={{ width: 128, aspectRatio: '200 / 380' }}
             >
-              <LancetArch initial={initial} label={author.name} imageUrl={imageUrl} />
+              <LancetArch
+                initial={initial}
+                label={author.name}
+                imageUrl={imageUrl}
+                focusX={author.image_focus_x as number | null}
+                focusY={author.image_focus_y as number | null}
+                zoom={author.image_zoom as number | null}
+              />
             </div>
           )}
           <div className="flex-1 min-w-0">

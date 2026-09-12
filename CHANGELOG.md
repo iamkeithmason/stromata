@@ -35,6 +35,56 @@ this session (creds were in the process env). Verified against Supabase: heading
 collection + order intact. Note: `note_draft` is empty on all four (was already empty; no
 `ANTHROPIC_API_KEY` this session) — worth a `scripts/generate-note-drafts.mjs` backfill before publish.
 Stage 5b stays manual: review and publish in `/admin/drafts`.
+## 2026-09-12 — Portrait download: robust downscale for non-web-format originals
+
+The 5 MB guard was still blocking some portraits (Augustine, Tertullian) even after the earlier
+bounded-thumbnail fix. Cause: `boundedWikimediaUrl` predicts the thumbnail URL by swapping the width
+into the original filename, which is wrong for non-web-format originals — a TIFF's generated
+thumbnail is `lossy-page1-<w>px-File.tif.jpg`, an SVG's is `<w>px-File.svg.png`, etc. The predicted
+URL 404s, the code falls back to the full-resolution original scan, and MAX_BYTES rejects it.
+
+Fix: download via Wikimedia's `Special:FilePath/<file>?width=` endpoint, which renders a
+width-bounded thumbnail server-side for *any* source format and 302-redirects to the correctly-named
+sized file — no filename guessing. It resolves both Commons-hosted and wiki-local files, so
+`en.wikipedia.org` works as the single host. New `wikimediaDownscaleUrl()` in both
+`app/api/admin/authors/image/route.ts` (the admin "Use this Wikipedia portrait" button) and
+`scripts/backfill-author-images.mjs`; the download now tries Special:FilePath → naive bounded
+thumbnail → source, all still under the 5 MB guard. `tsc` + `next lint` clean. (Couldn't verify
+against live Wikimedia from the cloud session — egress blocks it; confirmed on Keith's machine.)
+
+## 2026-09-12 — Non-destructive author-portrait reframing (focal point + zoom)
+
+Follow-on from the Wikipedia backfill. Portraits are drawn `object-fit: cover` inside the tall
+lancet arch, so a full-figure source (a seated statue, say) gets its head cropped off the top. Rather
+than re-cut the stored file, each author now carries how its portrait should be *framed*, applied at
+render — the image itself is never modified, so framing stays adjustable forever.
+
+- **Migration 017** adds `image_focus_x` / `image_focus_y` (object-position focal point, 0–100%) and
+  `image_zoom` (scale multiplier ≥ 1) to `authors`, all `NOT NULL` with defaults 50 / 50 / 1 — i.e.
+  dead-centre, no zoom, so every existing portrait renders identically after the backfill. Applied to
+  the live DB.
+- **`LancetArch` does the work in one place.** Every surface (reading-page aside, author page,
+  Featured Authors band, the authors browser) already renders portraits through this one component, so
+  it now takes `focusX` / `focusY` / `zoom` and applies them as `object-position` + a `scale()` at the
+  focal point. The clip-path moved to a wrapper so the zoomed image is clipped to the arch while the
+  gold tracery keyline stays unclipped. Nullish framing falls back to 50 / 50 / 1 — no visual change
+  for anything unframed.
+- **Admin reframing UI** in `AuthorImageField`: once a portrait is stored, a WYSIWYG arch-ratio
+  preview you drag to reposition, plus a zoom slider and a "Reset framing" button. Stored as three
+  numbers on the author; a fresh import/upload resets to the centred default. Wired through both the
+  new- and edit-author forms and their API routes.
+- No new colour literals; touches no HARD CONSTRAINT surface. `tsc` + `next lint` clean.
+## 2026-09-12 — Ingestion fetcher: `CONFIG_PATH` override for concurrent fetches
+
+`scripts/ingestion/fetch-texts.mjs` loaded its config only from the hardcoded `./config.js` next to
+the script, so two fetches in the same checkout raced on that one file — the only way to run them in
+parallel was a separate git worktree per fetch (with its own `node_modules` symlink and copied
+`.env.local`). Added a `CONFIG_PATH` env var: when set (relative to cwd, or absolute) the script
+imports that config instead of `./config.js`. Output still lands in `output/<collection.slug>/`, so
+concurrent runs with distinct slugs write to distinct directories and don't collide. This makes
+fanning out several ingestion fetches at once a one-liner per fetch
+(`CONFIG_PATH=… node scripts/ingestion/fetch-texts.mjs &`) with no worktree gymnastics. Default
+behaviour (no `CONFIG_PATH` → `./config.js`) is unchanged.
 
 ## 2026-09-12 — Normalise the design-critic loop as a standing tool
 
@@ -97,7 +147,6 @@ Also, a small **design workshop** off the same article:
   screenshot a live route (Playwright if installed, else pass `--screenshot`) and run a Claude vision
   critic against a studio bar, iterating on the score. **No image or video generation** — deliberately
   omitted for now on cost grounds; the critic loop needs neither.
-
 ## 2026-09-11 — Batch author-portrait backfill from Wikipedia
 
 All 68 authors were imageless (the `image_url`/`image_source` columns from migration 016 had never
@@ -122,6 +171,25 @@ portrait, look the name up on Wikipedia's REST summary endpoint, copy the return
 - **Runs locally, not in a web session.** Wikipedia and `upload.wikimedia.org` must be reachable; the
   cloud agent egress policy blocks both, so this is a `node scripts/…` run on Keith's machine (like
   the other pipeline fetch scripts). Added `npm run backfill:author-images`.
+
+## 2026-09-11 — ORB-trawl pipeline: New Advent fetcher chrome-strip fix + shared frontmatter parser
+
+Two code changes that rode in with the ORB-trawl Batch-1 ingestion run (the content import itself
+is recorded in the run-log, not here).
+
+- **New Advent fetcher now strips site chrome by container, not by blind table position.**
+  The newadvent `extractFn` in `scripts/ingestion/fetch-texts.mjs` used to remove the first and last
+  `<table>` on the page, which on the current New Advent layout left the A–Z index, the logo, the
+  breadcrumb and the footer embedded in every fetched body. It now targets the actual chrome
+  containers by id/class — the desktop and mobile headers (`#capitalcity`, `#mobilecity`,
+  `.scrollmenu`, `#mi5`), the interspersed ad placeholders, the gumroad support paragraphs, and the
+  `CONTACT US` / `New Advent LLC` copyright footer — while explicitly preserving `#springfield2`,
+  the content column that holds the `<h1>` title and the chapter body. Removing by container also
+  survives wording changes in the footer, which the text-match approach did not.
+- **Shared frontmatter parser extracted to `scripts/lib/frontmatter.mjs`.** `parseFrontmatter` was
+  duplicated logic; it now lives in one module that `scripts/pipeline-import.mjs` imports, so the
+  ingestion and import sides read the staged-output frontmatter contract from a single source of
+  truth.
 
 ## 2026-09-11 — LLM-safe design system: colour tokens + an enforced no-raw-colour rule
 

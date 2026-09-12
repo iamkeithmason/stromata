@@ -20,10 +20,56 @@ const MAX_BYTES = 5 * 1024 * 1024 // 5 MB
 // MAX_BYTES, so full-resolution museum scans no longer trip the size guard.
 const WIKIMEDIA_THUMB_WIDTH = 1024
 
+// Robust downscale: ask Wikimedia to render a width-bounded thumbnail via
+// Special:FilePath?width=, which works for ANY source format. This is preferred
+// over boundedWikimediaUrl below because that one predicts the thumbnail's
+// filename by swapping the width into the original name — which is wrong for
+// non-web-format originals: a TIFF's generated thumbnail is
+// `lossy-page1-<w>px-File.tif.jpg`, an SVG's is `<w>px-File.svg.png`, etc., none
+// of which a naive swap produces. When the predicted URL 404s the caller used to
+// fall back to the full-resolution original (Augustine, Tertullian — large
+// scans), tripping MAX_BYTES. Special:FilePath sidesteps the guesswork: give it
+// the file name and a width and it 302-redirects to the correctly-named sized
+// thumbnail. It resolves both Commons-hosted and wiki-local files, so en.
+// wikipedia.org works as the single host regardless of where the file lives.
+//
+// We only need the bare file name, which we lift from whichever upload URL the
+// summary handed us (original `/…/a/ab/File.tif` or thumb `/…/thumb/a/ab/File.tif/320px-…`).
+function wikimediaDownscaleUrl(raw: string, width: number): string | null {
+  let url: URL
+  try {
+    url = new URL(raw)
+  } catch {
+    return null
+  }
+  if (url.hostname.toLowerCase() !== 'upload.wikimedia.org') return null
+
+  const parts = url.pathname.split('/').filter(Boolean) // ['wikipedia','commons',('thumb','a','ab',)'File.tif',('320px-…')]
+  if (parts[0] !== 'wikipedia') return null
+
+  const thumbIdx = parts.indexOf('thumb')
+  // In a thumb path the original file name sits two hash dirs after `thumb`
+  // (…/thumb/a/ab/<File>/<sized>); otherwise it's the last path segment.
+  const filename = thumbIdx !== -1 ? parts[thumbIdx + 3] : parts[parts.length - 1]
+  if (!filename) return null
+
+  // The path segment is already percent-encoded; normalise (decode→encode) so we
+  // neither double-encode nor leave a raw space/comma in the query-less path.
+  let name: string
+  try {
+    name = encodeURIComponent(decodeURIComponent(filename))
+  } catch {
+    name = encodeURIComponent(filename)
+  }
+  return `https://en.wikipedia.org/wiki/Special:FilePath/${name}?width=${width}`
+}
+
 // Rewrite an upload.wikimedia.org file URL to a bounded-width thumbnail, so we
 // never download the multi-megabyte original. Returns null when the URL isn't a
 // Wikimedia upload URL or isn't a shape we recognise — the caller then falls
 // back to fetching the source as given (the MAX_BYTES guard still applies).
+// Kept as a secondary path behind wikimediaDownscaleUrl for plain web-format
+// files where a filename swap is enough.
 //
 //   original:  /wikipedia/commons/a/ab/File.jpg
 //              → /wikipedia/commons/thumb/a/ab/File.jpg/1024px-File.jpg
@@ -150,13 +196,20 @@ export async function POST(request: NextRequest) {
   const fetchImage = (u: string): Promise<Response | null> =>
     fetch(u, { headers: { 'User-Agent': 'TheStromata/1.0 (author portraits)' } }).catch(() => null)
 
-  // Prefer a bounded-width thumbnail so an oversized original never trips the
-  // size guard; fall back to the source as given if the thumbnail can't be
-  // built or doesn't resolve (e.g. an SVG original, whose vector file is small).
-  const bounded = boundedWikimediaUrl(sourceUrl, WIKIMEDIA_THUMB_WIDTH)
-  let res = bounded ? await fetchImage(bounded) : null
-  if (!res || !res.ok) {
-    res = await fetchImage(sourceUrl)
+  // Download a downscaled copy so an oversized original never trips MAX_BYTES.
+  // In order of preference: the format-agnostic Special:FilePath render, the
+  // naive filename-swap thumbnail, then the source as given (last resort, still
+  // guarded by MAX_BYTES). The first two are null for non-Wikimedia hosts.
+  const attempts = [
+    wikimediaDownscaleUrl(sourceUrl, WIKIMEDIA_THUMB_WIDTH),
+    boundedWikimediaUrl(sourceUrl, WIKIMEDIA_THUMB_WIDTH),
+    sourceUrl,
+  ].filter((u): u is string => Boolean(u))
+
+  let res: Response | null = null
+  for (const u of attempts) {
+    res = await fetchImage(u)
+    if (res && res.ok) break
   }
 
   if (!res) {

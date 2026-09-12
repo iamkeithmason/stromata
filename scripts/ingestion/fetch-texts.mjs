@@ -7,6 +7,12 @@
  *
  * Usage:
  *   node scripts/ingestion/fetch-texts.mjs
+ *   CONFIG_PATH=/path/to/other-config.js node scripts/ingestion/fetch-texts.mjs
+ *
+ * By default the config is ./config.js next to this script. Set the CONFIG_PATH
+ * env var to point at a different config file — this lets several fetches run
+ * concurrently in one checkout, each with its own config (and its own output
+ * dir, keyed by collection.slug), without racing on the shared config.js.
  *
  * To use for a new source:
  *   1. Edit config.js — swap the URLs, author, collection, and knownFields
@@ -26,9 +32,13 @@ import { fileURLToPath } from "url";
 import Anthropic from "@anthropic-ai/sdk";
 import { generateNoteWithCritic } from "../lib/note-prompt.mjs";
 
-// Load config from same directory
+// Load config — CONFIG_PATH env var (relative to cwd, or absolute) overrides the
+// default ./config.js next to this script, so concurrent runs can each use their own.
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const config = (await import(path.join(__dirname, "config.js"))).default;
+const configPath = process.env.CONFIG_PATH
+  ? path.resolve(process.env.CONFIG_PATH)
+  : path.join(__dirname, "config.js");
+const config = (await import(configPath)).default;
 
 // ---------------------------------------------------------------------------
 // Anthropic client (API key from env — optional; ingest continues without it)
@@ -104,23 +114,39 @@ const SOURCE_SELECTORS = {
       'p:has(a[href*="gumroad"])',
       "table:last-of-type", // footer table
     ],
-    // New Advent main text starts after the breadcrumb h1
+    // New Advent main text is the <h1> title + <h2> chapters + <p> body.
+    // Everything else is site chrome: desktop/mobile headers, nav, breadcrumb,
+    // and ad placeholders interspersed between chapters. Strip by container.
     extractFn: ($) => {
-      // Remove nav/header tables and footer
-      $("table").first().remove();
-      $("table").last().remove();
-      // Remove support/donation paragraphs
+      // Site chrome containers (desktop header w/ logo+tabs+A–Z index, mobile
+      // logo, breadcrumb). These wrap the leading "A B C … Z", the logo image,
+      // and the "Home > Fathers … > Title" crumb. NB: #springfield2 is the main
+      // content column (it holds the <h1> + chapters) — never remove it.
+      $("#capitalcity, #mobilecity, .scrollmenu, #mi5").remove();
+      // Ad placeholder divs (empty, but appear both as top/bottom banners and
+      // between chapters — remove so no stray markup survives).
+      $('[class*="catholicadnet"], [class*="CMtag"], [id*="728x90"]').remove();
+      // Support/donation paragraphs (gumroad) + footer nav paragraph.
       $("p").each((_, el) => {
         const text = $(el).text();
         if (
           text.includes("Please help support") ||
           text.includes("gumroad") ||
-          text.includes("instant download")
+          text.includes("instant download") ||
+          text.includes("ADVERTISE WITH NEW ADVENT") ||
+          text.includes("New Advent LLC") ||
+          text.includes("Immaculate Heart of Mary")
         ) {
           $(el).remove();
         }
       });
-      // Remove the "About this page" section
+      // Footer links ("CONTACT US" | "ADVERTISE WITH NEW ADVENT") and the
+      // "Copyright © … New Advent LLC" line (a contactus link inside a <b>) —
+      // remove the nearest block they sit in, in case the wording changes.
+      $('a[href*="contactus.htm"], a[href*="cleanmedia.net"]').each((_, el) => {
+        $(el).closest("p, center, b, strong").remove();
+      });
+      // Remove the "About this page" section (New Advent editorial footer block)
       $("h2").each((_, el) => {
         if ($(el).text().trim() === "About this page") {
           let next = $(el).next();
