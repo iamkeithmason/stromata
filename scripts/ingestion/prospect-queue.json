@@ -4870,7 +4870,7 @@
     },
     {
       "id": "the-refutation-of-all-heresies-rome",
-      "status": "pending",
+      "status": "imported",
       "added": "2026-09-11",
       "author": "Hippolytus of Rome",
       "death_year": 235,
@@ -4884,13 +4884,15 @@
       "translation_copyright_clear": true,
       "translator": "J. H. MacMahon (ANF Vol. 5)",
       "translator_death_year": null,
-      "stage_1_notes": "Ante-Nicene Fathers Vol. 5 (1886), a public-domain 19th-century translation. — copyright pre-verified (author pre-1900; PD English translation identified).",
-      "stage_2_output": "",
+      "stage_1_notes": "ANF vol. 5 translation by J. H. MacMahon, 1868/1886; long public domain. Author d. c. 235 (NEW AUTHOR — draft stub on import). — copyright pre-verified (author pre-1900; PD English translation identified). MULTI-CHAPTER collection: 8 extant books (I, IV–X; Books II & III are lost) from New Advent (050101, 050104–050110), each URL title-verified. Book VIII is genuinely short (~35k, 13 chapters) — complete, not truncated. Fetched in parallel via subagent. Imported 8 text(s) on 2026-09-12.",
+      "stage_2_output": "scripts/ingestion/output/the-refutation-of-all-heresies-rome/",
       "stage_3_themes": [
+        "vice",
+        "tradition",
         "christology",
-        "trinity",
         "scripture",
-        "tradition"
+        "salvation",
+        "creation"
       ],
       "rejection_reason": "",
       "notes": "From On the Ruin of Britain blog trawl (posts 066). NEW AUTHOR — import will create a draft author stub. MULTI-CHAPTER: import as a collection (output dir, one file per book/chapter). Verified SAFE by ORB-trawl verification pass 2026-09-11."
