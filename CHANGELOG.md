@@ -7,6 +7,22 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-09-12 — Normalise the design-critic loop as a standing tool
+
+Follow-up to the 2026-09-11 note_drafts/critic-loop work: make the design-critic loop a first-class,
+repeatable part of design work rather than a one-off script.
+
+- **`npm run design:critic`** — an alias for `scripts/design/critic-loop.mjs`.
+- **`playwright` is now a devDependency**, so the screenshot capture is reproducible for anyone who
+  clones, not just whoever installed it by hand. `npm ci` pulls the package but **not** the browsers
+  (~280 MB), so CI stays light; the browser download stays a one-time opt-in
+  (`npx playwright install chromium`). Playwright pulls in transitive dev-only advisories — left
+  as-is (dev tooling, not shipped); don't `npm audit fix` reflexively.
+- **CLAUDE.md** gains a "design-critic loop" subsection under the design system, documenting the
+  workflow and the two lessons the loop taught in practice: the `--aesthetic` brief is load-bearing
+  (a house-style brief caps the score and drags the design back to the default), and taste/direction
+  stay human (when the critic argues the concept rather than the craft, stop — usually ~8/10).
+
 ## 2026-09-11 — Fighting mean-reversion in note_drafts + a design-critic loop
 
 Prompted by Anshu Chimala's "How to turn your AI into a world-class designer" (Lenny's Newsletter).
