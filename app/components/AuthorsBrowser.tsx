@@ -20,6 +20,9 @@ export type AuthorItem = {
   birth_year: number | null
   death_year: number | null
   imageUrl: string | null
+  imageFocusX: number | null
+  imageFocusY: number | null
+  imageZoom: number | null
   tradition: { slug: string; name: string } | null
   era: { slug: string; label: string } | null
   textCount: number
@@ -148,7 +151,7 @@ export function AuthorsBrowser({
                 <div className="flex items-center gap-3 min-w-0">
                   {a.imageUrl && (
                     <div className="shrink-0" style={{ width: 30, aspectRatio: '200 / 380' }}>
-                      <LancetArch initial={a.name.charAt(0)} label={a.name} imageUrl={a.imageUrl} />
+                      <LancetArch initial={a.name.charAt(0)} label={a.name} imageUrl={a.imageUrl} focusX={a.imageFocusX} focusY={a.imageFocusY} zoom={a.imageZoom} />
                     </div>
                   )}
                   <div>

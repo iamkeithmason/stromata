@@ -58,13 +58,31 @@ type Props = {
   label: string
   /** Optional portrait; clipped to the arch. Falls back to the initial when absent. */
   imageUrl?: string | null
+  /**
+   * Per-author framing (see migration 017). The portrait is drawn object-fit:
+   * cover, so these reposition/zoom the crop without touching the stored file:
+   *   focusX / focusY — object-position focal point, 0–100 (%); 50/50 centres.
+   *   zoom            — scale multiplier at the focal point, ≥ 1 (1 = no zoom).
+   * Omitted / nullish values fall back to 50 / 50 / 1, i.e. the pre-framing look.
+   */
+  focusX?: number | null
+  focusY?: number | null
+  zoom?: number | null
 }
 
-export function LancetArch({ initial, label, imageUrl }: Props) {
+const clamp = (n: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, n))
+
+export function LancetArch({ initial, label, imageUrl, focusX, focusY, zoom }: Props) {
   // ── Portrait variant: HTML <img> (object-fit: cover) clipped to the arch ──
   if (imageUrl) {
     const clipId = clipIdFor(imageUrl)
     const clip = `url(#${clipId})`
+    // Normalise framing, defaulting to the centred / un-zoomed look so an
+    // unframed portrait renders exactly as it did before framing existed.
+    const fx = clamp(focusX ?? 50, 0, 100)
+    const fy = clamp(focusY ?? 50, 0, 100)
+    const z = clamp(zoom ?? 1, 1, 5)
+    const position = `${fx}% ${fy}%`
     return (
       <div style={{ position: 'relative', width: '100%', height: '100%' }} role="img" aria-label={label}>
         {/* Clip-path definition (0×0, off-layout) */}
@@ -75,30 +93,38 @@ export function LancetArch({ initial, label, imageUrl }: Props) {
             </clipPath>
           </defs>
         </svg>
-        {/* Vellum backing so any transparency reads warm */}
+        {/* Clip host: clips the vellum backing AND the (possibly zoomed) image to
+            the arch. The zoom is a scale() on the <img>, so the clip lives on
+            this wrapper — not the img — to keep the arch fixed to the frame while
+            the photo scales within it. The gold tracery is a sibling of this host
+            so its keyline is never clipped. */}
         <div
           style={{
             position: 'absolute',
             inset: 0,
-            background: 'var(--vellum)',
             clipPath: clip,
             WebkitClipPath: clip,
+            overflow: 'hidden',
           }}
-        />
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={imageUrl}
-          alt=""
-          style={{
-            position: 'absolute',
-            inset: 0,
-            width: '100%',
-            height: '100%',
-            objectFit: 'cover',
-            clipPath: clip,
-            WebkitClipPath: clip,
-          }}
-        />
+        >
+          {/* Vellum backing so any transparency reads warm */}
+          <div style={{ position: 'absolute', inset: 0, background: 'var(--vellum)' }} />
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={imageUrl}
+            alt=""
+            style={{
+              position: 'absolute',
+              inset: 0,
+              width: '100%',
+              height: '100%',
+              objectFit: 'cover',
+              objectPosition: position,
+              transform: z !== 1 ? `scale(${z})` : undefined,
+              transformOrigin: position,
+            }}
+          />
+        </div>
         {/* Gold tracery overlaid, unclipped so the keyline stays crisp */}
         <svg
           viewBox="0 0 200 380"

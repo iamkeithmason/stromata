@@ -43,6 +43,9 @@ export default async function EditAuthorPage({ params }: Props) {
           initialDraft={author.draft ?? false}
           initialImageUrl={author.image_url ?? null}
           initialImageSource={author.image_source ?? null}
+          initialImageFocusX={author.image_focus_x ?? 50}
+          initialImageFocusY={author.image_focus_y ?? 50}
+          initialImageZoom={author.image_zoom ?? 1}
         />
       </div>
     </main>
