@@ -7,6 +7,12 @@
  *
  * Usage:
  *   node scripts/ingestion/fetch-texts.mjs
+ *   CONFIG_PATH=/path/to/other-config.js node scripts/ingestion/fetch-texts.mjs
+ *
+ * By default the config is ./config.js next to this script. Set the CONFIG_PATH
+ * env var to point at a different config file — this lets several fetches run
+ * concurrently in one checkout, each with its own config (and its own output
+ * dir, keyed by collection.slug), without racing on the shared config.js.
  *
  * To use for a new source:
  *   1. Edit config.js — swap the URLs, author, collection, and knownFields
@@ -26,9 +32,13 @@ import { fileURLToPath } from "url";
 import Anthropic from "@anthropic-ai/sdk";
 import { NOTE_PROMPT } from "../lib/note-prompt.mjs";
 
-// Load config from same directory
+// Load config — CONFIG_PATH env var (relative to cwd, or absolute) overrides the
+// default ./config.js next to this script, so concurrent runs can each use their own.
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const config = (await import(path.join(__dirname, "config.js"))).default;
+const configPath = process.env.CONFIG_PATH
+  ? path.resolve(process.env.CONFIG_PATH)
+  : path.join(__dirname, "config.js");
+const config = (await import(configPath)).default;
 
 // ---------------------------------------------------------------------------
 // Anthropic client (API key from env — optional; ingest continues without it)

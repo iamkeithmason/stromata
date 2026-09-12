@@ -7,6 +7,18 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-09-12 — Ingestion fetcher: `CONFIG_PATH` override for concurrent fetches
+
+`scripts/ingestion/fetch-texts.mjs` loaded its config only from the hardcoded `./config.js` next to
+the script, so two fetches in the same checkout raced on that one file — the only way to run them in
+parallel was a separate git worktree per fetch (with its own `node_modules` symlink and copied
+`.env.local`). Added a `CONFIG_PATH` env var: when set (relative to cwd, or absolute) the script
+imports that config instead of `./config.js`. Output still lands in `output/<collection.slug>/`, so
+concurrent runs with distinct slugs write to distinct directories and don't collide. This makes
+fanning out several ingestion fetches at once a one-liner per fetch
+(`CONFIG_PATH=… node scripts/ingestion/fetch-texts.mjs &`) with no worktree gymnastics. Default
+behaviour (no `CONFIG_PATH` → `./config.js`) is unchanged.
+
 ## 2026-09-11 — ORB-trawl pipeline: New Advent fetcher chrome-strip fix + shared frontmatter parser
 
 Two code changes that rode in with the ORB-trawl Batch-1 ingestion run (the content import itself
