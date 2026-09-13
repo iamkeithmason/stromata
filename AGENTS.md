@@ -122,6 +122,25 @@ Rules:
 
 ---
 
+## Research bank — capturing what we learn about working with AI
+
+**0. A write-up is owed, before the session closes,** when any of these is true: the **method** changed, not just the artefact (a new loop, a new fan-out, a new gate); a working assumption was **reversed by evidence** (a ruling didn't survive the corpus, a borrowed pattern didn't fit); something was **built that will run again** (a linter, a check, a prompt that worked); a lesson was **paid for** (rounds spent, tokens burned, a round reverted) and the bill was large enough that you'd want to avoid paying it twice; or the same lesson surfaced for the **second** time. It is *not* owed for domain lessons (how Pilgrimage's rules work, which texts are safe) or one-off fixes. The write-up lives in this project, and uses this shape so extraction is cheap: *in one line / where it came from / what we did / what worked / what didn't, and why / the principle, stated generally / where else it fits / rules of thumb* — **the last two sections are what the bank reads.** Ask Keith before writing it: *"This session looks like it owes a write-up because \<trigger\>. Write it?"* Then run steps 2a–2c on it.
+
+**1. The bank is cross-project and lives in Notion** — [parent page](https://app.notion.com/p/3dad9194805d81018e99fcd77f78bfdd) — with two data sources: **Findings** (collection `48b7c51c-8629-4874-b7c4-69f68e14ad98`) and **Conventions** (collection `aaffb2df-3777-4240-9edd-a277922f43fc`).
+
+**2. When a session produces a working-practice note, a write-up, or a hard-won lesson about *how to work with AI*** (not a lesson about this project's domain), do this before closing the session:
+   a. Extract each lesson as one **Findings** row: title as a single sentence, Kind, Project, Date, Source URL, a one-line Note, and *Generalises* set honestly at capture time. If most of a write-up's findings are "No", they belong in this repo, not the bank.
+   b. Read the existing **Conventions**. For each finding, say whether it **supports, extends, or contradicts** an existing convention. Link it as Evidence to any it supports. If it contradicts one, **do not edit the convention — flag it to Keith.**
+   c. Only propose a new convention if **two or more findings from different projects** point the same way. Create it as `Status: Candidate`, *Verified against corpus* unchecked, with Evidence linked and *Operationalised in* stating "nowhere yet".
+
+**3. At the start of substantial work**, read the **Adopted** conventions whose *Applies to* includes this project or "All projects", and treat them as standing instructions. If one is marked *Enforced as: Prose* and this session could turn it into a check, say so.
+
+**4. Subagents do not inherit Notion MCP auth.** Bank reads and writes stay in the orchestrating thread.
+
+The conventions themselves are deliberately not restated here — the bank is the single copy.
+
+---
+
 ## Pipeline Purpose
 
 **Driver 3 — content breadth.** The pipeline finds, fetches, cleans, and stages new texts from public-domain sources. It does not discover authors or handle user-facing SEO — those are separate concerns.
