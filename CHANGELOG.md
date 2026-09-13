@@ -7,6 +7,36 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-09-13 — Parallel-subagent pattern: written up properly, and the AGENTS.md drift closed
+
+Keith asked whether the parallel-subagent discovery had ever had a proper write-up, and whether it
+had been normalised beyond the Drive batches it came from. Audit found it documented in five places
+and titled in none of them: `CLAUDE.md` §"Running batches with parallel research agents" (the
+operational rule plus the 5 Sep generalisation), `AGENTS.md` (same section), the 2026-07-13
+"Seventh batch" CHANGELOG entry (the origin narrative), the 2026-09-11 run-log's "Parallelisation
+note" (the worktree → `CONFIG_PATH` infra generalisation), and the *Content pipeline automation*
+backlog card's "Architecture refined by real evidence" section (the sharpest statement of the rule,
+buried in a card about something else). So: normalised, yes; findable as a method, no.
+
+- **New Notion page** under *The Stromata: Growth Tracker* — [The Parallel Subagent Pattern](https://app.notion.com/p/3dad9194805d8103924ffd0c2678d2dc).
+  The standalone account: the origin (per-`.docx` provenance verification as the bottleneck), the
+  insight that the backlog card had picked the wrong axis — it proposed forking on "noisy vs quiet
+  stages" when the property that matters is **read-only vs shared-write** — the first 8-agent run
+  and what it caught, the four phases of scaling, the boundary, and the constraints.
+- **`AGENTS.md` drift closed** — the Codex mirror carried the parallel-agent section but not the
+  5 Sep *"reach for this by default"* generalisation paragraph, so the standing convention was live
+  for Claude Code and absent for Codex. Paragraph ported verbatim (it contains no Claude-specific
+  wording); the two files' sections now diff clean.
+
+**Noted, not fixed:** `AGENTS.md` is a mechanical `Claude`→`Codex` find-replace of `CLAUDE.md`, and
+the replace has mangled a few references that should have stayed put — "the Codex API", and a
+model id rendered as `Codex-opus-4-8`. Harmless to the procedures around them, but they'd mislead a
+fresh Codex session that tried to act on them. Left alone here to keep this diff to the one thing
+asked for; worth a separate sweep, ideally with whatever generates the mirror taught to leave
+API/model identifiers alone.
+
+---
+
 ## 2026-09-12 — Pastoral Rule drafts re-fetched from New Advent (OCR bodies replaced)
 
 Gregory the Great's *Book of Pastoral Rule* (the four `pastoral-rule-gregory-part-1…4` drafts,
