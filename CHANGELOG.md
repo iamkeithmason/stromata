@@ -7,6 +7,37 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-09-13 — Research bank wired into the instruction files
+
+Keith set up a cross-project Research Bank in Notion (Findings + Conventions data sources under a
+shared parent page) for lessons about *how to work with AI*, as distinct from lessons about any one
+project's domain. This session put the governing procedure into the instruction files so sessions
+actually feed it.
+
+- **New section, `CLAUDE.md` and `AGENTS.md`** — "Research bank — capturing what we learn about
+  working with AI", inserted in both files immediately before §"Pipeline Purpose". Five numbered
+  parts: (0) when a write-up is owed — method changed / assumption reversed by evidence / something
+  built that will run again / a lesson paid for dearly / the same lesson twice — the shape it takes,
+  and the rule to *ask Keith first*; (1) the bank's parent page and the two collection ids; (2) the
+  before-close capture procedure (extract findings → reconcile against existing conventions →
+  propose a new convention only on two findings from different projects); (3) read Adopted
+  conventions at the start of substantial work; (4) subagents don't inherit Notion MCP auth, so bank
+  reads and writes stay in the orchestrating thread.
+- **Deliberately not restated here:** the conventions themselves. CLAUDE.md links the bank so there
+  is one copy — a second copy in the repo would drift, which is the failure the bank exists to avoid.
+- **The two files' sections are byte-identical** (verified by diff, not by eye). The section contains
+  no Claude-specific wording, so the `Claude`→`Codex` mirror problem noted in the entry below doesn't
+  bite here.
+
+**Worth knowing:** kept under 25 lines at Keith's instruction, which meant leaving the prose lines
+unwrapped rather than at the file's usual ~100 chars — wrapping part 0 alone would have cost ~11
+lines. Also left open, pending Keith's call: whether the step 0–2 write-up procedure eventually
+belongs in a *skill* (loaded on trigger) rather than always-resident CLAUDE.md prose, with only
+steps 3–4 staying as prose. Not worth moving until the loop has run a few times and its real shape
+is known.
+
+---
+
 ## 2026-09-13 — Parallel-subagent pattern: written up properly, and the AGENTS.md drift closed
 
 Keith asked whether the parallel-subagent discovery had ever had a proper write-up, and whether it
