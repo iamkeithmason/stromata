@@ -7,6 +7,33 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-09-14 — `published_at` timestamp for texts and collections
+
+Built via the autonomous next-agent-card lane. The first-ever weekly Growth Digest run
+(2026-09-08) needed a "Texts added" figure and had no reliable source: `updated_at` is bumped by
+any edit (a theme tweak, a summary fix), not just a fresh publish, and `created_at` reflects import
+time rather than publish time. Added a `published_at timestamptz` column to `texts` and
+`collections` so every future digest can count exact publish transitions instead of approximating.
+
+- **Migrations `018_published_at.sql` / `019_published_at_trigger.sql`** (applied to prod via the
+  Supabase MCP) — nullable `published_at` on both tables, set by a Postgres trigger
+  (`set_published_at_on_publish`) on the `published` false→true transition (an insert already
+  `published: true` counts as its own transition), and never touched again once non-null — an
+  unpublish/republish cycle keeps the original timestamp.
+- **DB trigger over application code, deliberately.** The first draft computed `published_at` in
+  each admin route handler via a read-then-write (fetch the existing row, then decide). Code review
+  caught a real bug in that approach: if the existing-row `select` ever failed and returned no data,
+  the fallback silently nulled out an already-recorded `published_at` on the next save. A trigger
+  sets it atomically with the same `UPDATE`/`INSERT`, with no separate read and no failure mode —
+  and needed no changes to any of the four admin route handlers at all.
+- Pre-existing published rows are left `null` rather than backfilled with a guessed date — there's
+  no reliable source for when they actually went live.
+- **Verified directly against Supabase**: ran the full insert → publish → unpublish → republish →
+  edit-while-published sequence inside a rolled-back transaction and confirmed `published_at` is
+  set exactly once and survives every subsequent state change untouched.
+
+---
+
 ## 2026-09-13 — Research bank wired into the instruction files
 
 Keith set up a cross-project Research Bank in Notion (Findings + Conventions data sources under a

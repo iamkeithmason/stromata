@@ -66,6 +66,7 @@ export type Text = {
   translation_notes: string | null
   ocr_quality: 'high' | 'medium' | 'low' | null
   published: boolean
+  published_at: string | null
   created_at: string
   updated_at: string
 }
