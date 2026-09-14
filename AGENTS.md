@@ -253,7 +253,7 @@ Before each pipeline run, pull new candidates from the Notion Content Prospect L
    - `newadvent.org` → `newadvent` (but check: New Advent /fathers/ URLs are broken as of June 2026 — use `archive_ocr` instead)
    - `gutenberg.org` → `gutenberg`
    - `wikisource.org` → `wikisource`
-   - `archive.org/stream/...djvu.txt` → `archive_ocr`
+   - `archive.org/download/...djvu.txt` → `archive_ocr`
    - `archive.org` (other) → `archive_online`
    - Other clean HTML (e.g. anglicanhistory.org, ccel.org) → `archive_online`
 
@@ -324,9 +324,9 @@ If the script errors (network failure, parse failure), note the error in `stage_
 ### Archive OCR sources (`archive_ocr`)
 
 1. **Check for source file:** `scripts/ingestion/sources/{collection_slug}-raw.txt`
-   If absent, download it:
+   If absent, download it — **use `/download/`, not `/stream/`** (see the Archive.org note under "Notes on Sources" below: `/stream/` now returns an HTML viewer page with the text buried in a `<pre>` block, `/download/` returns the file itself):
    ```bash
-   curl -L "https://archive.org/stream/{archive_identifier}/{archive_identifier}_djvu.txt" \
+   curl -L "https://archive.org/download/{archive_identifier}/{archive_identifier}_djvu.txt" \
      -o "scripts/ingestion/sources/{collection_slug}-raw.txt"
    ```
 
@@ -635,7 +635,7 @@ still apply per-file, still parallelize the same way. What changes is Stage 2/5a
 - **CCEL** (`ccel`): dynamic rendering — cannot scrape directly with a plain HTTP fetch (`fetch-texts.mjs` will not work). Two options: the Archive.org djvu.txt scan of the NPNF volumes (`archive_ocr`), or **browser-based extraction** (`ccel_browser`) — navigate to the work's page, click through to "Read Online" to reach the actual reading URL (pattern: `ccel.org/ccel/{author}/{work}/{work}.i_1.html`, found via the site's own internal links, not guessable), then extract with the browser's page-text tool. Confirmed working 2026-07-12 (Traherne, *Centuries of Meditations*). The extracted text needs the same manual structural cleanup as any other source (headings, stray pagination-artifact digits) — this is a real capability, not a magic fix, and produces the same quality of raw material as any other manual source, not a pre-cleaned one. Prefer this over `archive_ocr` for CCEL-sourced prospects specifically, since it skips OCR noise entirely.
 - **Project Gutenberg** (`gutenberg`): plain text — fetch-texts.mjs handles it. Use the plain text URL (not HTML).
 - **Wikisource** (`wikisource`): mediawiki HTML — fetch-texts.mjs handles it. Use the `/wiki/` URL.
-- **Archive.org** (`archive_online`): Use djvu.txt URL for OCR works; use direct HTML URLs for clean digitised editions.
+- **Archive.org** (`archive_online`): Use djvu.txt URL for OCR works; use direct HTML URLs for clean digitised editions. **Use the `/download/` path, not `/stream/`, for djvu.txt** — confirmed 2026-09-14: `archive.org/stream/{id}/{id}_djvu.txt` now returns a full HTML viewer page with the OCR text embedded in a single `<pre>...</pre>` block (breaks the plain-text assumption `clean-archive-ocr.mjs`/`archive-ocr-config.mjs` are built on, and would need an HTML-unwrap-plus-entity-decode step to use). `archive.org/download/{id}/{id}_djvu.txt` (a 302 redirect to the item's own `ia*.us.archive.org` file server, so keep `curl -L`) returns `Content-Type: text/plain` directly — same content, no wrapper. Verified against three different identifiers the same session. If `/download/` for some reason 404s while `/stream/`'s HTML viewer still loads, the identifier is fine and only the download route is having trouble — re-check rather than falling back to unwrapping `/stream/`'s HTML.
 
 For multi-volume NPNF works on Archive.org, the djvu.txt identifier pattern is typically:
-`https://archive.org/stream/{identifier}/{identifier}_djvu.txt`
+`https://archive.org/download/{identifier}/{identifier}_djvu.txt`
