@@ -1,21 +1,17 @@
 export default {
   collection: {
-    name: "The Shepherd of Hermas",
-    slug: "the-shepherd-of-hermas",
-    author: "Hermas",
+    name: "Letters 10.96–97 (to Trajan, on the Christians)",
+    slug: "pliny-letters-on-christians",
+    author: "Pliny the Younger",
     description: "",
   },
-  urls: [
-    "https://www.newadvent.org/fathers/02011.htm",
-    "https://www.newadvent.org/fathers/02012.htm",
-    "https://www.newadvent.org/fathers/02013.htm",
-  ],
-  source: "newadvent",
+  urls: ["https://faculty.georgetown.edu/jod/texts/pliny.html"],
+  source: "generic",
   knownFields: {
-    genre: "Treatise",
-    sourceAttribution: "Translated by Alexander Roberts and James Donaldson (ANF, Vol. II).",
-    provenanceNotes: "Text sourced from New Advent (newadvent.org). Accessed September 2026.",
-    translationNotes: "ANF Vol. II translation (Roberts-Donaldson, 1885); Alexander Roberts d. 1901 — public domain by pre-1929 publication. Traditionally dated c. 140-155 (Muratorian Canon names Hermas as brother of Pope Pius I).",
+    genre: "Letter",
+    sourceAttribution: "Melmoth/Bosanquet translation (revised), via Georgetown University's Forum Romanum text archive.",
+    provenanceNotes: "Text sourced from faculty.georgetown.edu/jod/texts/pliny.html. Accessed September 2026.",
+    translationNotes: "Melmoth/Bosanquet 19th-century translation (revised); public domain. Pliny the Younger d. c. 113.",
     copyrightSafe: true,
   },
 };
