@@ -1,7 +1,21 @@
-// TEMP single re-fetch of Against the Heathen Book VII (06317) — first fetch truncated (13k).
 export default {
-  collection: { name: "Against the Heathen (Adversus Nationes)", slug: "against-the-heathen-sicca", author: "Arnobius of Sicca", description: "" },
-  urls: ["https://www.newadvent.org/fathers/06317.htm"],
+  collection: {
+    name: "The Shepherd of Hermas",
+    slug: "the-shepherd-of-hermas",
+    author: "Hermas",
+    description: "",
+  },
+  urls: [
+    "https://www.newadvent.org/fathers/02011.htm",
+    "https://www.newadvent.org/fathers/02012.htm",
+    "https://www.newadvent.org/fathers/02013.htm",
+  ],
   source: "newadvent",
-  knownFields: { genre: "Apology", sourceAttribution: "Translated by Hamilton Bryce and Hugh Campbell (ANF, Vol. VI).", provenanceNotes: "Text sourced from New Advent (newadvent.org). Accessed September 2026.", translationNotes: "ANF vol. 6 translation by Hamilton Bryce and Hugh Campbell, 1871/1886; long public domain. Author d. c. 330. — copyright pre-verified (author pre-1900; PD English translation identified).", copyrightSafe: true },
+  knownFields: {
+    genre: "Treatise",
+    sourceAttribution: "Translated by Alexander Roberts and James Donaldson (ANF, Vol. II).",
+    provenanceNotes: "Text sourced from New Advent (newadvent.org). Accessed September 2026.",
+    translationNotes: "ANF Vol. II translation (Roberts-Donaldson, 1885); Alexander Roberts d. 1901 — public domain by pre-1929 publication. Traditionally dated c. 140-155 (Muratorian Canon names Hermas as brother of Pope Pius I).",
+    copyrightSafe: true,
+  },
 };

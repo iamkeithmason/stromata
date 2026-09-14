@@ -172,7 +172,7 @@
     },
     {
       "id": "epistle-to-diognetus",
-      "status": "pending",
+      "status": "imported",
       "added": "2026-06-30",
       "author": "Anonymous (Ante-Nicene)",
       "death_year": null,
@@ -186,9 +186,15 @@
       "translation_copyright_clear": true,
       "translator": "Roberts-Donaldson",
       "translator_death_year": 1901,
-      "stage_1_notes": "Copyright: anonymous 2nd-c. letter; translation_copyright_clear via Roberts-Donaldson ANF Vol. 1 (1885, Roberts d. 1901). Switched source from the Archive.org OCR workaround to New Advent directly (2026-09-08) — CLAUDE.md confirms /fathers/ has served normally again since 2026-08-29, and Notion's Content Prospect List independently lists the same New Advent URL with Status: Text available. Reachability curl check NOT run this session — this environment's outbound network policy blocks www.newadvent.org (and all other external hosts) entirely; confirm HTTP 200 and complete Stage 2 fetch next run once network access is available.",
-      "stage_2_output": "",
-      "stage_3_themes": [],
+      "stage_1_notes": "Copyright: anonymous 2nd-c. letter; translation_copyright_clear via Roberts-Donaldson ANF Vol. 1 (1885, Roberts d. 1901). Switched source from the Archive.org OCR workaround to New Advent directly (2026-09-08) — CLAUDE.md confirms /fathers/ has served normally again since 2026-08-29, and Notion's Content Prospect List independently lists the same New Advent URL with Status: Text available. Reachability curl check NOT run this session — this environment's outbound network policy blocks www.newadvent.org (and all other external hosts) entirely; confirm HTTP 200 and complete Stage 2 fetch next run once network access is available. Reachability confirmed (HTTP 200) 2026-09-14; fetched via New Advent, note_draft authored manually this run (ANTHROPIC_API_KEY not set in this environment — fetch-texts.mjs skipped inline generation), themes trimmed to 5. Imported 1 text(s) on 2026-09-14.",
+      "stage_2_output": "scripts/ingestion/output/epistle-to-diognetus/",
+      "stage_3_themes": [
+        "christology",
+        "salvation",
+        "contemplation",
+        "humility",
+        "suffering"
+      ],
       "rejection_reason": "",
       "notes": "Anonymous 2nd-century apologetic letter — author unknown, no death year. Copyright clear via translation: Roberts-Donaldson ANF Vol. 1, 1885 (Alexander Roberts d. 1901, James Donaldson d. 1915). New Advent broken for /fathers/ URLs — use Archive.org ANF Vol. 1 OCR. Stage 1: verify the Archive.org identifier 'antenicanefathers01robe' is the correct volume and that Diognetus appears within it."
     },
@@ -1634,7 +1640,7 @@
     },
     {
       "id": "the-pilgrims-progress-every-bunyan",
-      "status": "staged",
+      "status": "imported",
       "author": "John Bunyan",
       "title": "The Pilgrim's Progress (Every Child Can Read edition)",
       "source_type": "gutenberg",
@@ -1649,7 +1655,7 @@
       "translation_copyright_clear": false,
       "death_year": 1688,
       "translator_death_year": null,
-      "stage_1_notes": "Copyright clear on Bunyan's death year (1688) alone. Adaptation is the anonymous 1909 'Every Child Can Read' edition (John C. Winston Co.) — publication predates 1929, so it is unconditionally public domain in the US regardless of the uncredited editor's dates. Frontmatter translation_notes TODO placeholder (left over from an earlier fetch, dated stage_1_notes 2026-08-17 on other prospects from the same run) resolved 2026-09-08; themes trimmed from the auto-suggested set (dropped 'liturgy', which didn't fit a narrative allegory, added 'spiritual-warfare' for the Apollyon episode).",
+      "stage_1_notes": "Copyright clear on Bunyan's death year (1688) alone. Adaptation is the anonymous 1909 'Every Child Can Read' edition (John C. Winston Co.) — publication predates 1929, so it is unconditionally public domain in the US regardless of the uncredited editor's dates. Frontmatter translation_notes TODO placeholder (left over from an earlier fetch, dated stage_1_notes 2026-08-17 on other prospects from the same run) resolved 2026-09-08; themes trimmed from the auto-suggested set (dropped 'liturgy', which didn't fit a narrative allegory, added 'spiritual-warfare' for the Apollyon episode). All 1 file(s) already existed in the database as of 2026-09-14 — marked imported without inserting anything new.",
       "stage_3_themes": [
         "prayer",
         "repentance",
@@ -1679,7 +1685,7 @@
     },
     {
       "id": "the-stromata-clement",
-      "status": "staged",
+      "status": "imported",
       "added": "2026-08-30",
       "author": "Clement of Alexandria",
       "death_year": 215,
@@ -1693,7 +1699,7 @@
       "translation_copyright_clear": true,
       "translator": "Roberts-Donaldson (ANF)",
       "translator_death_year": 1915,
-      "stage_1_notes": "Book I already live (imported 2026-05-21). Staging Books II, III, IV, V, VI, VII (New Advent / Roberts-Donaldson ANF 1885, public domain). Book III is Latin — the ANF editors left it untranslated; included with an editorial note and a cure->cum scanno fix (Latin review advisable). Book VIII held (fragmentary appendix; collection titled I–VII). Clement d. 215 (<1900); ANF published 1885.",
+      "stage_1_notes": "Book I already live (imported 2026-05-21). Staging Books II, III, IV, V, VI, VII (New Advent / Roberts-Donaldson ANF 1885, public domain). Book III is Latin — the ANF editors left it untranslated; included with an editorial note and a cure->cum scanno fix (Latin review advisable). Book VIII held (fragmentary appendix; collection titled I–VII). Clement d. 215 (<1900); ANF published 1885. All 6 file(s) already existed in the database as of 2026-09-14 — marked imported without inserting anything new.",
       "stage_2_output": "scripts/ingestion/output/the-stromata/",
       "stage_3_themes": [
         "scripture",
@@ -1708,7 +1714,7 @@
     },
     {
       "id": "first-epistle-clement-corinthians",
-      "status": "pending",
+      "status": "imported",
       "added": "2026-09-08",
       "author": "Clement of Rome",
       "death_year": 99,
@@ -1722,15 +1728,21 @@
       "translation_copyright_clear": true,
       "translator": "Roberts-Donaldson (ANF Vol. 1)",
       "translator_death_year": 1901,
-      "stage_1_notes": "",
-      "stage_2_output": "",
-      "stage_3_themes": [],
+      "stage_1_notes": " Fetched via New Advent 2026-09-14; note_draft authored manually (no ANTHROPIC_API_KEY in this environment); themes adjusted (dropped contemplation, added community/ministry for the church-order focus). NOTE: duplicate 'first-epistle-of-clement-attributed' (same New Advent URL, added via ORB-trawl 2026-09-11) rejected this run — see that entry. Imported 1 text(s) on 2026-09-14.",
+      "stage_2_output": "scripts/ingestion/output/first-epistle-clement-corinthians/",
+      "stage_3_themes": [
+        "prayer",
+        "repentance",
+        "humility",
+        "community",
+        "ministry"
+      ],
       "rejection_reason": "",
       "notes": "Synced from Notion Content Prospect List (Status: Text available, Value 3, Complexity 1, Effort 1), 2026-09-08. Written c. 96 AD by Clement of Rome to the Corinthian church on factionalism and right church order; one of the earliest non-canonical Christian documents. Natural companion to the Ignatian and Polycarp letters (same Apostolic Fathers generation) — consider grouping. Stage 1 reachability curl check not run this session (environment network policy blocks external hosts); verify HTTP 200 on newadvent.org/fathers/1010.htm before Stage 2."
     },
     {
       "id": "epistle-polycarp-philippians",
-      "status": "pending",
+      "status": "imported",
       "added": "2026-09-08",
       "author": "Polycarp of Smyrna",
       "death_year": 155,
@@ -1744,15 +1756,21 @@
       "translation_copyright_clear": true,
       "translator": "Roberts-Donaldson (ANF Vol. 1)",
       "translator_death_year": 1901,
-      "stage_1_notes": "",
-      "stage_2_output": "",
-      "stage_3_themes": [],
+      "stage_1_notes": " Fetched via New Advent 2026-09-14; note_draft authored manually (no ANTHROPIC_API_KEY); themes trimmed from 6 to 5 (dropped liturgy). Imported 1 text(s) on 2026-09-14.",
+      "stage_2_output": "scripts/ingestion/output/epistle-polycarp-philippians/",
+      "stage_3_themes": [
+        "prayer",
+        "repentance",
+        "suffering",
+        "christology",
+        "salvation"
+      ],
       "rejection_reason": "",
       "notes": "Synced from Notion Content Prospect List (Status: Text available, Value 3, Complexity 1, Effort 1), 2026-09-08. Written c. 110-140 AD; references Ignatius and his letters directly. Polycarp was a disciple of the Apostle John. Notion suggests pairing with the Martyrdom of Polycarp as a two-text collection (both added this run) — consider a shared collection_slug/collection at Stage 2 if editorially desired. Stage 1 reachability curl check not run this session (environment network policy blocks external hosts); verify HTTP 200 before Stage 2."
     },
     {
       "id": "martyrdom-of-polycarp",
-      "status": "pending",
+      "status": "imported",
       "added": "2026-09-08",
       "author": "Anonymous (Church of Smyrna)",
       "death_year": null,
@@ -1766,9 +1784,15 @@
       "translation_copyright_clear": true,
       "translator": "Roberts-Donaldson (ANF Vol. 1)",
       "translator_death_year": 1901,
-      "stage_1_notes": "",
-      "stage_2_output": "",
-      "stage_3_themes": [],
+      "stage_1_notes": " Fetched via New Advent 2026-09-14; note_draft authored manually (no ANTHROPIC_API_KEY); themes adjusted (dropped repentance, kept the doxological/eucharistic imagery themes). Imported 1 text(s) on 2026-09-14.",
+      "stage_2_output": "scripts/ingestion/output/martyrdom-of-polycarp/",
+      "stage_3_themes": [
+        "suffering",
+        "prayer",
+        "christology",
+        "trinity",
+        "liturgy"
+      ],
       "rejection_reason": "",
       "notes": "Synced from Notion Content Prospect List (Status: Text available, Value 2, Complexity 1, Effort 1), 2026-09-08. Earliest extant Christian martyrdom account (c. 155-167 AD), written by the Church of Smyrna as a circular letter to other churches; author is the community, not Polycarp himself (he is the subject). No death_year — copyright clearance rests on the translation (Roberts-Donaldson ANF, Alexander Roberts d. 1901), same basis already used for 'epistle-to-diognetus' in this queue. Pairs naturally with 'epistle-polycarp-philippians' (added same run). Stage 1 reachability curl check not run this session (environment network policy blocks external hosts); verify HTTP 200 before Stage 2."
     },
@@ -2758,7 +2782,7 @@
     },
     {
       "id": "epistle-of-barnabas-church",
-      "status": "pending",
+      "status": "imported",
       "added": "2026-09-11",
       "author": "Unknown (Early Church)",
       "death_year": 130,
@@ -2772,13 +2796,14 @@
       "translation_copyright_clear": true,
       "translator": "Roberts & Donaldson (ANF)",
       "translator_death_year": null,
-      "stage_1_notes": "Early-2nd-century pseudonymous epistle; ANF vol. 1 translation (Roberts-Donaldson, pre-1928) is public domain. — copyright pre-verified (author pre-1900; PD English translation identified).",
-      "stage_2_output": "",
+      "stage_1_notes": "Early-2nd-century pseudonymous epistle; ANF vol. 1 translation (Roberts-Donaldson, pre-1928) is public domain. — copyright pre-verified (author pre-1900; PD English translation identified). Fetched via New Advent 2026-09-14; note_draft authored manually (no ANTHROPIC_API_KEY); themes re-derived from the typological/Two Ways content rather than the keyword auto-suggestion (prayer/humility/liturgy didn't fit). Imported 1 text(s) on 2026-09-14.",
+      "stage_2_output": "scripts/ingestion/output/epistle-of-barnabas-church/",
       "stage_3_themes": [
         "scripture",
-        "salvation",
         "christology",
-        "tradition"
+        "salvation",
+        "tradition",
+        "virtue"
       ],
       "rejection_reason": "",
       "notes": "From On the Ruin of Britain blog trawl (posts 1). NEW AUTHOR — import will create a draft author stub. Verified SAFE by ORB-trawl verification pass 2026-09-11."
@@ -5390,7 +5415,7 @@
     },
     {
       "id": "2-clement",
-      "status": "pending",
+      "status": "rejected",
       "added": "2026-09-11",
       "author": "Second Epistle of Clement (2 Clement)",
       "death_year": 150,
@@ -5412,7 +5437,7 @@
         "eschatology",
         "preaching"
       ],
-      "rejection_reason": "",
+      "rejection_reason": "Duplicate of 'second-epistle-of-clement-attributed' (identical New Advent URL fathers/1011.htm, same work). Also has a data-entry defect: its 'author' field holds the work's title ('Second Epistle of Clement (2 Clement)') rather than an author name. Kept 'second-epistle-of-clement-attributed' (correct author field 'Clement of Rome (attributed)') as the surviving entry for a future run.",
       "notes": "From On the Ruin of Britain blog trawl (posts 091). NEW AUTHOR — import will create a draft author stub. Verified SAFE by ORB-trawl verification pass 2026-09-11."
     },
     {
@@ -5471,7 +5496,7 @@
     },
     {
       "id": "first-epistle-of-clement-attributed",
-      "status": "pending",
+      "status": "rejected",
       "added": "2026-09-11",
       "author": "Clement of Rome (attributed)",
       "death_year": 99,
@@ -5494,7 +5519,7 @@
         "ministry",
         "salvation"
       ],
-      "rejection_reason": "",
+      "rejection_reason": "Duplicate of 'first-epistle-clement-corinthians' (identical New Advent URL fathers/1010.htm, same work) — that entry processed and staged this run instead. Found during 2026-09-14 run's Stage 1 pass; both entries entered the queue independently (Notion sync 2026-09-08 vs ORB-trawl 2026-09-11) without cross-checking by source URL.",
       "notes": "From On the Ruin of Britain blog trawl (posts 075). NEW AUTHOR — import will create a draft author stub. Verified SAFE by ORB-trawl verification pass 2026-09-11."
     },
     {
@@ -5958,6 +5983,35 @@
       ],
       "rejection_reason": "",
       "notes": "From On the Ruin of Britain blog trawl (posts 082). NEW AUTHOR — import will create a draft author stub. Verified SAFE by ORB-trawl verification pass 2026-09-11."
+    },
+    {
+      "id": "the-shepherd-of-hermas",
+      "status": "imported",
+      "added": "2026-09-14",
+      "author": "Hermas",
+      "death_year": 160,
+      "tradition": "early-church",
+      "era": "ante-nicene",
+      "title": "The Shepherd of Hermas",
+      "genre": "Treatise",
+      "source_type": "newadvent",
+      "source_url": "https://www.newadvent.org/fathers/02011.htm",
+      "collection_slug": "the-shepherd-of-hermas",
+      "translation_copyright_clear": true,
+      "translator": "Roberts-Donaldson (ANF Vol. II)",
+      "translator_death_year": 1901,
+      "stage_1_notes": "Synced from Notion Content Prospect List (Status: Text available, Value 3, Complexity 1, Effort 2), 2026-09-14. Author dates uncertain — Notion flagged tradition/era 'needs-editorial'; traditionally dated c. 140-155 AD per the Muratorian Canon, which names Hermas as brother of Pope Pius I. death_year set to an approximate 160 (safely pre-1900 either way) rather than left null, since the work's own date is well established even though Hermas's personal death date is not. Copyright: ANF Vol. II translation (Roberts-Donaldson, 1885; Alexander Roberts d. 1901) — public domain by pre-1929 publication. Reachability confirmed (HTTP 200) on all 3 New Advent pages 2026-09-14. Not a duplicate: checked against local queue and Supabase (no existing text/collection matching 'hermas' or 'shepherd'). Imported 3 text(s) on 2026-09-14.",
+      "stage_2_output": "scripts/ingestion/output/the-shepherd-of-hermas/",
+      "stage_3_themes": [
+        "repentance",
+        "humility",
+        "prayer",
+        "contemplation",
+        "virtue",
+        "community"
+      ],
+      "rejection_reason": "",
+      "notes": "MULTI-CHAPTER: 3-book collection (Visions / Mandates / Similitudes), one file per book, New Advent fathers/02011-02013.htm. note_draft authored manually per book (no ANTHROPIC_API_KEY in this environment). Longer Apostolic Fathers work — fetched in full rather than excerpted; Notion's Effort-2 flag anticipated possible excerpting but the full text reads well as three natural chapters."
     }
   ]
 }
