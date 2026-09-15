@@ -11,6 +11,15 @@
  * letterboxing) and clipped to the arch; the gold tracery is laid over it.
  * object-fit: cover is used instead of an SVG <image preserveAspectRatio>
  * because Chrome ignores "slice" when the <image> source is itself an SVG.
+ *
+ * Both variants carry the 200:380 ratio themselves, so they size identically
+ * wherever they are placed. The portrait variant is a plain <div> whose
+ * children are all absolutely positioned, so height: 100% alone collapses it
+ * to zero inside any auto-height parent — while the SVG variant, being a
+ * replaced element with an intrinsic ratio, still draws. That asymmetry hid
+ * the seasonal panel's portrait entirely the day its author first had one
+ * (see CHANGELOG 2026-09-15); `aspect-ratio` here removes the trap rather
+ * than relying on every caller nesting the component just so.
  */
 
 // The outer lancet outline in the 200×380 SVG coordinate space — used for the
@@ -84,7 +93,11 @@ export function LancetArch({ initial, label, imageUrl, focusX, focusY, zoom }: P
     const z = clamp(zoom ?? 1, 1, 5)
     const position = `${fx}% ${fy}%`
     return (
-      <div style={{ position: 'relative', width: '100%', height: '100%' }} role="img" aria-label={label}>
+      <div
+        style={{ position: 'relative', width: '100%', height: '100%', aspectRatio: '200 / 380' }}
+        role="img"
+        aria-label={label}
+      >
         {/* Clip-path definition (0×0, off-layout) */}
         <svg width="0" height="0" style={{ position: 'absolute' }} aria-hidden>
           <defs>
