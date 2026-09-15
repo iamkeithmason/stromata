@@ -8,6 +8,7 @@ import { ReadingHistorySection } from './components/ReadingHistorySection'
 import { FeaturedAuthors } from './components/FeaturedAuthors'
 import { SeasonalPanel } from './components/SeasonalPanel'
 import { ChurchYearRow } from './components/ChurchYearRow'
+import { resolveSeason } from '@/lib/liturgical/year'
 import { readingTime } from '@/lib/reading-time'
 import { ThemeChip } from './components/ThemeChip'
 
@@ -125,6 +126,13 @@ function SectionHeader({
 
 export default async function Home() {
   const supabase = createServerClient()
+
+  // The church year, resolved once and handed to both surfaces that show it,
+  // so the panel and the church-year row can never disagree. Note the page is
+  // ISR-cached (revalidate above), so a season turns over within that window
+  // rather than at midnight exactly — acceptable for a season, and the reason
+  // this is resolved per render rather than baked at build.
+  const season = resolveSeason().season
 
   // ── Author chips — top 5 authors by published text count ─────────────
   const { data: chipTextsRaw } = await supabase
@@ -297,11 +305,11 @@ export default async function Home() {
       </section>
 
       {/* ── Seasonal panel ───────────────────────────────────────────────── */}
-      <SeasonalPanel />
+      <SeasonalPanel season={season} />
 
       {/* ── Church-year row ──────────────────────────────────────────────── */}
       <div className="pt-8">
-        <ChurchYearRow currentSeason="trinitytide" />
+        <ChurchYearRow currentSeason={season} />
       </div>
 
       {/* ── Featured authors ─────────────────────────────────────────────── */}

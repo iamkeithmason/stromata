@@ -7,6 +7,42 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-09-15 — The church year resolves itself
+
+The seasonal panel's season was a hand-edited constant (`CURRENT_SEASON`), and the church-year row
+carried a second hardcoded copy in `app/page.tsx`. Advent would have arrived only when someone
+remembered to edit a file and deploy — and the two could disagree. Both now read one resolver.
+
+- **`lib/liturgical/year.ts`** — `resolveSeason(date)` returns the season, its cycle, and its
+  bounds. Easter is computed (Meeus/Jones/Butcher); Ash Wednesday, Pentecost and Advent Sunday hang
+  off it. No dependencies, no data.
+- **Six seasons, not four.** The old row listed Advent / Lent / Eastertide / Trinitytide, which
+  leaves the Twelve Days and the whole of January with nowhere to sit. Adding Christmastide and
+  Epiphanytide makes the set *tile the year* — every date has exactly one season, which is what
+  lets the panel be driven by the date at all. The fold-the-gaps question is what surfaced this:
+  an honest fold needed the missing seasons to exist first.
+- **Cycles recorded, not used yet.** Each season carries `incarnation` / `paschal` / `ordinary` —
+  the coarser two-movements-plus-the-time-between grouping. It is the hook for later grouping work
+  (seasonal collections, the liturgical wheel), derived in one place so a second definition can't
+  drift in.
+- **Christmas and Epiphany take `--season-feast`.** Both are principal feasts, and liturgical white
+  cannot be a ground for cream-on-dark text. No new colour token.
+- **The picks stay human.** `SEASON_PICKS` holds one hand-chosen text per season; only Trinitytide
+  is set (Wycliffe, as before). A `null` renders the panel's existing designed no-pick state rather
+  than a gap. This is deliberate: a scan of all 207 published texts found the corpus essentially
+  *unmarked* for season — a strict title scan returns six rows, one of them a false positive
+  ("Excel**lent**") — so season-fit is a curator's judgement, not something a query can derive.
+- **Tests run in CI now.** `npm run test:liturgical` (7 tests) is wired into the lint-and-types
+  workflow. The fixed dates are pinned against published Easter and Advent Sunday dates — a
+  self-consistently wrong computus would sail past a property test — and a tiling property walks
+  every day from 2024 to 2035 checking no gap or overlap at a boundary. Mutation-tested: shifting
+  Advent Sunday by one week fails 3 of the 7.
+
+Why the panel and not a bigger seasonal model: Umami says the panel is the weakest attributed entry
+point on the site — 3 `text-open`s all time against author pages' 50, and none in the last 30 days —
+and the referrer mix (chatgpt.com, google, duckduckgo, bing) shows readers arriving deep on text
+pages rather than at the homepage. So the automatic season is worth having for its own sake (it
+removes a recurring manual edit), while curating four seasons of collections is not yet earned.
 ## 2026-09-15 — Seasonal panel: the author portrait that was there but 0px tall
 
 Keith spotted that John Wycliffe's picture was missing from the Church Year panel on the homepage.
