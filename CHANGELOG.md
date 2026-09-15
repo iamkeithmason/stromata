@@ -7,6 +7,37 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-09-15 — Seasonal panel: the author portrait that was there but 0px tall
+
+Keith spotted that John Wycliffe's picture was missing from the Church Year panel on the homepage.
+The data was never the problem: the text, the author row, the `image_url`, the storage object and
+the live HTML were all correct — the live page was serving the right `<img src="…/john-wycliffe-…jpg">`
+all along. It rendered at **zero height**, so the arch simply wasn't there, leaving the caption
+("A Short Rule of Life / John Wycliffe") floating in empty space.
+
+- **Cause.** `LancetArch`'s two variants size differently. The initial variant is an `<svg>` — a
+  replaced element with an intrinsic ratio, so it draws even when its parent's height is `auto`.
+  The portrait variant is a `<div>` sized `height: 100%` whose children are all absolutely
+  positioned, so in an auto-height parent it collapses to nothing. `SeasonalPanel` put the arch and
+  its caption inside an extra wrapper div within the ratio box — which is exactly such an
+  auto-height parent. `FeaturedAuthors` puts `LancetArch` directly in the ratio box, which is why
+  the same portraits show fine in the author band.
+- **The bug was dormant for months** and fired the day its subject first had a photo (Wycliffe's
+  portrait was uploaded 2026-09-11). A layout that only works for one of two render paths will sit
+  quiet until the data picks the other one.
+- **Fixed at the root**: `LancetArch`'s portrait variant now carries `aspect-ratio: 200 / 380`
+  itself, so both variants size identically wherever they're placed and no caller has to nest it
+  just so. `SeasonalPanel` was also restructured to the `FeaturedAuthors` shape — arch alone in the
+  ratio box, caption a sibling below it (the caption had been overflowing the box too) — and now
+  passes the author's stored framing (`image_focus_x/y`, `image_zoom`, migration 017), which it was
+  silently dropping, so the panel crops a portrait the same way the author band does.
+- **Verified in a browser, not by reading the JSX**: measured the arch box in headless Chromium
+  (0.0px before, 285px after, matching the initial variant's 285px), then re-rendered the *live*
+  panel markup with the real stylesheet and portrait — before: no arch at all; after: Wycliffe in
+  the lancet arch with the caption beneath.
+
+---
+
 ## 2026-09-14 — `published_at` timestamp for texts and collections
 
 Built via the autonomous next-agent-card lane. The first-ever weekly Growth Digest run
