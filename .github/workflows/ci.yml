@@ -41,8 +41,15 @@ jobs:
       - name: Typecheck
         run: npx tsc --noEmit
 
-      # Pure unit suites — no credentials, no network. Kept to the suites that
-      # can run secret-free, so this gate stays fast and stays honest: a test
-      # that never runs in CI is documentation, not a contract.
-      - name: Unit tests (liturgical year)
-        run: npm run test:liturgical
+      # Pure unit suites — no credentials, no network. A test that never runs in
+      # CI is documentation, not a contract, so this runs EVERY suite rather than
+      # a chosen few: the comment used to say this while one of seven suites ran.
+      - name: Unit tests (all suites)
+        run: npm test
+
+      # ...and this proves the line above, instead of asserting it. It fails if
+      # any *.test.* file in the repo is not reachable from the npm scripts this
+      # workflow invokes — the gap that hid 20 test files, among them a sibling
+      # left behind when test:scripture named one file instead of a glob.
+      - name: Every test file runs in CI
+        run: npm run check:tests-in-ci
