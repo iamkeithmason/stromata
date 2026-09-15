@@ -156,7 +156,7 @@ export function TextsBrowser({
         <ul className="divide-y" style={{ borderColor: '#e5e0d8' }}>
           {filtered.map(t => (
             <li key={t.id}>
-              <Link href={`/texts/${t.slug}`} className="flex items-start justify-between py-4 group">
+              <Link data-umami-event="text-open" data-umami-event-from="texts-index" data-umami-event-text={t.slug} href={`/texts/${t.slug}`} className="flex items-start justify-between py-4 group">
                 <div>
                   <div>
                     <span

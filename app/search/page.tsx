@@ -273,7 +273,7 @@ export default async function SearchPage({ searchParams }: Props) {
             <ul className="divide-y" style={{ borderColor: '#e5e0d8' }}>
               {authors.map(a => (
                 <li key={a.id}>
-                  <Link
+                  <Link data-umami-event="author-open" data-umami-event-from="search-results" data-umami-event-author={a.name}
                     href={`/authors/${a.slug}`}
                     className="flex items-baseline justify-between py-4 group"
                   >
@@ -358,7 +358,7 @@ export default async function SearchPage({ searchParams }: Props) {
                       </span>
                     </div>
                     {/* Stretched link last in DOM so it sits above content; era link uses zIndex 2 to remain clickable */}
-                    <Link href={`/texts/${t.slug}`} className="absolute inset-0" style={{ zIndex: 1 }} aria-label={t.title} />
+                    <Link data-umami-event="text-open" data-umami-event-from="search-results" data-umami-event-text={t.slug} href={`/texts/${t.slug}`} className="absolute inset-0" style={{ zIndex: 1 }} aria-label={t.title} />
                   </li>
                 )
               })}
@@ -379,7 +379,7 @@ export default async function SearchPage({ searchParams }: Props) {
             <ul className="divide-y" style={{ borderColor: '#e5e0d8' }}>
               {suggested.map(t => (
                 <li key={t.id}>
-                  <Link
+                  <Link data-umami-event="text-open" data-umami-event-from="search-results" data-umami-event-text={t.slug}
                     href={`/texts/${t.slug}`}
                     className="flex items-baseline justify-between py-4 group"
                   >

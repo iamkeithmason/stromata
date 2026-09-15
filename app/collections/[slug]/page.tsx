@@ -116,7 +116,7 @@ export default async function CollectionPage({ params }: Props) {
       <JsonLd data={collectionJsonLd} />
       <JsonLd data={breadcrumbJsonLd} />
       <SiteHeader breadcrumb={author?.slug
-        ? <Link href={`/authors/${author.slug}`} className="hover:opacity-70 transition-opacity">{author.name}</Link>
+        ? <Link data-umami-event="author-open" data-umami-event-from="collection-page" data-umami-event-author={author.name} href={`/authors/${author.slug}`} className="hover:opacity-70 transition-opacity">{author.name}</Link>
         : undefined}
       />
 
@@ -132,7 +132,7 @@ export default async function CollectionPage({ params }: Props) {
           {author && (
             <p className="text-sm mb-4" style={{ color: '#6f6a60' }}>
               {author.slug ? (
-                <Link href={`/authors/${author.slug}`} className="hover:opacity-70 transition-opacity">
+                <Link data-umami-event="author-open" data-umami-event-from="collection-page" data-umami-event-author={author.name} href={`/authors/${author.slug}`} className="hover:opacity-70 transition-opacity">
                   {author.name}
                 </Link>
               ) : author.name}
@@ -164,7 +164,7 @@ export default async function CollectionPage({ params }: Props) {
               const position = i + 1
               return (
                 <li key={text.id}>
-                  <Link
+                  <Link data-umami-event="text-open" data-umami-event-from="collection-page" data-umami-event-text={text.slug}
                     href={`/texts/${text.slug}`}
                     className="flex items-start gap-4 py-3 group"
                     style={{ borderBottom: '1px solid #e5e0d8' }}

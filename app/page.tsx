@@ -573,7 +573,7 @@ function LeadByline({ author, hasContent }: { author: AuthorRef | null; hasConte
   return (
     <p className="font-serif" style={{ fontSize: 'var(--text-base)', color: 'var(--ink)', marginBottom: hasContent ? '1rem' : '1.25rem' }}>
       {author.slug ? (
-        <Link href={`/authors/${author.slug}`} className="hover:opacity-70 transition-opacity" style={{ color: 'var(--ink)', textDecoration: 'none' }}>
+        <Link data-umami-event="author-open" data-umami-event-from="featured-lead" data-umami-event-author={author.name} href={`/authors/${author.slug}`} className="hover:opacity-70 transition-opacity" style={{ color: 'var(--ink)', textDecoration: 'none' }}>
           {author.name}
         </Link>
       ) : author.name}
