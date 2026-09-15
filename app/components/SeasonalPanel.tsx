@@ -11,9 +11,12 @@
  *   - CTA link in gold with underline
  *   - Arch emblem right (§ glyph when no pick; text initial when pick set)
  *
- * Driven entirely by CURRENT_SEASON — no DB model, no season resolution.
- * Update the config object to change season. Out of scope: curated seasonal
- * collections, church-year row destinations, feast-day variant.
+ * The season comes from `resolveSeason()` (lib/liturgical/year.ts), so the
+ * panel turns over on its own — Advent arrives without an edit and a deploy.
+ * What stays hand-set is the *pick*: one text per season, chosen by Keith, in
+ * SEASON_PICKS below. A season with no pick yet renders the designed no-pick
+ * state (§ emblem, "Browse the library"), so the panel is always honest.
+ * Out of scope: curated seasonal collections, feast days.
  *
  * The whole panel is a single click target (one <Link> wraps everything),
  * so the CTA text and arch emblem below are plain visual affordances, not
@@ -25,6 +28,7 @@
 
 import Link from 'next/link'
 import { createServerClient } from '@/lib/supabase/server'
+import { resolveSeason, type Season } from '@/lib/liturgical/year'
 import { LancetArch } from './LancetArch'
 
 type SeasonPick = {
@@ -48,23 +52,71 @@ type SeasonConfig = {
   subtitle: string
   colour: string          // panel background (liturgical)
   note: string            // evergreen season note (~50–60 chars measure)
-  pick: SeasonPick | null
 }
 
 // ── Liturgical colours ───────────────────────────────────────────────────────
-//   The four season grounds live in globals.css as design tokens:
-//     Advent / Lent  → var(--season-advent-lent)   (violet)
-//     Eastertide     → var(--season-eastertide)    (gold-ochre)
-//     Trinitytide    → var(--season-trinitytide)   (green)
-//     Feast days     → var(--season-feast)         (dark ochre)
-// ── Update `colour` to the token for the active season ──────────────────────
-const CURRENT_SEASON: SeasonConfig = {
-  name: 'Trinitytide',
-  subtitle: 'The season after Pentecost · Green',
-  colour: 'var(--season-trinitytide)',
-  note: 'We are in the long green season after Pentecost — the weeks after Trinity in which the Church tends its life in the world. A season for wisdom literature, for letters of counsel, for texts on the daily practice of virtue.',
-  pick: { title: 'A Short Rule of Life', author: 'John Wycliffe', href: '/texts/a-short-rule-of-life' },
+//   The season grounds live in globals.css as design tokens:
+//     Advent / Lent        → var(--season-advent-lent)   (violet)
+//     Eastertide           → var(--season-eastertide)    (gold-ochre)
+//     Trinitytide          → var(--season-trinitytide)   (green)
+//     Christmas / Epiphany → var(--season-feast)         (dark ochre)
+//   Christmas and Epiphany take the feast ground: both are principal feasts,
+//   and liturgical white cannot be a ground for cream-on-dark text.
+// ────────────────────────────────────────────────────────────────────────────
+const SEASON_COPY: Record<Season, SeasonConfig> = {
+  advent: {
+    name: 'Advent',
+    subtitle: 'The weeks before the Nativity · Violet',
+    colour: 'var(--season-advent-lent)',
+    note: 'The weeks of waiting before the Nativity — a season that begins at the end, with the last things, and only then turns toward the manger. A season for texts on watchfulness, on judgement and mercy, and on the long patience of hope.',
+  },
+  christmas: {
+    name: 'Christmastide',
+    subtitle: 'The Twelve Days · White and gold',
+    colour: 'var(--season-feast)',
+    note: 'The Twelve Days — the Word made flesh, and the Church’s oldest astonishment that God should be born. A season for the Nativity sermons, for hymns of the Incarnation, for texts that dwell on eternity entering time.',
+  },
+  epiphany: {
+    name: 'Epiphanytide',
+    subtitle: 'The showing-forth · White and gold',
+    colour: 'var(--season-feast)',
+    note: 'The showing-forth — the light shown to the Gentiles, from the magi to the baptism in Jordan. A season for texts on manifestation and calling, on baptism, and on the slow work of recognising who has arrived.',
+  },
+  lent: {
+    name: 'Lent',
+    subtitle: 'Forty days to the Passion · Violet',
+    colour: 'var(--season-advent-lent)',
+    note: 'Forty days from the ashes to the tomb — the Church’s long turning, kept by fasting, almsgiving and prayer. A season for texts on repentance and self-examination, on the desert, and on the discipline that makes room for grace.',
+  },
+  eastertide: {
+    name: 'Eastertide',
+    subtitle: 'From Easter to Pentecost · White and gold',
+    colour: 'var(--season-eastertide)',
+    note: 'Fifty days from the empty tomb to the fire of Pentecost — the Church’s longest feast, kept standing rather than kneeling. A season for texts on resurrection and new life, on the sacraments of initiation, and on the Spirit given to the Church.',
+  },
+  trinitytide: {
+    name: 'Trinitytide',
+    subtitle: 'The season after Pentecost · Green',
+    colour: 'var(--season-trinitytide)',
+    note: 'We are in the long green season after Pentecost — the weeks after Trinity in which the Church tends its life in the world. A season for wisdom literature, for letters of counsel, for texts on the daily practice of virtue.',
+  },
 }
+
+// ── The picks — one text per season, chosen by hand ──────────────────────────
+//   This is the editorial layer and it stays human: the corpus carries almost
+//   no season-marked texts (a title scan over 207 published texts returns
+//   essentially nothing), so season-fit is a curator's judgement, not a query.
+//   Set an entry as its text is chosen; `null` is a designed state, not a gap.
+// ────────────────────────────────────────────────────────────────────────────
+const SEASON_PICKS: Record<Season, SeasonPick | null> = {
+  advent: null,
+  christmas: { title: 'Sermon 21 (On the Feast of the Nativity)', author: 'Leo the Great', href: '/texts/sermon-21-on-the-feast-of-the-nativity' },
+  epiphany: null,
+  lent: null,
+  eastertide: null,
+  trinitytide: { title: 'A Short Rule of Life', author: 'John Wycliffe', href: '/texts/a-short-rule-of-life' },
+}
+
 // ────────────────────────────────────────────────────────────────────────────
 
 // Reversed-out palette on the liturgical colour ground — the cream-on-dark
@@ -91,37 +143,53 @@ const LABEL_STYLE: React.CSSProperties = {
 // Concave corner radius — increase for more dramatic plaque cut, decrease to soften
 const CORNER_R = 14
 
-export async function SeasonalPanel() {
-  const s = CURRENT_SEASON
-  const hasNoPick = s.pick === null
+type Props = {
+  /** Defaults to today's season; passed in by the page so panel and row agree. */
+  season?: Season
+}
+
+export async function SeasonalPanel({ season = resolveSeason().season }: Props = {}) {
+  const copy = SEASON_COPY[season]
+  const configuredPick = SEASON_PICKS[season]
 
   // Slug for analytics — derived from the href rather than hardcoded, so it
-  // stays correct if CURRENT_SEASON.pick.href ever changes.
-  const pickSlug = s.pick ? s.pick.href.split('/').filter(Boolean).pop() : undefined
+  // stays correct if a pick's href ever changes.
+  const pickSlug = configuredPick ? configuredPick.href.split('/').filter(Boolean).pop() : undefined
 
-  // Portrait for the arch. A config `imageUrl` wins (manual override); otherwise
-  // resolve the pick text's author from the DB and use their stored portrait,
-  // falling back to the author initial when there is none. The stored framing
-  // (focal point + zoom, migration 017) comes along with it, so the panel crops
-  // a portrait the same way the author band does.
-  let pickImageUrl: string | null = s.pick?.imageUrl ?? null
+  // One query does two jobs: it confirms the pick's text is actually published,
+  // and it brings back the author's portrait and stored framing (focal point +
+  // zoom, migration 017) so the panel crops the same way the author band does.
+  //
+  // The published check matters because a pick can be set for a season months
+  // ahead of the text leaving /admin/drafts — as this Christmastide pick was.
+  // Rather than link the homepage at a page that isn't there, an unpublished or
+  // missing pick falls back to the panel's designed no-pick state.
+  let pickImageUrl: string | null = configuredPick?.imageUrl ?? null
   let pickFocusX: number | null = null
   let pickFocusY: number | null = null
   let pickZoom: number | null = null
-  if (s.pick && !pickImageUrl && pickSlug) {
+  let pickIsLive = false
+
+  if (configuredPick && pickSlug) {
     const supabase = createServerClient()
     const { data } = await supabase
       .from('texts')
-      .select('author:authors(image_url, image_focus_x, image_focus_y, image_zoom)')
+      .select('id, author:authors(image_url, image_focus_x, image_focus_y, image_zoom)')
       .eq('slug', pickSlug)
       .eq('published', true)
-      .single()
-    const author = data?.author as unknown as AuthorPortrait | null
-    pickImageUrl = author?.image_url ?? null
-    pickFocusX = author?.image_focus_x ?? null
-    pickFocusY = author?.image_focus_y ?? null
-    pickZoom = author?.image_zoom ?? null
+      .maybeSingle()
+    pickIsLive = Boolean(data?.id)
+    if (pickIsLive) {
+      const author = data?.author as unknown as AuthorPortrait | null
+      pickImageUrl = pickImageUrl ?? author?.image_url ?? null
+      pickFocusX = author?.image_focus_x ?? null
+      pickFocusY = author?.image_focus_y ?? null
+      pickZoom = author?.image_zoom ?? null
+    }
   }
+
+  const s = { ...copy, pick: pickIsLive ? configuredPick : null }
+  const hasNoPick = s.pick === null
 
   const panelHref = s.pick ? s.pick.href : '/texts'
   const panelUmamiProps = s.pick

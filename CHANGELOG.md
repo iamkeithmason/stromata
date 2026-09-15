@@ -55,6 +55,104 @@ and whether the reframe box at 132px wide is the right size in the live form.
 
 ---
 
+## 2026-09-15 — Twenty navigation links that were firing nothing at all
+
+Chasing why only 64 of 151 `text-open` events carried a `from` turned up something larger than the
+missing property: **20 of the 38 links that open a text, collection or author fired no event
+whatsoever.** The `/texts` index, search results, and every theme, era, tradition, scripture,
+collection and location page opened texts silently. All 38 are now instrumented, and all 38 carry
+`from`.
+
+- **Newly measured surfaces**: `texts-index`, `authors-index`, `search-results`, `theme-page`,
+  `era-page`, `tradition-page`, `scripture-page`, `collection-page`, plus author links in the
+  reader byline and `AuthorAside` (`text-reader`) and the featured-lead byline (`featured-lead`).
+- **`collection-nav` now carries `from` too.** The prev/next/end links in a collection reader were
+  firing with `direction` and `collection` but no `from`, against the rule that makes it mandatory
+  on every navigational event.
+- **The `from` vocabulary in CLAUDE.md and AGENTS.md was already stale** before this change —
+  `related-figures` and `text-page` were live in the code and absent from the documented list. Both
+  files now carry the full grouped vocabulary and say plainly that the list *is* the vocabulary.
+
+**A data-continuity note, in the spirit of the 2026-08-06 one.** This change will raise `text-open`
+volume substantially and shift every `from` share, because surfaces that were invisible start
+reporting. Counts before and after 2026-09-15 are not comparable, and — more pointedly — **any
+earlier conclusion about which surface "carries the reading" was drawn from a partially instrumented
+field.** The author-page share that motivated the author-page backlog card was measured against
+instrumented surfaces only; search and the texts index were not among them. The card has been
+annotated rather than withdrawn: its claim needs re-testing once a fortnight of complete data exists.
+
+**What is not verified.** The house rule is that an analytics change is done when the outgoing
+request has been *observed* carrying the payload — not when the attribute is in the JSX. That check
+needs a browser with network access and a running app against real data, neither of which this
+session has. What has been verified is structural: every navigational link carries event, `from` and
+a slug identifier on the same element, and `tsc` and `lint` are clean. The beacon check is Keith's,
+with the console snippet in CLAUDE.md, and the first digest after merge is the real confirmation.
+## 2026-09-15 — Christmastide has a pick, and a pick can no longer point at nothing
+
+`SEASON_PICKS.christmas` was `null` and the corpus had no Nativity text at all, so the season would
+have arrived in December with the panel showing its no-pick state. Leo the Great's *Sermon 21 (On
+the Feast of the Nativity)* is now imported as a draft and wired as the pick. The import itself is
+recorded in `scripts/ingestion/run-log/2026-09-15.md`, not here.
+
+- **A pick is now verified live before it is shown.** The panel already queried the pick's text for
+  the author portrait; that query now also confirms the text is `published`, and an unpublished or
+  missing pick falls back to the designed no-pick state. Without this, wiring a pick months ahead of
+  publication — exactly what this change does — would point the homepage at a page that isn't there.
+  One query still does both jobs.
+- Import ran through the **MCP SQL path** rather than `pipeline-import.mjs`, which needs a
+  service-role key this session doesn't carry; the insert mirrors the script's shape exactly
+  (`published: false`, no `editorial_introduction`, draft author stub for Leo). `parseFrontmatter`'s
+  docblock already anticipated this route, so staged output is parsed identically either way.
+- **The body was checksummed against the staged file, and the first attempt did not match.** Four
+  non-breaking spaces (U+00A0) that New Advent leaves beside its inline scripture citations did not
+  survive transcription into SQL — same length, same paragraph count, four prose paragraphs
+  differing. The staged file is now normalised to ordinary spaces so file and row agree byte for
+  byte, and the stored form is the better one: Postgres `\s` does not match U+00A0, so a stray NBSP
+  beside a citation is a trap for `backfill-scripture-refs`. Nothing but the md5 would have caught
+  it.
+
+The text stays `published: false` until Keith reviews it at /admin/drafts, and Leo stays a draft
+author until promoted. Until then the panel keeps showing the no-pick state for Christmastide —
+which is the guard above doing its job.
+
+---
+
+## 2026-09-15 — The church year resolves itself
+
+The seasonal panel's season was a hand-edited constant (`CURRENT_SEASON`), and the church-year row
+carried a second hardcoded copy in `app/page.tsx`. Advent would have arrived only when someone
+remembered to edit a file and deploy — and the two could disagree. Both now read one resolver.
+
+- **`lib/liturgical/year.ts`** — `resolveSeason(date)` returns the season, its cycle, and its
+  bounds. Easter is computed (Meeus/Jones/Butcher); Ash Wednesday, Pentecost and Advent Sunday hang
+  off it. No dependencies, no data.
+- **Six seasons, not four.** The old row listed Advent / Lent / Eastertide / Trinitytide, which
+  leaves the Twelve Days and the whole of January with nowhere to sit. Adding Christmastide and
+  Epiphanytide makes the set *tile the year* — every date has exactly one season, which is what
+  lets the panel be driven by the date at all. The fold-the-gaps question is what surfaced this:
+  an honest fold needed the missing seasons to exist first.
+- **Cycles recorded, not used yet.** Each season carries `incarnation` / `paschal` / `ordinary` —
+  the coarser two-movements-plus-the-time-between grouping. It is the hook for later grouping work
+  (seasonal collections, the liturgical wheel), derived in one place so a second definition can't
+  drift in.
+- **Christmas and Epiphany take `--season-feast`.** Both are principal feasts, and liturgical white
+  cannot be a ground for cream-on-dark text. No new colour token.
+- **The picks stay human.** `SEASON_PICKS` holds one hand-chosen text per season; only Trinitytide
+  is set (Wycliffe, as before). A `null` renders the panel's existing designed no-pick state rather
+  than a gap. This is deliberate: a scan of all 207 published texts found the corpus essentially
+  *unmarked* for season — a strict title scan returns six rows, one of them a false positive
+  ("Excel**lent**") — so season-fit is a curator's judgement, not something a query can derive.
+- **Tests run in CI now.** `npm run test:liturgical` (7 tests) is wired into the lint-and-types
+  workflow. The fixed dates are pinned against published Easter and Advent Sunday dates — a
+  self-consistently wrong computus would sail past a property test — and a tiling property walks
+  every day from 2024 to 2035 checking no gap or overlap at a boundary. Mutation-tested: shifting
+  Advent Sunday by one week fails 3 of the 7.
+
+Why the panel and not a bigger seasonal model: Umami says the panel is the weakest attributed entry
+point on the site — 3 `text-open`s all time against author pages' 50, and none in the last 30 days —
+and the referrer mix (chatgpt.com, google, duckduckgo, bing) shows readers arriving deep on text
+pages rather than at the homepage. So the automatic season is worth having for its own sake (it
+removes a recurring manual edit), while curating four seasons of collections is not yet earned.
 ## 2026-09-15 — Seasonal panel: the author portrait that was there but 0px tall
 
 Keith spotted that John Wycliffe's picture was missing from the Church Year panel on the homepage.

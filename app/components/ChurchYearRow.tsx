@@ -9,18 +9,28 @@
  * The real fix (each season → curated seasonal collection) depends on the
  * seasonal-model decision and is out of scope. This component will be updated
  * once destinations are resolved.
+ *
+ * The active season is no longer hand-set: it comes from `resolveSeason()`
+ * (lib/liturgical/year.ts) via the page, so this row and the seasonal panel
+ * cannot disagree. The six seasons listed here are the ones that tile the
+ * year in that module — the earlier four left January and the Twelve Days
+ * with nowhere to sit.
  */
+
+import type { Season } from '@/lib/liturgical/year'
 
 const SEASONS = [
   { name: 'Advent',        slug: 'advent' },
+  { name: 'Christmastide', slug: 'christmas' },
+  { name: 'Epiphanytide',  slug: 'epiphany' },
   { name: 'Lent',          slug: 'lent' },
   { name: 'Eastertide',    slug: 'eastertide' },
   { name: 'Trinitytide',   slug: 'trinitytide' },
 ]
 
 type Props = {
-  /** Slug of the currently active season */
-  currentSeason: string
+  /** Slug of the currently active season — from resolveSeason(), via the page */
+  currentSeason: Season
 }
 
 export function ChurchYearRow({ currentSeason }: Props) {

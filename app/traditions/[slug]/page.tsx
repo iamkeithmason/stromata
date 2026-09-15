@@ -145,7 +145,7 @@ export default async function TraditionPage({ params }: Props) {
             <ul className="divide-y" style={{ borderColor: 'var(--rule-soft)' }}>
               {texts.map(t => (
                 <li key={t.id}>
-                  <Link
+                  <Link data-umami-event="text-open" data-umami-event-from="tradition-page" data-umami-event-text={t.slug}
                     href={`/texts/${t.slug}`}
                     className="flex items-start justify-between py-4 group"
                   >
