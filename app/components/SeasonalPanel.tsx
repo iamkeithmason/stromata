@@ -39,6 +39,14 @@ type SeasonPick = {
   imageUrl?: string | null
 }
 
+/** The author columns the arch needs — portrait plus its stored framing. */
+type AuthorPortrait = {
+  image_url: string | null
+  image_focus_x: number | null
+  image_focus_y: number | null
+  image_zoom: number | null
+}
+
 type SeasonConfig = {
   name: string
   subtitle: string
@@ -150,18 +158,26 @@ export async function SeasonalPanel({ season = resolveSeason().season }: Props =
 
   // Portrait for the arch. A config `imageUrl` wins (manual override); otherwise
   // resolve the pick text's author from the DB and use their stored portrait,
-  // falling back to the author initial when there is none.
+  // falling back to the author initial when there is none. The stored framing
+  // (focal point + zoom, migration 017) comes along with it, so the panel crops
+  // a portrait the same way the author band does.
   let pickImageUrl: string | null = s.pick?.imageUrl ?? null
+  let pickFocusX: number | null = null
+  let pickFocusY: number | null = null
+  let pickZoom: number | null = null
   if (s.pick && !pickImageUrl && pickSlug) {
     const supabase = createServerClient()
     const { data } = await supabase
       .from('texts')
-      .select('author:authors(image_url)')
+      .select('author:authors(image_url, image_focus_x, image_focus_y, image_zoom)')
       .eq('slug', pickSlug)
       .eq('published', true)
       .single()
-    const author = data?.author as unknown as { image_url: string | null } | null
+    const author = data?.author as unknown as AuthorPortrait | null
     pickImageUrl = author?.image_url ?? null
+    pickFocusX = author?.image_focus_x ?? null
+    pickFocusY = author?.image_focus_y ?? null
+    pickZoom = author?.image_zoom ?? null
   }
 
   const panelHref = s.pick ? s.pick.href : '/texts'
@@ -309,21 +325,28 @@ export async function SeasonalPanel({ season = resolveSeason().season }: Props =
               </div>
             </div>
 
-            {/* ── Right: arch emblem (visual only — see wrapping Link above) ── */}
+            {/* ── Right: arch emblem (visual only — see wrapping Link above) ──
+                The ratio box holds the arch and nothing else, with the caption
+                as a sibling below it — the same shape FeaturedAuthors uses.
+                Putting the caption inside the box made it overflow, and the
+                extra wrapper it needed collapsed the portrait variant to zero
+                height (see LancetArch's note). */}
             <div
               className="shrink-0 mx-auto sm:mx-0"
-              style={{
-                width: hasNoPick ? 'clamp(90px, 14vw, 130px)' : 'clamp(110px, 18vw, 150px)',
-                aspectRatio: '200 / 380',
-              }}
+              style={{ width: hasNoPick ? 'clamp(90px, 14vw, 130px)' : 'clamp(110px, 18vw, 150px)' }}
             >
               {s.pick ? (
-                <div className="opacity-90">
-                  <LancetArch
-                    initial={s.pick.author.charAt(0)}
-                    label={`${s.pick.title} by ${s.pick.author}`}
-                    imageUrl={pickImageUrl}
-                  />
+                <>
+                  <div className="opacity-90" style={{ aspectRatio: '200 / 380' }}>
+                    <LancetArch
+                      initial={s.pick.author.charAt(0)}
+                      label={`${s.pick.title} by ${s.pick.author}`}
+                      imageUrl={pickImageUrl}
+                      focusX={pickFocusX}
+                      focusY={pickFocusY}
+                      zoom={pickZoom}
+                    />
+                  </div>
                   <div className="mt-2 text-center">
                     <p style={{ fontFamily: 'var(--serif)', fontStyle: 'italic', fontSize: 'var(--text-sm)', color: R.title, lineHeight: 1.3 }}>
                       {s.pick.title}
@@ -332,10 +355,10 @@ export async function SeasonalPanel({ season = resolveSeason().season }: Props =
                       {s.pick.author}
                     </p>
                   </div>
-                </div>
+                </>
               ) : (
                 /* No pick — § emblem, deliberate and present */
-                <div style={{ opacity: 0.72 }}>
+                <div style={{ opacity: 0.72, aspectRatio: '200 / 380' }}>
                   <LancetArch initial="§" label="Seasonal emblem" />
                 </div>
               )}
