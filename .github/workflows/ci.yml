@@ -40,3 +40,9 @@ jobs:
 
       - name: Typecheck
         run: npx tsc --noEmit
+
+      # Pure unit suites — no credentials, no network. Kept to the suites that
+      # can run secret-free, so this gate stays fast and stays honest: a test
+      # that never runs in CI is documentation, not a contract.
+      - name: Unit tests (liturgical year)
+        run: npm run test:liturgical
