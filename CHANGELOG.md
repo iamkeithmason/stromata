@@ -39,6 +39,33 @@ needs a browser with network access and a running app against real data, neither
 session has. What has been verified is structural: every navigational link carries event, `from` and
 a slug identifier on the same element, and `tsc` and `lint` are clean. The beacon check is Keith's,
 with the console snippet in CLAUDE.md, and the first digest after merge is the real confirmation.
+## 2026-09-15 — Christmastide has a pick, and a pick can no longer point at nothing
+
+`SEASON_PICKS.christmas` was `null` and the corpus had no Nativity text at all, so the season would
+have arrived in December with the panel showing its no-pick state. Leo the Great's *Sermon 21 (On
+the Feast of the Nativity)* is now imported as a draft and wired as the pick. The import itself is
+recorded in `scripts/ingestion/run-log/2026-09-15.md`, not here.
+
+- **A pick is now verified live before it is shown.** The panel already queried the pick's text for
+  the author portrait; that query now also confirms the text is `published`, and an unpublished or
+  missing pick falls back to the designed no-pick state. Without this, wiring a pick months ahead of
+  publication — exactly what this change does — would point the homepage at a page that isn't there.
+  One query still does both jobs.
+- Import ran through the **MCP SQL path** rather than `pipeline-import.mjs`, which needs a
+  service-role key this session doesn't carry; the insert mirrors the script's shape exactly
+  (`published: false`, no `editorial_introduction`, draft author stub for Leo). `parseFrontmatter`'s
+  docblock already anticipated this route, so staged output is parsed identically either way.
+- **The body was checksummed against the staged file, and the first attempt did not match.** Four
+  non-breaking spaces (U+00A0) that New Advent leaves beside its inline scripture citations did not
+  survive transcription into SQL — same length, same paragraph count, four prose paragraphs
+  differing. The staged file is now normalised to ordinary spaces so file and row agree byte for
+  byte, and the stored form is the better one: Postgres `\s` does not match U+00A0, so a stray NBSP
+  beside a citation is a trap for `backfill-scripture-refs`. Nothing but the md5 would have caught
+  it.
+
+The text stays `published: false` until Keith reviews it at /admin/drafts, and Leo stays a draft
+author until promoted. Until then the panel keeps showing the no-pick state for Christmastide —
+which is the guard above doing its job.
 
 ---
 

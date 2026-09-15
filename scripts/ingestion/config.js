@@ -1,17 +1,17 @@
 export default {
   collection: {
-    name: "Letters 10.96–97 (to Trajan, on the Christians)",
-    slug: "pliny-letters-on-christians",
-    author: "Pliny the Younger",
+    name: "Sermon 21 (On the Feast of the Nativity)",
+    slug: "sermon-21-nativity-leo",
+    author: "Leo the Great",
     description: "",
   },
-  urls: ["https://faculty.georgetown.edu/jod/texts/pliny.html"],
-  source: "generic",
+  urls: ["https://www.newadvent.org/fathers/360321.htm"],
+  source: "newadvent",
   knownFields: {
-    genre: "Letter",
-    sourceAttribution: "Melmoth/Bosanquet translation (revised), via Georgetown University's Forum Romanum text archive.",
-    provenanceNotes: "Text sourced from faculty.georgetown.edu/jod/texts/pliny.html. Accessed September 2026.",
-    translationNotes: "Melmoth/Bosanquet 19th-century translation (revised); public domain. Pliny the Younger d. c. 113.",
+    genre: "Sermon",
+    sourceAttribution: "Translated by Charles Lett Feltoe (NPNF Series II, Vol. XII).",
+    provenanceNotes: "Text sourced from New Advent. Accessed September 2026.",
+    translationNotes: "Charles Lett Feltoe (d. 1928). NPNF Series II, Vol. XII, published 1895 — public domain by publication date.",
     copyrightSafe: true,
   },
 };
