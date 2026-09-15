@@ -7,6 +7,40 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-09-15 — One glob replaces nine chained test scripts
+
+Adding `lib/authors/` earlier today meant adding a `test:authors` script, purely
+so the suite would run. The tests-in-CI check made that friction **visible**
+rather than silent — it failed the build and named the file — but the friction
+itself was still there, once per new test directory, forever.
+
+- **`npm test` is now one command**:
+  `tsx --test "lib/**/*.test.ts" "scripts/**/*.test.ts" "scripts/**/*.test.mjs"`.
+  Same 221 assertions as the nine-script chain it replaces.
+- **The quoting is load-bearing.** Node's test runner expands `**` itself;
+  unquoted, the shell expands it *without* globstar and silently misses nested
+  files — the same class of quiet gap this check exists to catch. `tsx --test
+  lib/` is not an alternative: tsx treats a bare directory as a module import
+  (`ERR_UNSUPPORTED_DIR_IMPORT`), not a discovery root.
+- **Six scripts removed** (`test:analytics`, `test:scripts`, `test:authors`,
+  `test:scripture`, `test:liturgical`, `test:pipeline`) — they existed only to be
+  chained. **`test:scout`, `test:sourcer` and `test:research` stay**: `scout.yml`
+  and `sourcer.yml` invoke them by name, and deleting them would have broken CI.
+- **`check-tests-in-ci.mjs` now strips shell quotes** from `--test` arguments.
+  It caught this itself: on the first attempt it reported all nine `lib/` and
+  `scripts/` files as ungated, because `"lib/**/*.test.ts"` with the quotes
+  attached matches nothing. Refusing to certify coverage it cannot parse is the
+  correct behaviour, and is why the fix landed with the change rather than after.
+- **Mutation-tested four ways**: a brand-new `lib/brandnew/` directory needs no
+  new script and its test actually runs (222 assertions, up from 221); a test
+  file outside the globbed trees is still flagged by name; narrowing the glob
+  flags 9 files; the repaired control passes.
+
+The check is doing what it was built for — it made a paper cut visible, and then
+refused to let the fix for that paper cut ship unverified.
+
+---
+
 ## 2026-09-15 — Editing an author now publishes; it used to wait up to an hour
 
 Keith reframed roughly fifteen author portraits and reported they were not

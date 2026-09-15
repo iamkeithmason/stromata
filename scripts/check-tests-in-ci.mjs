@@ -82,10 +82,13 @@ function globsFor(name, seen = new Set()) {
     out.push(...globsFor(m[1], seen))
   }
   // Everything after a `--test` flag, up to the next flag or shell separator.
+  // Arguments are commonly QUOTED, because Node's test runner expands `**`
+  // itself and the shell would otherwise expand it without globstar and quietly
+  // miss nested files. The quotes are shell syntax, not part of the pattern.
   for (const m of body.matchAll(/--test\s+([^&|;]+)/g)) {
     for (const tok of m[1].trim().split(/\s+/)) {
       if (tok.startsWith('-')) continue
-      out.push(tok)
+      out.push(tok.replace(/^['"]|['"]$/g, ''))
     }
   }
   return out
