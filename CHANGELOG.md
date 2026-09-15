@@ -37,6 +37,15 @@ all along. It rendered at **zero height**, so the arch simply wasn't there, leav
   can actually fail: with the `aspect-ratio` removed the two portrait cells measure 0.0px while the
   initial cells stay at 190px. A gallery entry is the cheapest check we have for a fault that code
   review cannot see.
+- **Write-up + research bank**: [Debug from the artefact inward: the portrait that was there all
+  along](https://app.notion.com/p/3dcd9194805d81ffa57bd31f3e844ea4) under *The Stromata: Growth
+  Tracker*. Six Findings rows captured, each linked as Evidence to an existing Adopted convention
+  (hypothesis-until-verified ×2, mutation-test, green-signal/invariants-to-checks, hand-copy
+  identity, surface-specific probing). **No new convention proposed** — all six come from this one
+  project, and the bar is two or more findings from different projects.
+- **Follow-up queued**: Feature Backlog card *Preview author portraits in the LancetArch in admin*
+  (Agent-ready, ICE 360) — the admin framing preview is a rounded rectangle, so it shows position
+  and zoom faithfully and the arch crop not at all.
 - **Verified in a browser, not by reading the JSX**: measured the arch box in headless Chromium
   (0.0px before, 285px after, matching the initial variant's 285px), then re-rendered the *live*
   panel markup with the real stylesheet and portrait — before: no arch at all; after: Wycliffe in
