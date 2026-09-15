@@ -210,6 +210,7 @@ export default function NewAuthorForm() {
       {/* Portrait */}
       <AuthorImageField
         slug={slug}
+        name={name}
         value={{ imageUrl, imageSource, ...framing }}
         candidateUrl={wikiImageUrl}
         onChange={v => {
