@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createServerClient } from '@/lib/supabase/server'
+import { revalidateAuthor } from '@/lib/authors/revalidate'
 
 type Params = { params: Promise<{ id: string }> }
 
@@ -23,5 +24,8 @@ export async function PATCH(request: NextRequest, { params }: Params) {
     .update({ era_id })
     .eq('id', id)
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+
+  await revalidateAuthor(supabase, id)
+
   return NextResponse.json({ ok: true })
 }

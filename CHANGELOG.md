@@ -7,6 +7,46 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-09-15 — Editing an author now publishes; it used to wait up to an hour
+
+Keith reframed roughly fifteen author portraits and reported they were not
+propagating. They were: the framing was stored correctly, `LancetArch` applied
+it correctly, and the live HTML already carried
+`object-position:31.5015% 0%; transform:scale(2.3)` for Wycliffe. **The page he
+was looking at was a render from before the edit.**
+
+The content routes are ISR (`export const revalidate = 3600`) and **nothing
+invalidated them when an author changed**. So every edit was invisible for up to
+an hour, with no signal distinguishing "not saved" from "not yet published" —
+which is exactly how correct data came to look like a broken feature.
+
+- **Not a new mechanism, a missing application of an existing one.** The texts
+  routes have called `revalidatePath` on save since they were written, and even
+  revalidate `/authors/{slug}` when a text changes. The author routes never did.
+- **`lib/authors/revalidate.ts`** — one helper, called by all four
+  author-mutating routes (`PATCH`/`POST /api/admin/authors`, `assign-era`,
+  `assign-location`) rather than copied into each. It revalidates `/`,
+  `/authors`, `/authors/{slug}`, and `/texts/{slug}` for every text of theirs —
+  the four surfaces that draw a portrait through `LancetArch`.
+- **A rename clears the old path too.** The `PATCH` route now reads the slug
+  before writing; without that, the page at the previous URL keeps its stale
+  copy.
+- **Best-effort by design.** A revalidation failure cannot fail a save that has
+  already committed — a stale page is a much smaller problem than a save that
+  reports failure after succeeding.
+- **`authorPaths()` is pure and tested** (6 assertions): the surface list, the
+  rename case, de-duplication when the slug did not change, and nullish slugs
+  never becoming `/authors/null`. Splitting it out means the logic is testable
+  without mocking `next/cache` or Supabase.
+
+**The tests-in-CI check earned its keep within the hour.** `lib/authors/` was
+covered by no npm script, so the new test file would have run nowhere —
+precisely the fault the check added earlier today exists to catch. It failed the
+build, named the file, and a `test:authors` script closed it. The gate is now 22
+test files, 221 assertions.
+
+---
+
 ## 2026-09-15 — Seven test files were running nowhere, and no single file said so
 
 `ci.yml` carried a comment saying "a test that never runs in CI is documentation, not a contract"

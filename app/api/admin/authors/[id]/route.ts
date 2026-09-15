@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createServerClient } from '@/lib/supabase/server'
+import { revalidateAuthor } from '@/lib/authors/revalidate'
 
 type Params = { params: Promise<{ id: string }> }
 
@@ -30,6 +31,14 @@ export async function PATCH(request: NextRequest, { params }: Params) {
   }
 
   const supabase = createServerClient()
+
+  // Read before writing: if the slug changed, the page at the OLD path would
+  // otherwise keep serving its cached copy.
+  const { data: before } = await supabase
+    .from('authors')
+    .select('slug')
+    .eq('id', id)
+    .single()
 
   const { data: tradition } = await supabase
     .from('traditions')
@@ -76,5 +85,8 @@ export async function PATCH(request: NextRequest, { params }: Params) {
     .eq('id', id)
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+
+  await revalidateAuthor(supabase, id, [before?.slug as string | undefined])
+
   return NextResponse.json({ ok: true })
 }

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createServerClient } from '@/lib/supabase/server'
+import { revalidateAuthor } from '@/lib/authors/revalidate'
 
 export async function GET() {
   const supabase = createServerClient()
@@ -44,7 +45,7 @@ export async function POST(request: NextRequest) {
     era_id = era?.id ?? null
   }
 
-  const { error } = await supabase.from('authors').insert({
+  const { data: created, error } = await supabase.from('authors').insert({
     name,
     slug: slug || null,
     tradition_id: tradition.id,
@@ -61,8 +62,11 @@ export async function POST(request: NextRequest) {
     image_focus_x: image_focus_x ?? 50,
     image_focus_y: image_focus_y ?? 50,
     image_zoom: image_zoom ?? 1,
-  })
+  }).select('id').single()
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+
+  if (created?.id) await revalidateAuthor(supabase, created.id as string)
+
   return NextResponse.json({ ok: true })
 }
