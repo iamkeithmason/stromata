@@ -19,6 +19,7 @@
     "backfill:scripture": "tsx scripts/backfill-scripture-refs.ts",
     "test:scripture": "tsx --test lib/scripture/*.test.ts",
     "test:scripts": "node --test scripts/*.test.mjs scripts/lib/*.test.mjs",
+    "test:authors": "tsx --test lib/authors/*.test.ts",
     "test:liturgical": "tsx --test lib/liturgical/*.test.ts",
     "test:pipeline": "tsx --test lib/pipeline/*.test.ts",
     "scout": "tsx scripts/scout/scout.ts",
@@ -30,7 +31,7 @@
     "research": "tsx scripts/research/research.ts",
     "test:research": "tsx --test scripts/research/*.test.ts",
     "design:critic": "node scripts/design/critic-loop.mjs",
-    "test": "npm run test:analytics && npm run test:scripts && npm run test:scripture && npm run test:liturgical && npm run test:pipeline && npm run test:scout && npm run test:sourcer && npm run test:research",
+    "test": "npm run test:analytics && npm run test:scripts && npm run test:authors && npm run test:scripture && npm run test:liturgical && npm run test:pipeline && npm run test:scout && npm run test:sourcer && npm run test:research",
     "check:tests-in-ci": "node scripts/check-tests-in-ci.mjs"
   },
   "dependencies": {
