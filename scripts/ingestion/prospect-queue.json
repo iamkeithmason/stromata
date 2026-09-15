@@ -6134,6 +6134,33 @@
       "stage_3_themes": [],
       "rejection_reason": "",
       "notes": "Dale's major 1875 treatise on atonement theology, representing his orthodox Congregationalist theology; already have one other Dale work in the queue ('the-laws-of-christ-for-common-life-dale', pending) so this would be a second Dale text."
+    },
+    {
+      "id": "sermon-21-nativity-leo",
+      "status": "imported",
+      "added": "2026-09-15",
+      "author": "Leo the Great",
+      "death_year": 461,
+      "tradition": "patristic",
+      "era": "nicene-post-nicene",
+      "title": "Sermon 21 (On the Feast of the Nativity)",
+      "genre": "Sermon",
+      "source_type": "newadvent",
+      "source_url": "https://www.newadvent.org/fathers/360321.htm",
+      "collection_slug": "sermon-21-nativity-leo",
+      "translation_copyright_clear": true,
+      "translator": "Charles Lett Feltoe",
+      "translator_death_year": 1928,
+      "stage_1_notes": "Death year 461. Translation by Feltoe, NPNF Series II Vol. XII, published 1895 \u2014 public domain by publication date (pre-1929), independent of the translator's 1928 death. Source URL returned 200 (verified 2026-09-15).",
+      "stage_2_output": "scripts/ingestion/output/sermon-21-nativity-leo/",
+      "stage_3_themes": [
+        "humility",
+        "christology",
+        "trinity",
+        "salvation"
+      ],
+      "rejection_reason": "",
+      "notes": "Prioritised out of order: the seasonal panel's Christmastide pick was null and the corpus carried no Nativity text at all. Imported via the MCP SQL path rather than pipeline-import.mjs \u2014 this session has no SUPABASE_SERVICE_ROLE_KEY \u2014 following the same insert shape (published:false, no editorial_introduction, draft author stub). Body verified byte-identical to the staged file by md5 (f6a575be721b95a1661fb60f75ad0614)."
     }
   ]
 }
