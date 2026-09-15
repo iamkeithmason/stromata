@@ -41,14 +41,14 @@ const clamp = (n: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, n
 
 export function AuthorImageField({
   slug,
-  name,
+  initial: initialProp,
   value,
   candidateUrl,
   onChange,
 }: {
   slug: string
-  /** Author's display name — only used for the placeholder arch's initial. */
-  name?: string
+  /** Letter for the placeholder arch, as every other LancetArch caller passes it. */
+  initial?: string
   value: AuthorImageValue
   /** Portrait URL suggested by the last Wikipedia lookup, or null. */
   candidateUrl: string | null
@@ -126,9 +126,9 @@ export function AuthorImageField({
   }
 
   const position = `${value.focusX}% ${value.focusY}%`
-  // Matches the front end's own fallback (`author.name.charAt(0)`), so the
-  // placeholder arch shows the letter the site would really draw.
-  const initial = ((name || '').trim().charAt(0) || slug.charAt(0) || '?').toUpperCase()
+  // The parent passes the author's own letter; the slug is the fallback while a
+  // new author is still unnamed, so the placeholder arch is never blank.
+  const initial = ((initialProp || '').trim().charAt(0) || slug.charAt(0) || '?').toUpperCase()
 
   return (
     <div className="pt-2 border-t border-stone-200">

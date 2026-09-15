@@ -33,7 +33,8 @@ it.
   the two states that arch doesn't cover: a Wikipedia candidate is previewed in the arch at the
   framing it would import with — so the crop is visible **before** the decision to import — and the
   empty state draws the initial in the arch, which is what the site would really show. The forms
-  now pass `name` through so that initial is the author's own.
+  now pass an `initial` through — the same shape every other `LancetArch` caller uses — so that
+  letter is the author's own, falling back to the slug while a new author is still unnamed.
 - **No change to `LancetArch`**, and none to how framing is stored or applied: `image_focus_x/y`
   and `image_zoom` (migration 017) are untouched, the stored file is still never re-cut, and every
   existing caller renders identically. The layering is built in the admin field, so no new
