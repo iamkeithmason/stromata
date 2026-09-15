@@ -7,39 +7,47 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
-## 2026-09-15 — CI ran one of seven test suites while claiming it ran them all
+## 2026-09-15 — Seven test files were running nowhere, and no single file said so
 
 `ci.yml` carried a comment saying "a test that never runs in CI is documentation, not a contract"
-— directly above a step that ran exactly one suite. The repo has **21 test files**; CI invoked
-**one** of them. Nothing was broken, and nothing would have told us: a green badge is evidence
-about the tests CI ran, not about the ones it never called.
+directly above a step that ran one of the repo's eight suites. But `ci.yml` is not the gate:
+`scout.yml` and `sourcer.yml` also trigger on `pull_request` and run `test:scout`, `test:sourcer`
+and `test:research`. **The PR gate is the union of three workflows, and no one file states it** —
+which is exactly why the gap survived.
 
-- **The gap, measured.** All seven `test:*` scripts pass secret-free (215 tests, 0 failures), so
-  there was never a credentials reason for the narrow gate. Four test files were reachable from no
-  npm script at all, and **`test:scripture` named a single file rather than a glob**, so
-  `lib/scripture/verses.test.ts` (7 tests) had never run under any script since it was written.
-  That one is the whole problem in miniature: invisible in `package.json`, invisible in `ci.yml`,
-  visible only when something compares the two.
-- **Fixed, not just reported.** `test:scripture` now globs; `test:scripts` picks up the orphaned
-  `scripts/*.test.mjs`; `npm test` chains all eight suites; CI runs `npm test`. **CI goes from 7
-  passing tests to 215.**
-- **`scripts/check-tests-in-ci.mjs` keeps it true.** It fails if any `*.test.*` file in the repo is
-  unreachable from the npm scripts `ci.yml` actually invokes. Both sides are **derived, never
-  restated**: the found set globs the working tree, the covered set is resolved by reading `ci.yml`
-  for the scripts it runs and `package.json` for what those expand to, recursively through `&&`
-  chains. Adding a suite to CI needs no edit to the check; removing one is caught. It carries an
-  `EXCLUDED` ratchet — currently empty, may shrink, never grow — and flags stale entries in it.
-- **Mutation-tested both ways**, per the standing convention that a check is only worth its place
-  if it can fail: a new orphaned test file is flagged by name; narrowing `test:scripture` back to a
-  single filename is flagged, naming `verses.test.ts`; the repaired control passes. Not just
-  "it went green."
+- **Measured, not guessed.** Of 21 test files, 14 were gated and **7 were not**: `lib/pipeline`,
+  both `lib/scripture` files, `scripts/analytics`, `scripts/lib/note-prompt`,
+  `scripts/normalise-markdown`, `scripts/scannos` — **96 tests running nowhere.** All of them pass
+  secret-free, so there was never a credentials reason. **`test:scripture` named a single file
+  rather than a glob**, so `lib/scripture/verses.test.ts` had never run under any script since it
+  was written. That one is the whole problem in miniature: invisible in `package.json`, invisible
+  in any workflow, visible only when something compares them.
+- **Fixed.** `test:scripture` globs; new `test:scripts` picks up the orphaned `scripts/*.test.mjs`;
+  `npm test` chains all eight suites and `ci.yml` runs it. **The gate goes from 119 tests to 215.**
+  `ci.yml` now covers the scout/sourcer suites too — deliberate overlap, so coverage survives
+  another workflow dropping its PR trigger.
+- **`scripts/check-tests-in-ci.mjs` keeps it true.** It fails if any `*.test.*` file is unreachable
+  from the npm scripts run by **every workflow that triggers on `pull_request`**. Both sides are
+  derived, never restated: the found set globs the tree; the covered set is resolved by reading each
+  workflow's `on:` block for a `pull_request` trigger, then `package.json` for what its scripts
+  expand to, recursively through `&&` chains. Adding a suite needs no edit here; removing one, or a
+  workflow quietly ceasing to gate PRs, is caught. `EXCLUDED` ratchet is empty and may only shrink.
+- **Mutation-tested four ways**, since a check that cannot fail proves nothing: a new orphaned test
+  file is flagged by name; narrowing `test:scripture` back to one filename is flagged, naming
+  `verses.test.ts`; removing `pull_request` from `sourcer.yml` flags exactly its 10 files and drops
+  it from the reported gating set; the repaired control passes.
+
+**The first cut of this got it wrong in the way the check exists to prevent.** It read `ci.yml`
+alone, concluded "CI runs 1 of 21 test files", and would have claimed a jump from 7 tests to 215.
+Thirteen of those files were already gated by the other two workflows. A conclusion about *the
+gate* drawn from *one workflow file* is the same error as a conclusion about *the tests* drawn from
+*a green badge* — which is the convention this check enforces, caught mid-session by noticing
+`scout` and `sourcer` running on the PR.
 
 This is the **check form** of the research-bank convention [a green or quiet signal is evidence
 only for the claim it tests](https://app.notion.com/p/3dbd9194805d81e69a41c2a10215f693), adopted
-15 Sep on evidence from four projects and until now enforced only as prose. Prose did not hold: the
-convention was adopted the same morning a session in this repo broke it, citing green runs on other
-branches as evidence that its own pipeline had recovered. Moving it rightwards is the response to
-that, and the convention's own note proposed this mechanism.
+15 Sep on evidence from four projects and until now enforced only as prose. Prose did not hold: it
+was broken the same morning it was adopted, and again an hour later by this very change.
 
 ---
 
