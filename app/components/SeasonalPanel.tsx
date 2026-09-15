@@ -110,7 +110,7 @@ const SEASON_COPY: Record<Season, SeasonConfig> = {
 // ────────────────────────────────────────────────────────────────────────────
 const SEASON_PICKS: Record<Season, SeasonPick | null> = {
   advent: null,
-  christmas: null,
+  christmas: { title: 'Sermon 21 (On the Feast of the Nativity)', author: 'Leo the Great', href: '/texts/sermon-21-on-the-feast-of-the-nativity' },
   epiphany: null,
   lent: null,
   eastertide: null,
@@ -149,36 +149,47 @@ type Props = {
 }
 
 export async function SeasonalPanel({ season = resolveSeason().season }: Props = {}) {
-  const s = { ...SEASON_COPY[season], pick: SEASON_PICKS[season] }
-  const hasNoPick = s.pick === null
+  const copy = SEASON_COPY[season]
+  const configuredPick = SEASON_PICKS[season]
 
   // Slug for analytics — derived from the href rather than hardcoded, so it
   // stays correct if a pick's href ever changes.
-  const pickSlug = s.pick ? s.pick.href.split('/').filter(Boolean).pop() : undefined
+  const pickSlug = configuredPick ? configuredPick.href.split('/').filter(Boolean).pop() : undefined
 
-  // Portrait for the arch. A config `imageUrl` wins (manual override); otherwise
-  // resolve the pick text's author from the DB and use their stored portrait,
-  // falling back to the author initial when there is none. The stored framing
-  // (focal point + zoom, migration 017) comes along with it, so the panel crops
-  // a portrait the same way the author band does.
-  let pickImageUrl: string | null = s.pick?.imageUrl ?? null
+  // One query does two jobs: it confirms the pick's text is actually published,
+  // and it brings back the author's portrait and stored framing (focal point +
+  // zoom, migration 017) so the panel crops the same way the author band does.
+  //
+  // The published check matters because a pick can be set for a season months
+  // ahead of the text leaving /admin/drafts — as this Christmastide pick was.
+  // Rather than link the homepage at a page that isn't there, an unpublished or
+  // missing pick falls back to the panel's designed no-pick state.
+  let pickImageUrl: string | null = configuredPick?.imageUrl ?? null
   let pickFocusX: number | null = null
   let pickFocusY: number | null = null
   let pickZoom: number | null = null
-  if (s.pick && !pickImageUrl && pickSlug) {
+  let pickIsLive = false
+
+  if (configuredPick && pickSlug) {
     const supabase = createServerClient()
     const { data } = await supabase
       .from('texts')
-      .select('author:authors(image_url, image_focus_x, image_focus_y, image_zoom)')
+      .select('id, author:authors(image_url, image_focus_x, image_focus_y, image_zoom)')
       .eq('slug', pickSlug)
       .eq('published', true)
-      .single()
-    const author = data?.author as unknown as AuthorPortrait | null
-    pickImageUrl = author?.image_url ?? null
-    pickFocusX = author?.image_focus_x ?? null
-    pickFocusY = author?.image_focus_y ?? null
-    pickZoom = author?.image_zoom ?? null
+      .maybeSingle()
+    pickIsLive = Boolean(data?.id)
+    if (pickIsLive) {
+      const author = data?.author as unknown as AuthorPortrait | null
+      pickImageUrl = pickImageUrl ?? author?.image_url ?? null
+      pickFocusX = author?.image_focus_x ?? null
+      pickFocusY = author?.image_focus_y ?? null
+      pickZoom = author?.image_zoom ?? null
+    }
   }
+
+  const s = { ...copy, pick: pickIsLive ? configuredPick : null }
+  const hasNoPick = s.pick === null
 
   const panelHref = s.pick ? s.pick.href : '/texts'
   const panelUmamiProps = s.pick
