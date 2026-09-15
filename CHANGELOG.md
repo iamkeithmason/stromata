@@ -7,6 +7,41 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-09-15 — Twenty navigation links that were firing nothing at all
+
+Chasing why only 64 of 151 `text-open` events carried a `from` turned up something larger than the
+missing property: **20 of the 38 links that open a text, collection or author fired no event
+whatsoever.** The `/texts` index, search results, and every theme, era, tradition, scripture,
+collection and location page opened texts silently. All 38 are now instrumented, and all 38 carry
+`from`.
+
+- **Newly measured surfaces**: `texts-index`, `authors-index`, `search-results`, `theme-page`,
+  `era-page`, `tradition-page`, `scripture-page`, `collection-page`, plus author links in the
+  reader byline and `AuthorAside` (`text-reader`) and the featured-lead byline (`featured-lead`).
+- **`collection-nav` now carries `from` too.** The prev/next/end links in a collection reader were
+  firing with `direction` and `collection` but no `from`, against the rule that makes it mandatory
+  on every navigational event.
+- **The `from` vocabulary in CLAUDE.md and AGENTS.md was already stale** before this change —
+  `related-figures` and `text-page` were live in the code and absent from the documented list. Both
+  files now carry the full grouped vocabulary and say plainly that the list *is* the vocabulary.
+
+**A data-continuity note, in the spirit of the 2026-08-06 one.** This change will raise `text-open`
+volume substantially and shift every `from` share, because surfaces that were invisible start
+reporting. Counts before and after 2026-09-15 are not comparable, and — more pointedly — **any
+earlier conclusion about which surface "carries the reading" was drawn from a partially instrumented
+field.** The author-page share that motivated the author-page backlog card was measured against
+instrumented surfaces only; search and the texts index were not among them. The card has been
+annotated rather than withdrawn: its claim needs re-testing once a fortnight of complete data exists.
+
+**What is not verified.** The house rule is that an analytics change is done when the outgoing
+request has been *observed* carrying the payload — not when the attribute is in the JSX. That check
+needs a browser with network access and a running app against real data, neither of which this
+session has. What has been verified is structural: every navigational link carries event, `from` and
+a slug identifier on the same element, and `tsc` and `lint` are clean. The beacon check is Keith's,
+with the console snippet in CLAUDE.md, and the first digest after merge is the real confirmation.
+
+---
+
 ## 2026-09-15 — The church year resolves itself
 
 The seasonal panel's season was a hand-edited constant (`CURRENT_SEASON`), and the church-year row
