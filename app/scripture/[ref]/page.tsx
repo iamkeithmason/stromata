@@ -174,7 +174,7 @@ export default async function ScriptureLookupPage({ params }: Props) {
                 const t = entry.text
                 return (
                   <li key={t.id}>
-                    <Link href={`/texts/${t.slug}`} className="flex items-start justify-between py-4 group">
+                    <Link data-umami-event="text-open" data-umami-event-from="scripture-page" data-umami-event-text={t.slug} href={`/texts/${t.slug}`} className="flex items-start justify-between py-4 group">
                       <div>
                         <div>
                           <span className="font-serif group-hover:opacity-70 transition-opacity" style={{ color: '#1b1b1b' }}>
@@ -200,7 +200,7 @@ export default async function ScriptureLookupPage({ params }: Props) {
               const author = entry.matched[0]?.author
               return (
                 <li key={entry.id} className="py-4">
-                  <Link href={`/collections/${entry.slug}`} className="flex items-start justify-between group">
+                  <Link data-umami-event="collection-open" data-umami-event-from="scripture-page" data-umami-event-collection={entry.slug} href={`/collections/${entry.slug}`} className="flex items-start justify-between group">
                     <div>
                       <span className="font-serif group-hover:opacity-70 transition-opacity" style={{ color: '#1b1b1b' }}>
                         {entry.title}
@@ -219,7 +219,7 @@ export default async function ScriptureLookupPage({ params }: Props) {
                   <div className="flex flex-wrap gap-x-1.5 gap-y-1 mt-2">
                     {entry.matched.map((m, i) => (
                       <span key={m.id} className="text-xs" style={{ color: '#9c9589' }}>
-                        <Link href={`/texts/${m.slug}`} className="hover:opacity-70 transition-opacity" style={{ textDecoration: 'underline', textDecorationColor: '#d6d0c8' }}>
+                        <Link data-umami-event="text-open" data-umami-event-from="scripture-page" data-umami-event-text={m.slug} href={`/texts/${m.slug}`} className="hover:opacity-70 transition-opacity" style={{ textDecoration: 'underline', textDecorationColor: '#d6d0c8' }}>
                           {m.title}
                         </Link>
                         {i < entry.matched.length - 1 ? ' ·' : ''}

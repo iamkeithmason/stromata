@@ -189,7 +189,7 @@ export function AuthorsBrowser({
                   </div>
                 </div>
                 {/* Stretched link covers the row but sits below the tradition link */}
-                <Link
+                <Link data-umami-event="author-open" data-umami-event-from="authors-index" data-umami-event-author={a.name}
                   href={`/authors/${a.slug}`}
                   className="absolute inset-0"
                   style={{ zIndex: 1 }}

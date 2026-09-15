@@ -80,7 +80,7 @@ export function AuthorAside({ name, slug, birthYear, deathYear, locationName, er
       )}
 
       {slug && (
-        <Link
+        <Link data-umami-event="author-open" data-umami-event-from="text-reader" data-umami-event-author={name}
           href={`/authors/${slug}`}
           className="kicker inline-block hover:opacity-70 transition-opacity"
           style={{ marginTop: '0.85rem', textDecoration: 'none' }}

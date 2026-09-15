@@ -146,7 +146,7 @@ export default async function CountryPage({ params }: Props) {
                     <ul className="divide-y border-l-2 pl-4" style={{ borderColor: '#e5e0d8' }}>
                       {authorTexts.map(t => (
                         <li key={t.id} className="py-2">
-                          <Link href={`/texts/${t.slug}`} className="flex items-baseline justify-between group">
+                          <Link data-umami-event="text-open" data-umami-event-from="location-page" data-umami-event-text={t.slug} href={`/texts/${t.slug}`} className="flex items-baseline justify-between group">
                             <span className="font-serif text-sm group-hover:opacity-70 transition-opacity" style={{ color: '#1b1b1b' }}>
                               {t.title}
                             </span>

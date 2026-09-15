@@ -211,7 +211,7 @@ export default async function TextPage({ params }: Props) {
         return (
           <>
             {author.slug
-              ? <Link href={`/authors/${author.slug}`} className="hover:opacity-70 transition-opacity">{author.name}</Link>
+              ? <Link data-umami-event="author-open" data-umami-event-from="text-reader" data-umami-event-author={author.name} href={`/authors/${author.slug}`} className="hover:opacity-70 transition-opacity">{author.name}</Link>
               : <span>{author.name}</span>
             }
             {author.tradition?.name && (
@@ -425,7 +425,7 @@ export default async function TextPage({ params }: Props) {
                   <Link
                     href={`/texts/${prevText.slug}`}
                     className="group flex flex-col max-w-[45%]"
-                    data-umami-event="collection-nav"
+                    data-umami-event="collection-nav" data-umami-event-from="text-reader"
                     data-umami-event-direction="prev"
                     data-umami-event-collection={collection?.title}
                   >
@@ -446,7 +446,7 @@ export default async function TextPage({ params }: Props) {
                   <Link
                     href={`/texts/${nextText.slug}`}
                     className="group flex flex-col text-right max-w-[45%]"
-                    data-umami-event="collection-nav"
+                    data-umami-event="collection-nav" data-umami-event-from="text-reader"
                     data-umami-event-direction="next"
                     data-umami-event-collection={collection?.title}
                   >
@@ -466,7 +466,7 @@ export default async function TextPage({ params }: Props) {
                   <Link
                     href={`/collections/${collection.slug}`}
                     className="group flex flex-col text-right max-w-[45%]"
-                    data-umami-event="collection-nav"
+                    data-umami-event="collection-nav" data-umami-event-from="text-reader"
                     data-umami-event-direction="end"
                     data-umami-event-collection={collection.title}
                   >
