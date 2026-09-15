@@ -214,8 +214,20 @@ export async function SeasonalPanel({ season = resolveSeason().season }: Props =
 
   return (
     <section className="content-shell">
-      {/* ── Outer panel: concave-corner plaque shape ── */}
+      {/* ── Outer panel: concave-corner plaque shape ──
+          The hover lift lives HERE, on the same element as the drop-shadow
+          filter, and not on the link inside it. A filtered element is
+          rasterised into its own layer, extended by the shadow's 40px blur;
+          when a *descendant* animates `transform`, WebKit invalidates only
+          part of that layer and leaves artefacts — a flashing outline at the
+          layer bounds, and un-repainted blocks below the panel where the blur
+          overlaps the next section (both seen in Safari, 2026-09-15). With
+          filter and transform on one element the whole layer is composited and
+          simply moved, so there is nothing to partially invalidate.
+          `has-[a:hover]` keeps the trigger area exactly the link — the click
+          target — rather than the 28px plaque padding around it. ── */}
       <div
+        className="transition-transform duration-200 ease-out has-[a:hover]:-translate-y-0.5 has-[a:focus-visible]:-translate-y-0.5"
         style={{
           backgroundImage: concaveBg,
           backgroundSize: '51% 51%',
@@ -229,7 +241,7 @@ export async function SeasonalPanel({ season = resolveSeason().season }: Props =
         <Link
           href={panelHref}
           {...panelUmamiProps}
-          className="block no-underline border border-[color:var(--gold-border)] transition-[border-color,transform,box-shadow] duration-200 ease-out hover:border-[color:var(--gold-border-strong)] hover:-translate-y-0.5 focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--gold)] focus-visible:border-[color:var(--gold-border-strong)]"
+          className="block no-underline border border-[color:var(--gold-border)] transition-[border-color] duration-200 ease-out hover:border-[color:var(--gold-border-strong)] focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--gold)] focus-visible:border-[color:var(--gold-border-strong)]"
           style={{
             padding: '1.75rem 2rem',
             boxShadow: 'var(--shadow-panel)',

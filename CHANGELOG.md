@@ -55,6 +55,38 @@ and whether the reframe box at 132px wide is the right size in the live form.
 
 ---
 
+## 2026-09-15 — Seasonal panel: the hover artefacts in Safari
+
+Keith hovered the panel in Safari and saw two things flicker: a bounding box around the plaque when
+crossing the gold keyline, and a white block above the church-year row below it. Both are the same
+fault.
+
+- **Cause: `filter` and the hover `transform` were on different elements.** The outer plaque div
+  carries `filter: var(--shadow-panel-drop)`, so WebKit rasterises it into its own layer — extended
+  well past the element by the shadow's 40px blur, which reaches over the row beneath. The lift
+  (`hover:-translate-y-0.5`) sat on the `<Link>` *inside* it. A descendant transform invalidates
+  only part of the filtered layer, so the repaint leaves residue: the layer's raster bounds show as
+  an outline, and the region below the panel is left un-repainted — the white block.
+- **Fix: one element owns both.** The lift moved onto the plaque div itself, so the whole composited
+  layer (shadow included) simply translates, with nothing to partially invalidate. It is triggered
+  with `has-[a:hover]` so the hover region stays exactly the link — the click target — rather than
+  the 28px plaque padding around it, and `has-[a:focus-visible]` gives keyboard focus the same lift,
+  which it never had.
+- **A side effect worth having:** the shadow now lifts *with* the panel. Previously the inner keyline
+  box rose while its shadow stayed put, which read as slightly wrong even where it rendered cleanly.
+- The link's transition list dropped from `border-color, transform, box-shadow` to `border-color`
+  alone: the transform no longer lives there, and `box-shadow` never changed on hover in the first
+  place — transitioning it was pointless repaint work.
+
+**Verified** in headless Chromium: the selector matches the plaque, the transform applies to the
+element that carries the filter, no descendant carries a transform any more, and Tailwind compiles
+`has-[a:hover]:-translate-y-0.5` to the same −2px lift as before. **Not verified:** the Safari
+repaint itself — reproducing it needs Safari, which this session does not have. The mechanism is
+textbook WebKit layer invalidation and the fix removes its precondition, but confirmation is Keith
+hovering the live panel.
+
+---
+
 ## 2026-09-15 — Twenty navigation links that were firing nothing at all
 
 Chasing why only 64 of 151 `text-open` events carried a `from` turned up something larger than the
