@@ -31,6 +31,12 @@ all along. It rendered at **zero height**, so the arch simply wasn't there, leav
   ratio box, caption a sibling below it (the caption had been overflowing the box too) — and now
   passes the author's stored framing (`image_focus_x/y`, `image_zoom`, migration 017), which it was
   silently dropping, so the panel crops a portrait the same way the author band does.
+- **Guarded on `/design`**: a "LancetArch — sizing guard (keep)" subsection renders both variants
+  in the two nestings that matter — inside an auto-height wrapper, and with only a width — as
+  pairs, so a collapsed portrait shows up as an empty column next to a drawn initial. Confirmed it
+  can actually fail: with the `aspect-ratio` removed the two portrait cells measure 0.0px while the
+  initial cells stay at 190px. A gallery entry is the cheapest check we have for a fault that code
+  review cannot see.
 - **Verified in a browser, not by reading the JSX**: measured the arch box in headless Chromium
   (0.0px before, 285px after, matching the initial variant's 285px), then re-rendered the *live*
   panel markup with the real stylesheet and portrait — before: no arch at all; after: Wycliffe in

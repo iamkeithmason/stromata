@@ -322,6 +322,53 @@ export default function DesignPage() {
             </div>
           </SubSection>
 
+          {/* ── Regression guard — see CHANGELOG 2026-09-15 ──────────────────
+              Keep this section. It is the cheap check for a bug that code
+              review cannot see: LancetArch's two variants used to size
+              differently, so a portrait could vanish while the initial in the
+              same slot still drew. ─────────────────────────────────────────── */}
+          <SubSection title="LancetArch — sizing guard (keep)">
+            <p className="mb-4 text-sm" style={{ color: 'var(--ink-mute)', maxWidth: '68ch' }}>
+              Every arch below must render, and the two arches in each pair must be the same height.
+              The portrait variant is a <code>div</code> whose children are all absolutely positioned,
+              so it collapsed to 0px in any auto-height parent — while the initial variant, an{' '}
+              <code>svg</code> with an intrinsic ratio, kept drawing and hid the fault until an
+              author first had a photo (the seasonal panel, 2026-09-15). An empty column here, or a
+              pair whose heights disagree, means that regression is back.
+            </p>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 items-start">
+              {/* Pair 1 — ratio box › auto-height wrapper › arch. The nesting
+                  that broke: the wrapper gives the arch no height to inherit. */}
+              {[
+                { imageUrl: DEMO_PORTRAIT, caption: 'wrapped · portrait' },
+                { imageUrl: null,          caption: 'wrapped · initial' },
+              ].map(({ imageUrl, caption }) => (
+                <div key={caption}>
+                  <div style={{ maxWidth: 100, aspectRatio: '200 / 380' }}>
+                    <div>
+                      <LancetArch initial="P" label={`Sizing guard — ${caption}`} imageUrl={imageUrl} />
+                    </div>
+                  </div>
+                  <p className="caption mt-2">{caption}</p>
+                </div>
+              ))}
+
+              {/* Pair 2 — no ratio box at all, only a width. Each variant has to
+                  supply its own 200:380 ratio. */}
+              {[
+                { imageUrl: DEMO_PORTRAIT, caption: 'width only · portrait' },
+                { imageUrl: null,          caption: 'width only · initial' },
+              ].map(({ imageUrl, caption }) => (
+                <div key={caption}>
+                  <div style={{ maxWidth: 100 }}>
+                    <LancetArch initial="P" label={`Sizing guard — ${caption}`} imageUrl={imageUrl} />
+                  </div>
+                  <p className="caption mt-2">{caption}</p>
+                </div>
+              ))}
+            </div>
+          </SubSection>
+
           <SubSection title="Theme chip">
             <div className="flex flex-wrap gap-2">
               {['Prayer', 'Humility', 'Scripture', 'Sacraments', 'Eschatology', 'Conscience'].map(theme => (
