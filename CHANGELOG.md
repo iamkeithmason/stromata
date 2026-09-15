@@ -7,6 +7,42 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-09-15 — CI ran one of seven test suites while claiming it ran them all
+
+`ci.yml` carried a comment saying "a test that never runs in CI is documentation, not a contract"
+— directly above a step that ran exactly one suite. The repo has **21 test files**; CI invoked
+**one** of them. Nothing was broken, and nothing would have told us: a green badge is evidence
+about the tests CI ran, not about the ones it never called.
+
+- **The gap, measured.** All seven `test:*` scripts pass secret-free (215 tests, 0 failures), so
+  there was never a credentials reason for the narrow gate. Four test files were reachable from no
+  npm script at all, and **`test:scripture` named a single file rather than a glob**, so
+  `lib/scripture/verses.test.ts` (7 tests) had never run under any script since it was written.
+  That one is the whole problem in miniature: invisible in `package.json`, invisible in `ci.yml`,
+  visible only when something compares the two.
+- **Fixed, not just reported.** `test:scripture` now globs; `test:scripts` picks up the orphaned
+  `scripts/*.test.mjs`; `npm test` chains all eight suites; CI runs `npm test`. **CI goes from 7
+  passing tests to 215.**
+- **`scripts/check-tests-in-ci.mjs` keeps it true.** It fails if any `*.test.*` file in the repo is
+  unreachable from the npm scripts `ci.yml` actually invokes. Both sides are **derived, never
+  restated**: the found set globs the working tree, the covered set is resolved by reading `ci.yml`
+  for the scripts it runs and `package.json` for what those expand to, recursively through `&&`
+  chains. Adding a suite to CI needs no edit to the check; removing one is caught. It carries an
+  `EXCLUDED` ratchet — currently empty, may shrink, never grow — and flags stale entries in it.
+- **Mutation-tested both ways**, per the standing convention that a check is only worth its place
+  if it can fail: a new orphaned test file is flagged by name; narrowing `test:scripture` back to a
+  single filename is flagged, naming `verses.test.ts`; the repaired control passes. Not just
+  "it went green."
+
+This is the **check form** of the research-bank convention [a green or quiet signal is evidence
+only for the claim it tests](https://app.notion.com/p/3dbd9194805d81e69a41c2a10215f693), adopted
+15 Sep on evidence from four projects and until now enforced only as prose. Prose did not hold: the
+convention was adopted the same morning a session in this repo broke it, citing green runs on other
+branches as evidence that its own pipeline had recovered. Moving it rightwards is the response to
+that, and the convention's own note proposed this mechanism.
+
+---
+
 ## 2026-09-15 — Admin portrait framing now previews in the real lancet arch
 
 The author form let Keith frame a portrait (drag the focal point, zoom) against a rounded
@@ -52,6 +88,15 @@ still renders all four arches at 100 × 190. `tsc --noEmit` and `npm run lint` c
 **What only Keith can confirm:** whether the dimmed ghost reads at the right strength against real
 portraits (0.28 was picked against a synthetic swatch — a very light portrait may want it stronger),
 and whether the reframe box at 132px wide is the right size in the live form.
+
+**Write-up + research bank**: [A stand-in eventually disagrees with the thing it stands
+for](https://app.notion.com/p/3dcd9194805d815dbe04d82dc0c4cc7c) under *The Stromata: Growth
+Tracker*. Five Findings captured, linked as Evidence to the conventions they bear on
+(never-restate-a-measurement, hand-copy identity test, hypothesis-until-verified ×2,
+green-signal-tests-one-claim). **No new convention proposed** — all five come from this project
+alone, and the bar is two or more from different projects. One finding was left deliberately
+unlinked as a candidate seed: *when the distinguishing evidence will arrive on its own within
+minutes, waiting beats publishing a theory*.
 
 ---
 
