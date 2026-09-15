@@ -266,6 +266,7 @@ export default function EditAuthorForm({
       {/* Portrait */}
       <AuthorImageField
         slug={initialSlug}
+        initial={name.charAt(0)}
         value={{ imageUrl, imageSource, ...framing }}
         candidateUrl={wikiImageUrl}
         onChange={v => {

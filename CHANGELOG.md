@@ -7,6 +7,54 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-09-15 — Admin portrait framing now previews in the real lancet arch
+
+The author form let Keith frame a portrait (drag the focal point, zoom) against a rounded
+rectangle. The front end has never drawn a portrait that way: `LancetArch` clips it to a pointed
+Gothic arch that cuts the top corners away entirely. So the framing controls were honest about
+vertical position and zoom and **silent about the crop that actually decides whether the head
+survives** — you found out how a portrait was really cropped after publishing it, not while framing
+it.
+
+- **Both admin previews now render the real `LancetArch`**, fed the live `focusX`/`focusY`/`zoom`
+  from the field's state, so what you frame is literally the component the site ships. The reframe
+  box had been a **hand-copy** of `LancetArch`'s image styling (`object-fit`, `object-position`,
+  `transform: scale()`, `transformOrigin`, and the same clamp bounds) in a rectangle — the exact
+  two-sources-of-truth drift the design notes warn about. That copy is gone.
+- **Context *and* truth, layered.** An arch-only preview shows the real crop but hides what is
+  being cropped away, which makes dragging harder — you cannot see the head you are trying to bring
+  into frame. So the box holds two layers built from identical framing maths: the full rectangle at
+  0.28 opacity (what is lost) with the real arch at full opacity over it (what ships). Because the
+  maths is shared, the ghost *is* the arch's image minus the clip; browser-measured, the two agree
+  on `object-position` and `transform` exactly.
+- **The small "Portrait" thumbnail** was a `w-24 h-32` rectangle — wrong shape *and* wrong ratio
+  (3:4 against the arch's 200:380). It is now dropped once a portrait is stored (the reframe arch
+  below is the preview; a second smaller copy of the same crop is noise) and kept as an arch for
+  the two states that arch doesn't cover: a Wikipedia candidate is previewed in the arch at the
+  framing it would import with — so the crop is visible **before** the decision to import — and the
+  empty state draws the initial in the arch, which is what the site would really show. The forms
+  now pass an `initial` through — the same shape every other `LancetArch` caller uses — so that
+  letter is the author's own, falling back to the slug while a new author is still unnamed.
+- **No change to `LancetArch`**, and none to how framing is stored or applied: `image_focus_x/y`
+  and `image_zoom` (migration 017) are untouched, the stored file is still never re-cut, and every
+  existing caller renders identically. The layering is built in the admin field, so no new
+  component variant was needed.
+
+**Verified by measurement, not by reading the JSX** — the lesson PR #90 paid for. `/admin` needs
+Keith's own login, so the field was rendered behind a throwaway route and driven with real
+Chromium: the arch box measures **132 × 250.8px**, exactly 200:380 (a first pass came back
+130 × 248.8 — a 1px border was eating the content box and distorting the ratio by 0.7%, so the
+border became a `ring`, which has no layout effect); a synthetic 40px drag moves `focusY`
+50 → 65.95 in the correct direction with the mapping unchanged; the zoom slider drives both layers
+to the same `matrix(2,0,0,2,0,0)`; and the `/design` "LancetArch — sizing guard (keep)" section
+still renders all four arches at 100 × 190. `tsc --noEmit` and `npm run lint` clean.
+
+**What only Keith can confirm:** whether the dimmed ghost reads at the right strength against real
+portraits (0.28 was picked against a synthetic swatch — a very light portrait may want it stronger),
+and whether the reframe box at 132px wide is the right size in the live form.
+
+---
+
 ## 2026-09-15 — Twenty navigation links that were firing nothing at all
 
 Chasing why only 64 of 151 `text-open` events carried a `from` turned up something larger than the
