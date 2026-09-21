@@ -218,8 +218,142 @@ const JOHN_OF_DAMASCUS_EXPOSITION = {
   keptHeadings: ['BOOK', 'CHAPTER'],
 };
 
+/**
+ * The first VERSE text to come through this pipeline, hence `verse: true` —
+ * without it the cleaner's paragraph rejoin turns 1,900 lines of heroic
+ * couplets into a wall of prose, and does it silently.
+ *
+ * The 1743 is the only public-domain English Psychomachia there is. Prudentius
+ * (d. c.413) falls outside both ANF and NPNF, so the usual 19th-century route
+ * does not exist; R. Martin Pope's 1905 volume is the Hymns only, and every
+ * 20th-century edition (Thomson's Loeb, Eagan's Fathers of the Church) is in
+ * copyright. Published 1743, so public domain on any test.
+ *
+ * It is a British Library eighteenth-century scan, which sets the cleanup:
+ * the long s is on roughly half the lines, 18th-century printing puts a
+ * CATCHWORD (the next page's first word) at the foot of every page, and the
+ * OCR scatters marginalia and plate noise between stanzas.
+ */
+// Staged from the scan's _djvu.XML, not its _djvu.txt — see
+// extract-djvu-xml.mjs. The .txt of this item merges couplets two to a line,
+// orphans every run-over, splices page numbers into the middle of lines, and
+// on several pages delivers the lines out of order. All of that is layout the
+// XML still has and the .txt threw away.
+const PRUDENTIUS_PSYCHOMACHIA = {
+  xmlFile: 'scripts/ingestion/sources/psychomachia-prudentius-raw.xml',
+  // Scan-image indices, inclusive. 0–1 are the board and title page; 2 opens
+  // the translator's verse preface on Abraham; 73 is the rear endpaper.
+  pages: [2, 72],
+  slug: 'psychomachia-prudentius',
+  title: 'Psychomachia: The War of the Soul',
+  author: 'Prudentius',
+  genre: 'Poem',
+  verse: true,
+  // Poem, not Hymn. Hymn was the vocabulary's only verse genre until
+  // migration 028 added this one, and an allegorical epic in heroic couplets
+  // filed as a hymn would have sat beside the Cathemerinon in every genre
+  // listing and told the reader something false about what they were opening.
+  // NOTE: run supabase/migrations/028_poem_genre.sql before importing, or
+  // pipeline-import.mjs skips the text with "genre \"Poem\" not found".
+  archiveId: 'bim_eighteenth-century_psychomachia-the-war-of_prudentius_1743',
+  themes: ['spiritual-warfare', 'virtue', 'vice', 'humility', 'conscience'],
+  // Honest rather than flattering. The arrangement is sound — every line is a
+  // line, in order, with the furniture gone — but the letters inside them come
+  // from a British Library microfilm scan, and the review file lists 59 places
+  // where the scan appears to have dropped a line outright.
+  ocrQuality: 'low',
+  noteDraft:
+    "Luxury arrives at the battlefield in a chariot, scattering violets and rose-petals at the Christian ranks, and very nearly wins — until Sobriety lifts the cross before the horses' eyes and the whole gaudy equipage goes over. Prudentius composed the Psychomachia around 400, and with it the personified Virtues and Vices that medieval Europe carved into a thousand porches and cathedral fronts. The allegory is stranger, and a great deal bloodier, than its reputation. This is the anonymous 1743 English version, which turns the Latin hexameters into heroic couplets and fights all seven combats at full length.",
+  sourceAttribution:
+    'Anonymous English verse translation, printed 1743 as "Psychomachia; the war of the soul: or, the battle of the virtues, and vices. Translated from Aur. Prudentius Clemens."',
+  provenanceNotes:
+    'Text sourced from the Archive.org scan of the 1743 London edition (identifier: bim_eighteenth-century_psychomachia-the-war-of_prudentius_1743). Accessed September 2026.',
+  translationNotes:
+    'Anonymous, published 1743 — public domain by publication date. No 19th-century public-domain English translation exists: Prudentius (c.348–c.413) appears in neither the Ante-Nicene nor the Nicene and Post-Nicene Fathers, R. Martin Pope\'s 1905 volume translates the Hymns only, and the modern editions (H. J. Thomson, Loeb; Sister M. Clement Eagan, Fathers of the Church) remain in copyright.',
+  editorialNotes:
+    'The founding allegory of the Christian inner life: seven single combats between personified Virtues and Vices, fought for possession of the soul. Its imagery shaped medieval art and literature for a thousand years. The 1743 renders it in heroic couplets — a real translation, close enough to track line by line, not the loose paraphrase it has sometimes been dismissed as.',
+  // The printed section headings, each keyed to however the scanner mangled
+  // it. Named one at a time rather than matched by a pattern: a heading is the
+  // one place where a wrong reading silently restructures the whole text.
+  headings: [
+    ['PSTCHOMACHI', 'The War of the Soul'],
+    // The printer set the title over two lines; the heading above now says
+    // it in full, so the tail would only repeat it. null drops the line.
+    ['WAR of the SOUL', null],
+    ['COMBAT of FAITH', 'The Combat of Faith and Idolatry'],
+    ['COMBAT of CHa8TITY', 'The Combat of Chastity and Lust'],
+    ['TheConaTofPaTiBNGE', 'The Combat of Patience and Wrath'],
+    ['COMBAT of PrIDE', 'The Combat of Pride and Humility'],
+    ['Combat of LUXURY', 'The Combat of Luxury and Sobriety'],
+    // The scan lost the second half of this heading — it breaks off at "Li-",
+    // and the review file flags the gap. Completing a hyphenated heading from
+    // its own first syllable is a different act from guessing at verse.
+    ['Conpar 7 AVARICE', 'The Combat of Avarice and Liberality'],
+    ['Combat of CONCORD', 'The Combat of Concord and Discord'],
+  ],
+  manualCorrections: {
+    // The decorated drop-capital that opens each section is set as an outsize
+    // initial the OCR reads as a stray mark or not at all. Restoring it is
+    // mechanical — the word is unambiguous from its own tail.
+    "AzRaM's Life we see a Plan": "In ABRAM's Life we see a Plan",
+  },
+  regexCorrections: [
+    // The long s, where the scanner recognised it AS a long s. Roughly half
+    // the lines carry one and every occurrence is a plain s, so this single
+    // rule is the difference between readable and not.
+    ['\u017f', 's', 'g'],
+  ],
+
+  // The long s where the scanner read it as an `f` instead — the same letter,
+  // missed — plus the other misreadings. Each is named individually, because
+  // the obvious shortcut does not work: you cannot decide these from the text
+  // itself. Asking which f-words have an s-form elsewhere in the corpus
+  // proposes `for`->`sor`, `fight`->`sight`, `fame`->`same` and
+  // `before`->`besore`, because the scan ALSO misreads s as f, so both
+  // spellings of everything are attested. The rule looks principled and is
+  // confidently wrong. So: only words that are not English at all with the f,
+  // and whose s-form the sense of the line confirms.
+  wordFixes: {
+    fide: 'side', whofe: 'whose', breaft: 'breast', luft: 'lust',
+    ftrike: 'strike', miftress: 'mistress', noife: 'noise', hoft: 'host',
+    despife: 'despise', "afsail'd": "assail'd", defigns: 'designs',
+    defires: 'desires', infidious: 'insidious', fink: 'sink',
+    fuccour: 'succour', fing: 'sing', fave: 'save', folid: 'solid',
+    chriftian: 'christian', earneft: 'earnest', cafe: 'case', fubdue: 'subdue',
+    domeffick: 'domestick', domeftick: 'domestick', myfick: 'mystick',
+    unfruigful: 'unfruitful', inaftive: 'inactive', alfailing: 'assailing',
+    ficly: 'fitly', fructure: 'structure', ftripling: 'stripling',
+    meaneft: 'meanest', priefts: 'priests', prieftly: 'priestly',
+    highpriefts: 'high priests', fince: 'since', deftitute: 'destitute',
+    ffrutting: 'strutting', studioufly: 'studiously', datkfome: 'darksome',
+    filence: 'silence', oppofite: 'opposite', attrafted: 'attracted',
+    effeft: 'effect', senfible: 'sensible', flumber: 'slumber',
+    "furnifh'd": "furnish'd", "furnist'd": "furnish'd", vifible: 'visible',
+    ftrufture: 'structure', infinuating: 'insinuating', faftion: 'faction',
+    "reafsum'd": "reassum'd", surmifings: 'surmisings', flaughter: 'slaughter',
+    misjfve: 'missive', filken: 'silken', filver: 'silver',
+    mifchief: 'mischief', guilgful: 'guileful', scofs: 'scoffs',
+    vindiftive: 'vindictive', incellefiual: 'intellectual',
+    oftentations: 'ostentatious', fmple: 'simple', fesus: 'Jesus',
+    cracifed: 'crucified', fibver: 'silver', defild: "defil'd",
+
+    // Not the long s — letters the scanner simply misread, each confirmed
+    // against the sense and the rhyme of its own couplet.
+    // Decorated drop-capitals the scanner missed. Restored only where the
+    // surviving letters leave one possible word.
+    'IRS T,': 'FIRST,', 'TEXT to the field': 'NEXT to the field',
+    'HEN Ric came': 'WHEN Ric came', "a time's last period": "In time's last period",
+    "proy'd": "prov'd", anpler: 'ampler', impatt: 'impart',
+    'ty pify': 'typify', wbilst: 'whilst', "amarz'd": "amaz'd",
+    '2yeen': 'queen', speQacle: 'spectacle', "trangress'd": "transgress'd",
+    "say'd": "sav'd", ofthe: 'of the', ofa: 'of a', 'ot faith': 'of Faith', "paith's": "Faith's", lor: 'Lot',
+    "sopow's": "Sodom's",
+  },
+};
+
 export default {
   'anselm-proslogion': ANSELM_PROSLOGION,
+  'prudentius-psychomachia': PRUDENTIUS_PSYCHOMACHIA,
   'chrysostom-on-the-priesthood': CHRYSOSTOM_ON_THE_PRIESTHOOD,
   'gregory-pastoral-rule': GREGORY_PASTORAL_RULE,
   'john-of-damascus-exposition': JOHN_OF_DAMASCUS_EXPOSITION,

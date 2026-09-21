@@ -15,6 +15,7 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { stripFootnoteMarkers } from './footnote-strip.mjs';
+import { markVerseBreaks } from '../lib/djvu-layout.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -159,8 +160,37 @@ function cleanOcrText(text, config) {
   // Stray punctuation-only lines
   text = text.replace(/^\s*[,\.\*\\\/\^\|]+\s*$/gm, '');
 
-  // 7. Rejoin broken prose paragraphs.
-  //    OCR of typeset books breaks every line at the printed column edge.
+  // 7. Rejoin broken prose paragraphs — unless the work is VERSE.
+  //
+  //    The rejoin exists because OCR of typeset PROSE breaks every line at the
+  //    printed column edge, so those breaks are the typesetter's and should go.
+  //    In verse every one of them is the poet's, and rejoining silently turns a
+  //    poem into a wall of prose — a loss no later step can undo, and one that
+  //    looks like successful cleaning rather than damage.
+  //
+  //    `verse: true` in the config keeps one line per line. Nothing else in the
+  //    pipeline changes: corrections, page-header stripping and artefact removal
+  //    all still apply, and they are what the OCR actually needs.
+  if (config.verse) {
+    //  Blank lines go entirely, rather than being collapsed to one.
+    //
+    //  In a scan of typeset verse the blanks are page furniture — gaps left
+    //  where a running head, a plate or a catchword was stripped — and they
+    //  fall between couplets at random. Keeping them would invent stanza
+    //  breaks the poem does not have, and (because a line before a blank is
+    //  treated as stanza-final below) would suppress its hard break too.
+    //
+    //  Real structure in these texts comes from the headings, which step 8
+    //  formats and which get their own spacing.
+    text = text
+      .split('\n')
+      .map((l) => l.trim())
+      .filter((l) => l.length > 0)
+      .join('\n');
+
+    return finishCleaning(text, config, issues);
+  }
+
   //    Strategy: accumulate lines into paragraphs, treating blank lines as breaks.
   //    Headings (all-caps or starting with CHAPTER/PREFACE) stay on their own line.
   const isHeadingLine = (l) => {
@@ -204,6 +234,17 @@ function cleanOcrText(text, config) {
 
   text = paragraphs.join('\n');
 
+  return finishCleaning(text, config, issues);
+}
+
+/**
+ * Steps 8-10: heading formatting, footnote-marker stripping, final whitespace.
+ *
+ * Split out so the prose and verse paths above share it. Everything here is
+ * line-oriented and indifferent to whether the body was rejoined, so both
+ * callers want all of it.
+ */
+function finishCleaning(text, config, issues) {
   // 8. Format chapter headings as markdown
   //    "CHAPTER I." and its following summary line → "## Chapter I\n\n*summary*"
   text = text.replace(
@@ -244,6 +285,11 @@ function cleanOcrText(text, config) {
   text = text.split('\n').map(l => l.trimEnd()).join('\n');
   text = text.replace(/\n{3,}/g, '\n\n');
   text = text.trim();
+
+  // 10.5 Verse hard breaks — shared with the XML route, not a second copy.
+  //   See markVerseBreaks in scripts/lib/djvu-layout.mjs for why a trailing
+  //   backslash and not two trailing spaces.
+  if (config.verse) text = markVerseBreaks(text.split('\n')).join('\n');
 
   return { text, issues, footnotesStripped: footnotes.count };
 }
