@@ -29,12 +29,13 @@ panel was in when it produced four weeks of unusable data.
 - **`scripts/verify-analytics.mjs`** turns "observe the outgoing beacon" from a
   console ritual into a command. Real browser, real deployment, every Umami
   collection request recorded and then aborted — a verification run cannot land
-  a synthetic event in the dataset. **28 checks passed against production on the
-  first complete run**, clearing every one of the eight pending events:
+  a synthetic event in the dataset. **30 checks pass against production**, and
+  the only two that fail are `text-session-depth`'s own, which is correct: it
+  is not deployed yet. That clears every one of the eight pending events:
   `citation-copy`, `reader-setting-change` (all three settings separately),
   `text-download` and `collection-download` (both formats), `collection-nav`,
-  `theme-click`, and all eight PR #93 `from` surfaces on `text-open` plus the
-  new `collection-open` ones. The assertion half (`scripts/lib/wire-check.mjs`)
+  `theme-click`, all eight PR #93 `from` surfaces on `text-open`, all five on
+  `author-open`, and both new `collection-open` surfaces. The assertion half (`scripts/lib/wire-check.mjs`)
   is unit-tested, so the sweep cannot go green by looking in the wrong place.
 
 - **`scripts/monthly-metrics.mjs --month 2026-09`** prints the Monthly Log row.
