@@ -1,8 +1,10 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo } from 'react'
 import Link from 'next/link'
 import { FilterPill } from './FilterPill'
+import { useUrlFilters } from '@/lib/use-url-filters'
+import { pickFacet } from '@/lib/facets'
 
 declare global {
   interface Window {
@@ -37,30 +39,41 @@ const SORTS: { key: SortKey; label: string }[] = [
 
 type Filters = { tradition: string; era: string; genre: string; sort: SortKey }
 
+const DEFAULTS: Filters = { tradition: '', era: '', genre: '', sort: 'title' }
+
 export function TextsBrowser({
   items,
   facets,
-  initial,
   from,
 }: {
   items: TextItem[]
   facets: { traditions: Facet[]; eras: Facet[]; genres: Facet[] }
-  initial: Filters
   from: string
 }) {
-  const [filters, setFilters] = useState<Filters>(initial)
-
-  // Keep the URL in sync so a filtered view is shareable/bookmarkable, without a
-  // server round-trip (history.replaceState, not the router).
-  useEffect(() => {
-    const params = new URLSearchParams()
-    if (filters.tradition) params.set('tradition', filters.tradition)
-    if (filters.era) params.set('era', filters.era)
-    if (filters.genre) params.set('genre', filters.genre)
-    if (filters.sort !== 'title') params.set('sort', filters.sort)
-    const qs = params.toString()
-    window.history.replaceState(null, '', qs ? `?${qs}` : window.location.pathname)
-  }, [filters])
+  // Filters live in the URL so a filtered view is shareable, and are read from
+  // it here rather than on the server — which is what lets /texts be statically
+  // cached instead of re-querying the whole library per request. See
+  // lib/use-url-filters.ts.
+  const [filters, setFilters] = useUrlFilters<Filters>(
+    DEFAULTS,
+    params => ({
+      // pickFacet keeps an unknown or stale slug from filtering everything out.
+      tradition: pickFacet(params.get('tradition') ?? undefined, facets.traditions),
+      era: pickFacet(params.get('era') ?? undefined, facets.eras),
+      genre: pickFacet(params.get('genre') ?? undefined, facets.genres),
+      sort: SORTS.some(s => s.key === params.get('sort'))
+        ? (params.get('sort') as SortKey)
+        : 'title',
+    }),
+    f => {
+      const params = new URLSearchParams()
+      if (f.tradition) params.set('tradition', f.tradition)
+      if (f.era) params.set('era', f.era)
+      if (f.genre) params.set('genre', f.genre)
+      if (f.sort !== 'title') params.set('sort', f.sort)
+      return params
+    },
+  )
 
   // Toggle a facet; fire an analytics event only when a filter is applied (not cleared).
   const set = (key: 'tradition' | 'era' | 'genre', value: string) => {

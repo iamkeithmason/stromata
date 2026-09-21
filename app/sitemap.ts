@@ -20,7 +20,9 @@ type TextRow = {
 }
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const supabase = createPublicClient()
+  // Live read: this feed declares `revalidate = 0` above and must reflect the
+  // database as it is now, not the public client's hourly cache.
+  const supabase = createPublicClient({ live: true })
   const loc = (path: string) => `${SITE_URL}${path}`
 
   const [textsRes, authorsRes, collectionsRes, locationsRes] = await Promise.all([

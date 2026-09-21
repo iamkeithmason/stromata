@@ -2,9 +2,16 @@ import Link from 'next/link'
 import { createPublicClient } from '@/lib/supabase/public'
 import { SiteHeader } from '@/app/components/SiteHeader'
 import { TrackPageEvent } from '@/app/components/TrackPageEvent'
-import { readingTime } from '@/lib/reading-time'
+import { readingMinutes } from '@/lib/reading-time'
 import { parseReferenceQuery } from '@/lib/scripture'
 import ScriptureSearch from '../ScriptureSearch'
+
+// Incremental Static Regeneration: serve a cached render and refresh it at most
+// hourly, so a crawler sweep costs one Supabase query per page per hour rather
+// than one per request.
+// 4,268 distinct reference routes are reachable from the scripture index, and
+// every one of them re-queried Supabase on each request without this.
+export const revalidate = 3600
 
 type Props = { params: Promise<{ ref: string }> }
 
@@ -12,7 +19,7 @@ type TextRow = {
   id: string
   title: string
   slug: string
-  body: string
+  word_count: number | null
   collection_id: string | null
   genre: { name: string } | null
   author: { name: string; slug: string | null; tradition: { name: string } | null } | null
@@ -98,7 +105,7 @@ export default async function ScriptureLookupPage({ params }: Props) {
   if (textIds.length > 0) {
     const { data } = await supabase
       .from('texts')
-      .select('id, title, slug, body, collection_id, genre:genres(name), author:authors(name, slug, tradition:traditions(name))')
+      .select('id, title, slug, word_count, collection_id, genre:genres(name), author:authors(name, slug, tradition:traditions(name))')
       .in('id', textIds)
       .eq('published', true)
       .order('title')
@@ -188,7 +195,7 @@ export default async function ScriptureLookupPage({ params }: Props) {
                           )}
                         </div>
                         <div className="text-xs mt-0.5" style={{ color: '#9c9589' }}>
-                          approx. {readingTime(t.body)} min read
+                          approx. {readingMinutes(t.word_count)} min read
                         </div>
                       </div>
                       <span className="text-xs ml-4 shrink-0 mt-0.5" style={{ color: '#6f6a60' }}>{t.genre?.name}</span>
