@@ -16,7 +16,7 @@
  *
  * To use for a new source:
  *   1. Edit config.js — swap the URLs, author, collection, and knownFields
- *   2. Set `source` to: newadvent | ccel | gutenberg | wikisource | generic
+ *   2. Set `source` to: newadvent | ccel | gutenberg | wikisource | wittenberg | generic
  *   3. Run the script
  *   4. Review _review-summary.md, then fill TODOs in each .md file
  *
@@ -193,6 +193,62 @@ const SOURCE_SELECTORS = {
       ).remove();
       $("[style]").removeAttr("style"); // drop inline style attrs (mw layout hints)
       return $("#mw-content-text").html() || $("body").html() || "";
+    },
+  },
+
+  wittenberg: {
+    // Project Wittenberg (projectwittenberg.org) — static HTML unchanged since
+    // ~2013, no semantic containers at all (no <nav>/<header>/<article>, no id
+    // or class on the chrome). Masthead, page nav and translator/contact credit
+    // are plain <center>/<font>/<p>/<h2-4> elements interleaved with the text,
+    // so — like New Advent's ad paragraphs — they're matched by their text
+    // content rather than by a selector. scripts/lib/source-chrome.mjs carries
+    // the markdown-level backstop, including one tell (the "Published in:"
+    // citation label) that this DOM pass cannot isolate at all: the source
+    // nests it as an unclosed <p> inside an unclosed <p>, which merges the
+    // label with the citation text that follows it before cheerio ever sees
+    // two separate nodes.
+    extractFn: ($) => {
+      $("img[src*='w4.gif'], img[alt='pwimage']").remove();
+      // Unwrap <center> from inside heading tags first — turndown's heading
+      // rule renders an empty "#### " marker with the real title text spilling
+      // out as a separate paragraph when a <center> is the heading's sole
+      // child, which is how every title on this site is marked up.
+      $("h1, h2, h3, h4").find("center").each((_, el) => {
+        $(el).replaceWith($(el).contents());
+      });
+      // Masthead: a heading reading only "Project Wittenberg" / "PROJECT
+      // WITTENBERG", sometimes followed by a bare underscore rule from a <br>.
+      $("h1, h2, h3, h4").each((_, el) => {
+        const text = $(el).text().replace(/\s+/g, " ").trim();
+        if (/^project wittenberg(\s+_+)?$/i.test(text)) $(el).remove();
+      });
+      // "To: <link> - <link> - Project Wittenberg" nav trail — top and bottom
+      // of every page, and between chapters of a multi-page work. Short,
+      // dash-joined, no sentence punctuation, and always names the project —
+      // real prose mentioning it reads as a sentence, not a link list.
+      $("center, p, font").each((_, el) => {
+        const text = $(el).text().replace(/\s+/g, " ").trim();
+        if (/project wittenberg/i.test(text) && text.length < 150 && !/[.!?]/.test(text)) {
+          $(el).remove();
+        }
+      });
+      // Translator/licence credit ("...for Project Wittenberg by <name>, and is
+      // in the public domain...") and the site's standing contact block that
+      // follows it (Walther Library / Concordia Theological Seminary / address
+      // & phone) — real provenance, but it belongs in translation_notes, not
+      // the reading body.
+      $("p, center").each((_, el) => {
+        const text = $(el).text().replace(/\s+/g, " ").trim();
+        if (
+          /for project wittenberg by/i.test(text) ||
+          (/walther library/i.test(text) && /concordia theological seminary/i.test(text)) ||
+          (/surface mail:/i.test(text) && /phone:/i.test(text))
+        ) {
+          $(el).remove();
+        }
+      });
+      return $("body").html() || "";
     },
   },
 
@@ -392,7 +448,7 @@ async function fetchAndProcess(url, index, cfg) {
     // per-chapter page (each book of Clement's Stromata is one) the h1 is
     // `Chapter 1. Introductory.`, real content that an unconditional drop
     // would delete. It is removed only when it IS the title just resolved.
-    dropLeadingHeading: source === "newadvent" ? title : false,
+    dropLeadingHeading: source === "newadvent" || source === "wittenberg" ? title : false,
   });
   for (const r of removed) {
     console.log(`  ✂ stripped ${r.rule} (${r.why})`);
