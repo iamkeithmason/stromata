@@ -125,9 +125,13 @@ failure mode.
 real browser over a real deployment, intercepts every request to Umami's collection endpoint,
 records the payload and then **aborts** it — so a verification run never lands a synthetic event in
 the dataset. It prints a pass/fail table and exits non-zero on any failure. `--only=a,b` narrows it;
-`--prod` is required (and sufficient) to point it at production. Behind a TLS-inspecting proxy, where
-Chromium rejects the re-signed certificate, `--via-node` routes each request through Playwright's
-Node-side stack instead — certificates are still verified, just by Node. The assertion half lives in
+`--prod` is required (and sufficient) to point it at production. A Vercel preview with Deployment
+Protection on answers 302 to `vercel.com/sso-api` for everything, so the sweep sees a login page
+rather than the site: pass `--bypass-token=<automation bypass secret>` (Vercel → Project → Settings →
+Deployment Protection → Protection Bypass for Automation), or set
+`VERCEL_AUTOMATION_BYPASS_SECRET`. Behind a TLS-inspecting proxy, where Chromium rejects the
+re-signed certificate, `--via-node` routes each request through Playwright's Node-side stack
+instead — certificates are still verified, just by Node. The assertion half lives in
 `scripts/lib/wire-check.mjs` and is unit-tested, so the sweep cannot go green by looking in the
 wrong place. Two things it deliberately does not do: block the tracker script (that would leave
 `window.umami` undefined and every check would "pass" by firing nothing) and treat a page that

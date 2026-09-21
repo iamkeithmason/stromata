@@ -25,6 +25,14 @@
  * Needs a Chromium: `npx playwright install chromium` once. In a sandbox with a
  * preinstalled browser, point at it with --browser-path= or CHROMIUM_PATH.
  *
+ * A Vercel preview with Deployment Protection turned on answers 302 to
+ * vercel.com/sso-api for every request, so the sweep sees a login page instead
+ * of the site. Pass the project's automation bypass secret with
+ * --bypass-token=… (or VERCEL_AUTOMATION_BYPASS_SECRET in the environment) and
+ * every request carries the x-vercel-protection-bypass header. Find it under
+ * Vercel → Project → Settings → Deployment Protection → Protection Bypass for
+ * Automation.
+ *
  * Behind a TLS-inspecting proxy (CI sandboxes, some corporate networks) Chromium
  * will not trust the re-signed certificate and every page load fails with
  * ERR_CERT_AUTHORITY_INVALID. `--via-node` then routes each request through
@@ -75,6 +83,11 @@ const VERBOSE = Boolean(flags.verbose);
 const TIMEOUT = Number(flags.timeout) || 8000;
 const BROWSER_PATH = flags['browser-path'] || process.env.CHROMIUM_PATH || undefined;
 const VIA_NODE = Boolean(flags['via-node']);
+const BYPASS_TOKEN = flags['bypass-token'] || process.env.VERCEL_AUTOMATION_BYPASS_SECRET || '';
+/** Sent on every request when a bypass secret is supplied; empty otherwise. */
+const BYPASS_HEADERS = BYPASS_TOKEN
+  ? { 'x-vercel-protection-bypass': BYPASS_TOKEN, 'x-vercel-set-bypass-cookie': 'true' }
+  : {};
 
 const log = (...a) => VERBOSE && console.log('   ', ...a);
 
@@ -154,7 +167,11 @@ async function ensureTracker(page) {
     .catch(() => {
       throw new Error(
         'window.umami never appeared — the tracker script did not load on this target. ' +
-          'Every check would pass by firing nothing, so the run is stopped instead.'
+          'Every check would pass by firing nothing, so the run is stopped instead.' +
+          (BYPASS_TOKEN
+            ? ''
+            : '\nIf this is a Vercel preview with Deployment Protection on, it is serving a ' +
+              'login page: pass --bypass-token=<automation bypass secret>.')
       );
     });
 }
@@ -223,7 +240,7 @@ async function expectNoEvent({ event, case: label, action, timeout = 2500 }) {
  * therefore lists exactly the pages that currently have content.
  */
 async function loadSitemap() {
-  const res = await fetch(`${BASE}/sitemap.xml`);
+  const res = await fetch(`${BASE}/sitemap.xml`, { headers: BYPASS_HEADERS });
   if (!res.ok) die(`GET ${BASE}/sitemap.xml -> HTTP ${res.status}. Is the target deployed?`);
   const xml = await res.text();
   const paths = [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)]
@@ -617,6 +634,7 @@ async function main() {
     viewport: { width: 1280, height: 1600 },
   });
   context.setDefaultTimeout(TIMEOUT);
+  if (BYPASS_TOKEN) await context.setExtraHTTPHeaders(BYPASS_HEADERS);
   await installInterceptor(context);
   await context.grantPermissions(['clipboard-read', 'clipboard-write'], { origin: new URL(BASE).origin });
 
