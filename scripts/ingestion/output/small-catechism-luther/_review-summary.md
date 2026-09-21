@@ -1,9 +1,9 @@
 # Review Summary — Small Catechism
 
-Generated: 2026-08-17  
+Generated: 2026-09-21  
 Author: Martin Luther  
-Source: wikisource  
-Texts: 1
+Source: wittenberg  
+Texts: 7
 
 ---
 
@@ -19,14 +19,80 @@ For each text below:
 
 ---
 
-## 1. Small Catechism
+## 1. book-1
 
-**File:** `small-catechism.md`  
-**Source:** https://en.wikisource.org/wiki/Small_Catechism  
+**File:** `book-1.md`  
+**Source:** https://www.projectwittenberg.org/pub/resources/text/wittenberg/luther/little.book/web/book-1.html  
 **Genre suggestion:** Catechesis _(known)_  
-**Theme suggestions:** Prayer, Repentance, Humility, Suffering, Baptism, Sacraments
+**Theme suggestions:** Prayer
 
-_Rationale:_ Keywords found in text suggest Prayer, Repentance, Humility as primary themes. Confirm against the full controlled vocabulary.
+_Rationale:_ Keywords found in text suggest Prayer as primary themes. Confirm against the full controlled vocabulary.
+
+---
+
+## 2. book-2
+
+**File:** `book-2.md`  
+**Source:** https://www.projectwittenberg.org/pub/resources/text/wittenberg/luther/little.book/web/book-2.html  
+**Genre suggestion:** Catechesis _(known)_  
+**Theme suggestions:** Christology, Trinity, Salvation, Scripture, Doctrine
+
+_Rationale:_ Keywords found in text suggest Christology, Trinity, Salvation as primary themes. Confirm against the full controlled vocabulary.
+
+---
+
+## 3. book-3
+
+**File:** `book-3.md`  
+**Source:** https://www.projectwittenberg.org/pub/resources/text/wittenberg/luther/little.book/web/book-3.html  
+**Genre suggestion:** Catechesis _(known)_  
+**Theme suggestions:** Prayer, Trinity, Doctrine
+
+_Rationale:_ Keywords found in text suggest Prayer, Trinity, Doctrine as primary themes. Confirm against the full controlled vocabulary.
+
+---
+
+## 4. book-4
+
+**File:** `book-4.md`  
+**Source:** https://www.projectwittenberg.org/pub/resources/text/wittenberg/luther/little.book/web/book-4.html  
+**Genre suggestion:** Catechesis _(known)_  
+**Theme suggestions:** Repentance, Baptism, Sacraments, Christology, Trinity, Salvation
+
+_Rationale:_ Keywords found in text suggest Repentance, Baptism, Sacraments as primary themes. Confirm against the full controlled vocabulary.
+
+---
+
+## 5. book-5
+
+**File:** `book-5.md`  
+**Source:** https://www.projectwittenberg.org/pub/resources/text/wittenberg/luther/little.book/web/book-5.html  
+**Genre suggestion:** Catechesis _(known)_  
+**Theme suggestions:** Salvation
+
+_Rationale:_ Keywords found in text suggest Salvation as primary themes. Confirm against the full controlled vocabulary.
+
+---
+
+## 6. book-6
+
+**File:** `book-6.md`  
+**Source:** https://www.projectwittenberg.org/pub/resources/text/wittenberg/luther/little.book/web/book-6.html  
+**Genre suggestion:** Catechesis _(known)_  
+**Theme suggestions:** Sacraments, Liturgy, Christology, Salvation, Scripture
+
+_Rationale:_ Keywords found in text suggest Sacraments, Liturgy, Christology as primary themes. Confirm against the full controlled vocabulary.
+
+---
+
+## 7. book-appx
+
+**File:** `book-appx.md`  
+**Source:** https://www.projectwittenberg.org/pub/resources/text/wittenberg/luther/little.book/web/book-appx.html  
+**Genre suggestion:** Catechesis _(known)_  
+**Theme suggestions:** Prayer, Christology, Trinity, Doctrine
+
+_Rationale:_ Keywords found in text suggest Prayer, Christology, Trinity as primary themes. Confirm against the full controlled vocabulary.
 
 ---
 

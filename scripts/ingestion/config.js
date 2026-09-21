@@ -1,17 +1,19 @@
 export default {
   collection: {
-    name: "Second Epistle of Clement",
-    slug: "second-epistle-of-clement-attributed",
-    author: "Clement of Rome (attributed)",
+    name: "Disputation of Doctor Martin Luther on the Power and Efficacy of Indulgences",
+    slug: "ninety-five-theses-luther",
+    author: "Martin Luther",
     description: "",
   },
-  urls: ["https://www.newadvent.org/fathers/1011.htm"],
-  source: "newadvent",
+  urls: [
+    "https://www.projectwittenberg.org/pub/resources/text/wittenberg/luther/web/ninetyfive.html",
+  ],
+  source: "wittenberg",
   knownFields: {
-    genre: "Homily",
-    sourceAttribution: "Translated by Alexander Roberts and James Donaldson (Ante-Nicene Fathers, Vol. VII).",
-    provenanceNotes: "Text sourced from New Advent. Accessed September 2026.",
-    translationNotes: "Alexander Roberts & James Donaldson. Ante-Nicene Fathers Vol. VII, published 1867-1886 — public domain by publication date.",
+    genre: "Treatise",
+    sourceAttribution: "Works of Martin Luther: Adolph Spaeth, L.D. Reed, Henry Eyster Jacobs, et al., Trans. & Eds. (Philadelphia: A. J. Holman Company, 1915), Vol. 1, pp. 29-38.",
+    provenanceNotes: "Text sourced from Project Wittenberg (projectwittenberg.org). Accessed September 2026.",
+    translationNotes: "Works of Martin Luther (Philadelphia: A. J. Holman Company, 1915), Vol. 1 — published 1915, public domain by publication date.",
     copyrightSafe: true,
   },
 };
