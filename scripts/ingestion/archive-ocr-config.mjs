@@ -271,7 +271,7 @@ const PRUDENTIUS_PSYCHOMACHIA = {
   // where the scan appears to have dropped a line outright.
   ocrQuality: 'low',
   // After the re-read from the page images: 0 lines carrying wreckage (was
-  // 65) and a couplet rhyme rate of 83.2% (was 56.7%). Not 'high', and the
+  // 65) and a couplet rhyme rate of 86.3% (was 58.6%). Not 'high', and the
   // reason is one specific known hole rather than general doubt — leaf 69's
   // scan is cropped at the foot and one or two verse lines are absent from
   // the IMAGE, so no re-reading recovers them, and there is no second copy of

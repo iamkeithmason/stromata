@@ -2,7 +2,7 @@
 
 Re-read from the scan's page images, not its `_djvu.txt`/`_djvu.xml` OCR.
 1373 lines of verse across 72 leaves.
-30 leaves were read against the scan by hand where the pitch test disagreed; every other leaf matched its predicted line count.
+30 leaves disagreed with the line count the XML's pitch analysis predicted, and each carries a named reason in `visionLineCountAccepted`. Those reasons say how much looking is behind each one — some were read line-by-line against the scan, the rest rest on weaker evidence and say so. Every other leaf matched its prediction.
 
 Catchword chain: 7 pairs did not match (4→5, 7→8, 45→46, 49→50, 59→60, 66→67, 72→73).
 
@@ -14,7 +14,7 @@ The poem is in heroic couplets, so the form is a checksum on the reading.
 These numbers are only meaningful next to the previous ones — see CHANGELOG.
 
 - Couplets: 685
-- Rhyme rate: **83.2%**
+- Rhyme rate: **86.3%**
 - Lines carrying obvious wreckage: **0**
 
 No line carries a numeral or ends in something that is not a word.
@@ -24,10 +24,7 @@ No line carries a numeral or ends in something that is not a word.
 Noisy on purpose. This text really does rhyme seat/State and join/divine,
 so a flag here is a suggestion to glance, never evidence of a fault.
 
-- [ ] line 7: …applyd / …guide
-- [ ] line 9: …lead / …seed
 - [ ] line 19: …subdue / …crew
-- [ ] line 21: …infest / …breast
 - [ ] line 39: …reviews / …pursues
 - [ ] line 47: …foes / …overthrows
 - [ ] line 55: …bowd / …load
@@ -37,6 +34,7 @@ so a flag here is a suggestion to glance, never evidence of a fault.
 - [ ] line 77: …womb / …come
 - [ ] line 81: …true / …drew
 - [ ] line 92: …kind / …explain
+- [ ] line 116: …separate / …bring
 - [ ] line 119: …expels / …cells
 - [ ] line 139: …designs / …lines
 - [ ] line 157: …blow / …foe
@@ -46,19 +44,14 @@ so a flag here is a suggestion to glance, never evidence of a fault.
 - [ ] line 181: …thrown / …bone
 - [ ] line 191: …jo / …lie
 - [ ] line 197: …men / …again
-- [ ] line 199: …supprest / …breast
 - [ ] line 217: …womb / …come
-- [ ] line 221: …heavn / …givn
-- [ ] line 240: …led / …dead
 - [ ] line 272: …flies / …eyes
 - [ ] line 274: …broke / …shook
 - [ ] line 290: …foe / …blow
-- [ ] line 357: …breast / …vest
 - [ ] line 367: …eyes / …defies
 - [ ] line 391: …hour / …power
 - [ ] line 405: …unknown / …throne
 - [ ] line 435: …crew / …embrue
-- [ ] line 439: …beat / …feet
 - [ ] line 452: …oer / …grass
 - [ ] line 465: …beheld / …quelld
 - [ ] line 478: …severe / …care
@@ -73,39 +66,46 @@ so a flag here is a suggestion to glance, never evidence of a fault.
 - [ ] line 598: …ensue / …you
 - [ ] line 610: …run / …son
 - [ ] line 626: …led / …made
-- [ ] line 630: …deed / …head
 - [ ] line 632: …true / …drew
 - [ ] line 670: …scene / …pain
 - [ ] line 672: …die / …joy
-- [ ] line 674: …dead / …fled
 - [ ] line 696: …road / …strewd
 - [ ] line 702: …by / …eye
 - [ ] line 704: …true / …crew
-- [ ] line 718: …sheds / …spreads
 - [ ] line 722: …wears / …ensnares
-- [ ] line 726: …supprest / …breast
 - [ ] line 732: …run / …son
 - [ ] line 740: …supplies / …eyes
 - [ ] line 766: …blow / …foe
-- [ ] line 776: …exprest / …breast
-- [ ] line 778: …spread / …fled
 - [ ] line 799: …run / …undone
 - [ ] line 805: …despise / …eyes
-- [ ] line 823: …pleads / …deeds
 - [ ] line 851: …hairs / …cares
 - [ ] line 865: …shew / …know
-- [ ] line 871: …rear / …volunteer
 - [ ] line 879: …joy / …dry
 - [ ] line 881: …store / …poor
-- [ ] line 883: …givn / …heavn
 - [ ] line 887: …flies / …eyes
 - [ ] line 889: …powr / …hour
 - [ ] line 891: …foe / …below
 - [ ] line 895: …inclines / …designs
 - [ ] line 901: …broke / …look
 - [ ] line 917: …drew / …hue
+- [ ] line 925: …serene / …train
+- [ ] line 927: …field / …killd
+- [ ] line 932: …requires / …fare
+- [ ] line 950: …confide / …flies
+- [ ] line 952: …buys / …care
+- [ ] line 995: …view / …true
+- [ ] line 1015: …flow / …foe
+- [ ] line 1017: …drownd / …ground
+- [ ] line 1021: …inspire / …lyre
+- [ ] line 1049: …foe / …owe
+- [ ] line 1065: …blow / …foe
+- [ ] line 1078: …side / …cloud
+- [ ] line 1080: …crowd / …guilt
+- [ ] line 1121: …shews / …grows
+- [ ] line 1141: …do / …new
+- [ ] line 1155: …run / …undone
 
-_…and 35 more._
+_…and 14 more._
 
 ## Leaves
 

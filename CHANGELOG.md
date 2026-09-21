@@ -21,7 +21,7 @@ Measured, same checker both sides:
 | | djvu OCR | page images |
 |---|---|---|
 | Lines | 1,227 | **1,373** |
-| Couplet rhyme rate | 56.7% | **83.2%** |
+| Couplet rhyme rate | 58.6% | **86.3%** |
 | Lines carrying wreckage | 65 | **0** |
 
 `In ABRAM's Life we see a Plan / Who prov'd, in Ares low Delius, / ... / His 45.

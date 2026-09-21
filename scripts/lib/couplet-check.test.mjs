@@ -179,3 +179,19 @@ test('a triplet does not throw the rest of the poem out of phase', () => {
   assert.equal(report.noRhyme.length, 0, 'nothing after the triplet should de-phase');
   assert.equal(report.rhymeRate, 1);
 });
+
+test('the vowel-class rule is exercised by pairs only it can pass', () => {
+  // Regression guard. This branch was dead for its whole first life: it
+  // compared the class-encoded rime and stripped the encoding with a regex
+  // that left an empty string, so it never fired. Nothing caught it, because
+  // the only fixture aimed at it (seat/State) also passes on the exact-rime
+  // path. These two pairs match on NEITHER of the earlier paths — different
+  // rimes, different three-letter tails — so if this rule breaks again, this
+  // test is what fails.
+  assert.notEqual(rime('applyd'), rime('guide'));
+  assert.notEqual('lyd'.slice(-3), 'ide'.slice(-3));
+  assert.equal(rhymes("apply'd", 'Guide'), true);
+
+  assert.notEqual(rime('lead'), rime('seed'));
+  assert.equal(rhymes('lead', 'seed'), true);
+});

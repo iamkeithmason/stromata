@@ -13,6 +13,11 @@
  * is an odd number of lines, so fixed pairing goes out of phase at the first one
  * and reports every couplet after it as broken. See checkCouplets.
  *
+ * For scale: on the Psychomachia the djvu OCR scores 58.6% and 0 of its lines
+ * are clean enough to publish; the same pages read from the images score 86.3%
+ * with no line carrying wreckage. The ceiling is well under 100% because the
+ * poem rhymes by an eighteenth-century ear, not because the reading is wrong.
+ *
  * WHAT IT DOES NOT DO, and this is the important part. It does not decide
  * whether a line is correct, and it never rewrites one. It ranks lines by how
  * likely they are to repay a human look. Two different signals, with very
@@ -110,15 +115,16 @@ export function plausibleWord(word) {
 }
 
 /**
- * Reduce a word to the part that carries its rhyme.
+ * Reduce a word to the part that carries its rhyme: the last vowel cluster and
+ * whatever follows it, with a silent final `e` dropped first so that `state`
+ * reduces on its `a` and not on the mute letter after it.
  *
- * From the last vowel cluster to the end, with a silent final `e` dropped first
- * so that `state` reduces on its `a` and not on the mute letter after it. The
- * vowel cluster is then replaced by the index of its equivalence class, so
- * `seat` and `state` can be compared without a pronunciation dictionary.
- * Returns null when the word has no vowel to work from.
+ * Returns the two halves rather than a single string, because callers need
+ * them apart: `rime` encodes the vowel as an equivalence class for an exact
+ * comparison, and `rhymes` needs the raw spelling to ask which classes it
+ * could belong to. Returns null when the word has no vowel to work from.
  */
-export function rime(word) {
+export function rimeParts(word) {
   let w = normaliseWord(word);
   if (!w) return null;
   // Spellings where a letter in the coda is not a sound. Without these the
@@ -136,10 +142,25 @@ export function rime(word) {
   const m = /([aeiouy]+)([^aeiouy]*)$/.exec(w);
   if (!m) return null;
   const [, vowels, tail] = m;
-  const cls = VOWEL_CLASSES.findIndex((set) => set.includes(vowels));
   // Doubled final consonants are a printing habit, not a sound.
-  const coda = tail.replace(/(.)\1$/, '$1');
-  return `${cls === -1 ? vowels : `v${cls}`}|${coda}`;
+  return { vowels, coda: tail.replace(/(.)\1$/, '$1') };
+}
+
+/** Which sound-classes a vowel spelling can stand for. */
+function vowelClasses(vowels) {
+  const hits = [];
+  VOWEL_CLASSES.forEach((set, i) => {
+    if (set.includes(vowels)) hits.push(i);
+  });
+  return hits;
+}
+
+/** The canonical rime string, for an exact comparison between two words. */
+export function rime(word) {
+  const parts = rimeParts(word);
+  if (!parts) return null;
+  const cls = VOWEL_CLASSES.findIndex((set) => set.includes(parts.vowels));
+  return `${cls === -1 ? parts.vowels : `v${cls}`}|${parts.coda}`;
 }
 
 /**
@@ -164,15 +185,21 @@ export function rhymes(a, b) {
   // Orthographic tail match — three letters is enough to be meant.
   if (wa.length >= 3 && wb.length >= 3 && wa.slice(-3) === wb.slice(-3)) return true;
 
-  // Same coda, vowels that share any class: seat/state, join/divine.
-  if (ra && rb) {
-    const [va, ca] = ra.split('|');
-    const [vb, cb] = rb.split('|');
-    if (ca === cb && ca.length > 0 && va !== vb) {
-      const sa = VOWEL_CLASSES.filter((s) => s.includes(va.replace(/^v\d+$/, ''))).length;
-      const sb = VOWEL_CLASSES.filter((s) => s.includes(vb.replace(/^v\d+$/, ''))).length;
-      if (sa && sb) return true;
-    }
+  // Same coda, and vowel spellings that can stand for the same sound:
+  // apply'd/Guide, lead/seed, join/divine.
+  //
+  // This compares the RAW vowel clusters. An earlier version compared the
+  // class-encoded form from `rime` and stripped the encoding with a regex that
+  // left an empty string, so the lookup always missed and this branch never
+  // once fired. It went unnoticed because seat/State — the pair the test
+  // asserts — happens to pass on the exact-rime path above. A rule whose only
+  // fixture is served by a different rule is a rule nobody is testing.
+  const pa = rimeParts(a);
+  const pb = rimeParts(b);
+  if (pa && pb && pa.coda === pb.coda && pa.coda.length > 0 && pa.vowels !== pb.vowels) {
+    const ca = vowelClasses(pa.vowels);
+    const cb = vowelClasses(pb.vowels);
+    if (ca.some((i) => cb.includes(i))) return true;
   }
   return false;
 }

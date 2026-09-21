@@ -7,9 +7,9 @@
  * the scanner read wrong is read wrong here too." That was the right division
  * of labour, and it left the letters where they were — which on a British
  * Library microfilm of eighteenth-century type is not good enough to publish.
- * Measured on the staged text with scripts/lib/couplet-check.mjs: 74 lines
- * carrying obvious wreckage and a couplet rhyme rate of 30.5%, against ~100%
- * for the same pages read off the images. The scan had also dropped 72 lines
+ * Measured on the staged text with scripts/lib/couplet-check.mjs: 65 lines
+ * carrying obvious wreckage and a couplet rhyme rate of 58.6%, against 86.3%
+ * for the whole text read off the images. The scan had also dropped 72 lines
  * outright — 5.5% of the poem simply absent, with nothing in the text to show
  * for it.
  *
@@ -539,7 +539,7 @@ copyright_safe: true
     `Re-read from the scan's page images, not its \`_djvu.txt\`/\`_djvu.xml\` OCR.`,
     `${verseLines.length} lines of verse across ${manifest.leaves.filter((l) => l.image).length} leaves.`,
     adjudicated.length
-      ? `${adjudicated.length} leaves were read against the scan by hand where the pitch test disagreed; every other leaf matched its predicted line count.`
+      ? `${adjudicated.length} leaves disagreed with the line count the XML's pitch analysis predicted, and each carries a named reason in \`visionLineCountAccepted\`. Those reasons say how much looking is behind each one — some were read line-by-line against the scan, the rest rest on weaker evidence and say so. Every other leaf matched its prediction.`
       : `Every leaf matched the line count the XML's pitch analysis predicted for it.`,
     '',
     brokenChain.length
