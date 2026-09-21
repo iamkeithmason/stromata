@@ -17,19 +17,6 @@ note_draft: "Each commandment gets the same two-part treatment: the bare prohibi
 
 <!-- EDITORIAL INTRO — write 2–4 sentences here explaining what this text is and why it matters. This appears above the text on the reader page. -->
 
-### Luther's Little Instruction Book  
-(The Small Catechism of Martin Luther)
-
-### _Translated by Robert E. Smith  
-May 22, 1994_
-
-_(Version 1.1 -- December 22, 1994)  
-PW# 001-003-002Ea_
-
-* * *
-
-* * *
-
 **I.  
 THE TEN COMMANDMENTS**  
 \[1\] \[2\] \[3\] \[4\] \[5\] \[6\] \[7\] \[8\] \[9\] \[10\]
@@ -127,9 +114,3 @@ THE TEN COMMANDMENTS**
 > > **Q.** What does it mean?
 > > 
 > > **A.** God threatens to punish everyone who breaks these commandments. We should be afraid of His anger because of this and not violate such commandments. But He promises grace and all good things to those who keep such commandments. Because of this, we, too, should love Him, trust Him, and willingly do what His commandments require.
-
-* * *
-
-* * *
-
-* * *

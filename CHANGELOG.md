@@ -7,6 +7,44 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-09-21 — Six new Project Wittenberg chrome rules, and healed the drafts they were left in
+
+Keith reviewing the Small Catechism drafts (from #123) found real noise still in the body: the
+whole-work title/translator masthead repeated on every chapter, orphaned `* * *` page dividers left
+over once the paragraphs they bracketed were already stripped, and a dead in-page jump-anchor list
+(`\[1\] \[2\] \[3\] …`) that can never resolve to anything, since every `<a>` href is stripped
+project-wide. `scripts/lib/source-chrome.mjs` gets six new/changed rules for these —
+`wittenberg-work-title-header`, `wittenberg-translator-credit-heading`, `wittenberg-edition-code`,
+`wittenberg-orphaned-divider`, `wittenberg-underscore-rule`, and `wittenberg-jump-anchors` promoted
+from advisory-only to stripped outright (it had escaped two rounds of Stage 3 review already, and
+its old pattern assumed a surviving `(url)` that never happens once links are stripped — the real
+shape has none). `fetch-texts.mjs`'s DOM pass gets the matching primary-defence fix for future
+fetches, detecting the repeated title structurally (a heading immediately followed by a "Translated
+by" heading) rather than by this one work's title text, plus removing every `<hr>` and the internal
+edition-code paragraph.
+
+One real near-miss while writing this, caught by a dry run against the live corpus before `--write`:
+a bare-underscore-divider rule was briefly written `structural: true` (unconditional), on the same
+reasoning as `newadvent-az-bar`'s A–Z bar — until the dry run showed it matching a genuine topic-break
+divider inside an unrelated New Advent import (`catechetical-lecture-18.md`, Cyril of Jerusalem's own
+formatting, nothing to do with Wittenberg). Reverted to `requires: 'wittenberg'`, with a regression
+test pinning the exact false-positive case. `wittenberg-jump-anchors` and the work-title-header rule,
+by contrast, were confirmed safe to be unconditional by checking the whole corpus for the pattern
+first (`wittenberg-work-title-header`'s title text; the jump-anchor shape occurs in exactly one text
+project-wide) rather than assuming.
+
+Ran `strip-source-chrome.mjs --drafts --files --write` against the result: 7 texts cleaned (6
+remaining catechism chapters + the 95 Theses — `small-catechism-ten-commandments` was already
+hand-cleaned and published by Keith mid-review, so left alone) and all 8 staged output files aligned.
+One known remaining blemish, left alone on purpose: on two texts (`small-catechism-ten-commandments`
+originally, and the 95 Theses' citation line) the anchor-list or underscore-divider is glued to a real
+heading/citation in the same markdown block with no blank line between them — this module only drops
+whole blocks, and dropping either would delete real content with it. `fetch-texts.mjs`'s DOM fix
+(removing the `<font size="-1">` anchor wrapper before turndown ever runs) is the actual fix for any
+future fetch of this shape.
+
+---
+
 ## 2026-09-21 — Built the license infrastructure the CC-catechism prospect is blocked on
 
 Added `texts.license` (migration `030_text_license.sql`, nullable, `null` = public domain —

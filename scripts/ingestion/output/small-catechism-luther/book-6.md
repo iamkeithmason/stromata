@@ -17,16 +17,6 @@ note_draft: "Luther's fifth question — who receives this sacrament worthily �
 
 <!-- EDITORIAL INTRO — write 2–4 sentences here explaining what this text is and why it matters. This appears above the text on the reader page. -->
 
-### Luther's Little Instruction Book  
-(The Small Catechism of Martin Luther)
-
-### _Translated by Robert E. Smith  
-May 22, 1994_
-
-* * *
-
-* * *
-
 **
 
 VI.  
@@ -70,9 +60,3 @@ THE SACRAMENT OF THE ALTAR
 > > **Q. Who, then, receives such a sacrament in a worthy way?**
 > > 
 > > **A.** Of course, fasting and other physical preparations are excellent disciplines for the body. But anyone who believes these words, "Given for you," and "Shed for you to forgive sins," is really worthy and well prepared. But whoever doubts or does not believe these words is not worthy and is unprepared, because the words, "for you" demand a heart that fully believes.
-
-* * *
-
-* * *
-
-* * *

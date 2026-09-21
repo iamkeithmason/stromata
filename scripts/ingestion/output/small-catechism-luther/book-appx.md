@@ -17,16 +17,6 @@ note_draft: "This is the only part of the catechism written as a script to perfo
 
 <!-- EDITORIAL INTRO — write 2–4 sentences here explaining what this text is and why it matters. This appears above the text on the reader page. -->
 
-### Luther's Little Instruction Book  
-(The Small Catechism of Martin Luther)
-
-### _Translated by Robert E. Smith  
-May 22, 1994_
-
-* * *
-
-* * *
-
 **
 
 APPENDIX I.  
@@ -75,9 +65,3 @@ DEVOTIONS
 > > After this, pray the Lord's Prayer and the following prayer:
 > > 
 > > _Lord God, Heavenly Father, bless us and these gifts, which we receive from Your generous hand, through Jesus Christ, our Lord. Amen._
-
-* * *
-
-* * *
-
-* * *
