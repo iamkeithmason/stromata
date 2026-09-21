@@ -386,10 +386,13 @@ async function fetchAndProcess(url, index, cfg) {
   // structurally unmistakable), so running all of them costs nothing and still
   // catches a New Advent page fetched under the `generic` profile.
   const { output: markdown, removed, advisories } = stripChrome(rawMarkdown, {
-    // New Advent pages open with an <h1> of the page title, which the reader
-    // renders above the body anyway. Safe to drop here because extractTitle()
-    // has already read it, two lines up.
-    dropLeadingHeading: source === "newadvent",
+    // New Advent pages open with an <h1>, and where that h1 is the page title
+    // the reader renders it above the body anyway — so it is a duplicate and
+    // goes. Passing the title rather than `true` is what keeps that safe: on a
+    // per-chapter page (each book of Clement's Stromata is one) the h1 is
+    // `Chapter 1. Introductory.`, real content that an unconditional drop
+    // would delete. It is removed only when it IS the title just resolved.
+    dropLeadingHeading: source === "newadvent" ? title : false,
   });
   for (const r of removed) {
     console.log(`  ✂ stripped ${r.rule} (${r.why})`);

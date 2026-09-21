@@ -2,6 +2,7 @@ import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import { slugify } from '@/lib/headings'
 import { rehypeScripture } from '@/lib/scripture/rehype-scripture'
+import { isPlateParagraphMdast, plateFromHast } from '@/lib/markdown/plate'
 import ScriptureRef from '@/app/components/ScriptureRef'
 
 // Extracts plain text from a React node tree so we can slugify heading children.
@@ -20,7 +21,18 @@ function nodeToText(node: React.ReactNode): string {
 // Minimal shape of the mdast nodes this plugin touches.
 type MdastNode = {
   type: string
+  value?: string
+  children?: MdastNode[]
   data?: { hProperties?: Record<string, unknown> }
+}
+
+// Minimal shape of the hast nodes the component map inspects.
+type HastNode = {
+  type: string
+  tagName?: string
+  value?: string
+  properties?: Record<string, unknown>
+  children?: HastNode[]
 }
 
 // remark plugin: numbers only top-level paragraphs (direct children of the
@@ -35,6 +47,8 @@ function remarkNumberParagraphs() {
     let n = 0
     for (const node of tree.children ?? []) {
       if (node.type === 'paragraph') {
+        // A plate carries no argument, so it takes no paragraph number.
+        if (isPlateParagraphMdast(node)) continue
         n += 1
         const data = (node.data ??= {})
         const props = (data.hProperties ??= {})
@@ -66,8 +80,32 @@ export default function MarkdownBody({ content, numbered = true, size = 'default
           }
           return <span>{children}</span>
         },
-        // Paragraphs
+        // Paragraphs — and plates, which arrive as a paragraph holding one image.
         p: ({ node, children }) => {
+          const plate = plateFromHast((node as HastNode | undefined)?.children)
+          if (plate) {
+            const { src, alt } = plate
+            return (
+              <figure className="my-10 flex flex-col items-center">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={src}
+                  alt={alt}
+                  loading="lazy"
+                  className="h-auto"
+                  style={{ maxWidth: 'min(100%, 26rem)', border: '1px solid var(--reader-quote-rule)' }}
+                />
+                {alt && (
+                  <figcaption
+                    className="mt-3 font-serif italic text-center"
+                    style={{ color: 'var(--reader-quote)', fontSize: 'var(--text-sm)' }}
+                  >
+                    {alt}
+                  </figcaption>
+                )}
+              </figure>
+            )
+          }
           const rawNum = node?.properties?.['data-pnum']
           const num = typeof rawNum === 'number'
             ? rawNum

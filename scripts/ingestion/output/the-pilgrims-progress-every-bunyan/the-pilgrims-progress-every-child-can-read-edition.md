@@ -6,9 +6,10 @@ genre: "Treatise"
 themes: [prayer, repentance, humility, suffering, spiritual-warfare]
 collection: "the-pilgrims-progress-every-bunyan"
 collection_order: 1
-source_attribution: "Sourced from Project Gutenberg. 'Every Child Can Read' abridged edition, The John C. Winston Co., 1909; editor uncredited."
+source_attribution: "Sourced from Project Gutenberg (ebook 39452). 'Every Child Can Read' abridged edition, edited by Rev. Jesse Lyman Hurlbut, D.D.; The John C. Winston Co., Philadelphia, 1909. Seven plates from the same edition."
+source_url: "https://www.gutenberg.org/ebooks/39452"
 provenance_notes: "Text sourced from Project Gutenberg. Accessed 2026-08."
-translation_notes: "Bunyan (d. 1688) is public domain outright. The abridgment itself is the 1909 'Every Child Can Read' edition (The John C. Winston Co., Philadelphia) — publication predates 1929, so under US law it is unconditionally public domain regardless of the uncredited editor's dates; no translator/adapter death-year lookup is needed."
+translation_notes: "Bunyan (d. 1688) is public domain outright. The abridgment itself is the 1909 'Every Child Can Read' edition (The John C. Winston Co., Philadelphia) — publication predates 1929, so under US law it is unconditionally public domain regardless of Hurlbut's dates (d. 1930); no translator/adapter death-year lookup is needed."
 ocr_quality: "high"
 published: false
 copyright_safe: true
@@ -120,9 +121,7 @@ Now, I saw, upon a time, when he was walking in the fields, that he was (as he w
 
 I saw also that he looked this way and that way, as if he would run; yet he stood still, because (as I perceived) he could not tell which way to go. \[15\]I looked then, and saw a man named Evangelist coming to him, who asked, "Wherefore dost thou cry?"
 
-![Evangelist Points to Wicket-Gate.](images/i_020.jpg "Evangelist Points to Wicket-Gate.
-") Evangelist Points to Wicket-Gate.  
-See page 15
+![Evangelist Points to Wicket-Gate.](/plates/the-pilgrims-progress-every-child-can-read-edition/i_020.jpg)
 
 He answered, "Sir, I read in the book in my hand, that I am condemned to die, and after that to come to judgment; and I find that I am not willing to do the first, nor able to do the second."
 
@@ -539,8 +538,7 @@ Now, I saw in my dream that the highway up which Christian was to go was fenced 
 
 He ran thus till he came to a place somewhat ascending; and upon that place stood a Cross, and a little below, in the bottom, a tomb. So I saw in my dream, that just as Christian came up with the cross, his burden loosed from off his shoulders, and fell from off his back, and began to tumble, and so continued to do till it came to the mouth of the tomb, where it fell in, and I saw it no more.
 
-![Christian Before the Cross.](images/i_057.jpg "Christian Before the Cross.") Christian Before the Cross.  
-See page 50
+![Christian Before the Cross.](/plates/the-pilgrims-progress-every-child-can-read-edition/i_057.jpg)
 
 Then was Christian glad and lightsome, and said with a merry heart, "He hath given me rest by His sorrow, and life by His death." Then he stood still awhile to look and wonder; for it was very surprising to him that the sight of the cross should thus ease him of his burden. He looked, therefore, and looked again, even till the springs that were in his head sent the water down his cheeks. Now, as he stood looking and weeping, behold, three Shining Ones came to him, and saluted him with "Peace be to thee." So the first said to him, "Thy sins be forgiven thee;" the second stripped him of his rags, and clothed him\[51\] with a change of garments; the third also set a mark on his forehead, and gave him a roll with a seal upon it, which he bade him look on as he ran, and that he should give it in at the heavenly gate; so they went their way. Then Christian gave three leaps for joy, and went on, singing:
 
@@ -915,9 +913,7 @@ But, since I live, let Jesus wear the crown."
 
   
   
-![Christian and Faithful Join Company.](images/i_098.jpg "Christian
-and Faithful Join Company.") Christian and Faithful Join Company.  
-See page 89
+![Christian and Faithful Join Company.](/plates/the-pilgrims-progress-every-child-can-read-edition/i_098.jpg)
 
 * * *
 
@@ -1332,8 +1328,7 @@ For though they killed thee, thou art yet alive."
 
   
   
-![Hopeful and Christian.](images/i_140.jpg "Hopeful and Christian.") Hopeful and Christian.  
-See page 120
+![Hopeful and Christian.](/plates/the-pilgrims-progress-every-child-can-read-edition/i_140.jpg)
 
 * * *
 
@@ -1744,9 +1739,7 @@ Chris. What is the meaning of your laughter?
 
 Atheist. I laugh to see what ignorant persons you are, to take upon yourselves so tedious a journey, and yet are like to have nothing but your travel for your pains.
 
-![Atheist Laughing at Christian and Hopeful.](images/i_183.jpg "Atheist Laughing
-at Christian and Hopeful.") Atheist Laughing at Christian and Hopeful.  
-See page 170
+![Atheist Laughing at Christian and Hopeful.](/plates/the-pilgrims-progress-every-child-can-read-edition/i_183.jpg)
 
 \[171\]Chris. Why, man, do you think we shall not be received?
 
@@ -2447,10 +2440,7 @@ Shows what our end will be."
 
 Now, there was, on the other side of the wall that fenced in the way up which Christiana and her companions were to go, a garden, and that garden belonged to him whose was that barking dog, of whom mention was made before. And some of the fruit-trees that grew in that garden shot their branches over the wall; and, being mellow, they that found them did gather them up and oft eat of them to their hurt. So Christiana's\[231\] boys, as boys are apt to do, being pleased with the trees, and the fruit that did hang thereon, did bend the branches down, and pluck the fruit, and begin to eat. Their mother did also chide them for so doing; but still the boys went on.
 
-![Christiana's Boys Began to Eat.
-](images/i_246.jpg "Christiana's Boys Began to Eat.
-") Christiana's Boys Began to Eat.  
-See page 231
+![Christiana's Boys Began to Eat.](/plates/the-pilgrims-progress-every-child-can-read-edition/i_246.jpg)
 
 "Well," said she, "my sons, you do wrong, for that fruit is none of ours;" but she did not know that it did belong to the enemy: I'll warrant you, if she had, she would have been ready to die for fear. But that passed, and they went on their way.
 
@@ -3899,8 +3889,7 @@ They also gave to the other young women such things as they desired, and to thei
 
 About Christiana's neck the shepherds put a necklace, and so they did about the necks of her four daughters; also they put ear-rings in their ears, and jewels on their foreheads.
 
-![Turn-away Resisting Evangelist.](images/i_374.jpg "Turn-away Resisting Evangelist.") Turn-away Resisting Evangelist.  
-See page 357
+![Turn-away Resisting Evangelist.](/plates/the-pilgrims-progress-every-child-can-read-edition/i_374.jpg)
 
 THEY LEAVE THE SHEPHERDS
 

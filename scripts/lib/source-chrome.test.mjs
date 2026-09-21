@@ -126,6 +126,34 @@ test('a leading H1 is advisory, never stripped by default', () => {
   assert.equal(dropped.output, 'The body proper.');
 });
 
+test('a title-matched drop keeps a chapter heading that merely leads the body', () => {
+  // The case that makes `true` unsafe and a string safe. New Advent serves each
+  // book of Clement's Stromata as one page titled "The Stromata (Book II)"
+  // whose first heading is a real chapter heading. Deleting it loses content.
+  const stromata = '# Chapter 1. Introductory.\n\nMy Miscellanies will contain the truth.';
+  assert.equal(stripChrome(stromata, { dropLeadingHeading: 'The Stromata (Book II)' }).output, stromata);
+  assert.deepEqual(stripChrome(stromata, { dropLeadingHeading: 'The Stromata (Book II)' }).removed, []);
+
+  // Where the heading IS the title — the multi-chapter fetch, where the title
+  // was read from this very h1 — it goes.
+  const john = '# Commentary on the Gospel of John (Book II)\n\nAnd the Word was with God.';
+  const { output, removed } = stripChrome(john, {
+    dropLeadingHeading: 'Commentary on the Gospel of John (Book II)',
+  });
+  assert.deepEqual(removed.map(r => r.rule), ['leading-h1']);
+  assert.equal(output, 'And the Word was with God.');
+});
+
+test('heading/title matching survives emphasis and trailing punctuation, nothing more', () => {
+  const body = '# _The Divine Institutes_ (Book I).\n\nBody.';
+  assert.equal(stripChrome(body, { dropLeadingHeading: 'The Divine Institutes (Book I)' }).output, 'Body.');
+  // A heading that only resembles the title is content.
+  assert.equal(
+    stripChrome(body, { dropLeadingHeading: 'The Divine Institutes' }).output,
+    body,
+  );
+});
+
 test('an H1 further down the body is not treated as a duplicate title', () => {
   const body = 'An opening paragraph.\n\n# A heading partway through';
   assert.deepEqual(stripChrome(body).advisories, []);

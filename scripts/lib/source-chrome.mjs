@@ -314,6 +314,21 @@ export function detectChrome(markdown, options = {}) {
   return findings;
 }
 
+/**
+ * Is this heading the same as that title? Compares leniently enough to survive
+ * markdown emphasis and trailing punctuation, and no further — a heading that
+ * merely resembles the title is content, and stays.
+ */
+function sameHeading(heading, title) {
+  const norm = str => str
+    .replace(/[*_`]/g, '')
+    .replace(/\s+/g, ' ')
+    .replace(/[.,;:]+$/, '')
+    .trim()
+    .toLowerCase();
+  return norm(heading) === norm(title);
+}
+
 function advisoriesIn(markdown, options) {
   return detectChrome(markdown, { source: options.source, advisory: true }).filter(f => f.kind === 'advisory');
 }
@@ -374,9 +389,18 @@ export function stripChrome(markdown, options = {}) {
 
   // Optional, opt-in: drop a leading H1 that the reader page already renders as
   // the text's title. Never on by default — see ADVISORY_RULES.
+  //
+  // Pass the title as a string to make this SAFE rather than merely opt-in: the
+  // heading is then dropped only when it IS that title. That distinction is not
+  // academic. New Advent serves each book of Clement's Stromata as one page
+  // whose <h1> is `Chapter 1. Introductory.` — a real heading, not a duplicated
+  // title — and an unconditional drop deletes it. Pass `true` only where a human
+  // is reading the diff before it is written.
   if (options.dropLeadingHeading) {
     const at = blocks.findIndex(b => b.text.trim() !== '');
-    if (at !== -1 && /^#\s+\S/.test(blocks[at].text.trim())) {
+    const heading = at === -1 ? null : blocks[at].text.trim().match(/^#\s+(\S.*)$/);
+    const wanted = typeof options.dropLeadingHeading === 'string' ? options.dropLeadingHeading : null;
+    if (heading && (wanted === null || sameHeading(heading[1], wanted))) {
       removed.push({
         rule: 'leading-h1',
         why: 'leading H1 duplicating the rendered title',

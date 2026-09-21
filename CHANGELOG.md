@@ -7,6 +7,45 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-09-21 — Duplicated title headings, and the Pilgrim's Progress plates
+
+Follow-up to the source-chrome entry below, on Keith's calls for the two things that entry
+deliberately reported rather than stripped.
+
+**The duplicated leading H1 — and the bug the dry run caught.** The 11 New Advent drafts opened with
+an `# H1` repeating the title the reader already renders above the body; those are gone. The first
+attempt at extending the same drop to staged files surfaced a real bug in what had just shipped:
+`dropLeadingHeading: source === "newadvent"` would have **deleted a real chapter heading**. New
+Advent serves each book of Clement's *Stromata* as one page whose `<h1>` on some fetches is
+`Chapter 1. Introductory.` — content, not a title. `dropLeadingHeading` now takes the title as a
+string and drops the heading only when it *is* that title; `true` remains for the healer, where a
+human reads the diff first. Verified against the live page: the page title goes, `Chapter 1.`
+stays.
+
+Corpus-wide, **343 texts open with an H1** (96 of them published). Only the 11 were touched — the
+rest are a separate call, since for many of them the heading is likely genuine.
+
+**The plates.** *The Pilgrim's Progress* carried 7 images pathed relative to Gutenberg
+(`images/i_020.jpg`), which resolved to nothing. The seven plates from the same 1909 Winston edition
+now live in `public/plates/<slug>/` and the body points at them. Two things came with it:
+
+- **`scripts/ingestion/fetch-gutenberg-plates.mjs`** — downloads an illustrated PG edition's plates
+  and rewrites the markdown. It also normalises the caption: Gutenberg puts it in the alt text, the
+  title attribute *and* a line of prose after the image, so a naive conversion renders it twice and
+  follows it with a `See page 15` pointing at a pagination that does not exist online. Only the alt
+  text is kept. `www.gutenberg.org` is blocked from the cloud agent environment (the same egress
+  constraint `backfill-author-images.mjs` documents for Wikipedia), so it reads from mirrors.
+- **`MarkdownBody` renders a plate as a `<figure>`** with the alt text as a figcaption, via a shared
+  helper in `lib/markdown/plate.ts`. Markdown has no figure syntax, so an illustration always
+  arrives wrapped in a paragraph; the remark plugin and the `p` renderer both have to recognise that
+  and agree, or a `<figure>` lands inside a `<p>` — invalid HTML. One tested helper, used twice.
+  Server-rendered to check rather than assumed: the figure sits between the paragraphs, and the
+  paragraph numbers run 1, 2 across it, so a plate consumes no number.
+
+Also corrected the edition's attribution while in there: it recorded "editor uncredited", but the
+source itself names **Rev. Jesse Lyman Hurlbut, D.D.** Copyright reasoning is unchanged — 1909
+publication is public domain outright regardless of Hurlbut's dates (d. 1930).
+
 ## 2026-09-21 — New Advent site chrome in text bodies: stripped, healed, and made loud
 
 Fourteen texts carried New Advent's furniture in their reading body — the `A B C … Z` encyclopedia
