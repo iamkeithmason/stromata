@@ -25,3 +25,7 @@ scripts/_*
 
 # Transient agent worktrees (created by Claude Code subagent isolation)
 .claude/worktrees/
+# Pipeline — page-image crops fetched from Archive.org (re-fetchable, ~22MB
+# for one text). The TRANSCRIPTS and manifest beside them are NOT ignored:
+# they are the irreplaceable half of the work, the crops are a download.
+scripts/ingestion/work/*/pages/

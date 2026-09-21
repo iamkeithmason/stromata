@@ -11,6 +11,8 @@ import {
   applyWordFixes,
   markVerseBreaks,
   decodeEntities,
+  verseParagraphStarts,
+  alignByTrigram,
 } from './djvu-layout.mjs';
 
 // Every fixture below is a real line from the Archive.org scan of the 1743
@@ -212,4 +214,52 @@ test('applyWordFixes anchors on word boundaries only where there is one', () => 
     applyWordFixes("IRS T, heav'n-born FaiTH", { 'IRS T,': 'FIRST,' }).text,
     "FIRST, heav'n-born FaiTH",
   );
+});
+
+test('markVerseBreaks leaves a prose footnote unbroken', () => {
+  // The 1743 prints two prose footnotes inside the verse. They arrive as
+  // blockquotes, and a hard break at the compositor's line end would set
+  // prose as though it were verse.
+  const out = markVerseBreaks([
+    'Who spiritually can explain',
+    "What ABRAM's *mystick* \\* *Numbers* mean.",
+    '> \\* There are various Expositions of this Passage,',
+  ]);
+  assert.equal(out[0], 'Who spiritually can explain\\');
+  // Last verse line before the note: no break, the paragraph ends there.
+  assert.equal(out[1], "What ABRAM's *mystick* \\* *Numbers* mean.");
+  assert.equal(out[2], '> \\* There are various Expositions of this Passage,');
+});
+
+test('verseParagraphStarts finds the compositor’s indents and not the margin jitter', () => {
+  // Leaf 26 of the 1743: two verse paragraphs open on this page, at 6% and
+  // 7.5% of the measure, among ordinary lines that wander -2% to +3%.
+  const [p] = parseDjvuXml(
+    page([
+      line([['That', 545, 900, 100, 160], ['none', 950, 1300, 100, 160], ['shoud', 1350, 1900, 100, 160]]),
+      line([['Safe', 690, 1000, 300, 360], ['from', 1050, 1400, 300, 360], ['the', 1450, 1700, 300, 360]]),
+      line([['Nor', 552, 850, 500, 560], ['once', 900, 1250, 500, 560], ['approachd', 1300, 2000, 500, 560]]),
+    ]),
+  );
+  const starts = verseParagraphStarts(classifyLines(p));
+  assert.equal(starts.length, 1);
+  assert.match(starts[0].text, /^Safe/);
+});
+
+test('alignByTrigram matches two readings of the same printed line', () => {
+  // The scanner's reading on the left, the transcriber's on the right.
+  const transcript = [
+    'In ABRAM’s Life we see a Plan',
+    'Of *Faith*, accommodate to Man;',
+    'The Parent of the *blessed* Line;',
+  ];
+  const hit = alignByTrigram('Ot Faith, accommodate to Man;', transcript);
+  assert.equal(hit.index, 1);
+});
+
+test('alignByTrigram returns null rather than guessing', () => {
+  const transcript = ['Of *Faith*, accommodate to Man;', 'The Parent of the *blessed* Line;'];
+  // A prose footnote is not any of the verse lines — it must not be forced
+  // onto the nearest one.
+  assert.equal(alignByTrigram('* The Plan of this Temple is taken from', transcript), null);
 });
