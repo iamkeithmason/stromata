@@ -7,6 +7,128 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-09-21 — Research: an absence is a hypothesis, not a finding
+
+`docs/research/2026-09-21-absence-is-not-evidence.md`. Four times in one session
+a claim that something was missing turned out to be an inference from a symptom
+rather than a reading of the source — two backlog cards, `reader-return`, and a
+provenance gate that was already built end to end. The `published_at` backfill's
+first heuristic failed the same way, and so did the outage: a permissions
+refusal and "no such text" were the same thing to a page that only checked for
+a row.
+
+Extends the existing *A fix that exists is not a fix that ran* and supports
+*Invisible failures need a witness, not an argument*. The new half is the prior
+it argues for: in a system with history, "it exists and something about the path
+is broken" beats "it was never built", and an absence in data is a question to
+take to the code.
+
+---
+
+## 2026-09-21 — The convention became a lint rule, and it found a fourth bug
+
+The mount-effect analytics fix above was a documented convention that three of
+four components quietly ignored for months. `.eslintrc.cjs` now encodes it, on
+the same reasoning as the raw-colour rule: a documented convention is a
+probability an LLM follows most of the time; a lint rule in CI is a contract.
+
+- **The rule** flags `.track()` on a `*.umami` object inside a `useEffect` or
+  `useLayoutEffect`. Event handlers are deliberately untouched — by the time a
+  reader clicks, the tracker has long since loaded, and those call sites are
+  correct as written. The rule is about mount timing, not call shape.
+- **The ratchet needed fixing to add it.** `legacyRawColour` switched
+  `no-restricted-syntax` *off* for its files, and both rules share that one rule
+  id — so adding the analytics selector would have silently exempted the legacy
+  list from it, including `AuthorsBrowser`, `TextsBrowser` and `ReaderSettings`,
+  all of which already call `umami.track`. The override now re-declares the rule
+  with the analytics selectors instead of disabling it, so the exemption is as
+  narrow as its comment always claimed.
+- **It found `ReadingProgressBar` on its first run**, which the hand audit had
+  cleared as "fires on scroll, therefore safe". It is not: `onScroll()` runs once
+  synchronously at mount, and `computeProgress()` returns `1` outright when the
+  document is shorter than the viewport. So on any short text the 75% threshold
+  is already met on that first call, before the tracker exists — and `maxRef` is
+  seeded from reading history, so a returning reader hits it too. Both fired into
+  `window.umami?.` and vanished. Now routed through `whenTrackerReady`, with the
+  wait cancelled on unmount.
+
+## 2026-09-21 — published_at can be reconstructed for half the corpus, and only half
+
+`texts.published_at` was added partway through and is null for 207 of 547
+published texts, so every publishing-over-time chart sees a corpus that published
+nothing before 14 September. `scripts/backfill-published-at.mjs` reconstructs
+what can be reconstructed and refuses to invent the rest: dry-run by default,
+`--write` to apply, `--slug`/`--id` to scope, and a per-month histogram so the
+shape can be checked before anything is written.
+
+**It backfills only texts created before September**, where there was no
+draft-then-publish path to take and created_at is therefore the publish within
+minutes. Anything created in the review-queue era stays null — the 246 drafts
+cleared on 21 September were created on the 12th, and writing created_at there
+would put a demonstrably wrong date in the one column charts are meant to trust.
+A row it cannot date stays undated and is drawn as an explicit gap.
+
+**A second thing was wrong, and CI caught it.** The script validated credentials
+and built its Supabase client at module scope, then called `main()` unconditionally.
+`classify` is pure and its test imports the module — so that `process.exit(1)` on
+missing credentials killed the test process outright. Green locally, where
+`.env.local` exists; red in CI, where it does not. The side effects moved inside
+`main()`, and the CLI entry is guarded with the same `invokedDirectly` check
+`scripts/normalise-markdown.mjs` already uses. A test now imports the module with
+the Supabase variables cleared and asserts it simply resolves.
+
+**The first heuristic was wrong and the dry run caught it.** It also required
+`updated_at` to sit close to `created_at`, on the theory that a row created
+published and never re-saved would not have moved. The dry run rejected all 207
+candidates: every row carries the same `updated_at`, because the `texts_updated_at`
+trigger bumps on every write and the maintenance scripts rewrite bodies
+corpus-wide. `updated_at` records the last time anything touched a row, which by
+now is never the publish. It is no longer consulted, and a test pins that so it
+is not reintroduced as a signal.
+
+---
+
+## 2026-09-21 — Three mount-time events were never reaching Umami
+
+`lib/analytics/track-when-ready.ts` was written because `window.umami?.track()` in a mount
+effect is a silent coin toss: the tracker loads `defer` + `afterInteractive`, React's effects
+routinely run first, and the optional chaining swallows the event without a trace. The helper
+landed, was unit-tested, and documented the evidence — then only one component was ever moved
+onto it. The three older ones were left as they were.
+
+An all-time Umami event tally taken while prototyping the admin growth panel shows what that
+cost: 23 event names, roughly 600 events, and **`reader-return` and `weekly-reader` appear in
+neither**. `reader-return` is the Growth Model's North Star measured as an event. It has never
+once reached the wire in the site's history.
+
+- **`TrackReaderReturn`, `TrackWeeklyReader` and `TrackPageEvent` now fire through
+  `whenTrackerReady`.** `TrackTextSessionDepth` already did, and is unchanged.
+- **The ledger writes moved inside the callback, which is the half that is easy to miss.**
+  `TrackWeeklyReader` set its `sessionStorage` "already fired" flag *before* the track call, so a
+  dropped event marked the session as reported and made the miss unrecoverable for the rest of
+  that visit. `TrackReaderReturn` advanced its week marker unconditionally, spending a reader's
+  return without reporting it. Both now record only once the event has actually gone out. The
+  distinction that matters: `TrackWeeklyReader` still records the *visit history* outside the
+  callback, because that is genuine reader history and is true whether or not analytics loaded —
+  it is the record *of the report* that belongs beside the report.
+- **`TrackPageEvent` is the component the helper's doc comment was written about.** It carries
+  the `*-page-view` family, `text-view`, `collection-view` and `search-no-results` across eleven
+  pages. The comment measured `text-view` at 8 against `text-read`'s 52; the all-time tally still
+  reads 49 against 109, and a mount cannot be outnumbered by a scroll that happens on it.
+  `era-page-view` and `scripture-lookup-view` were absent from Umami altogether despite being
+  mounted on live routes.
+
+**Verified on the wire, not in the JSX.** A production build served locally, driven by a real
+browser with the tracker script allowed to load, intercepting Umami's collection endpoint and
+aborting each request so no synthetic event lands in the dataset. `/` now sends `weekly-reader`
+and `reader-return`; `/eras/apostolic` now sends `era-page-view` carrying `era: "Apostolic"`.
+All three were previously absent. 312 tests pass, `tsc` is clean, lint carries only a
+pre-existing unused-import warning in `app/about/page.tsx`.
+
+**Still to do, deliberately not in this PR:** the Growth Model page defines the North Star as
+unique visitors who fired `reader-return`, while `lib/analytics/dashboard.ts` and the weekly
+digest use repeat visits (`visits − visitors`). Two definitions for one number. The weekly
+digest's proxy is unaffected by this change and stays as it is.
 ## 2026-09-21 — Every text page on the site was 404ing
 
 `select('*')` on `texts` from the public client. Migration 026 narrowed anon's
