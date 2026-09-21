@@ -26,6 +26,18 @@
 -- zero policies, and 010_grants.sql grants anon nothing on texts/collections.
 -- Every read of these columns goes through the service-role client server-side,
 -- so the new columns inherit admin-only access by construction.
+--
+-- [Annotation added 2026-09-21, after the fact — the SQL below is unchanged.]
+-- Two claims in the paragraph above stopped being true the same day:
+--   * 010_grants.sql never granted anon "nothing". Supabase's default
+--     privileges grant ALL on new tables to anon and 010 only ever added
+--     grants, so every table was anon=arwdDxtm. Fixed in 024.
+--   * "RLS enabled with zero policies" ended when 023 added published-only
+--     SELECT policies, so public pages could read with the anon key. RLS is
+--     row-level: once a published row is visible, so is every column on it,
+--     these four included. 026 withholds them with a column-level grant.
+-- The conclusion (these columns are admin-only) holds again as of 026 — but by
+-- construction now, rather than by accident.
 
 ALTER TABLE texts
   ADD COLUMN summary_draft TEXT,

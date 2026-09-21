@@ -7,6 +7,47 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-09-21 — RLS guards rows; the draft columns needed a column grant
+
+Follow-up to the anon-key switch earlier today. Moving public reads onto the anon key put the
+`published` boundary in the database — but **RLS is row-level, not column-level**. Once a row is
+visible, every column on it is. The review queue's back-office fields live on `texts` and
+`collections`, so on a *published* row the public key could read them: `note_draft` on 273 rows,
+`summary_draft` on 36, `review_state` on 51. `review_note` — "why a text was held, in Keith's
+words" — was empty, which is the only reason this was cheap to find rather than expensive. It
+fills as the queue gets used, so the leak arrives with the feature.
+
+- **`026` withholds six columns** from `anon` and `authenticated`: `texts.note_draft`,
+  `summary_draft`, `review_state`, `review_note`, and `collections.description_draft`,
+  `provenance_verified_at`. service_role is untouched.
+- **The obvious migration does nothing, silently.** `revoke select (review_note) on texts from
+  anon` runs clean and changes nothing: a column-level REVOKE only removes column-level grants,
+  and `024`'s table-wide `grant select on all tables` confers every column regardless. Caught by
+  checking `has_column_privilege` afterwards, which still read `true`. The working form is to drop
+  the table grant and re-grant the allowed columns explicitly, which is what `026` does.
+- **These two tables now fail closed.** A column added to `texts` or `collections` later is not
+  readable by anon until granted — the next workflow column cannot leak the way these did — but a
+  new *public* column needs its grant alongside the `ALTER TABLE`. Corollary: never re-run
+  `grant select on all tables in schema public to anon`; it would restore table-level SELECT and
+  undo this.
+- **`select('*')` is now a 403 on those tables**, because PostgREST rejects the whole request when
+  a selected column is unreadable rather than omitting it. Two public call sites converted:
+  `app/authors/[slug]/page.tsx`'s head-only count (`select('*')` → `select('id')`) and
+  `app/collections/[slug]/page.tsx`'s collection fetch (→ an explicit column list, matching the
+  shape its own download routes already used). `select('*')` on `authors` is left alone — that
+  table withholds nothing.
+
+Verified at runtime, not just by privilege flags, because both converted routes are dynamic and a
+build never exercises them: served the production build against the real anon key and requested
+both collection pages and both author pages — **200 with full content** — while a draft text slug
+and a nonexistent collection both returned 404, and no withheld field name appears in the HTML. As
+`anon`, `select *`, `review_note` and `provenance_verified_at` each raise `insufficient_privilege`,
+while the columns the pages actually render all still read. Also corrected `020`'s comment, which
+said these columns "inherit admin-only access by construction" — true when written, and made false
+by the policies added hours later.
+
+---
+
 ## 2026-09-21 — Public pages read with the anon key; RLS now enforces `published`
 
 Supabase's security advisor flagged two WARNs (`public.rls_auto_enable()` executable by `anon`

@@ -54,7 +54,11 @@ export default async function CollectionPage({ params }: Props) {
 
   const { data: collection } = await supabase
     .from('collections')
-    .select('*, author:authors(name, slug)')
+    // Explicit columns, not '*': anon cannot read description_draft /
+    // provenance_verified_at (026), and PostgREST rejects the whole request
+    // when select=* includes an unreadable column. Mirrors the shape the
+    // download routes already use.
+    .select('id, title, slug, description, published, author:authors(name, slug)')
     .eq('slug', slug)
     .eq('published', true)
     .single()
@@ -70,7 +74,10 @@ export default async function CollectionPage({ params }: Props) {
     .order('collection_order', { ascending: true, nullsFirst: false })
     .order('title')
 
-  const author = collection.author as { name: string; slug: string | null } | null
+  // `as unknown as` because naming the columns changes what Supabase infers for
+  // the embedded author (an array, not a single row) — the same cast the
+  // metadata query above and the authors pages already use.
+  const author = collection.author as unknown as { name: string; slug: string | null } | null
 
   // ── Structured data — built from real fields only (no null values) ──────────
   const canonicalUrl = `${SITE_URL}/collections/${slug}`
