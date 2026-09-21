@@ -46,6 +46,11 @@ Also corrected the edition's attribution while in there: it recorded "editor unc
 source itself names **Rev. Jesse Lyman Hurlbut, D.D.** Copyright reasoning is unchanged — 1909
 publication is public domain outright regardless of Hurlbut's dates (d. 1930).
 
+Write-up: `docs/research/2026-09-21-fix-that-never-ran.md`. Five findings filed to the research
+bank, all linked as evidence to existing conventions (the mutation-test one, the green-signal one,
+and the invariant/judgement discriminator — the `dropLeadingHeading` bug is a textbook instance of
+the last). No new convention proposed: all five come from one project and the bar is two.
+
 ## 2026-09-21 — New Advent site chrome in text bodies: stripped, healed, and made loud
 
 Fourteen texts carried New Advent's furniture in their reading body — the `A B C … Z` encyclopedia
