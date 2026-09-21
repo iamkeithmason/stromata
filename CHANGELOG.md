@@ -111,6 +111,75 @@ pre-existing unused-import warning in `app/about/page.tsx`.
 unique visitors who fired `reader-return`, while `lib/analytics/dashboard.ts` and the weekly
 digest use repeat visits (`visits − visitors`). Two definitions for one number. The weekly
 digest's proxy is unaffected by this change and stays as it is.
+## 2026-09-21 — The rename lands, and the Notion gating note turns out to be wrong
+
+**The UI rename is done, so the transitional bridge comes out.** Keith renamed
+the Notion `Tradition` option to "Imperial"; `NOTION_TRADITIONS` no longer
+carries the `Byzantine` line, and the comment above it records the rename
+instead of asking for it.
+
+The rename was verified *in place*, not just by reading the new name: the
+renamed option kept its id
+(`…/Rk9OPA/NDZhN2I2N2ItYjQ2MS00ZTMzLWExZGQtMTdlMzYxMGExYzYw`, the same id
+`Byzantine` carried), which is what proves no row was blanked — and a spot
+check on John of Damascus (#257) reads `Tradition: Imperial`. That id check is
+the cheap way to tell an in-place rename from a drop-and-recreate after the
+fact; the names alone look identical either way.
+
+Reading an older value still works, deliberately: `Byzantine` remains an alias
+in `TRADITIONS`. Read and write are not the same list, and only the write list
+has to name live options.
+
+**Separately: this file's "Notion access" note was overcautious, and it cost
+real work.** It said `notion-query-data-sources` in SQL mode against a single
+data source is plan-gated, and told future sessions not to retry it. Both halves
+were wrong for SQL. Probed today against the prospect list: **SQL mode works**
+(291 rows, CTEs, `GROUP BY … HAVING`, `group_concat`), and so does **`rows`
+mode**. Only view mode is actually gated.
+
+The cost of believing it: the plan of record for reading this database was
+`notion-search` + one `notion-fetch` per hit — page-at-a-time, no aggregation,
+and earlier in this same run it was the stated reason a whole-list check was
+"not possible on this plan". A note that forecloses a capability is worse than
+no note, because nobody re-tests a documented dead end. The section now says
+which modes are verified working, on what date, against what; flags that SQL
+draws on a metered shared-workspace budget on a non-Business plan rather than
+being free; and keeps the two traps worth knowing (SQL flattens rich text; row
+titles come in two shapes).
+
+**What the newly-available query bought immediately** — a duplicate sweep of all
+291 prospects, which was the thing that had looked impractical. 14 duplicate
+groups, 29 rows. Exactly one is a genuine tradition conflict: *The Cloud of
+Unknowing* is filed twice, #14 Anglican and #90 Roman Catholic. Eight more pair a
+fully-tagged row against a later untagged copy of the same work, which is a
+tradition difference only in the degenerate sense that one side is blank. The
+sweep is a report, not a purge — which row of a pair survives is an editorial
+call, so nothing was deleted or merged.
+
+The sweep also produced its own lesson, now in CLAUDE.md: grouping on `Title`
+alone found 12 groups and **missed 3**, because Scout rows are titled
+`Author — Work` while hand-made rows carry a bare title. Two passes, union the
+results.
+
+**A postscript that makes the point twice.** Correcting the "Notion access"
+section left the *Pre-run sync* section still telling future runs the query
+tools were gated — the stale claim survived inside the very file now warning
+against stale claims, which is how these things actually persist. That step now
+gives the one ranked query instead of a page-at-a-time search.
+
+Writing that query surfaced a trap worth the entry on its own. Score is a Notion
+formula and comes back empty from SQL (`notAvailableInQuerySql`), so it has to
+be recomputed as `Value ÷ (Complexity + Effort)` — and because the three inputs
+are stored as integers, the obvious expression is **integer division**. A
+`Value 3 · Complexity 1 · Effort 2` row scores `1`, not `1.5`; every row
+collapses onto a few integers and `ORDER BY score DESC` returns an arbitrary
+order that still looks ranked. Caught by running the query before documenting it
+rather than after — `("Value" * 1.0) / …` is the fix, and the `* 1.0` is now
+flagged as load-bearing. The columns are declared `FLOAT` in the schema, which
+does not help.
+
+---
+
 ## 2026-09-21 — The Notion tradition option becomes `Imperial`
 
 The site's controlled vocabulary has always had `imperial` / "Imperial" and no
