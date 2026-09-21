@@ -7,6 +7,67 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-09-21 — A collection's byline is derived from its texts, not stored beside them
+
+`collections.author_id` was an independent column: set by hand in the admin form,
+set again by `pipeline-import.mjs` at import, and read only to render a byline.
+Two copies of one fact, and the copy nobody reads back is the one that goes
+stale. It had, twice. `hydriotaphia-browne` sat with a null `author_id` while all
+five of its texts were Sir Thomas Browne's, and `against-the-heathen-sicca` lost
+its Arnobius mid-session on the day this was written. Both are *published*
+collections, so both were live pages with no byline, no breadcrumb back to the
+author, and no author in the `<title>`, meta description, OG tags or
+`BreadcrumbList` JSON-LD. Nothing alerts on that — it just quietly reads as a
+collection by nobody.
+
+- **The column's meaning flipped rather than the column going away.** Null used
+  to mean "no author"; it now means "inherit from my texts". That needed no
+  migration and no backfill, because no collection ever wanted "deliberately
+  nobody" — every null was an omission. A *non*-null value now means someone
+  chose it: an override for the case derivation genuinely can't reach, like a
+  compiler or editor whose attribution differs from the parts.
+- **`lib/collections/author.ts` is the single rule**, with `lib/collections/author.test.ts`
+  as its specification (13 cases, including both live nulls). The collection page,
+  its `generateMetadata`, both download routes, the admin dashboard list and
+  `publishCollection`'s revalidation all read through it, so they can't disagree
+  about who a collection is by.
+- **Derived from *all* texts, not just published ones.** The byline says who
+  wrote the work; it isn't a listing of what's visible today. `pastoral-rule-gregory`
+  is published with all four texts still in draft, and should still say Gregory
+  the Great.
+- **A multi-author collection names everyone** — "Jerome and Augustine of Hippo",
+  Oxford-comma-free, each name linked where it has an author page. The corpus is
+  single-author 40-for-40 today, but that's a property of the current acquisition
+  path (one work by one author, split into chapters), not of collections: the
+  first anthology or letters-between-two-figures collection breaks it. The
+  breadcrumb still only appears for a single author, since a breadcrumb has to
+  point somewhere.
+- **A derived author is named, but only linked if it can be.** Deriving from all
+  texts means a published collection can name an author who is still an
+  unreviewed pipeline stub, and a draft author's page 404s until it has a
+  published text (`app/authors/[slug]/page.tsx`). The attribution is right
+  either way; the link isn't, so `isLinkable()` renders those as plain text and
+  suppresses the breadcrumb. Nothing in the corpus hits this today — it's the
+  edge derivation opens, closed at the same time as opening it.
+- **Two quieter consequences.** `publishCollection` now revalidates every author
+  page a collection touches rather than the one on its row, so Browne's page
+  would have been refreshed. And `generate-review-drafts.mjs` derives the author
+  it feeds the description prompt — otherwise this change would have handed it
+  "Unknown" for every pipeline-created collection, which is exactly the sort of
+  silent downgrade that only shows up in the prose weeks later.
+- **`supabase/migrations/022_collection_author_derived.sql` is cleanup, not a
+  prerequisite.** It nulls the 38 rows whose `author_id` merely restates what
+  their texts already say — lossless by construction, since it only touches rows
+  where every text is by that same author. The code renders identically before
+  and after it, because an override that agrees with the texts is
+  indistinguishable from the derived value; applying it just means a non-null
+  value is a deliberate one.
+
+Verified with `tsc --noEmit`, `npm run lint`, and the full suite (309 tests, 31
+files). Not verified in the rendered admin or collection page — `/admin` needs
+Keith's login, and `next build` needs Supabase credentials CI deliberately
+doesn't carry.
+
 ## 2026-09-21 — The admin session slides, so a phone review isn't logged out
 
 The review queue that shipped this morning is meant to be worked in spare

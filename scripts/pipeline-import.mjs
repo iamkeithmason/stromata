@@ -152,14 +152,18 @@ async function resolveCollectionId(prospect) {
 
   if (existing) return existing.id;
 
-  const authorId = await resolveAuthor(prospect);
-
+  // `author_id` is deliberately left null: collection authorship is derived
+  // from the collection's texts (lib/collections/author.ts), so writing it here
+  // would be a second copy of a fact the texts already carry — and the one that
+  // silently goes stale. The column survives only as a manual override, set in
+  // the admin edit form when a collection's own attribution differs from its
+  // texts'. The author stub itself is still created: main() calls
+  // resolveAuthor() before this, so the texts have someone to point at.
   const { data: created, error } = await supabase
     .from('collections')
     .insert({
       slug: prospect.collection_slug,
       title: prospect.title,
-      author_id: authorId,
       published: false,
     })
     .select('id')

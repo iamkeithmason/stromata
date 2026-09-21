@@ -1,4 +1,5 @@
 import { createServerClient } from '@/lib/supabase/server'
+import { fetchCollectionAuthors, formatAuthorNames } from '@/lib/collections/author'
 import { markdownFilename, type DownloadableText, type DownloadableCollection } from '@/lib/downloads'
 import { CollectionDocument } from '@/lib/pdf/TextDocument'
 
@@ -37,6 +38,17 @@ export async function GET(_req: Request, { params }: { params: Promise<{ slug: s
     .order('collection_order', { ascending: true, nullsFirst: false })
     .order('title')
 
+  // The byline is derived from the collection's texts rather than read off the
+  // collection row (see lib/collections/author.ts), so a bundle is attributed
+  // correctly even where `collections.author_id` was never filled in.
+  const authorNames = formatAuthorNames(
+    await fetchCollectionAuthors(supabase, (collection as { id: string }).id, collection.author)
+  )
+  const downloadable: DownloadableCollection = {
+    ...(collection as unknown as DownloadableCollection),
+    author: authorNames ? { name: authorNames } : null,
+  }
+
   // @react-pdf/renderer is ESM-only; a static top-level import compiles to a
   // `require()` in Next's CommonJS route bundle, which throws ERR_REQUIRE_ESM
   // on Node runtimes without CJS-requiring-ESM support. Dynamic import avoids
@@ -44,7 +56,7 @@ export async function GET(_req: Request, { params }: { params: Promise<{ slug: s
   const { renderToBuffer } = await import('@react-pdf/renderer')
   const buffer = await renderToBuffer(
     await CollectionDocument({
-      collection: collection as unknown as DownloadableCollection,
+      collection: downloadable,
       texts: (texts ?? []) as unknown as DownloadableText[],
     })
   )

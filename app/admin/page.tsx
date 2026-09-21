@@ -3,6 +3,7 @@ import { createServerClient } from '@/lib/supabase/server'
 import { readQueue } from '@/lib/pipeline/queue'
 import { listStagedBundles } from '@/lib/sourcer/staging'
 import { resolveLiveStatuses } from '@/lib/pipeline/liveStatus'
+import { resolveCollectionAuthors, formatAuthorNames } from '@/lib/collections/author'
 import AgentSchedule from './AgentSchedule'
 
 type TextRow = {
@@ -13,7 +14,7 @@ type TextRow = {
 }
 type CollectionRow = {
   id: string; title: string; slug: string; published: boolean; description: string | null
-  author: { name: string } | null
+  author: { name: string; slug: string | null } | null
 }
 
 function Dot({ filled, emptyLabel }: { filled: boolean; emptyLabel: string }) {
@@ -50,7 +51,7 @@ export default async function AdminDashboard({ searchParams }: Props) {
       .order('created_at', { ascending: false }),
     supabase
       .from('collections')
-      .select('id, title, slug, published, description, author:authors(name)')
+      .select('id, title, slug, published, description, author:authors(name, slug)')
       .order('title'),
     supabase.from('authors').select('id', { count: 'exact', head: true }),
     supabase.from('locations').select('id', { count: 'exact', head: true }),
@@ -93,6 +94,19 @@ export default async function AdminDashboard({ searchParams }: Props) {
   const allTexts = (texts ?? []) as unknown as TextRow[]
   const liveTextDraftAuthor = allTexts.filter(t => t.published && t.author?.[0]?.draft)
   const liveTextDraftCollection = allTexts.filter(t => t.published && t.collection && t.collection.published === false)
+
+  // Collection bylines are derived from the collection's texts, matching the
+  // public page (lib/collections/author.ts). No extra query: allTexts already
+  // carries each text's author and collection. Order here follows the texts
+  // query (newest first) rather than collection_order, which only shows on a
+  // multi-author collection and doesn't matter for an admin index line.
+  const textAuthorsByCollection = new Map<string, TextRow['author']>()
+  for (const t of allTexts) {
+    if (!t.collection?.id) continue
+    const found = textAuthorsByCollection.get(t.collection.id) ?? []
+    found.push(...(t.author ?? []))
+    textAuthorsByCollection.set(t.collection.id, found)
+  }
   const integrityCount = liveTextDraftAuthor.length + liveTextDraftCollection.length
 
   return (
@@ -208,7 +222,9 @@ export default async function AdminDashboard({ searchParams }: Props) {
                   <div>
                     <span className="text-stone-800 text-sm font-medium">{c.title}</span>
                     <span className="text-stone-400 text-xs ml-3">
-                      {(c.author as { name: string } | null)?.name}
+                      {formatAuthorNames(
+                        resolveCollectionAuthors(c.author, textAuthorsByCollection.get(c.id) ?? [])
+                      )}
                     </span>
                     <span className={`ml-3 text-xs ${c.published ? 'text-green-600' : 'text-stone-400'}`}>
                       {c.published ? '● Published' : '○ Draft'}
