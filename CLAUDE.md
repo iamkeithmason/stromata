@@ -955,7 +955,9 @@ still apply per-file, still parallelize the same way. What changes is Stage 2/5a
 | `scripts/ingestion/fetch-texts.mjs` | Fetch & clean digital sources; generate note_draft inline | Stage 2, digital |
 | `scripts/ingestion/extract-docx.mjs` | Extract a Google Drive `.docx` → staged markdown; normalises paragraphs & flags verse | Stage 2, `gdrive_docx` |
 | `scripts/normalise-markdown.mjs` | Insert paragraph block boundaries / flag verse / **rejoin mid-sentence page-break splits** (dry-run default, `--write` to apply) | Auto via extract-docx; manual cleanup; rejoin applied to the body in Stage 5a |
-| `scripts/ingestion/clean-archive-ocr.mjs` | Clean Archive.org djvu.txt OCR | Stage 2, archive_ocr |
+| `scripts/ingestion/clean-archive-ocr.mjs` | Clean Archive.org djvu.txt OCR | Stage 2, archive_ocr, PROSE |
+| `scripts/ingestion/extract-djvu-xml.mjs` | Stage an Archive.org scan from its **`_djvu.xml`** instead of its `_djvu.txt`, so the page layout survives: one line per printed line, in reading order, with page numbers/catchwords/signature marks told from text by **where they sit on the page** rather than by what they look like. Writes a second `{slug}-review.md` listing every dropped line, every place the line pitch says the scan LOST a line, and every line the OCR itself was unsure of. Config lives in `archive-ocr-config.mjs` (`xmlFile`, `pages`, `headings`, `wordFixes`) | Stage 2, archive_ocr, **VERSE** or any layout-bearing scan |
+| `scripts/lib/djvu-layout.mjs` | The judgement half of the above — parse/classify/assemble/`stripStrayMarks`/`applyWordFixes`/`markVerseBreaks`, pure and unit-tested against real lines from the 1743 Psychomachia | Auto via extract-djvu-xml |
 | `scripts/ingestion/split-into-chapters.mjs` | Split one long text (OCR/markdown) into a per-chapter collection: detects `CHAPTER N`/`BOOK N`/etc. boundaries, extracts titles from the body, de-interleaves footnotes, reflows each chapter, writes the `output/{slug}/` multi-file layout. **Footnotes are dropped by default** (reading editions; apparatus is regenerable from the raw OCR) — pass `--footnotes=endnotes` (GUI: "Keep footnotes as endnotes") to retain them. `--dry` previews boundaries; exports `detectChapters()` for a GUI preview. | Long multi-chapter works |
 | `scripts/ingestion/footnote-deinterleave.mjs` | Pull page-bottom footnotes out of OCR prose (djvu.txt interleaves them at page breaks), rejoin words split across the break, drop inline markers. Returns clean prose + the notes (appended as per-chapter endnotes by the splitter). | Auto via split-into-chapters |
 | `scripts/ingestion/config.js` | Config for fetch-texts.mjs — overwrite per prospect | Stage 2, digital |
@@ -982,6 +984,28 @@ still apply per-file, still parallelize the same way. What changes is Stage 2/5a
 - **Project Gutenberg** (`gutenberg`): plain text — fetch-texts.mjs handles it. Use the plain text URL (not HTML).
 - **Wikisource** (`wikisource`): mediawiki HTML — fetch-texts.mjs handles it. Use the `/wiki/` URL.
 - **Archive.org** (`archive_online`): Use djvu.txt URL for OCR works; use direct HTML URLs for clean digitised editions. **Use the `/download/` path, not `/stream/`, for djvu.txt** — confirmed 2026-09-14: `archive.org/stream/{id}/{id}_djvu.txt` now returns a full HTML viewer page with the OCR text embedded in a single `<pre>...</pre>` block (breaks the plain-text assumption `clean-archive-ocr.mjs`/`archive-ocr-config.mjs` are built on, and would need an HTML-unwrap-plus-entity-decode step to use). `archive.org/download/{id}/{id}_djvu.txt` (a 302 redirect to the item's own `ia*.us.archive.org` file server, so keep `curl -L`) returns `Content-Type: text/plain` directly — same content, no wrapper. Verified against three different identifiers the same session. If `/download/` for some reason 404s while `/stream/`'s HTML viewer still loads, the identifier is fine and only the download route is having trouble — re-check rather than falling back to unwrapping `/stream/`'s HTML.
+
+- **Archive.org `_djvu.xml` — reach for this before `_djvu.txt` whenever layout carries meaning.** The
+  two hold the **same OCR**; the XML additionally keeps a `<LINE>` per printed line, a bounding box
+  per word, and a per-word confidence, and the `.txt` throws all three away. That loss is not
+  cosmetic. Staging the 1743 *Psychomachia* from the `.txt` gave couplets merged two to a line,
+  run-overs orphaned as junk, page numbers spliced into the middle of verse, several pages in the
+  **wrong order**, and no way to tell a catchword from a short line of poetry — and every one of
+  those was recoverable from the XML with no hand-written rules about brackets or digits. Fetch it
+  the same way as the text (`/download/`, not `/stream/`):
+  `curl -L "https://archive.org/download/{id}/{id}_djvu.xml" -o scripts/ingestion/sources/{slug}-raw.xml`,
+  then run `extract-djvu-xml.mjs`. Use the `.txt` for a wall of prose; treat it as misleading for
+  verse, drama, columns, or anything with catchwords or marginalia.
+- **Two traps when correcting an 18th-century scan, both learned the expensive way on the
+  Psychomachia.** First, **the long s is misread two different ways** — sometimes as `ſ` (easy, one
+  global rule) and sometimes as `f` (`Cafe`, `fubdue`, `whofe`), which no global rule can touch.
+  Second, and this is the trap: **you cannot decide the `f` cases from the text itself.** Asking
+  which `f`-words have an `s`-form attested elsewhere in the same text proposes `for`→`sor`,
+  `fight`→`sight`, `fame`→`same` and `before`→`besore`, because the scan *also* misreads `s` as
+  `f`, so both spellings of everything are attested. The heuristic looks principled and is
+  confidently wrong. Name each correction individually in `wordFixes` (case-preserving — 18th-century
+  printing capitalises nouns, and a `gi` regex silently flattens that), and only where the `f`-form
+  is not English at all and the sense of the line confirms the `s`-form.
 
 For multi-volume NPNF works on Archive.org, the djvu.txt identifier pattern is typically:
 `https://archive.org/download/{identifier}/{identifier}_djvu.txt`

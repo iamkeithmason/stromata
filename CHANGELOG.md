@@ -7,6 +7,67 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-09-21 — Archive.org scans: read the `_djvu.xml`, not the `_djvu.txt`
+
+Keith wanted the *Psychomachia* — the founding allegory of the inner life, seven
+single combats between Virtues and Vices, the thing a thousand cathedral porches
+are carved from. Notion #102 pointed at New Advent (that URL serves Augustine)
+and richmond.edu (404). He found an Archive.org scan of a 1743 anonymous English
+verse translation, which turned out to be the only complete public-domain English
+Psychomachia there is: Prudentius appears in neither ANF nor NPNF, Pope 1905 is
+the Hymns only, and Thomson (Loeb) and Eagan (FoC) are in copyright.
+
+The first attempt went through `clean-archive-ocr.mjs` on the `_djvu.txt` and the
+result was not usable. Couplets came out merged two to a line. Run-overs — the
+tail of a long line, set flush right by the printer — were orphaned as junk.
+Page numbers were spliced into the middle of verse. Catchwords were
+indistinguishable from short lines of poetry. And on several pages the lines
+simply came out in the **wrong order**.
+
+Then the actual finding: **`_djvu.txt` is a lossy flattening of `_djvu.xml`.**
+Same OCR, but the XML keeps a `<LINE>` per printed line, a bounding box per word,
+and a per-word confidence — and every one of the failures above is a consequence
+of the `.txt` throwing those away. Nothing needed better OCR; it needed the
+layout that was already in the file next door.
+
+So `scripts/ingestion/extract-djvu-xml.mjs` and `scripts/lib/djvu-layout.mjs`
+(pure, 18 tests, every fixture a real line from this scan). Furniture is told
+from text by **geometry** — above the block is a header, below it a footer, short
+and set well into the measure is a run-over to be folded back — never by what the
+text looks like. Word count is deliberately not a signal: the scanner splits a
+row of specks in the margin into eight "words", which is how `2 „ — — K 2 8 8`
+came through as verse on the first pass.
+
+Two things the module does that matter more than the extraction:
+
+- **It reports what it removed.** Every dropped line, with its reason, goes in a
+  `{slug}-review.md`. A line of the poem vanishing without trace is the failure
+  this whole approach exists to avoid.
+- **It finds lines the scan lost.** Leaded verse has a near-constant line pitch,
+  so a gap half again the usual one means type that did not come through. That
+  is damage which leaves no mark in the text and would otherwise ship unnoticed.
+  It found 59 of them, and the couplets either side of the ones I checked do not
+  rhyme — so they are real.
+
+The other lesson was paid for with a wrong answer I nearly shipped. The 1743 uses
+the long s, and the scanner misreads it **two** ways: as `ſ` (one global rule) and
+as `f` — `Cafe`, `fubdue`, `whofe`. For the `f` cases I reached for what looked
+like a principled test: which `f`-words have an `s`-form attested elsewhere in the
+same text? It proposes `for`→`sor`, `fight`→`sight`, `fame`→`same`,
+`before`→`besore`. The scan *also* misreads `s` as `f`, so both spellings of
+everything are attested and the corpus cannot arbitrate. Same shape as this
+week's other two: an operation that succeeds and returns confident nonsense.
+Every correction is now named individually in `wordFixes`, case-preserving,
+because 18th-century printing capitalises nouns and a `gi` regex flattens that
+without saying so.
+
+Staged as `published: false` with `ocr_quality: low` — honest, not flattering.
+The arrangement is sound; the letters inside it come from a British Library
+microfilm and 423 lines carry OCR the scanner itself doubted. Import (Stage 5a)
+was not run: this container has no Supabase credentials.
+
+---
+
 ## 2026-09-21 — "CI is not firing" was a false positive, and nearly became a note
 
 A comment in `.github/workflows/ci.yml` records a real gap: a PR opened by an

@@ -6161,6 +6161,34 @@
       ],
       "rejection_reason": "",
       "notes": "Prioritised out of order: the seasonal panel's Christmastide pick was null and the corpus carried no Nativity text at all. Imported via the MCP SQL path rather than pipeline-import.mjs — this session has no SUPABASE_SERVICE_ROLE_KEY — following the same insert shape (published:false, no editorial_introduction, draft author stub). Body verified byte-identical to the staged file by md5 (f6a575be721b95a1661fb60f75ad0614)."
+    },
+    {
+      "id": "psychomachia-prudentius",
+      "status": "staged",
+      "added": "2026-09-21",
+      "author": "Prudentius",
+      "death_year": 413,
+      "tradition": "patristic",
+      "era": "nicene-post-nicene",
+      "title": "Psychomachia: The War of the Soul",
+      "genre": "Hymn",
+      "source_type": "archive_ocr",
+      "source_url": "https://archive.org/details/bim_eighteenth-century_psychomachia-the-war-of_prudentius_1743",
+      "collection_slug": "psychomachia-prudentius",
+      "translation_copyright_clear": true,
+      "translator": "Anonymous",
+      "translator_death_year": null,
+      "stage_1_notes": "Author d. c. 413. Translation anonymous, PUBLISHED 1743 — public domain by publication date, which is the governing rule where no translator is named (CLAUDE.md multi-file-collections note 5). Source verified by fetching the scan and reading its title page, not by trusting the link. The New Advent URL on Notion #102 is wrong — it serves Augustine — and the richmond.edu link 404s; neither was used. No 19th-century PD English translation exists: Prudentius is in neither ANF nor NPNF, Pope 1905 is the Hymns only, and Thomson (Loeb) and Eagan (FoC) are in copyright.",
+      "stage_2_output": "scripts/ingestion/output/psychomachia-prudentius.md",
+      "stage_3_themes": [
+        "spiritual-warfare",
+        "virtue",
+        "vice",
+        "humility",
+        "conscience"
+      ],
+      "rejection_reason": "",
+      "notes": "Staged from the scan _djvu.XML via scripts/ingestion/extract-djvu-xml.mjs, not the _djvu.txt — the .txt merges couplets two to a line, orphans run-overs, splices page numbers into the verse and on several pages reorders the lines. 1237 lines, all seven combats plus the verse preface. ocr_quality: low, deliberately: the arrangement is sound but this is a British Library microfilm scan and scripts/ingestion/output/psychomachia-prudentius-review.md lists 59 places where the scan appears to have lost a line and 423 lines the OCR itself was unsure of. READ THAT FILE before publishing. Genre Hymn is the least-wrong option — the controlled vocabulary has no bucket for an allegorical epic poem."
     }
   ]
 }
