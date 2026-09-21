@@ -6,6 +6,7 @@ import { TrackPageEvent } from '@/app/components/TrackPageEvent'
 import { DownloadLinks } from '@/app/components/DownloadLinks'
 import { JsonLd } from '@/app/components/JsonLd'
 import { readingTime } from '@/lib/reading-time'
+import { fetchCollectionAuthors, formatAuthorNames, isLinkable } from '@/lib/collections/author'
 import { OG_IMAGE, SITE_URL } from '@/lib/metadata'
 
 // Incremental Static Regeneration: cache the rendered page and revalidate
@@ -20,16 +21,18 @@ export async function generateMetadata({ params }: Props) {
   const supabase = createPublicClient()
   const { data } = await supabase
     .from('collections')
-    .select('title, author:authors(name)')
+    .select('id, title, author:authors(name, slug)')
     .eq('slug', slug)
     .eq('published', true)
     .single()
 
   if (!data) return { title: 'Collection — The Stromata' }
 
-  const author = (data.author as unknown as { name: string } | null)?.name
+  // Derived from the collection's texts — `author_id` is only an override.
+  const author =
+    formatAuthorNames(await fetchCollectionAuthors(supabase, data.id as string, data.author)) || null
   // Format: "Collection Title — Author Name | The Stromata"
-  // Omits author segment if the collection has no linked author.
+  // Omits the author segment when there are no texts to derive one from.
   const title = author
     ? `${data.title} — ${author} | The Stromata`
     : `${data.title} | The Stromata`
@@ -74,10 +77,18 @@ export default async function CollectionPage({ params }: Props) {
     .order('collection_order', { ascending: true, nullsFirst: false })
     .order('title')
 
-  // `as unknown as` because naming the columns changes what Supabase infers for
-  // the embedded author (an array, not a single row) — the same cast the
-  // metadata query above and the authors pages already use.
-  const author = collection.author as unknown as { name: string; slug: string | null } | null
+  // Who the collection is by is derived from its texts rather than stored a
+  // second time on the collection row (see lib/collections/author.ts).
+  //
+  // The derivation applies no `published` filter of its own, so the caller's
+  // privileges decide its reach. On this page that is the anon key, and 023's
+  // RLS policy scopes it to published texts — right for a public byline. The
+  // admin dashboard and publishCollection() hold service_role and so see every
+  // text, published or not, which is what they need.
+  const authors = await fetchCollectionAuthors(supabase, collection.id, collection.author)
+  // A breadcrumb points somewhere, so it needs exactly one author *and* a page
+  // to point at — a draft author's page 404s until it has a published text.
+  const soleAuthor = authors.length === 1 && isLinkable(authors[0]) ? authors[0] : null
 
   // ── Structured data — built from real fields only (no null values) ──────────
   const canonicalUrl = `${SITE_URL}/collections/${slug}`
@@ -111,10 +122,10 @@ export default async function CollectionPage({ params }: Props) {
     '@type': 'BreadcrumbList',
     itemListElement: [
       { '@type': 'ListItem', position: 1, name: 'The Stromata', item: SITE_URL },
-      ...(author?.slug
-        ? [{ '@type': 'ListItem', position: 2, name: author.name, item: `${SITE_URL}/authors/${author.slug}` }]
+      ...(soleAuthor?.slug
+        ? [{ '@type': 'ListItem', position: 2, name: soleAuthor.name, item: `${SITE_URL}/authors/${soleAuthor.slug}` }]
         : []),
-      { '@type': 'ListItem', position: author?.slug ? 3 : 2, name: collection.title, item: canonicalUrl },
+      { '@type': 'ListItem', position: soleAuthor?.slug ? 3 : 2, name: collection.title, item: canonicalUrl },
     ],
   }
 
@@ -122,8 +133,8 @@ export default async function CollectionPage({ params }: Props) {
     <div style={{ background: 'var(--paper)', paddingTop: '4rem' }} className="min-h-screen">
       <JsonLd data={collectionJsonLd} />
       <JsonLd data={breadcrumbJsonLd} />
-      <SiteHeader breadcrumb={author?.slug
-        ? <Link data-umami-event="author-open" data-umami-event-from="collection-page" data-umami-event-author={author.name} href={`/authors/${author.slug}`} className="hover:opacity-70 transition-opacity">{author.name}</Link>
+      <SiteHeader breadcrumb={soleAuthor?.slug
+        ? <Link data-umami-event="author-open" data-umami-event-from="collection-page" data-umami-event-author={soleAuthor.name} href={`/authors/${soleAuthor.slug}`} className="hover:opacity-70 transition-opacity">{soleAuthor.name}</Link>
         : undefined}
       />
 
@@ -136,13 +147,19 @@ export default async function CollectionPage({ params }: Props) {
           <h1 className="font-serif text-3xl mb-3" style={{ color: '#1b1b1b' }}>
             {collection.title}
           </h1>
-          {author && (
+          {authors.length > 0 && (
             <p className="text-sm mb-4" style={{ color: '#6f6a60' }}>
-              {author.slug ? (
-                <Link data-umami-event="author-open" data-umami-event-from="collection-page" data-umami-event-author={author.name} href={`/authors/${author.slug}`} className="hover:opacity-70 transition-opacity">
-                  {author.name}
-                </Link>
-              ) : author.name}
+              {authors.map((a, i) => (
+                <span key={a.slug ?? a.name}>
+                  {/* "A", "A and B", "A, B and C" — mirrors formatAuthorNames. */}
+                  {i > 0 && (i === authors.length - 1 ? ' and ' : ', ')}
+                  {isLinkable(a) ? (
+                    <Link data-umami-event="author-open" data-umami-event-from="collection-page" data-umami-event-author={a.name} href={`/authors/${a.slug}`} className="hover:opacity-70 transition-opacity">
+                      {a.name}
+                    </Link>
+                  ) : a.name}
+                </span>
+              ))}
             </p>
           )}
           {collection.description && (

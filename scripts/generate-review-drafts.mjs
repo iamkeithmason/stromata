@@ -330,6 +330,25 @@ async function fillSummaryDrafts(texts) {
 
 // ── Step 3: collections.description_draft ────────────────────────────────────
 
+// Who a collection is by is derived from its texts — `collections.author_id` is
+// only a manual override and is null for everything the pipeline creates, so
+// reading it alone would hand the description prompt "Unknown" for most
+// collections. Mirrors lib/collections/author.ts, which is the TypeScript copy
+// the site renders from; this script runs under plain node and can't import it.
+function collectionAuthorName(collection, texts) {
+  const override = [collection.author].flat().filter(Boolean)[0];
+  if (override?.name) return override.name;
+
+  const names = [];
+  for (const t of texts) {
+    const name = [t.author].flat().filter(Boolean)[0]?.name;
+    if (name && !names.includes(name)) names.push(name);
+  }
+  if (names.length === 0) return 'Unknown';
+  if (names.length === 1) return names[0];
+  return `${names.slice(0, -1).join(', ')} and ${names[names.length - 1]}`;
+}
+
 async function fillCollectionDescriptions(texts) {
   const collectionIds = [...new Set(texts.map((t) => t.collection_id).filter(Boolean))];
   if (collectionIds.length === 0) {
@@ -357,9 +376,8 @@ async function fillCollectionDescriptions(texts) {
   let done = 0;
   for (let i = 0; i < targets.length; i++) {
     const c = targets[i];
-    const notes = texts
-      .filter((t) => t.collection_id === c.id && t.note_draft)
-      .map((t) => t.note_draft);
+    const inCollection = texts.filter((t) => t.collection_id === c.id);
+    const notes = inCollection.filter((t) => t.note_draft).map((t) => t.note_draft);
 
     if (notes.length === 0) {
       console.warn(`  [${i + 1}/${targets.length}] ${c.title} — no note drafts to write from; skipped`);
@@ -376,7 +394,7 @@ async function fillCollectionDescriptions(texts) {
     try {
       description = await generateDescription({
         title: c.title,
-        author: c.author?.name ?? 'Unknown',
+        author: collectionAuthorName(c, inCollection),
         notes,
       });
     } catch (err) {

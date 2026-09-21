@@ -11,6 +11,16 @@ on:
   push:
     branches: [main]
   pull_request:
+  # Manual trigger, for the window where a PR shows no checks at all rather
+  # than failing ones. Observed on #107: a PR opened through the GitHub MCP
+  # server produced no workflow run from its `opened` event — zero runs, every
+  # workflow — and sat that way until the next push, whose `synchronize` event
+  # did start one. So the gap is real but bounded: a PR opened by an agent and
+  # not pushed to again can sit looking unchecked indefinitely, which reads as
+  # "not yet" and never resolves. Note the limit — GitHub only offers the
+  # dispatch button for workflows present on the DEFAULT branch, so this helps
+  # branches cut after it lands, never the PR that adds it.
+  workflow_dispatch:
 
 concurrency:
   # New push to a PR supersedes its in-flight run; main runs stay isolated.

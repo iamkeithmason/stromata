@@ -845,10 +845,15 @@ still apply per-file, still parallelize the same way. What changes is Stage 2/5a
    falling back to a flat `{collection_slug}.md` — the directory takes priority automatically.
 2. **One queue entry per collection**, not per chapter — `collection_slug` on that single entry is
    what ties everything together; the import script creates the `collections` row (using that
-   entry's `title` and resolved `author_id`) the first time it sees more than one output file for
-   that slug, and links every chapter's `texts` row to it via `collection_id` +
-   `collection_order`. Verify with a query joining `collections` → `texts`, not just a `texts`
-   check.
+   entry's `title`) the first time it sees more than one output file for that slug, and links
+   every chapter's `texts` row to it via `collection_id` + `collection_order`. It deliberately
+   leaves `collections.author_id` null — **a collection's byline is derived from its texts**
+   (`lib/collections/author.ts`), so there is no second copy of the author to keep in step. The
+   column is a manual override for the rare case where the collection's own attribution differs
+   from its texts' (a compiler, an editor); null means "inherit". Derivation spans *all* texts,
+   published or not, and a multi-author collection names everyone. Verify with a query joining
+   `collections` → `texts`, not just a `texts` check — and don't read a null `author_id` as a
+   missing author.
 3. **Work smallest-to-largest.** Sort subfolders by file count first — a 2-file collection is a
    good way to validate the pattern before tackling a 30+ file one. First run (2026-07-13) did
    *The Consolation of Philosophy* (Alfred's Old English Boethius, 2 chapters: prose + verse) and

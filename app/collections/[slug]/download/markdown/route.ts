@@ -1,4 +1,5 @@
 import { createPublicClient } from '@/lib/supabase/public'
+import { fetchCollectionAuthors, formatAuthorNames } from '@/lib/collections/author'
 import {
   buildCollectionMarkdown,
   markdownFilename,
@@ -40,8 +41,20 @@ export async function GET(_req: Request, { params }: { params: Promise<{ slug: s
     .order('collection_order', { ascending: true, nullsFirst: false })
     .order('title')
 
+  // The byline is derived from the collection's texts rather than read off the
+  // collection row (see lib/collections/author.ts), so a bundle is attributed
+  // correctly even where `collections.author_id` was never filled in. The anon
+  // key scopes it to published texts, matching what the bundle contains.
+  const authorNames = formatAuthorNames(
+    await fetchCollectionAuthors(supabase, (collection as { id: string }).id, collection.author)
+  )
+  const downloadable: DownloadableCollection = {
+    ...(collection as unknown as DownloadableCollection),
+    author: authorNames ? { name: authorNames } : null,
+  }
+
   const markdown = buildCollectionMarkdown(
-    collection as unknown as DownloadableCollection,
+    downloadable,
     (texts ?? []) as unknown as DownloadableText[]
   )
 
