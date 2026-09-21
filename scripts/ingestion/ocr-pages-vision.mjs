@@ -53,18 +53,29 @@
  * key into this file to close the gap — the seam is the point.
  *
  * Usage:
- *   node scripts/ingestion/ocr-pages-vision.mjs prepare <config-key> [--force]
+ *   node scripts/ingestion/ocr-pages-vision.mjs prepare  <config-key> [--force]
  *   node scripts/ingestion/ocr-pages-vision.mjs assemble <config-key> [--dry] [--db]
+ *   node scripts/ingestion/ocr-pages-vision.mjs push     <config-key>
  *
  * `prepare` is idempotent and skips crops already on disk; `--force` refetches.
  *
- * `--db` pushes the assembled body onto the text row that already carries this
- * slug — for a text like the Psychomachia that was imported before the re-read,
- * where pipeline-import.mjs will skip the slug as already present. It reads the
- * body from the file it just wrote and touches nothing else: never `published`,
- * never `editorial_introduction`, never an author. Needs
- * SUPABASE_SERVICE_ROLE_KEY in .env.local, same as the other maintenance
- * scripts, so it runs from a local checkout rather than an agent session.
+ * `push` sends the staged body to the text row that already carries this slug —
+ * for a text like the Psychomachia, imported before the re-read, where
+ * pipeline-import.mjs skips the slug as already present. It touches nothing
+ * else: never `published`, never `editorial_introduction`, never an author, and
+ * it refuses outright if the row is published.
+ *
+ * `push` IS ITS OWN COMMAND, and that is the point. It reads only
+ * `output/<slug>.md`, which is committed, so it runs in any checkout. The first
+ * cut hung it off `assemble --db`, which meant it needed the manifest and the
+ * 72 transcripts — and `work/` was gitignored wholesale, so the one machine
+ * that could reach the database was the one machine that could not run the
+ * command. The step that writes somewhere shared should depend on the artefact
+ * that is shared, not on a working directory that happens to be local.
+ * (`assemble --db` still works where both are present.)
+ *
+ * Needs SUPABASE_SERVICE_ROLE_KEY in .env.local, same as the other maintenance
+ * scripts.
  */
 
 import fs from 'fs';
@@ -318,7 +329,7 @@ async function pushToDb(config, outFile) {
     ({ default: dotenv } = await import('dotenv'));
     ({ createClient } = await import('@supabase/supabase-js'));
   } catch {
-    console.error('\n✗ --db needs the project dependencies. Run `npm install` first.');
+    console.error('\n✗ Writing to the database needs the project dependencies. Run `npm install` first.');
     process.exitCode = 1;
     return;
   }
@@ -326,7 +337,9 @@ async function pushToDb(config, outFile) {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
   if (!url || !key) {
-    console.error('\n✗ --db needs NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY in .env.local.');
+    console.error(
+      '\n✗ Writing to the database needs NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY in .env.local.',
+    );
     process.exitCode = 1;
     return;
   }
@@ -635,17 +648,28 @@ copyright_safe: true
 const [command, key, ...flags] = process.argv.slice(2);
 const config = CONFIGS[key];
 
-if (!['prepare', 'assemble'].includes(command) || !config) {
+if (!['prepare', 'assemble', 'push'].includes(command) || !config) {
   console.error('Usage:');
   console.error('  node scripts/ingestion/ocr-pages-vision.mjs prepare <config-key> [--force]');
-  console.error('  node scripts/ingestion/ocr-pages-vision.mjs assemble <config-key> [--dry]');
+  console.error('  node scripts/ingestion/ocr-pages-vision.mjs assemble <config-key> [--dry] [--db]');
+  console.error('  node scripts/ingestion/ocr-pages-vision.mjs push <config-key>');
   console.error(`\nConfig keys: ${Object.keys(CONFIGS).join(', ')}`);
   process.exit(1);
 }
-if (!config.xmlFile || !config.archiveId) {
+
+// `push` needs only the staged markdown, which is committed. Everything else
+// needs the scan.
+if (command !== 'push' && (!config.xmlFile || !config.archiveId)) {
   console.error(`Config "${key}" needs both xmlFile and archiveId.`);
   process.exit(1);
 }
 
 if (command === 'prepare') prepare(config, { force: flags.includes('--force') });
-else await assemble(config, { dry: flags.includes('--dry'), db: flags.includes('--db') });
+else if (command === 'push') {
+  const outFile = path.join(ROOT, 'scripts/ingestion/output', `${config.slug}.md`);
+  if (!fs.existsSync(outFile)) {
+    console.error(`No staged markdown at ${path.relative(ROOT, outFile)}. Run \`assemble\` first.`);
+    process.exit(1);
+  }
+  await pushToDb(config, outFile);
+} else await assemble(config, { dry: flags.includes('--dry'), db: flags.includes('--db') });

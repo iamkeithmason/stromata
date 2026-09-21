@@ -57,6 +57,17 @@ Three things this got wrong before it got them right, all now in the code:
 - **Never tell the transcriber the predicted line count.** It becomes a target
   to pad toward and the check stops being independent.
 
+`push` is its own command, and the reason is a bug worth recording. The first
+cut hung the database write off `assemble --db`, so it needed the manifest and
+all 72 transcripts — and `work/` was gitignored wholesale, so the only machine
+with the credentials was the only machine that could not run it. Keith hit
+`No manifest. Run prepare first.` on the first try. `push` now reads only the
+committed `output/<slug>.md`. The gitignore was also wrong in the same way: it
+buried the transcripts, which are the irreplaceable half of the job, alongside
+22MB of re-downloadable crops. Only `work/*/pages/` is ignored now, and the
+transcripts and manifest are committed. **The step that writes somewhere
+shared must depend on the artefact that is shared.**
+
 One editorial supply, in `visionSupplies` with its justification: leaf 12 ends
 a line "with jo" and a speck, no further type on the page. The transcriber left
 it unfinished, which was right — completing it is a person's call, not a
