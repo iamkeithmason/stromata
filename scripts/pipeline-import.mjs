@@ -338,6 +338,19 @@ async function importTextFile(filePath, prospect, authorId, collectionId) {
     }
   }
 
+  // A non-null license carries its own attribution obligation (CC BY-SA and
+  // similar require the work to be credited to its source, not just marked
+  // public domain by omission). Refuse rather than import a licensed text
+  // with nothing to attribute it to.
+  const license = data.license || null;
+  const sourceUrl = data.source_url || prospect.source_url || null;
+  const sourceAttribution = data.source_attribution || null;
+  if (license && (!sourceAttribution || !sourceUrl)) {
+    const msg = `${data.slug}: license "${license}" set but source_attribution and/or source_url missing`;
+    console.warn(`  ! ${msg}`);
+    return { skipped: true, reason: 'license_missing_attribution', detail: msg };
+  }
+
   const { data: text, error } = await supabase
     .from('texts')
     .insert({
@@ -348,10 +361,11 @@ async function importTextFile(filePath, prospect, authorId, collectionId) {
       body: cleanBody,
       collection_id: collectionId,
       collection_order: data.collection_order ?? null,
-      source_url: data.source_url || prospect.source_url || null,
-      source_attribution: data.source_attribution || null,
+      source_url: sourceUrl,
+      source_attribution: sourceAttribution,
       provenance_notes: data.provenance_notes || null,
       translation_notes: data.translation_notes || null,
+      license,
       ocr_quality: data.ocr_quality || null,
       note_draft: data.note_draft || null,
       published: false,

@@ -21,12 +21,16 @@ export function CitationButton({
   slug,
   sourceAttribution,
   accessionNumber,
+  licenseName,
+  licenseUrl,
 }: {
   title: string
   authorName: string | null
   slug: string
   sourceAttribution: string | null
   accessionNumber: number | null
+  licenseName?: string | null
+  licenseUrl?: string | null
 }) {
   const [copied, setCopied] = useState(false)
 
@@ -41,6 +45,7 @@ export function CitationButton({
       `(accessed ${accessed}).`,
       accessionNumber != null ? `STROMATA № ${String(accessionNumber).padStart(2, '0')}.` : null,
       sourceAttribution ? `Source text: ${sourceAttribution}` : null,
+      licenseName && licenseUrl ? `Licensed under ${licenseName} (${licenseUrl}).` : null,
     ].filter(Boolean)
     return parts.join(' ')
   }
