@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { createServerClient } from '@/lib/supabase/server'
+import { createPublicClient } from '@/lib/supabase/public'
 import { SiteHeader } from '@/app/components/SiteHeader'
 import { TrackPageEvent } from '@/app/components/TrackPageEvent'
 
@@ -11,7 +11,7 @@ export const metadata = {
 }
 
 export default async function LocationsPage() {
-  const supabase = createServerClient()
+  const supabase = createPublicClient()
 
   const [{ data: locations }, { data: authorCounts }] = await Promise.all([
     supabase.from('locations').select('id, name, slug').order('name'),

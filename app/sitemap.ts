@@ -1,5 +1,5 @@
 import type { MetadataRoute } from 'next'
-import { createServerClient } from '@/lib/supabase/server'
+import { createPublicClient } from '@/lib/supabase/public'
 import { SITE_URL } from '@/lib/metadata'
 
 // Serves /sitemap.xml — a full map of the public site for search engines,
@@ -20,7 +20,7 @@ type TextRow = {
 }
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const supabase = createServerClient()
+  const supabase = createPublicClient()
   const loc = (path: string) => `${SITE_URL}${path}`
 
   const [textsRes, authorsRes, collectionsRes, locationsRes] = await Promise.all([

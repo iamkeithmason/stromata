@@ -1,4 +1,4 @@
-import { createServerClient } from '@/lib/supabase/server'
+import { createPublicClient } from '@/lib/supabase/public'
 import { SiteHeader } from '@/app/components/SiteHeader'
 import { readingTime } from '@/lib/reading-time'
 import { uniqueFacets, pickFacet } from '@/lib/facets'
@@ -37,7 +37,7 @@ const SORT_KEYS = ['title', 'author', 'length'] as const
 
 export default async function TextsPage({ searchParams }: Props) {
   const sp = await searchParams
-  const supabase = createServerClient()
+  const supabase = createPublicClient()
 
   const { data } = await supabase
     .from('texts')

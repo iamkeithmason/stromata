@@ -15,7 +15,7 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 
-import { classifySingleText, classifyCollection, UNKNOWN, DRAFT } from './liveStatus'
+import { classifySingleText, classifyCollection, UNKNOWN, DRAFT } from './liveStatusClassify'
 
 test('classifySingleText: live when the resolved slug is published', () => {
   const published = new Map([['small-catechism', true]])

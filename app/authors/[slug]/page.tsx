@@ -2,7 +2,7 @@ import Link from 'next/link'
 import { SiteHeader } from '@/app/components/SiteHeader'
 import { TrackPageEvent } from '@/app/components/TrackPageEvent'
 import { notFound } from 'next/navigation'
-import { createServerClient } from '@/lib/supabase/server'
+import { createPublicClient } from '@/lib/supabase/public'
 import { readingTime } from '@/lib/reading-time'
 import MarkdownBody from '@/app/components/MarkdownBody'
 import { LancetArch } from '@/app/components/LancetArch'
@@ -84,7 +84,7 @@ function buildMetaDescription(
 
 export async function generateMetadata({ params }: Props) {
   const { slug } = await params
-  const supabase = createServerClient()
+  const supabase = createPublicClient()
 
   const { data: author } = await supabase
     .from('authors')
@@ -97,7 +97,10 @@ export async function generateMetadata({ params }: Props) {
   // Count published texts for this author
   const { count: textCount } = await supabase
     .from('texts')
-    .select('*', { count: 'exact', head: true })
+    // select('id') not select('*'): anon cannot read the review-queue columns
+    // (026), and PostgREST rejects the whole request when select=* includes an
+    // unreadable column. head:true returns no rows either way.
+    .select('id', { count: 'exact', head: true })
     .eq('author_id', author.id)
     .eq('published', true)
 
@@ -143,7 +146,7 @@ export async function generateMetadata({ params }: Props) {
 
 export default async function AuthorPage({ params }: Props) {
   const { slug } = await params
-  const supabase = createServerClient()
+  const supabase = createPublicClient()
 
   const { data: author } = await supabase
     .from('authors')

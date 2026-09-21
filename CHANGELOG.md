@@ -31,10 +31,16 @@ collection by nobody.
   its `generateMetadata`, both download routes, the admin dashboard list and
   `publishCollection`'s revalidation all read through it, so they can't disagree
   about who a collection is by.
-- **Derived from *all* texts, not just published ones.** The byline says who
-  wrote the work; it isn't a listing of what's visible today. `pastoral-rule-gregory`
-  is published with all four texts still in draft, and should still say Gregory
-  the Great.
+- **No `published` filter of its own — the caller's privileges set its reach.**
+  The byline says who wrote the work, not what's visible today, so the query
+  doesn't narrow it. Since #106 moved public pages onto the anon key, RLS
+  supplies that filter on the public side, which is right for a public byline:
+  `pastoral-rule-gregory`, published with all four texts still in draft, shows
+  no byline — on a page that already reads "No published texts in this
+  collection yet." The admin dashboard and `publishCollection()` hold
+  service_role and see every text, which is what an index line and a
+  revalidation sweep need. Adding the filter to the query itself would have
+  narrowed those too.
 - **A multi-author collection names everyone** — "Jerome and Augustine of Hippo",
   Oxford-comma-free, each name linked where it has an author page. The corpus is
   single-author 40-for-40 today, but that's a property of the current acquisition
@@ -68,6 +74,103 @@ files). Not verified in the rendered admin or collection page — `/admin` needs
 Keith's login, and `next build` needs Supabase credentials CI deliberately
 doesn't carry.
 
+## 2026-09-21 — RLS guards rows; the draft columns needed a column grant
+
+Follow-up to the anon-key switch earlier today. Moving public reads onto the anon key put the
+`published` boundary in the database — but **RLS is row-level, not column-level**. Once a row is
+visible, every column on it is. The review queue's back-office fields live on `texts` and
+`collections`, so on a *published* row the public key could read them: `note_draft` on 273 rows,
+`summary_draft` on 36, `review_state` on 51. `review_note` — "why a text was held, in Keith's
+words" — was empty, which is the only reason this was cheap to find rather than expensive. It
+fills as the queue gets used, so the leak arrives with the feature.
+
+- **`026` withholds six columns** from `anon` and `authenticated`: `texts.note_draft`,
+  `summary_draft`, `review_state`, `review_note`, and `collections.description_draft`,
+  `provenance_verified_at`. service_role is untouched.
+- **The obvious migration does nothing, silently.** `revoke select (review_note) on texts from
+  anon` runs clean and changes nothing: a column-level REVOKE only removes column-level grants,
+  and `024`'s table-wide `grant select on all tables` confers every column regardless. Caught by
+  checking `has_column_privilege` afterwards, which still read `true`. The working form is to drop
+  the table grant and re-grant the allowed columns explicitly, which is what `026` does.
+- **These two tables now fail closed.** A column added to `texts` or `collections` later is not
+  readable by anon until granted — the next workflow column cannot leak the way these did — but a
+  new *public* column needs its grant alongside the `ALTER TABLE`. Corollary: never re-run
+  `grant select on all tables in schema public to anon`; it would restore table-level SELECT and
+  undo this.
+- **`select('*')` is now a 403 on those tables**, because PostgREST rejects the whole request when
+  a selected column is unreadable rather than omitting it. Two public call sites converted:
+  `app/authors/[slug]/page.tsx`'s head-only count (`select('*')` → `select('id')`) and
+  `app/collections/[slug]/page.tsx`'s collection fetch (→ an explicit column list, matching the
+  shape its own download routes already used). `select('*')` on `authors` is left alone — that
+  table withholds nothing.
+
+Verified at runtime, not just by privilege flags, because both converted routes are dynamic and a
+build never exercises them: served the production build against the real anon key and requested
+both collection pages and both author pages — **200 with full content** — while a draft text slug
+and a nonexistent collection both returned 404, and no withheld field name appears in the HTML. As
+`anon`, `select *`, `review_note` and `provenance_verified_at` each raise `insufficient_privilege`,
+while the columns the pages actually render all still read. Also corrected `020`'s comment, which
+said these columns "inherit admin-only access by construction" — true when written, and made false
+by the policies added hours later.
+
+---
+
+## 2026-09-21 — Public pages read with the anon key; RLS now enforces `published`
+
+Supabase's security advisor flagged two WARNs (`public.rls_auto_enable()` executable by `anon`
+and `authenticated`) and eleven INFOs (RLS enabled, no policies). The WARNs were the small half.
+The INFOs meant every table was deny-all, which forced **every** page — public ones included — to
+read with the service_role key, which bypasses RLS outright. The only thing keeping 316
+unpublished drafts off the public site was application code remembering `.eq('published', true)`.
+One missed filter in a new page or query would have leaked drafts. With the mobile review queue
+about to add exactly that kind of new query surface, that was the finding worth acting on.
+
+- **`rls_auto_enable()` EXECUTE revoked** from `public`, `anon` and `authenticated`
+  (`022`). Event triggers run as the function owner and never consult the caller's EXECUTE
+  privilege, so `ensure_rls` keeps auto-enabling RLS on new tables: verified by creating a scratch
+  table afterwards and reading back `pg_class.relrowsecurity = true`, then confirming an `anon`
+  call is refused with `insufficient_privilege`.
+- **SELECT policies for `anon` / `authenticated`** on all eleven tables (`023`), written to
+  reproduce what the site shows today rather than to a tidier rule. `texts` and `collections`
+  gate on `published`; the `text_themes` / `text_scripture_references` junctions inherit their
+  parent text's visibility (exposing them for a draft would leak that the draft exists); reference
+  tables are `using (true)`. **`authors` is the one that needed reading the code first**:
+  `app/authors/page.tsx` lists non-draft authors regardless of text count, while
+  `app/authors/[slug]/page.tsx` 404s a draft author *only* when it has no published texts. The
+  policy is `draft = false OR has a published text` — the obvious "has a published text" would
+  have silently dropped non-draft authors whose texts aren't published yet.
+- **Public routes switched to a new `createPublicClient()`** (`lib/supabase/public.ts`, anon key,
+  subject to RLS) across 24 files. `createServerClient()` stays service_role for `/admin`,
+  `/api/admin`, writes, scripts and the Scout/Sourcer agents, and now carries `import 'server-only'`
+  so it is a build error to pull into a Client Component.
+- **A grant drift that had been live since the start.** `010_grants.sql` documented that `anon`
+  would get "NO ACCESS" to `texts`, `text_themes` and `collections`. It never did — Supabase's
+  default privileges grant ALL on new tables to `anon`, and `010` only ever added grants, never
+  revoked. Every table was in fact `anon=arwdDxtm`: SELECT *and* INSERT/UPDATE/DELETE. Deny-all
+  RLS was the only thing standing in the way. `024` revokes the write grants so `anon` is
+  SELECT-only at both layers.
+- **`authenticated` is now SELECT-only too** (`025`), and `author_locations` was narrowed from
+  `using (true)` to inherit the authors policy. `010` gave `authenticated` full CRUD on purpose,
+  staging a Phase 2 that hasn't happened — `auth.users` is empty and the admin area authenticates
+  with its own signed cookie and talks to the database as service_role, so nothing ever connects
+  as that role. Inert today only because RLS denies the writes, which makes it a trap: the first
+  per-user write policy would inherit table-wide CRUD rather than the narrow grant its author
+  intended. Phase 2 is now additive. The unused `lib/supabase/client.ts` (`createBrowserClient`)
+  is deleted — it duplicated the new public client and invited picking the wrong one.
+- **`020`/`021` came from the review-queue branch, not here.** This branch had backfilled the same
+  two directly-applied migrations independently; on merge they collided add/add and the
+  review-queue originals won — they carry the fuller rationale.
+
+Verification, since "the policy looks right" is not evidence. Row fingerprints (`md5` over the
+ordered id set) for all twelve public surfaces were captured before the change as service_role +
+the app's own filters, then re-read as `anon` under RLS: **identical on all twelve** — 222 texts,
+20 collections, 74 authors, 913 theme links, 6,145 scripture refs, 4,385 view rows, and the five
+reference tables. A production build then ran with the **real anon key and a placeholder
+service-role key**: every public route prerendered from live data, which is itself proof that no
+public path still depends on service_role. Across the 158 prerendered public files, zero draft
+slugs appear; the two *published* Tractates do, and the other 122 don't. `get_advisors` (security)
+now returns an empty list — no WARNs, and the INFOs are gone too, because the tables have policies
+rather than because anything was suppressed.
 ## 2026-09-21 — The admin session slides, so a phone review isn't logged out
 
 The review queue that shipped this morning is meant to be worked in spare

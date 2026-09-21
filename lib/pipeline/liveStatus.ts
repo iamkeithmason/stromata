@@ -30,16 +30,22 @@
 import { promises as fs } from 'fs'
 import path from 'path'
 import { createServerClient } from '@/lib/supabase/server'
+import {
+  classifySingleText,
+  classifyCollection,
+  UNKNOWN,
+  type LiveStatusResult,
+} from './liveStatusClassify'
+
+export {
+  classifySingleText,
+  classifyCollection,
+  UNKNOWN,
+  DRAFT,
+} from './liveStatusClassify'
+export type { LiveStatus, LiveStatusResult } from './liveStatusClassify'
 
 const OUTPUT_DIR = path.join(process.cwd(), 'scripts', 'ingestion', 'output')
-
-export type LiveStatus = 'live' | 'draft' | 'unknown'
-
-export interface LiveStatusResult {
-  status: LiveStatus
-  /** The live public URL, set only when status === 'live'. */
-  href: string | null
-}
 
 async function outputFilePaths(collectionSlug: string): Promise<string[]> {
   const files: string[] = []
@@ -74,25 +80,6 @@ async function readFrontmatterSlug(filePath: string): Promise<string | null> {
   } catch {
     return null
   }
-}
-
-export const UNKNOWN: LiveStatusResult = { status: 'unknown', href: null }
-export const DRAFT: LiveStatusResult = { status: 'draft', href: null }
-
-// Pure — the part worth unit-testing without touching Supabase or the
-// filesystem. "Live" means every published flag for the prospect's output is
-// true: a lone unpublished chapter, or a text/collection absent from the
-// database entirely, both fall short of that (see lib/pipeline/liveStatus.test.ts
-// for the real half-published cases this corpus has actually produced).
-
-export function classifySingleText(slug: string, publishedBySlug: Map<string, boolean>): LiveStatusResult {
-  const pub = publishedBySlug.get(slug)
-  return pub === undefined ? UNKNOWN : pub ? { status: 'live', href: `/texts/${slug}` } : DRAFT
-}
-
-export function classifyCollection(collectionSlug: string, publishedFlags: boolean[] | undefined): LiveStatusResult {
-  if (!publishedFlags || publishedFlags.length === 0) return UNKNOWN
-  return publishedFlags.every(Boolean) ? { status: 'live', href: `/collections/${collectionSlug}` } : DRAFT
 }
 
 /**

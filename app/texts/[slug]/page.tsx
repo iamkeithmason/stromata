@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import { createServerClient } from '@/lib/supabase/server'
+import { createPublicClient } from '@/lib/supabase/public'
 import MarkdownBody from '@/app/components/MarkdownBody'
 import { SiteHeader } from '@/app/components/SiteHeader'
 import { RecordVisit } from '@/app/components/RecordVisit'
@@ -28,7 +28,7 @@ type Props = { params: Promise<{ slug: string }> }
 
 export async function generateMetadata({ params }: Props) {
   const { slug } = await params
-  const supabase = createServerClient()
+  const supabase = createPublicClient()
   const { data } = await supabase
     .from('texts')
     .select('title, summary, author:authors(name)')
@@ -67,7 +67,7 @@ export async function generateMetadata({ params }: Props) {
 
 export default async function TextPage({ params }: Props) {
   const { slug } = await params
-  const supabase = createServerClient()
+  const supabase = createPublicClient()
 
   const { data: text } = await supabase
     .from('texts')

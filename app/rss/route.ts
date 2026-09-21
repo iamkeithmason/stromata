@@ -1,4 +1,4 @@
-import { createServerClient } from '@/lib/supabase/server'
+import { createPublicClient } from '@/lib/supabase/public'
 
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
@@ -13,7 +13,7 @@ function escapeXml(str: string): string {
 }
 
 export async function GET() {
-  const supabase = createServerClient()
+  const supabase = createPublicClient()
 
   const { data: texts } = await supabase
     .from('texts')

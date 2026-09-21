@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { createServerClient } from '@/lib/supabase/server'
+import { createPublicClient } from '@/lib/supabase/public'
 import { BookCover } from '@/app/components/BookCover'
 import { SiteHeader } from '@/app/components/SiteHeader'
 import { TrackPageEvent } from '@/app/components/TrackPageEvent'
@@ -111,7 +111,7 @@ export default async function SearchPage({ searchParams }: Props) {
   const { q } = await searchParams
   const query = q?.trim() ?? ''
 
-  const supabase = createServerClient()
+  const supabase = createPublicClient()
 
   let texts: TextResult[] = []
   let authors: AuthorResult[] = []

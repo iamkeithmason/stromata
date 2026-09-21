@@ -1,4 +1,4 @@
-import { createServerClient } from '@/lib/supabase/server'
+import { createPublicClient } from '@/lib/supabase/public'
 import { fetchCollectionAuthors, formatAuthorNames } from '@/lib/collections/author'
 import {
   buildCollectionMarkdown,
@@ -15,7 +15,7 @@ export const revalidate = 0
 // same reading order as the collection page (collection_order, then title).
 export async function GET(_req: Request, { params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
-  const supabase = createServerClient()
+  const supabase = createPublicClient()
 
   const { data: collection } = await supabase
     .from('collections')
@@ -43,7 +43,8 @@ export async function GET(_req: Request, { params }: { params: Promise<{ slug: s
 
   // The byline is derived from the collection's texts rather than read off the
   // collection row (see lib/collections/author.ts), so a bundle is attributed
-  // correctly even where `collections.author_id` was never filled in.
+  // correctly even where `collections.author_id` was never filled in. The anon
+  // key scopes it to published texts, matching what the bundle contains.
   const authorNames = formatAuthorNames(
     await fetchCollectionAuthors(supabase, (collection as { id: string }).id, collection.author)
   )

@@ -11,6 +11,14 @@ on:
   push:
     branches: [main]
   pull_request:
+  # Manual trigger. A `pull_request` event raised by a GitHub App's token does
+  # not start a workflow run — GitHub suppresses it to prevent workflows
+  # triggering workflows — so a PR opened by an agent through the App gets no
+  # CI at all, which reads as "no checks" rather than as a failure. This lets
+  # the run be started by hand against any ref. GitHub only offers the button
+  # for workflows present on the default branch, so it works for branches cut
+  # after this lands, not retroactively.
+  workflow_dispatch:
 
 concurrency:
   # New push to a PR supersedes its in-flight run; main runs stay isolated.

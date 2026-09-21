@@ -1,4 +1,4 @@
-import { createServerClient } from '@/lib/supabase/server'
+import { createPublicClient } from '@/lib/supabase/public'
 import { markdownFilename, type DownloadableText } from '@/lib/downloads'
 import { TextDocument } from '@/lib/pdf/TextDocument'
 
@@ -10,7 +10,7 @@ export const revalidate = 0
 // Renders a published text as a styled PDF (server-side, @react-pdf/renderer).
 export async function GET(_req: Request, { params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
-  const supabase = createServerClient()
+  const supabase = createPublicClient()
 
   const { data } = await supabase
     .from('texts')

@@ -16,10 +16,14 @@
  *
  * Two deliberate choices:
  *
- *  - **Derived from ALL texts, not just published ones.** The byline states who
- *    wrote the work; it is not a listing of what happens to be visible today. A
- *    published collection whose texts are still drafts (pastoral-rule-gregory,
- *    at time of writing) should still say "Gregory the Great".
+ *  - **No `published` filter of its own — the caller's privileges decide its
+ *    reach.** The byline states who wrote the work, not what happens to be
+ *    visible, so nothing here narrows it. What that means in practice differs by
+ *    client, and deliberately so: public pages hold the anon key, where 023's
+ *    RLS policy scopes it to published texts (right for a public byline, and the
+ *    reason a published collection whose texts are all still drafts shows none);
+ *    the admin dashboard and publishCollection() hold service_role and see every
+ *    text, which is what an index line and a revalidation sweep need.
  *  - **Multi-author collections list their names.** The corpus is single-author
  *    40-for-40 today, but that is a property of the current acquisition path
  *    (one work by one author, split into chapters), not of collections. An
@@ -104,8 +108,10 @@ export function formatAuthorNames(authors: CollectionAuthorRef[]): string {
 /**
  * Read a collection's authors straight from its texts.
  *
- * Note the absence of an `.eq('published', true)` filter — see the note above:
- * authorship is a fact about the work, not about what is currently visible.
+ * Note the absence of an `.eq('published', true)` filter — see the note above.
+ * That is not the same as "reads every text": under the anon key RLS supplies
+ * that filter itself. Adding one here would narrow the service-role callers too,
+ * which is the opposite of what they need.
  */
 export async function fetchCollectionAuthors(
   supabase: SupabaseClient,

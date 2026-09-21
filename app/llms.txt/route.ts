@@ -1,4 +1,4 @@
-import { createServerClient } from '@/lib/supabase/server'
+import { createPublicClient } from '@/lib/supabase/public'
 import { SITE_URL } from '@/lib/metadata'
 
 // Serves /llms.txt — a curated, Markdown-formatted map of the site for AI
@@ -52,7 +52,7 @@ function section(title: string, links: string[]): string {
 }
 
 export async function GET() {
-  const supabase = createServerClient()
+  const supabase = createPublicClient()
 
   const { data } = await supabase
     .from('texts')

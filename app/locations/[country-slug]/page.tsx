@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import { createServerClient } from '@/lib/supabase/server'
+import { createPublicClient } from '@/lib/supabase/public'
 import { SiteHeader } from '@/app/components/SiteHeader'
 import { TrackPageEvent } from '@/app/components/TrackPageEvent'
 import { readingTime } from '@/lib/reading-time'
@@ -27,14 +27,14 @@ type TextRow = {
 }
 
 export async function generateStaticParams() {
-  const supabase = createServerClient()
+  const supabase = createPublicClient()
   const { data } = await supabase.from('locations').select('slug')
   return (data ?? []).map(l => ({ 'country-slug': l.slug }))
 }
 
 export async function generateMetadata({ params }: Props) {
   const slug = (await params)['country-slug']
-  const supabase = createServerClient()
+  const supabase = createPublicClient()
   const { data } = await supabase.from('locations').select('name').eq('slug', slug).single()
   if (!data) return { title: 'Locations — The Stromata' }
   return {
@@ -46,7 +46,7 @@ export async function generateMetadata({ params }: Props) {
 
 export default async function CountryPage({ params }: Props) {
   const slug = (await params)['country-slug']
-  const supabase = createServerClient()
+  const supabase = createPublicClient()
 
   const { data: location } = await supabase
     .from('locations')

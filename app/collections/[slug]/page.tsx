@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import { createServerClient } from '@/lib/supabase/server'
+import { createPublicClient } from '@/lib/supabase/public'
 import { SiteHeader } from '@/app/components/SiteHeader'
 import { TrackPageEvent } from '@/app/components/TrackPageEvent'
 import { DownloadLinks } from '@/app/components/DownloadLinks'
@@ -18,7 +18,7 @@ type Props = { params: Promise<{ slug: string }> }
 
 export async function generateMetadata({ params }: Props) {
   const { slug } = await params
-  const supabase = createServerClient()
+  const supabase = createPublicClient()
   const { data } = await supabase
     .from('collections')
     .select('id, title, author:authors(name, slug)')
@@ -32,7 +32,7 @@ export async function generateMetadata({ params }: Props) {
   const author =
     formatAuthorNames(await fetchCollectionAuthors(supabase, data.id as string, data.author)) || null
   // Format: "Collection Title — Author Name | The Stromata"
-  // Omits the author segment when the collection has no texts to derive one from.
+  // Omits the author segment when there are no texts to derive one from.
   const title = author
     ? `${data.title} — ${author} | The Stromata`
     : `${data.title} | The Stromata`
@@ -53,11 +53,15 @@ export async function generateMetadata({ params }: Props) {
 
 export default async function CollectionPage({ params }: Props) {
   const { slug } = await params
-  const supabase = createServerClient()
+  const supabase = createPublicClient()
 
   const { data: collection } = await supabase
     .from('collections')
-    .select('*, author:authors(name, slug)')
+    // Explicit columns, not '*': anon cannot read description_draft /
+    // provenance_verified_at (026), and PostgREST rejects the whole request
+    // when select=* includes an unreadable column. Mirrors the shape the
+    // download routes already use.
+    .select('id, title, slug, description, published, author:authors(name, slug)')
     .eq('slug', slug)
     .eq('published', true)
     .single()
@@ -74,9 +78,13 @@ export default async function CollectionPage({ params }: Props) {
     .order('title')
 
   // Who the collection is by is derived from its texts rather than stored a
-  // second time on the collection row (see lib/collections/author.ts). Note the
-  // derivation spans *all* texts, published or not: the byline states who wrote
-  // the work, it is not a listing of what happens to be visible today.
+  // second time on the collection row (see lib/collections/author.ts).
+  //
+  // The derivation applies no `published` filter of its own, so the caller's
+  // privileges decide its reach. On this page that is the anon key, and 023's
+  // RLS policy scopes it to published texts — right for a public byline. The
+  // admin dashboard and publishCollection() hold service_role and so see every
+  // text, published or not, which is what they need.
   const authors = await fetchCollectionAuthors(supabase, collection.id, collection.author)
   // A breadcrumb points somewhere, so it needs exactly one author *and* a page
   // to point at — a draft author's page 404s until it has a published text.
