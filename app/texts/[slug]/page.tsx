@@ -1,6 +1,7 @@
 import Link from 'next/link'
+import { notFound } from 'next/navigation'
 import { createPublicClient } from '@/lib/supabase/public'
-import { assertFound } from '@/lib/supabase/not-found'
+import { orThrow } from '@/lib/supabase/query'
 import MarkdownBody from '@/app/components/MarkdownBody'
 import { SiteHeader } from '@/app/components/SiteHeader'
 import { RecordVisit } from '@/app/components/RecordVisit'
@@ -69,36 +70,43 @@ export default async function TextPage({ params }: Props) {
   const { slug } = await params
   const supabase = createPublicClient()
 
-  const { data: textRow, error: textError } = await supabase
-    .from('texts')
-    // The anon-granted columns spelled out, not `*`. Anon holds a column-level
-    // grant on `texts`
-    // (026), and PostgREST refuses the WHOLE request when select=* expands to
-    // include an unreadable column — so `*` here returned no row and this page
-    // answered 404 for every text on the site.
-    //
-    // Spelled out rather than interpolated from PUBLIC_TEXT_COLUMNS because
-    // supabase-js parses the select string at the TYPE level and needs a
-    // literal; a template substitution makes it a ParserError and every field
-    // on the row becomes untyped. lib/supabase/public-columns.ts holds the
-    // canonical list and the reasoning, and its test reads this file back to
-    // check the two have not drifted.
-    .select(`
-      accession_number, author_id, body, collection_id, collection_order,
-      created_at, editorial_introduction, featured, featured_from, featured_note,
-      genre_id, id, ocr_quality, provenance_notes, published, published_at,
-      slug, source_attribution, source_url, summary, title, translation_notes,
-      updated_at, word_count,
-      author:authors(name, slug, bio, birth_year, death_year, image_url, image_focus_x, image_focus_y, image_zoom, loc:locations(name, slug), tradition:traditions(slug, name), era:eras(label, slug)),
-      genre:genres(name),
-      text_themes(theme:themes(name, slug)),
-      collection:collections(id, title, slug, published)
-    `)
-    .eq('slug', slug)
-    .eq('published', true)
-    .single()
+  // `.maybeSingle()` + orThrow. `.single()` reports zero rows as an error,
+  // which a guard would turn into a 500 for a slug that simply does not
+  // exist; and an unguarded read turns a Supabase outage into a 404 on
+  // every text on the site. See lib/supabase/query.ts.
+  const text = orThrow(
+    await supabase
+      .from('texts')
+      // The anon-granted columns spelled out, not `*`. Anon holds a column-level
+      // grant on `texts`
+      // (026), and PostgREST refuses the WHOLE request when select=* expands to
+      // include an unreadable column — so `*` here returned no row and this page
+      // answered 404 for every text on the site.
+      //
+      // Spelled out rather than interpolated from PUBLIC_TEXT_COLUMNS because
+      // supabase-js parses the select string at the TYPE level and needs a
+      // literal; a template substitution makes it a ParserError and every field
+      // on the row becomes untyped. lib/supabase/public-columns.ts holds the
+      // canonical list and the reasoning, and its test reads this file back to
+      // check the two have not drifted.
+      .select(`
+        accession_number, author_id, body, collection_id, collection_order,
+        created_at, editorial_introduction, featured, featured_from, featured_note,
+        genre_id, id, ocr_quality, provenance_notes, published, published_at,
+        slug, source_attribution, source_url, summary, title, translation_notes,
+        updated_at, word_count,
+        author:authors(name, slug, bio, birth_year, death_year, image_url, image_focus_x, image_focus_y, image_zoom, loc:locations(name, slug), tradition:traditions(slug, name), era:eras(label, slug)),
+        genre:genres(name),
+        text_themes(theme:themes(name, slug)),
+        collection:collections(id, title, slug, published)
+      `)
+      .eq('slug', slug)
+      .eq('published', true)
+      .maybeSingle(),
+    'the reader page',
+  )
 
-  const text = assertFound(textRow, textError)
+  if (!text) notFound()
 
   // author and genre are many-to-one → plain objects at runtime. The casts go
   // through `unknown` because the select is now a literal column list, so

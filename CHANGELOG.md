@@ -7,55 +7,85 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
-## 2026-09-21 — A failed read that renders as "zero results" poisons the ISR cache
+## 2026-09-21 — Bounding the failure the query-error fix below still leaves open
 
-Reported via Discord: "buttons to the texts don't respond" — tried in both Brave and Chrome,
-shields down. The actual bug was worse than an unresponsive click: `/texts` and `/authors` were
-live-verified showing **"0 TEXTS" / "0 IN THE LIBRARY", "No texts/authors match these filters"** —
-to every visitor, on production, right now. There was nothing on either page to click.
+Landed alongside the entry directly below (same incident, same session that reported it, a
+different Claude session fixed the root cause first — see that entry for the full story and
+`orThrow`/`.maybeSingle()`, which supersede what this entry originally proposed here). Three things
+that fix doesn't cover, added on top of it:
 
-Root cause: `export const revalidate = 3600` makes these pages ISR — Next builds them in the
-background and keeps serving the last good version if the build throws. But
-`app/texts/page.tsx`, `app/authors/page.tsx` and `app/page.tsx`'s two homepage queries all wrote
-`const { data } = await supabase...` then `(data ?? []) as ...`, discarding `error` entirely. A
-Supabase read that *fails* and one that *succeeds with zero rows* both come back as `data: null`,
-and this pattern cannot tell them apart — so a failed read doesn't throw, it renders a
-successful-looking page reporting an empty corpus, and ISR happily bakes that over the working
-cache for the next hour. The trigger was a live Supabase incident (free-tier egress overage,
-`2abc198` same day was already chasing the same root cause) — confirmed directly against the
-`texts` table over both PostgREST and a raw Postgres connection, timing out 3/3 tries — but the
-database recovering on its own was never going to fix the cache it had already poisoned; only a
-fresh deploy (or the next revalidation happening to land while the DB was briefly healthy) would.
-That's a landmine for the *next* transient Supabase blip too, not just this one.
-
-- `lib/supabase/rows.ts` (`rowsOrThrow`): throws on `error` instead of coercing to `[]`. Applied to
-  the three listing reads above. A thrown error during ISR background regeneration makes Next keep
-  the last good cache and retry next window, instead of overwriting a working page with an empty
-  one.
-- `lib/supabase/not-found.ts` (`assertFound`): the same blind spot, one level down. `.single()` on
-  `texts/[slug]`, `authors/[slug]`, `collections/[slug]` also returns `data: null` for both "no such
-  row" and "query failed," and all three called `notFound()` on any falsy `data`. A failed detail-page
-  read rendered as a false 404 — telling a reader (and search engines) a text doesn't exist rather
-  than "ask again in a moment." `assertFound` keeps the real 404 (`error.code === 'PGRST116'`) and
-  throws everything else.
-- `lib/supabase/public.ts`: `createPublicClient()`'s fetch now carries an 8s `AbortSignal.timeout`,
-  so a stalled query fails fast instead of hanging until the platform's own function timeout (up to
-  60s on Vercel) — a click reading as "nothing happened" for however long that takes.
-- `app/loading.tsx`, `app/error.tsx`: root-level UI Next.js had neither before. Loading streams in
-  immediately so a click has visible feedback while data is in flight; the error boundary — what
-  `rowsOrThrow`/`assertFound` now throw into — gives a branded "try again" instead of Next's default
-  crash page.
+- `lib/supabase/public.ts`: `createPublicClient()`'s fetch now carries an 8s `AbortSignal.timeout`.
+  `orThrow` makes a failed read fail loudly, but nothing previously bounded how long a *stalled*
+  read (Supabase accepts the connection but never answers) takes to surface as a failure at all —
+  a click could still hang until the platform's own function timeout (up to 60s on Vercel).
+- `app/loading.tsx`, `app/error.tsx`: root-level UI Next.js had neither of before, so what `orThrow`
+  now throws on a live (non-ISR) request had nowhere to land but Next's default crash page. Loading
+  streams in immediately so a click has visible feedback while data is in flight; the error boundary
+  gives a branded "try again" instead.
 - `scripts/verify-site-health.mjs`: the QA automation asked for alongside the fix. Loads cached
-  pages and asserts a budget, hits the live-read routes (sitemap/rss/llms.txt) the same way, and —
-  the check that actually maps to the report — opens `/texts`, clicks the first real text link, and
+  pages and the live-read routes (sitemap/rss/llms.txt) against a time budget, and — the check that
+  actually maps to the original report — opens `/texts`, clicks the first real text link, and
   asserts the browser lands on real content within budget. Run manually or on a schedule, the same
   way `verify-analytics.mjs` is: `node scripts/verify-site-health.mjs --prod`.
 
-Not fixed here, flagged as a follow-up: the same `data ?? []` / `notFound()`-on-falsy-`data` pattern
-is still present in every other ISR page in `app/` (eras/traditions/themes/locations index and
-`[slug]` pages, `scripture/[ref]`, the secondary queries on the pages fixed above) — lower-stakes
-individually since none of them are the two top-of-funnel pages that were actually caught empty
-tonight, but it's the identical landmine in every one of them.
+The entry below already fixed `scripture/[ref]` was left out of its own sweep — worth checking
+before calling this class of bug closed.
+
+---
+
+## 2026-09-21 — The egress fix shipped an empty library, and a query error is not an empty result
+
+An hour after #118 merged, production served **"Library — 0 texts — No texts
+match these filters"** at HTTP 200, `/authors` the same, and 404s on theme pages
+that exist. Supabase's REST API had stopped answering — HTTP 522 to everything,
+a one-row `select id limit 1` included, while the management API still reported
+`ACTIVE_HEALTHY` — and a deploy ran inside that window.
+
+Nothing in #118 was wrong. What it changed was what an outage *costs*. Those
+pages used to render per request, so a broken minute was a broken minute; making
+them prerendered meant the broken minute was captured and served until the next
+successful regeneration. **An optimisation that moves work earlier moves failure
+later.**
+
+The enabling condition was the error handling, not the caching:
+`const { data } = await supabase…` then `data ?? []` discards `error`, so a
+failed query and an empty library are the same value. Under a dynamic page that
+is a bad minute; under a prerender it is a confident, complete, wrong page that
+reports no problem anywhere.
+
+- **`lib/supabase/query.ts` — `orThrow`.** A query error now throws. At build
+  time that fails the deploy; during ISR regeneration it aborts and Next keeps
+  serving the last good copy. Both beat publishing an empty library. The trade
+  is deliberate and worth stating plainly: **a Supabase outage now fails
+  builds.** That is the point — the previous behaviour was a build that
+  "succeeded".
+- **`.single()` → `.maybeSingle()` wherever a lookup gates `notFound()`.**
+  `.single()` reports *zero rows* as an error, so a naive guard around it would
+  have turned a genuinely missing slug into a 500. `maybeSingle` gives null for
+  absence and an error only for failure, so `notFound()` once again means "no
+  such thing" and never "the database was unreachable". Applied on the reader,
+  author, theme, era, tradition, location and collection pages; the two indexes
+  and the homepage feed are guarded as list queries.
+- **Build errors stay readable.** Supabase returned a ~7 kB Cloudflare HTML
+  page as `error.message`; unabridged it buries the one useful line in the build
+  log. The thrown message summarises HTML bodies to their `<title>` and caps
+  plain text at 300 characters.
+
+**Verified against the live failure rather than by reasoning.** With Supabase
+still down, `npm run build` exits 1 with `Supabase query failed for a theme
+page: an HTML error page from the gateway … Supabase was most likely
+unreachable`. The same conditions that produced a green build shipping an empty
+library now produce no build at all.
+
+`lib/supabase/public-columns.ts` already carried a long note about this exact
+shape — migration 026 made a permission refusal "indistinguishable from 'no such
+text'", and every reading page 404ed while the indexes worked. That note fixed
+the cause it came from and the shape returned through a different door sixteen
+days later, with an outage in place of a refusal. Prose described the failure
+and could not prevent a new instance of it, which is the same argument this repo
+already makes for its colour-literal lint rule. Hence a guard, not another note.
+
+Write-up: `docs/research/2026-09-21-relocating-work-relocates-failure.md`.
 
 ---
 

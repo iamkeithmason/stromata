@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { createPublicClient } from '@/lib/supabase/public'
+import { orThrow } from '@/lib/supabase/query'
 import { SiteHeader } from '@/app/components/SiteHeader'
 import { TrackPageEvent } from '@/app/components/TrackPageEvent'
 import { readingMinutes } from '@/lib/reading-time'
@@ -53,11 +54,19 @@ export default async function CountryPage({ params }: Props) {
   const slug = (await params)['country-slug']
   const supabase = createPublicClient()
 
-  const { data: location } = await supabase
-    .from('locations')
-    .select('id, name, slug, alternative_names, description')
-    .eq('slug', slug)
-    .single()
+  // `.maybeSingle()` + orThrow, not `.single()`: `.single()` reports zero
+  // rows as an ERROR, so a guard around it would turn a genuinely missing
+  // location into a 500. maybeSingle gives null for absence and an error only
+  // when the query really failed — so notFound() below means "no such
+  // location", never "Supabase was down". See lib/supabase/query.ts.
+  const location = orThrow(
+    await supabase
+      .from('locations')
+      .select('id, name, slug, alternative_names, description')
+      .eq('slug', slug)
+      .maybeSingle(),
+    'a location page',
+  )
 
   if (!location) notFound()
 

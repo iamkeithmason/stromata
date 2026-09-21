@@ -1,5 +1,5 @@
 import { createPublicClient } from '@/lib/supabase/public'
-import { rowsOrThrow } from '@/lib/supabase/rows'
+import { orThrow } from '@/lib/supabase/query'
 import { SiteHeader } from '@/app/components/SiteHeader'
 import { TrackPageEvent } from '@/app/components/TrackPageEvent'
 import { uniqueFacets } from '@/lib/facets'
@@ -37,7 +37,9 @@ export const metadata = {
 export default async function AuthorsPage() {
   const supabase = createPublicClient()
 
-  const [{ data: authors, error: authorsError }, { data: textAuthorRows, error: textAuthorError }] = await Promise.all([
+  // Both guarded: a failed query here rendered "No authors match these
+  // filters" as a confident 200. See lib/supabase/query.ts.
+  const [authorsRes, textAuthorsRes] = await Promise.all([
     supabase
       .from('authors')
       .select(
@@ -49,9 +51,12 @@ export default async function AuthorsPage() {
     supabase.from('texts').select('author_id').eq('published', true),
   ])
 
-  const rows = rowsOrThrow(authors, authorsError) as unknown as AuthorRow[]
+  const authors = orThrow(authorsRes, 'the authors index')
+  const textAuthorRows = orThrow(textAuthorsRes, 'per-author text counts on the authors index')
 
-  const textCounts = rowsOrThrow(textAuthorRows, textAuthorError).reduce(
+  const rows = (authors ?? []) as unknown as AuthorRow[]
+
+  const textCounts = (textAuthorRows ?? []).reduce(
     (acc: Record<string, number>, t: { author_id: string | null }) => {
       if (t.author_id) acc[t.author_id] = (acc[t.author_id] ?? 0) + 1
       return acc

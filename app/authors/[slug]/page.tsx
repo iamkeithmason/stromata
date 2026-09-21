@@ -3,7 +3,7 @@ import { SiteHeader } from '@/app/components/SiteHeader'
 import { TrackPageEvent } from '@/app/components/TrackPageEvent'
 import { notFound } from 'next/navigation'
 import { createPublicClient } from '@/lib/supabase/public'
-import { assertFound } from '@/lib/supabase/not-found'
+import { orThrow } from '@/lib/supabase/query'
 import { readingMinutes } from '@/lib/reading-time'
 import MarkdownBody from '@/app/components/MarkdownBody'
 import { LancetArch } from '@/app/components/LancetArch'
@@ -149,20 +149,30 @@ export default async function AuthorPage({ params }: Props) {
   const { slug } = await params
   const supabase = createPublicClient()
 
-  const { data: authorRow, error: authorError } = await supabase
-    .from('authors')
-    .select('*, tradition:traditions(name, slug), era:eras(label, slug), loc:locations(name, slug)')
-    .eq('slug', slug)
-    .single()
+  // Both reads guarded — see lib/supabase/query.ts. `.maybeSingle()` because
+  // `.single()` reports zero rows as an error, and the texts query because the
+  // draft check below 404s on an empty `rows`: a failed query there would hide
+  // a real author behind "no such page".
+  const author = orThrow(
+    await supabase
+      .from('authors')
+      .select('*, tradition:traditions(name, slug), era:eras(label, slug), loc:locations(name, slug)')
+      .eq('slug', slug)
+      .maybeSingle(),
+    'an author page',
+  )
 
-  const author = assertFound(authorRow, authorError)
+  if (!author) notFound()
 
-  const { data: texts } = await supabase
-    .from('texts')
-    .select('id, title, slug, word_count, genre:genres(name), text_themes(theme:themes(name))')
-    .eq('author_id', author.id)
-    .eq('published', true)
-    .order('title')
+  const texts = orThrow(
+    await supabase
+      .from('texts')
+      .select('id, title, slug, word_count, genre:genres(name), text_themes(theme:themes(name))')
+      .eq('author_id', author.id)
+      .eq('published', true)
+      .order('title'),
+    "an author's texts",
+  )
 
   const rows = (texts ?? []) as unknown as TextRow[]
 

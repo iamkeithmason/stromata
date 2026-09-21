@@ -1,5 +1,5 @@
 import { createPublicClient } from '@/lib/supabase/public'
-import { rowsOrThrow } from '@/lib/supabase/rows'
+import { orThrow } from '@/lib/supabase/query'
 import { SiteHeader } from '@/app/components/SiteHeader'
 import { readingMinutes } from '@/lib/reading-time'
 import { uniqueFacets } from '@/lib/facets'
@@ -38,15 +38,20 @@ export const revalidate = 3600
 export default async function TextsPage() {
   const supabase = createPublicClient()
 
-  const { data, error } = await supabase
-    .from('texts')
-    .select(
-      'id, title, slug, word_count, author:authors(name, slug, tradition:traditions(name, slug), era:eras(label, slug, year_start)), genre:genres(name, slug), text_themes(theme:themes(name))',
-    )
-    .eq('published', true)
-    .order('title')
+  // orThrow, not `data ?? []`: a failed query here used to render "0 texts" as
+  // a confident 200. See lib/supabase/query.ts.
+  const data = orThrow(
+    await supabase
+      .from('texts')
+      .select(
+        'id, title, slug, word_count, author:authors(name, slug, tradition:traditions(name, slug), era:eras(label, slug, year_start)), genre:genres(name, slug), text_themes(theme:themes(name))',
+      )
+      .eq('published', true)
+      .order('title'),
+    'the library index',
+  )
 
-  const rows = rowsOrThrow(data, error) as unknown as TextRow[]
+  const rows = (data ?? []) as unknown as TextRow[]
 
   const items: TextItem[] = rows.map(t => ({
     id: t.id,
