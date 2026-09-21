@@ -98,6 +98,59 @@ test('the breadcrumb rule covers every section of the site, not one', () => {
   assert.deepEqual(stripChrome(prose).removed, []);
 });
 
+// The Summa masthead as it actually reached the corpus, copied from the body
+// of summa-theologica-curated-selection-aquinas-01-summa-theologica-curated-selection
+// on 2026-09-21 — a hand-imported "curated selection" of 26 questions that
+// bypassed fetch-texts.mjs, so it carried this run, undecoded HTML entities
+// and all, once per question.
+const SUMMA_MASTHEAD = [
+  'The Summa Theologi&aelig; of St. Thomas Aquinas',
+  'Second and Revised Edition, 1920',
+  'Literally translated by Fathers of the English Dominican Province',
+  'Online Edition Copyright © 2017 by Kevin Knight',
+  'Nihil Obstat. F. Innocentius Apap, O.P., S.T.M., Censor. Theol.',
+  'Imprimatur. Edus. Canonicus Surmont, Vicarius Generalis. Westmonasterii.',
+  'APPROBATIO ORDINIS',
+  'Nihil Obstat. F. Raphael Moss, O.P., S.T.L. and F. Leo Moore, O.P., S.T.L.',
+  'Imprimatur. F. Beda Jarrett, O.P., S.T.L., A.M., Prior Provincialis Angli&aelig;',
+  'MARI&AElig; IMMACULAT&AElig; - SEDI SAPIENTI&AElig;',
+  'SUMMA THEOLOGIAE: Man\'s last end (Prima Secundae Partis, Q. 1)',
+  'Home > Summa Theologiae > First Part of the Second Part > Question 1',
+  '# Question 1. Man\'s last end',
+  'Objection 1. It would seem that it does not belong to a wise man to consider the end.',
+].join('\n\n');
+
+test('the whole New Advent Summa masthead is found and removed, prose untouched', () => {
+  const { output, removed } = stripChrome(SUMMA_MASTHEAD);
+  const ids = removed.map(r => r.rule);
+  assert.deepEqual(new Set(ids), new Set([
+    'newadvent-summa-masthead-title',
+    'newadvent-summa-edition-line',
+    'newadvent-summa-translator-line',
+    'newadvent-summa-online-copyright',
+    'newadvent-nihil-obstat',
+    'newadvent-imprimatur',
+    'newadvent-summa-approbatio-ordinis',
+    'newadvent-summa-dedication',
+    'newadvent-summa-page-title',
+    'newadvent-breadcrumb',
+  ]));
+  assert.equal(
+    output,
+    '# Question 1. Man\'s last end\n\nObjection 1. It would seem that it does not belong to a wise man to consider the end.',
+  );
+  // Every stray &aelig;/&AElig; entity in the fixture lived inside the
+  // stripped masthead — none should survive into the cleaned output.
+  assert.doesNotMatch(output, /&[a-zA-Z]+;/);
+});
+
+test('the Summa masthead rules stay dormant without the breadcrumb to confirm them', () => {
+  // Nihil Obstat / Imprimatur are real front matter on plenty of Catholic
+  // works that are not New Advent scrapes, so they must not fire alone.
+  const body = 'Nihil Obstat. Some censor.\n\nImprimatur. Some bishop.\n\nThe actual text.';
+  assert.deepEqual(stripChrome(body).removed, []);
+});
+
 test('a flattened Gutenberg header is caught even without the *** marker', () => {
   // The head rule keys on `*** START OF`; this body had none, and 108 KB of
   // licence text reached Supabase in front of the work.
@@ -122,6 +175,100 @@ test('Gutenberg boilerplate truncates head and tail, keeping the book', () => {
   ].join('\n\n');
   const { output } = stripChrome(body);
   assert.equal(output, 'Chapter the first, in which the book actually begins.');
+});
+
+// A front-matter list of illustrations, shortened from the Hurlbut "Every
+// Child Can Read" Pilgrim's Progress body as stored in Supabase, 2026-09-21.
+// The seven captions in the real body are real plate captions for images
+// pulled in separately by fetch-gutenberg-plates.mjs; only this print-page
+// table of contents for them is chrome.
+const GUTENBERG_ILLUSTRATED_BODY = [
+  'Jesse Lyman Hurlbut.',
+  '* * *',
+  '\\[9\\]',
+  '## LIST OF ILLUSTRATIONS.',
+  'Christian Confides in His Wife',
+  '_Frontispiece_',
+  'PAGE',
+  'Evangelist Points to Wicket-Gate',
+  '15',
+  '* * *',
+  '\\[11\\]',
+  '## THE PILGRIM\'S PROGRESS',
+  '* * *',
+  '## CHAPTER I.',
+  'As I walked through the wilderness of this world, I lighted on a certain place where was a den,\\[1\\] and laid me down in that place to sleep.',
+  '### FOOTNOTES:',
+  '\\[1\\] Bedford jail, in which Bunyan was twelve years a prisoner.',
+].join('\n\n');
+
+test('the Gutenberg list-of-illustrations span is removed up to the next heading', () => {
+  const { output, removed } = stripChrome(GUTENBERG_ILLUSTRATED_BODY, { source: 'gutenberg' });
+  assert.deepEqual(removed.map(r => r.rule), ['gutenberg-list-of-illustrations', 'gutenberg-page-number']);
+  // The editor's own signature (real preface content) and the "* * *" scene
+  // divider that opens Chapter I survive; only the illustrations table and
+  // the two isolated page numbers around it are gone.
+  assert.match(output, /Jesse Lyman Hurlbut\./);
+  assert.match(output, /^## THE PILGRIM'S PROGRESS/m);
+  assert.doesNotMatch(output, /LIST OF ILLUSTRATIONS/);
+  assert.doesNotMatch(output, /Wicket-Gate/);
+  assert.doesNotMatch(output, /\\\[9\\\]|\\\[11\\\]/);
+  // The footnote marker fused to "den," and its definition are real content
+  // and must survive untouched.
+  assert.match(output, /den,\\\[1\\\]/);
+  assert.match(output, /\\\[1\\\] Bedford jail/);
+});
+
+test('a fused bracket number is advisory, never auto-stripped — it may be a real footnote', () => {
+  const body = 'Many a young person has \\[6\\]stumbled through the dull parts.';
+  const { output, removed, advisories } = stripChrome(body, { source: 'gutenberg' });
+  assert.deepEqual(removed, []);
+  assert.equal(output, body);
+  assert.deepEqual(advisories.map(a => a.rule), ['inline-bracket-number']);
+});
+
+test('a fused bracket number outside the document\'s own FOOTNOTES range is auto-stripped', () => {
+  // The real ambiguity-breaker found in the Bunyan corpus text, 2026-09-21:
+  // the book's single FOOTNOTES apparatus only defines 1–11, so a fused
+  // "\[17\]" elsewhere cannot be a footnote reference under any reading —
+  // nothing defines it — and is safe to remove outright, unlike the [6] case
+  // above, which sits inside the defined range and stays ambiguous.
+  const body = [
+    'As I walked through the wilderness of this world, I lighted on a certain place where was a den,\\[1\\] and laid me down to sleep.',
+    'because that all which you forsake is not\\[17\\] worth to be compared with',
+    '### FOOTNOTES:',
+    '\\[1\\] Bedford jail, in which Bunyan was twelve years a prisoner.',
+  ].join('\n\n');
+  const { output, removed, advisories } = stripChrome(body, { source: 'gutenberg' });
+  assert.deepEqual(removed.map(r => r.rule), ['gutenberg-out-of-range-fused-number']);
+  assert.match(output, /not worth to be compared with/);
+  assert.doesNotMatch(output, /\\\[17\\\]/);
+  // [1] is within the defined range (1–11), so it is genuinely ambiguous and
+  // stays exactly as ambiguous as before — advisory only, never auto-decided.
+  assert.match(output, /den,\\\[1\\\]/);
+  assert.deepEqual(advisories.map(a => a.rule), ['inline-bracket-number']);
+  // The footnote apparatus itself is never touched, even though it is full
+  // of bracket-numbers in the defined range.
+  assert.match(output, /\\\[1\\\] Bedford jail/);
+});
+
+test('with no FOOTNOTES apparatus at all, every fused number stays advisory', () => {
+  // No basis for telling a marker from a page number without a defined
+  // range to check against, so nothing here is auto-stripped.
+  const body = 'because that all which you forsake is not\\[17\\] worth to be compared with';
+  const { output, removed, advisories } = stripChrome(body, { source: 'gutenberg' });
+  assert.deepEqual(removed, []);
+  assert.equal(output, body);
+  assert.deepEqual(advisories.map(a => a.rule), ['inline-bracket-number']);
+});
+
+test('an isolated bracket number is stripped, but a footnote definition list is not', () => {
+  const body = 'Text before.\n\n\\[13\\]\n\n## CHAPTER I.\n\n### FOOTNOTES:\n\n\\[1\\] Bedford jail.';
+  const { output, removed } = stripChrome(body, { source: 'gutenberg' });
+  assert.deepEqual(removed.map(r => r.rule), ['gutenberg-page-number']);
+  assert.match(output, /Text before\./);
+  assert.match(output, /## CHAPTER I\./);
+  assert.match(output, /\\\[1\\\] Bedford jail\./);
 });
 
 // Chrome fragments copied verbatim from projectwittenberg.org (the 95 Theses

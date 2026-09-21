@@ -7,6 +7,37 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-09-21 — Healed the Summa and Pilgrim's Progress drafts, and taught source-chrome.mjs two new tells
+
+Keith spotted raw scrape/print artefacts reading through on two large drafts: the Summa Theologica
+(curated selection) carried New Advent's full `/summa/` masthead — title, edition line, translator
+credit, online-edition copyright, both Dominican Nihil Obstat/Imprimatur blocks, the dedication, and
+the page's own title repeated as plain text — undecoded `&aelig;`/`&AElig;` entities included, once
+per question, 26 times over (it was hand-imported outside `fetch-texts.mjs`, which strips this at
+the DOM level on a normal fetch). The Pilgrim's Progress (Hurlbut "Every Child Can Read" edition)
+carried its print edition's front-matter List of Illustrations (captions/page numbers for plates
+that are separately embedded elsewhere as real images) plus dozens of OCR page-number artefacts —
+some their own paragraph, some fused mid-sentence into a word.
+
+Added to `scripts/lib/source-chrome.mjs`: nine new New Advent Summa-masthead rules plus the page-title
+duplicate (all gated on the breadcrumb confirming the source, since Nihil Obstat/Imprimatur are real
+front matter on plenty of non-scraped Catholic works); a new `span-to-heading` rule kind for a
+floating front-matter block like a List of Illustrations (drops from a matching heading through, but
+not including, the next markdown heading); an unconditional rule for an isolated bracket-number
+block (`\[9\]`); and a new document-level pass that also strips a *fused* bracket-number wherever its
+value exceeds every footnote the document's own `### FOOTNOTES:` list actually defines — safe because
+nothing defines that number, so whatever it looks like it cannot be a reference. A number *within* the
+defined range stays advisory only (`inline-bracket-number`): Bunyan's `\[6\]stumbled` has nothing to
+do with footnote 6, "Perspective glass," and telling a genuine marker from a page number that reuses a
+low digit needs reading the sentence, not a mechanical rule. Ran `strip-source-chrome.mjs --write`
+over the whole corpus afterward (dry run first) — exactly these two drafts changed, nothing else in
+the ~290-text corpus tripped the new rules.
+
+Both texts are still `published: false`; this only cleaned the drafts Keith will review before
+publishing.
+
+---
+
 ## 2026-09-21 — Built the license infrastructure the CC-catechism prospect is blocked on
 
 Added `texts.license` (migration `030_text_license.sql`, nullable, `null` = public domain —
