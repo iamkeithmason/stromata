@@ -95,7 +95,7 @@ export const NOTION_ERAS = ERAS.map((e) => e.canonical);
 /** Genre options that exist on the Notion Content Prospect List. */
 export const NOTION_GENRES = [
   'Homily', 'Sermon', 'Letter', 'Treatise', 'Essay', 'Meditation', 'Rule',
-  'Prayer', 'Catechesis', 'Commentary', 'Dialogue', 'Hymn', 'Confession',
+  'Prayer', 'Catechesis', 'Commentary', 'Dialogue', 'Hymn', 'Poem', 'Confession',
   'Hagiography', 'Apology', 'Exegesis',
 ] as const;
 

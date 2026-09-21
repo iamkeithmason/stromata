@@ -31,7 +31,7 @@ export const ERAS = [
 
 export const GENRES = [
   'Homily', 'Sermon', 'Letter', 'Treatise', 'Essay', 'Meditation', 'Rule',
-  'Prayer', 'Catechesis', 'Commentary', 'Dialogue', 'Hymn', 'Confession',
+  'Prayer', 'Catechesis', 'Commentary', 'Dialogue', 'Hymn', 'Poem', 'Confession',
   'Hagiography', 'Apology', 'Exegesis',
 ] as const
 

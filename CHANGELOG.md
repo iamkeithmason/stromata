@@ -33,6 +33,127 @@ before calling this class of bug closed.
 
 ---
 
+## 2026-09-21 — New pipeline source: Project Wittenberg
+
+Added `wittenberg` as a `source_type` for `fetch-texts.mjs` — Project Wittenberg
+(projectwittenberg.org) hosts Luther and other Lutheran writers as static HTML
+unchanged since ~2013, surfaced by a Discord tip from a visiting Lutheran pastor
+who also pointed at other Lutheran-text sources.
+
+The site has no semantic containers at all — no `<nav>`/`<header>`/`<article>` —
+so `SOURCE_SELECTORS.wittenberg` matches its masthead, page-nav trail and
+translator/contact credit by text content, the same way New Advent's ad
+paragraphs are matched, backed by the matching `source-chrome.mjs` rules. One
+tell genuinely cannot be isolated at the DOM level: the "**Published in:**"
+edition-citation label sits inside an unclosed `<p>` nested in another unclosed
+`<p>`, so cheerio's `.text()` merges the label into the citation before any
+selector can separate them. `wittenberg-published-in-label` is the *primary*
+defence for that one case (deliberately unconditional, not the backstop) —
+verified against the two real pages queued below, both before and after
+disabling the DOM pass, so the rule is confirmed to fire in the scenario it
+exists for and not just the one it doesn't need to.
+
+Queued two prospects: the Small Catechism (Robert E. Smith's 1994 translation,
+7 chapters, explicit "is in the public domain" dedication rather than a
+death-year proxy) and the Ninety-Five Theses (1915 Philadelphia Edition,
+public domain by publication date). The Small Catechism replaces a 2026-06-30
+Wikisource attempt that left `translation_copyright_clear: false` unresolved
+and partially failed to import — confirmed via Supabase that nothing exists
+under that slug, so this is a clean re-run rather than a duplicate.
+
+Scouted (not queued) `thesmallcatechism.org` — a CC-licensed contemporary
+translation offered in the same conversation — as Stromata's first
+Creative-Commons rather than public-domain candidate source; separate
+licensing considerations, reported without a pipeline change.
+
+---
+
+## 2026-09-21 — Archive.org scans: read the `_djvu.xml`, not the `_djvu.txt`
+
+Keith wanted the *Psychomachia* — the founding allegory of the inner life, seven
+single combats between Virtues and Vices, the thing a thousand cathedral porches
+are carved from. Notion #102 pointed at New Advent (that URL serves Augustine)
+and richmond.edu (404). He found an Archive.org scan of a 1743 anonymous English
+verse translation, which turned out to be the only complete public-domain English
+Psychomachia there is: Prudentius appears in neither ANF nor NPNF, Pope 1905 is
+the Hymns only, and Thomson (Loeb) and Eagan (FoC) are in copyright.
+
+The first attempt went through `clean-archive-ocr.mjs` on the `_djvu.txt` and the
+result was not usable. Couplets came out merged two to a line. Run-overs — the
+tail of a long line, set flush right by the printer — were orphaned as junk.
+Page numbers were spliced into the middle of verse. Catchwords were
+indistinguishable from short lines of poetry. And on several pages the lines
+simply came out in the **wrong order**.
+
+Then the actual finding: **`_djvu.txt` is a lossy flattening of `_djvu.xml`.**
+Same OCR, but the XML keeps a `<LINE>` per printed line, a bounding box per word,
+and a per-word confidence — and every one of the failures above is a consequence
+of the `.txt` throwing those away. Nothing needed better OCR; it needed the
+layout that was already in the file next door.
+
+So `scripts/ingestion/extract-djvu-xml.mjs` and `scripts/lib/djvu-layout.mjs`
+(pure, 18 tests, every fixture a real line from this scan). Furniture is told
+from text by **geometry** — above the block is a header, below it a footer, short
+and set well into the measure is a run-over to be folded back — never by what the
+text looks like. Word count is deliberately not a signal: the scanner splits a
+row of specks in the margin into eight "words", which is how `2 „ — — K 2 8 8`
+came through as verse on the first pass.
+
+Two things the module does that matter more than the extraction:
+
+- **It reports what it removed.** Every dropped line, with its reason, goes in a
+  `{slug}-review.md`. A line of the poem vanishing without trace is the failure
+  this whole approach exists to avoid.
+- **It finds lines the scan lost.** Leaded verse has a near-constant line pitch,
+  so a gap half again the usual one means type that did not come through. That
+  is damage which leaves no mark in the text and would otherwise ship unnoticed.
+  It found 55 of them (63 before heading false-positives were excluded), and the
+  couplets either side of the ones I checked do not rhyme — so they are real.
+
+The other lesson was paid for with a wrong answer I nearly shipped. The 1743 uses
+the long s, and the scanner misreads it **two** ways: as `ſ` (one global rule) and
+as `f` — `Cafe`, `fubdue`, `whofe`. For the `f` cases I reached for what looked
+like a principled test: which `f`-words have an `s`-form attested elsewhere in the
+same text? It proposes `for`→`sor`, `fight`→`sight`, `fame`→`same`,
+`before`→`besore`. The scan *also* misreads `s` as `f`, so both spellings of
+everything are attested and the corpus cannot arbitrate. Same shape as this
+week's other two: an operation that succeeds and returns confident nonsense.
+Every correction is now named individually in `wordFixes`, case-preserving,
+because 18th-century printing capitalises nouns and a `gi` regex flattens that
+without saying so.
+
+Staged as `published: false` with `ocr_quality: low` — honest, not flattering.
+The arrangement is sound; the letters inside it come from a British Library
+microfilm and 423 lines carry OCR the scanner itself doubted. Import (Stage 5a)
+was not run: this container has no Supabase credentials.
+
+Two things followed from building the checklist, and both were bugs the
+checklist made visible rather than cosmetics. The gap detector fired at every
+heading, because display type is set with its own leading — eight false entries
+in a 63-item list is how a checklist stops being finished, so headings are now
+excluded from the pitch test. And the title, which the printer set over two
+lines, left its second line stranded under the markdown heading that already
+said it in full; a heading mapped to `null` now removes a line instead of
+replacing it. 55 real gaps remain, each a checkbox with a deep link to its leaf.
+
+**A `Poem` genre** (migration `028`, mirrored in `lib/constants.ts`,
+`lib/pipeline/vocab.ts`, `scripts/sourcer/vocab.ts`, `scripts/scout/config.ts`,
+`scripts/ingestion/fetch-texts.mjs` and CLAUDE.md). The vocabulary had exactly
+one verse genre, so every poem that is not a hymn had to be filed as one, and
+the Psychomachia — an allegorical epic in heroic couplets — would have sat
+beside the Cathemerinon in every genre listing on the site. Hymn keeps the
+liturgical and sung; Poem takes the rest; a text that could be either is a
+hymn. The Notion `Genre` select needs the option added by hand in the UI: the
+API specifies select options by name with no ids, so an ALTER that rewrites the
+set reads as drop-and-recreate and blanks the column on every row.
+
+Write-up in `docs/research/2026-09-21-the-flattened-copy.md`; four rows in the
+research bank's Findings, two of them linked as evidence to existing
+conventions. No new convention proposed — all four came from one project, and
+the bar is two.
+
+---
+
 ## 2026-09-21 — The egress fix shipped an empty library, and a query error is not an empty result
 
 An hour after #118 merged, production served **"Library — 0 texts — No texts
