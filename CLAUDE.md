@@ -788,7 +788,13 @@ Status: imported.
 | `modern` | Modern (1800–1900) |
 
 ### Genres (use `name`, not slug)
-Homily · Sermon · Letter · Treatise · Essay · Meditation · Rule · Prayer · Catechesis · Commentary · Dialogue · Hymn · Confession · Hagiography · Apology · Exegesis
+Homily · Sermon · Letter · Treatise · Essay · Meditation · Rule · Prayer · Catechesis · Commentary · Dialogue · Hymn · Poem · Confession · Hagiography · Apology · Exegesis
+
+`Hymn` is the liturgical and the sung; `Poem` is everything else in verse (narrative, allegorical,
+didactic, devotional). A text that could be either is a hymn. Added 2026-09-21 — migration
+`028_poem_genre.sql`; the Notion `Genre` select needs the option added by hand in the UI, because
+the API specifies select options by name only and an ALTER that rewrites the set blanks the column
+on every row.
 
 ### Theme Clusters (use `slug`, max 6 per text)
 

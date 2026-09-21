@@ -2,7 +2,7 @@
 title: "Psychomachia: The War of the Soul"
 slug: "psychomachia-prudentius"
 author: "Prudentius"
-genre: "Hymn"
+genre: "Poem"
 themes: ["spiritual-warfare","virtue","vice","humility","conscience"]
 source_attribution: "Anonymous English verse translation, printed 1743 as \"Psychomachia; the war of the soul: or, the battle of the virtues, and vices. Translated from Aur. Prudentius Clemens.\""
 provenance_notes: "Text sourced from the Archive.org scan of the 1743 London edition (identifier: bim_eighteenth-century_psychomachia-the-war-of_prudentius_1743). Accessed September 2026."
@@ -127,7 +127,6 @@ A late, but not unworthy Heir,
 
 ## The War of the Soul
 
-WAR of the SOUL.\
 DN Tov. whose mercies silver to\
 Jon helpless mortals, when distrest\
 RS Thou, who art mighty in thy father's\
@@ -163,7 +162,7 @@ And ranks both armies in opposing lines\
 
 ## The Combat of Faith and Idolatry
 
-IRS T, heav'n-born FaiTH Res\
+FIRST, heav'n-born FaiTH Res\
 The dubious fortune of the war to try;\
 "Rude was her dress, and un-adorn'd her hair,\
 Her arms protended, and her shoulders bare;\
@@ -192,7 +191,7 @@ Array'd in vestments of the tyrian dye.
 
 ## The Combat of Chastity and Lust
 
-TEXT to the field, rous'd by the war's a-\
+NEXT to the field, rous'd by the war's a-\
 Fair CHASTITY advanc'd in splendid\
 From th? adverse lines a fury shoots in haste,\
 With flaming torches whizzing round her waste;\
@@ -503,7 +502,7 @@ Sure then to follow, when their work is done.
 
 ## The Combat of Luxury and Sobriety
 
-a time's last period, to the combat came\
+In time's last period, to the combat came\
 A fell lect” Luxury by name;\
 Th abandon'd wanton, from her early days,\
 Despis'd all censure, nor regarded praise\
@@ -681,7 +680,7 @@ Nor once look'd backward with a wishful eye.
 
 ## The Combat of Avarice and Liberality
 
-"HEN Ric came, if. ancient fame says\
+"WHEN Ric came, if. ancient fame says\
 To glean the spoil of the luxurious A\
 Tuck'd up 2 corner of her robe she bare,\
 Which deeply bellied, like a sheet, before;\

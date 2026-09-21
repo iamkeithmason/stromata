@@ -46,8 +46,8 @@ Two things the module does that matter more than the extraction:
 - **It finds lines the scan lost.** Leaded verse has a near-constant line pitch,
   so a gap half again the usual one means type that did not come through. That
   is damage which leaves no mark in the text and would otherwise ship unnoticed.
-  It found 59 of them, and the couplets either side of the ones I checked do not
-  rhyme — so they are real.
+  It found 55 of them (63 before heading false-positives were excluded), and the
+  couplets either side of the ones I checked do not rhyme — so they are real.
 
 The other lesson was paid for with a wrong answer I nearly shipped. The 1743 uses
 the long s, and the scanner misreads it **two** ways: as `ſ` (one global rule) and
@@ -65,6 +65,31 @@ Staged as `published: false` with `ocr_quality: low` — honest, not flattering.
 The arrangement is sound; the letters inside it come from a British Library
 microfilm and 423 lines carry OCR the scanner itself doubted. Import (Stage 5a)
 was not run: this container has no Supabase credentials.
+
+Two things followed from building the checklist, and both were bugs the
+checklist made visible rather than cosmetics. The gap detector fired at every
+heading, because display type is set with its own leading — eight false entries
+in a 63-item list is how a checklist stops being finished, so headings are now
+excluded from the pitch test. And the title, which the printer set over two
+lines, left its second line stranded under the markdown heading that already
+said it in full; a heading mapped to `null` now removes a line instead of
+replacing it. 55 real gaps remain, each a checkbox with a deep link to its leaf.
+
+**A `Poem` genre** (migration `028`, mirrored in `lib/constants.ts`,
+`lib/pipeline/vocab.ts`, `scripts/sourcer/vocab.ts`, `scripts/scout/config.ts`,
+`scripts/ingestion/fetch-texts.mjs` and CLAUDE.md). The vocabulary had exactly
+one verse genre, so every poem that is not a hymn had to be filed as one, and
+the Psychomachia — an allegorical epic in heroic couplets — would have sat
+beside the Cathemerinon in every genre listing on the site. Hymn keeps the
+liturgical and sung; Poem takes the rest; a text that could be either is a
+hymn. The Notion `Genre` select needs the option added by hand in the UI: the
+API specifies select options by name with no ids, so an ALTER that rewrites the
+set reads as drop-and-recreate and blanks the column on every row.
+
+Write-up in `docs/research/2026-09-21-the-flattened-copy.md`; four rows in the
+research bank's Findings, two of them linked as evidence to existing
+conventions. No new convention proposed — all four came from one project, and
+the bar is two.
 
 ---
 

@@ -3,71 +3,181 @@
 Source: `scripts/ingestion/sources/psychomachia-prudentius-raw.xml`, pages 2–72 of 74.
 Extracted 1237 lines. Headings applied: The War of the Soul; The Combat of Faith and Idolatry; The Combat of Chastity and Lust; The Combat of Patience and Wrath; The Combat of Pride and Humility; The Combat of Luxury and Sobriety; The Combat of Avarice and Liberality; The Combat of Concord and Discord.
 
-## Lines the scan appears to have lost
+## Checklist — lines the scan appears to have lost
 
 A page of leaded verse has a near-constant line pitch, so a gap wider than the
-usual one means type that did not come through. Check these against the page
-images before publishing — this is damage that leaves no mark in the text.
+usual one means type that did not come through. This is damage that leaves no
+mark in the text, so it has to be checked against the page images.
 
-- p.2 — ~1 line(s) between “…The Earneft of the promis'd Seed,” and “Think, in like Cafe, what muſt be done; …”
-- p.6 — ~1 line(s) between “…To rebel Thoughts no Reſpite give;” and “And bear the Sword of Faith in Hand;…”
-- p.8 — ~2 line(s) between “…PSTCHOMACHI 4: b OR, THE” and “WAR of the SOUL.…”
-- p.8 — ~1 line(s) between “…WAR of the SOUL.” and “DN Tov. whoſe mercies  fibver _ to…”
-- p.14 — ~1 line(s) between “…A new alliance is commenc'd with heav'n,” and “vnd'rous conception where extremes unite…”
-- p.14 — ~1 line(s) between “…r after all the heav'nly gifts beſtow'd,” and “Still in the God unfaded glories ſhine,…”
-- p.14 — ~1 line(s) between “…And hence my triumph, O infernal Lüst;” and “Mocks thy devices, and defies thy rage;…”
-- p.15 — ~1 line(s) between “…l in dungeons of eternal night ; stream,” and “Or roll'd in whirling vortices of flame …”
-- p.17 — ~1 line(s) between “…t not a groan muſt thence emiſſion find,” and “Thus when the ſpake, a javelin launch'd …”
-- p.17 — ~1 line(s) between “…Her ſhoulders o'er, impenetrably made;” and “Nor ſhow'rs of arrows drive her from the…”
-- p.18 — ~1 line(s) between “… limits now the mon/er”'s rage reſtrain,” and “Stung with remorſe, the toſſes it aſi de…”
-- p.18 — ~1 line(s) between “…tung with remorſe, the toſſes it aſi de,” and “Nor longer meditates the martial ſtrife,…”
-- p.19 — ~1 line(s) between “…ikes the inverted ſhaft of poliſh'd wood” and “Enters her breaſt, and drinks her vital …”
-- p.20 — ~1 line(s) between “…e goddeſs orders all his toils to ceaſe,” and “With wealth accumulated ſwells his ſtore…”
-- p.20 — ~1 line(s) between “…wealth accumulated ſwells his ſtore, FOR” and “Safe, and unhurt ſhe then purſues her wa…”
-- p.21 — ~1 line(s) between “…The COMBAT of PrIDE and HUMILITY. dae” and “A beadlong coarſer flew, at will, wi ith…”
-- p.21 — ~1 line(s) between “… ſwelling canvaſs bellied for a veſt ; |” and “And opening gathers ev'ry wind that blow…”
-- p.22 — ~1 line(s) between “…Wich ſuch a fereil, and ing lorious band” and “Who to ſuch mines of wealth have fought …”
-- p.22 — ~1 line(s) between “…poſſeſſions , and imperial ſway 3 ; 1255” and “1 Would dri Ve, if poſſible, its ancient…”
-- p.23 — ~1 line(s) between “…eap the'wealth of many a fertile field ;” and “And ſeize the land, where flowing bounty…”
-- p.23 — ~1 line(s) between “…O'er all the nan we get unbounded power;” and “We ftrike th* impreſſion, and we ſeal hi…”
-- p.23 — ~1 line(s) between “…all our influence thro* his inmoſt ſoul,” and “Then, with what hope can you this empire…”
-- p.23 — ~1 line(s) between “…From us, who grow and -ſtrengthen 2 — i.” and “And Mas and Miftreſs had an equal date:…”
-- p.24 — ~1 line(s) between “…Nor ſprightly trumpets. animate to arms;” and “In war will PT ſupport a ſtorm? 92 orm ?…”
-- p.26 — ~1 line(s) between “…e from the liſts the queen of meekneſs 2” and “Nor once approach'd the ambuſh that was …”
-- p.26 — ~4 line(s) between “…From no ſurmifings i in a fearful mind,” and “And down the pit a pondrous ruin drops:…”
-- p.26 — ~2 line(s) between “…And down the pit a pondrous ruin drops:” and “Soon as che gentle- minded queen beheld …”
-- p.26 — ~1 line(s) between “…oon as che gentle- minded queen beheld |” and “R Forward…”
-- p.34 — ~2 line(s) between “…A drunken vagrant, by her fraudful arts,” and “Think on your Saviour, and your future f…”
-- p.34 — ~1 line(s) between “…k on the anceſtry, from which-youſpring,” and “Your line from JuDan does to MART run,…”
-- p.38 — ~2 line(s) between “… deeply wounded by his poiſon'd darts...” and “Of all the ſhining wreaths, and drops of…”
-- p.38 — ~1 line(s) between “… the ſhining wreaths, and drops of gold,” and “And all the gems, the dreſſer's arts uni…”
-- p.38 — ~2 line(s) between “…ow from their ſtations in diſorder toſt,” and “O'er flinty paths „ and thorns ſhe ſcour…”
-- p.39 — ~1 line(s) between “…The Conpar 7 AVARICE and Li-” and “"HEN Ric came, if. ancient fame ſays…”
-- p.41 — ~1 line(s) between “…o ray of reaſon to the wretch ſupplies,”” and “For fronger minds a guilgful bait ſhe la…”
-- p.41 — ~1 line(s) between “… fronger minds a guilgful bait ſhe lays,” and “With fair appearances the ſenſe is won,…”
-- p.41 — ~2 line(s) between “…With fair appearances the ſenſe is won,” and “Sobs ſudden. at the ent' rance of the da…”
-- p.41 — ~3 line(s) between “…hat's mortal, by her hands ſhall fall; 7” and “To catch the worldling i in infernal fla…”
-- p.43 — ~1 line(s) between “…Not only minds devoid of reaſon's ray” and “But ev'n the wiſe conſent to miſs their …”
-- p.43 — ~1 line(s) between “…o us the monarch of the infernal reign .” and “From us he got them; by our arms they fe…”
-- p.46 — ~1 line(s) between “…pake the fiend, and inſtant on the place” and “And, in their room, amazing change! 1e…”
-- p.46 — ~1 line(s) between “…And, in their room, amazing change! 1e” and “A virtue now ſhe outwardly appears,…”
-- p.46 — ~1 line(s) between “…Not i in a Vice's, but a Virtues name ;” and “A well-known emblem of parental cares;…”
-- p.46 — ~1 line(s) between “…A well-known emblem of parental cares;” and “Seems of a numerous progeny poſſeſt. 1…”
-- p.50 — ~3 line(s) between “…, ye Juſt, from off th* embattled field,” and “Peace is conſummate ; if the heart deſir…”
-- p.56 — ~1 line(s) between “…. CoNCoRD enter d thro? the narrow gates” and “A wily foe did there inſidious hide, =…”
-- p.57 — ~1 line(s) between “…rops of oozing blood, at laſt, were ſeen” and “ CoNCORD alarm'd,criesout ; what hoſtile…”
-- p.59 — ~1 line(s) between “… brutal tribes the mangled carcaſs rend;” and “When now the common weal was aſcertain'd…”
-- p.60 — ~2 line(s) between “…er the Queens aſcending take their ſeat,” and “But ſcorn all difference for agreement's…”
-- p.60 — ~1 line(s) between “…And ſummon all their people to attend.” and “The ſov'reign mandate, nor abſconding ſt…”
-- p.63 — ~2 line(s) between “…Heay*n will rejeC the blazing ſacrifice,” and “Nay, ſhould you ſtand the perſecutor's f…”
-- p.63 — ~3 line(s) between “…ſhould you ſtand the perſecutor's flame,” and “That little drop of cordial gall will fo…”
-- p.66 — ~1 line(s) between “…© Obtain a reſidence, and roam no more.” and “And rear a ſtately ſtructure to the sky…”
-- p.66 — ~1 line(s) between “… what avails it, tho? our arms o'erthrew” and “If yet the Son of God, ordain'd to come …”
-- p.66 — ~1 line(s) between “…Sin to aboliſh, and reverſe our doom, r” and “Adorn'd, and furnifh'd for its heav'oly …”
-- p.67 — ~1 line(s) between “…The ſtately arch of ey'ry portal fill;” and “* The Plan of this Temple is taken from …”
-- p.70 — ~2 line(s) between “… #5, dew'sthronedefigrds 9 oy png FI 8 7” and “With ſofteſt touch, and elegance of thou…”
-- p.71 — ~1 line(s) between “…ning foliage round the trunk diſpoſe ; 3” and “They never droop, they never hang their …”
-- p.71 — ~1 line(s) between “…dreadful combats of the carnal field ; 3” and “| Now take the _ and then che better par…”
+Each item links straight to the scanned leaf. Read the two quoted lines, find
+them on the image, and type in whatever sits between them. The couplet rhyme is
+the quickest test: a missing line usually leaves its partner unrhymed.
+
+- [ ] **leaf 2** ([open the scan](https://archive.org/details/bim_eighteenth-century_psychomachia-the-war-of_prudentius_1743/page/n2/mode/1up)) — ~1 line(s) missing
+      after: `…The Earneft of the promis'd Seed,`
+      before: `Think, in like Cafe, what muſt be done; |…`
+- [ ] **leaf 6** ([open the scan](https://archive.org/details/bim_eighteenth-century_psychomachia-the-war-of_prudentius_1743/page/n6/mode/1up)) — ~1 line(s) missing
+      after: `…To rebel Thoughts no Reſpite give;`
+      before: `And bear the Sword of Faith in Hand;…`
+- [ ] **leaf 14** ([open the scan](https://archive.org/details/bim_eighteenth-century_psychomachia-the-war-of_prudentius_1743/page/n14/mode/1up)) — ~1 line(s) missing
+      after: `…A new alliance is commenc'd with heav'n,`
+      before: `vnd'rous conception where extremes unite,…`
+- [ ] **leaf 14** ([open the scan](https://archive.org/details/bim_eighteenth-century_psychomachia-the-war-of_prudentius_1743/page/n14/mode/1up)) — ~1 line(s) missing
+      after: `…For after all the heav'nly gifts beſtow'd,`
+      before: `Still in the God unfaded glories ſhine,…`
+- [ ] **leaf 14** ([open the scan](https://archive.org/details/bim_eighteenth-century_psychomachia-the-war-of_prudentius_1743/page/n14/mode/1up)) — ~1 line(s) missing
+      after: `…And hence my triumph, O infernal Lüst;`
+      before: `Mocks thy devices, and defies thy rage;…`
+- [ ] **leaf 15** ([open the scan](https://archive.org/details/bim_eighteenth-century_psychomachia-the-war-of_prudentius_1743/page/n15/mode/1up)) — ~1 line(s) missing
+      after: `…And howl in dungeons of eternal night ; stream,`
+      before: `Or roll'd in whirling vortices of flame : E M4…`
+- [ ] **leaf 17** ([open the scan](https://archive.org/details/bim_eighteenth-century_psychomachia-the-war-of_prudentius_1743/page/n17/mode/1up)) — ~1 line(s) missing
+      after: `…But not a groan muſt thence emiſſion find,`
+      before: `Thus when the ſpake, a javelin launch'd _…`
+- [ ] **leaf 17** ([open the scan](https://archive.org/details/bim_eighteenth-century_psychomachia-the-war-of_prudentius_1743/page/n17/mode/1up)) — ~1 line(s) missing
+      after: `…Her ſhoulders o'er, impenetrably made;`
+      before: `Nor ſhow'rs of arrows drive her from the fight; :…`
+- [ ] **leaf 18** ([open the scan](https://archive.org/details/bim_eighteenth-century_psychomachia-the-war-of_prudentius_1743/page/n18/mode/1up)) — ~1 line(s) missing
+      after: `…No limits now the mon/er”'s rage reſtrain,`
+      before: `Stung with remorſe, the toſſes it aſi de,…`
+- [ ] **leaf 18** ([open the scan](https://archive.org/details/bim_eighteenth-century_psychomachia-the-war-of_prudentius_1743/page/n18/mode/1up)) — ~1 line(s) missing
+      after: `…Stung with remorſe, the toſſes it aſi de,`
+      before: `Nor longer meditates the martial ſtrife,…`
+- [ ] **leaf 19** ([open the scan](https://archive.org/details/bim_eighteenth-century_psychomachia-the-war-of_prudentius_1743/page/n19/mode/1up)) — ~1 line(s) missing
+      after: `…Then ſtrikes the inverted ſhaft of poliſh'd wood`
+      before: `Enters her breaſt, and drinks her vital blood.…`
+- [ ] **leaf 20** ([open the scan](https://archive.org/details/bim_eighteenth-century_psychomachia-the-war-of_prudentius_1743/page/n20/mode/1up)) — ~1 line(s) missing
+      after: `…The goddeſs orders all his toils to ceaſe,`
+      before: `With wealth accumulated ſwells his ſtore, FOR…`
+- [ ] **leaf 20** ([open the scan](https://archive.org/details/bim_eighteenth-century_psychomachia-the-war-of_prudentius_1743/page/n20/mode/1up)) — ~1 line(s) missing
+      after: `…With wealth accumulated ſwells his ſtore, FOR`
+      before: `Safe, and unhurt ſhe then purſues her way,…`
+- [ ] **leaf 21** ([open the scan](https://archive.org/details/bim_eighteenth-century_psychomachia-the-war-of_prudentius_1743/page/n21/mode/1up)) — ~1 line(s) missing
+      after: `…A ſwelling canvaſs bellied for a veſt ; |`
+      before: `And opening gathers ev'ry wind that blows.…`
+- [ ] **leaf 22** ([open the scan](https://archive.org/details/bim_eighteenth-century_psychomachia-the-war-of_prudentius_1743/page/n22/mode/1up)) — ~1 line(s) missing
+      after: `…Wich ſuch a fereil, and ing lorious band`
+      before: `Who to ſuch mines of wealth have fought their…`
+- [ ] **leaf 22** ([open the scan](https://archive.org/details/bim_eighteenth-century_psychomachia-the-war-of_prudentius_1743/page/n22/mode/1up)) — ~1 line(s) missing
+      after: `…To cich poſſeſſions , and imperial ſway 3 ; 1255`
+      before: `1 Would dri Ve, if poſſible, its ancient tings.…`
+- [ ] **leaf 23** ([open the scan](https://archive.org/details/bim_eighteenth-century_psychomachia-the-war-of_prudentius_1743/page/n23/mode/1up)) — ~1 line(s) missing
+      after: `…And reap the'wealth of many a fertile field ;`
+      before: `And ſeize the land, where flowing bounty reigns.…`
+- [ ] **leaf 23** ([open the scan](https://archive.org/details/bim_eighteenth-century_psychomachia-the-war-of_prudentius_1743/page/n23/mode/1up)) — ~1 line(s) missing
+      after: `…O'er all the nan we get unbounded power;`
+      before: `We ftrike th* impreſſion, and we ſeal his fate;…`
+- [ ] **leaf 23** ([open the scan](https://archive.org/details/bim_eighteenth-century_psychomachia-the-war-of_prudentius_1743/page/n23/mode/1up)) — ~1 line(s) missing
+      after: `…Shoot all our influence thro* his inmoſt ſoul,`
+      before: `Then, with what hope can you this empire claim…`
+- [ ] **leaf 23** ([open the scan](https://archive.org/details/bim_eighteenth-century_psychomachia-the-war-of_prudentius_1743/page/n23/mode/1up)) — ~1 line(s) missing
+      after: `…From us, who grow and -ſtrengthen 2 — i.`
+      before: `And Mas and Miftreſs had an equal date:…`
+- [ ] **leaf 24** ([open the scan](https://archive.org/details/bim_eighteenth-century_psychomachia-the-war-of_prudentius_1743/page/n24/mode/1up)) — ~1 line(s) missing
+      after: `…Nor ſprightly trumpets. animate to arms;`
+      before: `In war will PT ſupport a ſtorm? 92 orm ?…`
+- [ ] **leaf 26** ([open the scan](https://archive.org/details/bim_eighteenth-century_psychomachia-the-war-of_prudentius_1743/page/n26/mode/1up)) — ~1 line(s) missing
+      after: `…Safe from the liſts the queen of meekneſs 2`
+      before: `Nor once approach'd the ambuſh that was laid,…`
+- [ ] **leaf 26** ([open the scan](https://archive.org/details/bim_eighteenth-century_psychomachia-the-war-of_prudentius_1743/page/n26/mode/1up)) — ~4 line(s) missing
+      after: `…From no ſurmifings i in a fearful mind,`
+      before: `And down the pit a pondrous ruin drops:…`
+- [ ] **leaf 26** ([open the scan](https://archive.org/details/bim_eighteenth-century_psychomachia-the-war-of_prudentius_1743/page/n26/mode/1up)) — ~2 line(s) missing
+      after: `…And down the pit a pondrous ruin drops:`
+      before: `Soon as che gentle- minded queen beheld |…`
+- [ ] **leaf 26** ([open the scan](https://archive.org/details/bim_eighteenth-century_psychomachia-the-war-of_prudentius_1743/page/n26/mode/1up)) — ~1 line(s) missing
+      after: `…Soon as che gentle- minded queen beheld |`
+      before: `R Forward…`
+- [ ] **leaf 34** ([open the scan](https://archive.org/details/bim_eighteenth-century_psychomachia-the-war-of_prudentius_1743/page/n34/mode/1up)) — ~2 line(s) missing
+      after: `…A drunken vagrant, by her fraudful arts,`
+      before: `Think on your Saviour, and your future fate;…`
+- [ ] **leaf 34** ([open the scan](https://archive.org/details/bim_eighteenth-century_psychomachia-the-war-of_prudentius_1743/page/n34/mode/1up)) — ~1 line(s) missing
+      after: `…Think on the anceſtry, from which-youſpring,`
+      before: `Your line from JuDan does to MART run,…`
+- [ ] **leaf 38** ([open the scan](https://archive.org/details/bim_eighteenth-century_psychomachia-the-war-of_prudentius_1743/page/n38/mode/1up)) — ~2 line(s) missing
+      after: `…Are deeply wounded by his poiſon'd darts...`
+      before: `Of all the ſhining wreaths, and drops of gold,…`
+- [ ] **leaf 38** ([open the scan](https://archive.org/details/bim_eighteenth-century_psychomachia-the-war-of_prudentius_1743/page/n38/mode/1up)) — ~1 line(s) missing
+      after: `…Of all the ſhining wreaths, and drops of gold,`
+      before: `And all the gems, the dreſſer's arts unite…`
+- [ ] **leaf 38** ([open the scan](https://archive.org/details/bim_eighteenth-century_psychomachia-the-war-of_prudentius_1743/page/n38/mode/1up)) — ~2 line(s) missing
+      after: `…Now from their ſtations in diſorder toſt,`
+      before: `O'er flinty paths „ and thorns ſhe ſcour'd away >…`
+- [ ] **leaf 41** ([open the scan](https://archive.org/details/bim_eighteenth-century_psychomachia-the-war-of_prudentius_1743/page/n41/mode/1up)) — ~1 line(s) missing
+      after: `…No ray of reaſon to the wretch ſupplies,”`
+      before: `For fronger minds a guilgful bait ſhe lays,…`
+- [ ] **leaf 41** ([open the scan](https://archive.org/details/bim_eighteenth-century_psychomachia-the-war-of_prudentius_1743/page/n41/mode/1up)) — ~1 line(s) missing
+      after: `…For fronger minds a guilgful bait ſhe lays,`
+      before: `With fair appearances the ſenſe is won,…`
+- [ ] **leaf 41** ([open the scan](https://archive.org/details/bim_eighteenth-century_psychomachia-the-war-of_prudentius_1743/page/n41/mode/1up)) — ~2 line(s) missing
+      after: `…With fair appearances the ſenſe is won,`
+      before: `Sobs ſudden. at the ent' rance of the dart.…`
+- [ ] **leaf 41** ([open the scan](https://archive.org/details/bim_eighteenth-century_psychomachia-the-war-of_prudentius_1743/page/n41/mode/1up)) — ~3 line(s) missing
+      after: `…And all, that's mortal, by her hands ſhall fall; 7`
+      before: `To catch the worldling i in infernal flames.…`
+- [ ] **leaf 43** ([open the scan](https://archive.org/details/bim_eighteenth-century_psychomachia-the-war-of_prudentius_1743/page/n43/mode/1up)) — ~1 line(s) missing
+      after: `…Not only minds devoid of reaſon's ray`
+      before: `But ev'n the wiſe conſent to miſs their way.…`
+- [ ] **leaf 43** ([open the scan](https://archive.org/details/bim_eighteenth-century_psychomachia-the-war-of_prudentius_1743/page/n43/mode/1up)) — ~1 line(s) missing
+      after: `…To us the monarch of the infernal reign .`
+      before: `From us he got them; by our arms they fell ;…`
+- [ ] **leaf 46** ([open the scan](https://archive.org/details/bim_eighteenth-century_psychomachia-the-war-of_prudentius_1743/page/n46/mode/1up)) — ~1 line(s) missing
+      after: `…So ſpake the fiend, and inſtant on the place`
+      before: `And, in their room, amazing change! 1e…`
+- [ ] **leaf 46** ([open the scan](https://archive.org/details/bim_eighteenth-century_psychomachia-the-war-of_prudentius_1743/page/n46/mode/1up)) — ~1 line(s) missing
+      after: `…And, in their room, amazing change! 1e`
+      before: `A virtue now ſhe outwardly appears,…`
+- [ ] **leaf 46** ([open the scan](https://archive.org/details/bim_eighteenth-century_psychomachia-the-war-of_prudentius_1743/page/n46/mode/1up)) — ~1 line(s) missing
+      after: `…Not i in a Vice's, but a Virtues name ;`
+      before: `A well-known emblem of parental cares;…`
+- [ ] **leaf 46** ([open the scan](https://archive.org/details/bim_eighteenth-century_psychomachia-the-war-of_prudentius_1743/page/n46/mode/1up)) — ~1 line(s) missing
+      after: `…A well-known emblem of parental cares;`
+      before: `Seems of a numerous progeny poſſeſt. 1…`
+- [ ] **leaf 50** ([open the scan](https://archive.org/details/bim_eighteenth-century_psychomachia-the-war-of_prudentius_1743/page/n50/mode/1up)) — ~3 line(s) missing
+      after: `…Retire, ye Juſt, from off th* embattled field,`
+      before: `Peace is conſummate ; if the heart deſires 4…`
+- [ ] **leaf 56** ([open the scan](https://archive.org/details/bim_eighteenth-century_psychomachia-the-war-of_prudentius_1743/page/n56/mode/1up)) — ~1 line(s) missing
+      after: `…L. CoNCoRD enter d thro? the narrow gates`
+      before: `A wily foe did there inſidious hide, =…`
+- [ ] **leaf 57** ([open the scan](https://archive.org/details/bim_eighteenth-century_psychomachia-the-war-of_prudentius_1743/page/n57/mode/1up)) — ~1 line(s) missing
+      after: `…Some drops of oozing blood, at laſt, were ſeen`
+      before: ` CoNCORD alarm'd,criesout ; what hoſtile hand…`
+- [ ] **leaf 59** ([open the scan](https://archive.org/details/bim_eighteenth-century_psychomachia-the-war-of_prudentius_1743/page/n59/mode/1up)) — ~1 line(s) missing
+      after: `…The brutal tribes the mangled carcaſs rend;`
+      before: `When now the common weal was aſcertain'd,…`
+- [ ] **leaf 60** ([open the scan](https://archive.org/details/bim_eighteenth-century_psychomachia-the-war-of_prudentius_1743/page/n60/mode/1up)) — ~2 line(s) missing
+      after: `…Thither the Queens aſcending take their ſeat,`
+      before: `But ſcorn all difference for agreement's ſake.…`
+- [ ] **leaf 60** ([open the scan](https://archive.org/details/bim_eighteenth-century_psychomachia-the-war-of_prudentius_1743/page/n60/mode/1up)) — ~1 line(s) missing
+      after: `…And ſummon all their people to attend.`
+      before: `The ſov'reign mandate, nor abſconding ſtays 3…`
+- [ ] **leaf 63** ([open the scan](https://archive.org/details/bim_eighteenth-century_psychomachia-the-war-of_prudentius_1743/page/n63/mode/1up)) — ~2 line(s) missing
+      after: `…Heay*n will rejeC the blazing ſacrifice,`
+      before: `Nay, ſhould you ſtand the perſecutor's flame,…`
+- [ ] **leaf 63** ([open the scan](https://archive.org/details/bim_eighteenth-century_psychomachia-the-war-of_prudentius_1743/page/n63/mode/1up)) — ~3 line(s) missing
+      after: `…Nay, ſhould you ſtand the perſecutor's flame,`
+      before: `That little drop of cordial gall will four =…`
+- [ ] **leaf 66** ([open the scan](https://archive.org/details/bim_eighteenth-century_psychomachia-the-war-of_prudentius_1743/page/n66/mode/1up)) — ~1 line(s) missing
+      after: `…© Obtain a reſidence, and roam no more.`
+      before: `And rear a ſtately ſtructure to the sky…`
+- [ ] **leaf 66** ([open the scan](https://archive.org/details/bim_eighteenth-century_psychomachia-the-war-of_prudentius_1743/page/n66/mode/1up)) — ~1 line(s) missing
+      after: `…Say. what avails it, tho? our arms o'erthrew`
+      before: `If yet the Son of God, ordain'd to come SS…`
+- [ ] **leaf 66** ([open the scan](https://archive.org/details/bim_eighteenth-century_psychomachia-the-war-of_prudentius_1743/page/n66/mode/1up)) — ~1 line(s) missing
+      after: `…Sin to aboliſh, and reverſe our doom, r`
+      before: `Adorn'd, and furnifh'd for its heav'oly gueſt? . r…`
+- [ ] **leaf 67** ([open the scan](https://archive.org/details/bim_eighteenth-century_psychomachia-the-war-of_prudentius_1743/page/n67/mode/1up)) — ~1 line(s) missing
+      after: `…The ſtately arch of ey'ry portal fill;`
+      before: `* The Plan of this Temple is taken from the Deſcript…`
+- [ ] **leaf 70** ([open the scan](https://archive.org/details/bim_eighteenth-century_psychomachia-the-war-of_prudentius_1743/page/n70/mode/1up)) — ~2 line(s) missing
+      after: `… ſhrine, for #5, dew'sthronedefigrds 9 oy png FI 8 7`
+      before: `With ſofteſt touch, and elegance of thoughts ' *…`
+- [ ] **leaf 71** ([open the scan](https://archive.org/details/bim_eighteenth-century_psychomachia-the-war-of_prudentius_1743/page/n71/mode/1up)) — ~1 line(s) missing
+      after: `…A twining foliage round the trunk diſpoſe ; 3`
+      before: `They never droop, they never hang their heads.…`
+- [ ] **leaf 71** ([open the scan](https://archive.org/details/bim_eighteenth-century_psychomachia-the-war-of_prudentius_1743/page/n71/mode/1up)) — ~1 line(s) missing
+      after: `…The dreadful combats of the carnal field ; 3`
+      before: `| Now take the _ and then che better part, |…`
 
 ## Lines the scanner was unsure of
 

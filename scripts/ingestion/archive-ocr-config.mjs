@@ -247,11 +247,15 @@ const PRUDENTIUS_PSYCHOMACHIA = {
   slug: 'psychomachia-prudentius',
   title: 'Psychomachia: The War of the Soul',
   author: 'Prudentius',
-  genre: 'Hymn',
+  genre: 'Poem',
   verse: true,
-  // The controlled vocabulary has no bucket for an allegorical epic poem;
-  // Hymn is the only verse genre in it, so it is the least wrong choice
-  // rather than the right one. Worth revisiting if a Poem genre is ever added.
+  // Poem, not Hymn. Hymn was the vocabulary's only verse genre until
+  // migration 028 added this one, and an allegorical epic in heroic couplets
+  // filed as a hymn would have sat beside the Cathemerinon in every genre
+  // listing and told the reader something false about what they were opening.
+  // NOTE: run supabase/migrations/028_poem_genre.sql before importing, or
+  // pipeline-import.mjs skips the text with "genre \"Poem\" not found".
+  archiveId: 'bim_eighteenth-century_psychomachia-the-war-of_prudentius_1743',
   themes: ['spiritual-warfare', 'virtue', 'vice', 'humility', 'conscience'],
   // Honest rather than flattering. The arrangement is sound — every line is a
   // line, in order, with the furniture gone — but the letters inside them come
@@ -273,6 +277,9 @@ const PRUDENTIUS_PSYCHOMACHIA = {
   // one place where a wrong reading silently restructures the whole text.
   headings: [
     ['PSTCHOMACHI', 'The War of the Soul'],
+    // The printer set the title over two lines; the heading above now says
+    // it in full, so the tail would only repeat it. null drops the line.
+    ['WAR of the SOUL', null],
     ['COMBAT of FAITH', 'The Combat of Faith and Idolatry'],
     ['COMBAT of CHa8TITY', 'The Combat of Chastity and Lust'],
     ['TheConaTofPaTiBNGE', 'The Combat of Patience and Wrath'],
@@ -332,6 +339,10 @@ const PRUDENTIUS_PSYCHOMACHIA = {
 
     // Not the long s — letters the scanner simply misread, each confirmed
     // against the sense and the rhyme of its own couplet.
+    // Decorated drop-capitals the scanner missed. Restored only where the
+    // surviving letters leave one possible word.
+    'IRS T,': 'FIRST,', 'TEXT to the field': 'NEXT to the field',
+    'HEN Ric came': 'WHEN Ric came', "a time's last period": "In time's last period",
     "proy'd": "prov'd", anpler: 'ampler', impatt: 'impart',
     'ty pify': 'typify', wbilst: 'whilst', "amarz'd": "amaz'd",
     '2yeen': 'queen', speQacle: 'spectacle', "trangress'd": "transgress'd",

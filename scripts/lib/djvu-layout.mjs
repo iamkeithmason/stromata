@@ -201,11 +201,12 @@ export function classifyLines(page, options = {}) {
 
 /**
  * Fold turnovers back into the line they belong to, and drop everything that
- * is not text. Returns the kept lines plus a full account of what was dropped,
+ * is not text. `isHeading` tells the gap detector which lines are display type,
+ * whose leading is not the body's. Returns the kept lines plus a full account of what was dropped,
  * so a removal is always reviewable — a silent drop is how a real line of the
  * poem goes missing and nobody finds out.
  */
-export function assemblePage(classified, { gapRatio = 1.7 } = {}) {
+export function assemblePage(classified, { gapRatio = 1.7, isHeading = () => false } = {}) {
   const kept = [];
   const dropped = [];
 
@@ -239,6 +240,11 @@ export function assemblePage(classified, { gapRatio = 1.7 } = {}) {
   if (typical > 0) {
     for (let i = 1; i < kept.length; i++) {
       const gap = kept[i].y0 - kept[i - 1].y0;
+      // Display type is set with its own leading, so the pitch test fires at
+      // every heading and reports a line that was never there. A checklist
+      // with a false entry at each of eight headings is a checklist nobody
+      // finishes, so headings are excluded rather than explained away.
+      if (isHeading(kept[i].text) || isHeading(kept[i - 1].text)) continue;
       if (gap > typical * gapRatio) {
         suspectedGaps.push({
           after: kept[i - 1].text,
@@ -328,7 +334,14 @@ export function stripStrayMarks(line) {
 export function applyWordFixes(text, fixes = {}) {
   const applied = new Map();
   for (const [wrong, right] of Object.entries(fixes)) {
-    const re = new RegExp(`\\b${wrong.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'gi');
+    // Anchor with \b only where the edge is a word character. A key that ends
+    // in punctuation ("IRS T,") has no word boundary after it, and a trailing
+    // \b there matches nothing at all — silently, which is the worst way for a
+    // correction to fail.
+    const escaped = wrong.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const lead = /^[A-Za-z0-9]/.test(wrong) ? '\\b' : '';
+    const tail = /[A-Za-z0-9]$/.test(wrong) ? '\\b' : '';
+    const re = new RegExp(`${lead}${escaped}${tail}`, 'gi');
     text = text.replace(re, (found) => {
       applied.set(wrong, (applied.get(wrong) ?? 0) + 1);
       if (found === found.toUpperCase() && /[A-Z]{2}/.test(found)) return right.toUpperCase();

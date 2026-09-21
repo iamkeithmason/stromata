@@ -19,6 +19,7 @@ export const GENRES = [
   'Commentary',
   'Dialogue',
   'Hymn',
+  'Poem',
   'Confession',
   'Hagiography',
   'Apology',

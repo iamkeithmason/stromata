@@ -41,6 +41,7 @@ export const GENRES = [
   { slug: 'commentary', name: 'Commentary' },
   { slug: 'dialogue', name: 'Dialogue' },
   { slug: 'hymn', name: 'Hymn' },
+  { slug: 'poem', name: 'Poem' },
   { slug: 'confession', name: 'Confession' },
   { slug: 'hagiography', name: 'Hagiography' },
   { slug: 'apology', name: 'Apology' },

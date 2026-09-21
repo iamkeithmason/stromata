@@ -74,9 +74,14 @@ const [first, last] = config.pages ?? [0, pages.length - 1];
 const lines = [];
 const report = { dropped: [], gaps: [], suspect: [], marks: [] };
 
+// The heading patterns do double duty: they place the markdown headings below,
+// and here they tell the gap detector which lines are display type.
+const headingPatterns = (config.headings ?? []).map(([pattern]) => new RegExp(pattern));
+const isHeading = (text) => headingPatterns.some((re) => re.test(text));
+
 for (let i = first; i <= last && i < pages.length; i++) {
   const classified = classifyLines(pages[i], config.layout);
-  const { kept, dropped, suspectedGaps } = assemblePage(classified, config.layout);
+  const { kept, dropped, suspectedGaps } = assemblePage(classified, { ...config.layout, isHeading });
 
   for (const line of kept) lines.push({ ...line, page: i });
   for (const d of dropped) report.dropped.push({ page: i, role: d.role, text: d.text, why: d.why });
@@ -134,8 +139,11 @@ for (const [pattern, heading] of config.headings ?? []) {
     console.warn(`  ! heading never matched: /${pattern}/`);
     continue;
   }
-  text = text.replace(re, `\n## ${heading}\n`);
-  headingsApplied.push(heading);
+  // A null heading removes the line instead of replacing it — for the second
+  // half of a heading the printer set over two lines, which the markdown
+  // heading above it now says in full.
+  text = heading === null ? text.replace(re, '') : text.replace(re, `\n## ${heading}\n`);
+  if (heading !== null) headingsApplied.push(heading);
 }
 
 text = text
@@ -170,20 +178,32 @@ const outDir = path.join(ROOT, 'scripts/ingestion/output');
 const outFile = path.join(outDir, `${config.slug}.md`);
 const reviewFile = path.join(outDir, `${config.slug}-review.md`);
 
+/** Deep link to one leaf of the scan, so a checklist item is one click away. */
+const pageLink = (n) =>
+  config.archiveId ? ` ([open the scan](https://archive.org/details/${config.archiveId}/page/n${n}/mode/1up))` : '';
+
 const reviewBody = [
   `# Review — ${config.title}`,
   '',
   `Source: \`${config.xmlFile}\`, pages ${first}–${last} of ${pages.length}.`,
   `Extracted ${lines.length} lines. Headings applied: ${headingsApplied.length ? headingsApplied.join('; ') : 'none'}.`,
   '',
-  '## Lines the scan appears to have lost',
+  '## Checklist — lines the scan appears to have lost',
   '',
   'A page of leaded verse has a near-constant line pitch, so a gap wider than the',
-  'usual one means type that did not come through. Check these against the page',
-  'images before publishing — this is damage that leaves no mark in the text.',
+  'usual one means type that did not come through. This is damage that leaves no',
+  'mark in the text, so it has to be checked against the page images.',
+  '',
+  'Each item links straight to the scanned leaf. Read the two quoted lines, find',
+  'them on the image, and type in whatever sits between them. The couplet rhyme is',
+  'the quickest test: a missing line usually leaves its partner unrhymed.',
   '',
   ...(report.gaps.length
-    ? report.gaps.map((g) => `- p.${g.page} — ~${g.missing} line(s) between “…${g.after.slice(-40)}” and “${g.before.slice(0, 40)}…”`)
+    ? report.gaps.flatMap((g) => [
+        `- [ ] **leaf ${g.page}**${pageLink(g.page)} — ~${g.missing} line(s) missing`,
+        `      after: \`…${g.after.slice(-52)}\``,
+        `      before: \`${g.before.slice(0, 52)}…\``,
+      ])
     : ['- none']),
   '',
   '## Lines the scanner was unsure of',

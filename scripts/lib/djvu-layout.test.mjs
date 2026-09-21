@@ -204,3 +204,12 @@ test('markVerseBreaks marks every line but the stanza-final ones', () => {
 test('markVerseBreaks does not double a backslash it already put there', () => {
   assert.deepEqual(markVerseBreaks(['a\\', 'b\\', 'c']), ['a\\', 'b\\', 'c']);
 });
+
+test('applyWordFixes anchors on word boundaries only where there is one', () => {
+  // "IRS T," is the drop-capital F missing from FIRST. A trailing \b after the
+  // comma matches nothing, and does so silently.
+  assert.equal(
+    applyWordFixes("IRS T, heav'n-born FaiTH", { 'IRS T,': 'FIRST,' }).text,
+    "FIRST, heav'n-born FaiTH",
+  );
+});
