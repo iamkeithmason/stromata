@@ -86,8 +86,8 @@ It is a read-only formula — the Scout **never writes Score**.
   so the agent never proposes it. Missing dates → Era left blank + `needs-editorial`.
 - **Tradition** the agent may propose, but code validates it against the death
   year. It **auto-reassigns** only among the three date-settled traditions (Early
-  Church ≤325, Patristic 325–600, Byzantine 600–1054) — e.g. a Greek-East author
-  mislabelled "Patristic" is corrected to Byzantine. Everything else (post-1054
+  Church ≤325, Patristic 325–600, Imperial 600–1054) — e.g. a Greek-East author
+  mislabelled "Patristic" is corrected to Imperial. Everything else (post-1054
   East/West, a Reformation confession, a boundary figure, or missing dates) is
   **flagged** `needs-editorial` with the field cleared, rather than guessed. The
   correction/flag is recorded in Editorial notes (`↻` / `⚑`) and the row still

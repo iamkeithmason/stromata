@@ -8,8 +8,13 @@
  *     read-only Score formula = Value ÷ (Complexity + Effort). The agent emits
  *     only the three integers; Score is never written (scoring.ts owns the
  *     arithmetic).
- *   - Tradition options include Byzantine and Oriental Orthodox (migration has
+ *   - Tradition options include Imperial and Oriental Orthodox (migration has
  *     landed). Era is derived from the author's dates, never proposed.
+ *     NOTE: the Imperial option was called "Byzantine" in Notion until
+ *     2026-09-21. It was renamed so Notion matches the site's own controlled
+ *     vocabulary, which has always been `imperial` / "Imperial" — the old name
+ *     existed only to be translated by a mapping line in CLAUDE.md. "Byzantine"
+ *     survives as an alias below so an older row still resolves.
  *   - Status has no "Proposed" option; we write a provisional value that Notion
  *     auto-creates on first use, keeping agent proposals filterable.
  */
@@ -29,7 +34,7 @@ export type PriorityBand = 'high' | 'medium' | 'low';
 export const TRADITIONS: Array<{ canonical: string; band: PriorityBand; aliases: string[] }> = [
   { canonical: 'Early Church', band: 'high', aliases: ['Early Church (pre-Nicene)', 'early-church'] },
   { canonical: 'Patristic', band: 'high', aliases: ['patristic'] },
-  { canonical: 'Byzantine', band: 'high', aliases: ['Imperial', 'imperial', 'byzantine'] },
+  { canonical: 'Imperial', band: 'high', aliases: ['Byzantine', 'byzantine', 'imperial'] },
   { canonical: 'Roman Catholic', band: 'high', aliases: ['roman-catholic'] },
   { canonical: 'Anglican', band: 'high', aliases: ['anglican'] },
   { canonical: 'Oriental Orthodox', band: 'medium', aliases: ['oriental-orthodox'] },
@@ -41,11 +46,26 @@ export const TRADITIONS: Array<{ canonical: string; band: PriorityBand; aliases:
   { canonical: 'Ecumenical', band: 'low', aliases: ['ecumenical'] },
 ];
 
-/** Tradition options that actually exist on the Notion Content Prospect List. */
+/**
+ * Tradition options that actually exist on the Notion Content Prospect List.
+ *
+ * `Byzantine` and `Imperial` are both listed **during the rename transition**.
+ * The option is being renamed to Imperial so Notion matches the site's own
+ * controlled vocabulary; until that rename is made in the Notion UI, the live
+ * option is still called Byzantine, and the Scout writing a value that does not
+ * exist would either fail validation or silently create a stray option.
+ *
+ * Listing both means neither ordering breaks: the code can ship before or after
+ * the rename. **Delete the `Byzantine` line once the Notion option is renamed**
+ * — it is transitional, not a permanent alias. (The permanent alias lives in
+ * TRADITIONS above, which is what maps an older row's value to the canonical
+ * name.)
+ */
 export const NOTION_TRADITIONS = [
   'Early Church',
   'Patristic',
-  'Byzantine',
+  'Imperial',
+  'Byzantine', // transitional — remove after the Notion option is renamed
   'Oriental Orthodox',
   'Eastern Orthodox',
   'Roman Catholic',

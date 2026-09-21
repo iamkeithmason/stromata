@@ -498,7 +498,7 @@ Before each pipeline run, pull new candidates from the Notion Content Prospect L
    `Apostolic` → `apostolic` · `Ante-Nicene` → `ante-nicene` · `Nicene & Post-Nicene` → `nicene-post-nicene` · `Early Medieval` → `early-medieval` · `High Medieval` → `high-medieval` · `Late Medieval` → `late-medieval` · `Reformation` → `reformation` · `Post-Reformation` → `post-reformation` · `Modern` → `modern`
 
    **Tradition name → slug:**
-   `Early Church` → `early-church` · `Patristic` → `patristic` · `Byzantine` → `imperial` · `Oriental Orthodox` → `oriental-orthodox` · `Eastern Orthodox` → `eastern-orthodox` · `Roman Catholic` → `roman-catholic` · `Anglican` → `anglican` · `Reformed` → `reformed` · `Lutheran` → `lutheran` · `Ecumenical` → `ecumenical`
+   `Early Church` → `early-church` · `Patristic` → `patristic` · `Imperial` → `imperial` (the Notion option was renamed from `Byzantine` on 2026-09-21; an old row reading `Byzantine` still maps to `imperial`) · `Oriental Orthodox` → `oriental-orthodox` · `Eastern Orthodox` → `eastern-orthodox` · `Roman Catholic` → `roman-catholic` · `Anglican` → `anglican` · `Reformed` → `reformed` · `Lutheran` → `lutheran` · `Ecumenical` → `ecumenical`
 
    > **Why the preference, and it is not cosmetic.** `Cleared edition URL` is the
    > exact edition an editor pinned and checked; `Reference URL` is whatever

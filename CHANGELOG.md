@@ -7,6 +7,40 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-09-21 — The Notion tradition option becomes `Imperial`
+
+The site's controlled vocabulary has always had `imperial` / "Imperial" and no
+Byzantine; the Notion prospect list had "Byzantine", and a mapping line in
+CLAUDE.md existed only to translate between them. Notion was the odd one out, so
+the option is being renamed and the bridge retired.
+
+It is not a label edit — "Byzantine" was load-bearing in seven places:
+
+- `scripts/scout/config.ts` — `TRADITIONS` had it as the **canonical** name with
+  `Imperial` as an alias; those swap. `NOTION_TRADITIONS`, which documents
+  itself as "options that actually exist on the Notion Content Prospect List",
+  listed it.
+- `scripts/scout/taxonomy.ts` — `ERA_BUCKET_TRADITIONS`, the 600–1054
+  `TRADITION_WINDOWS` entry, and the string `eraBucketFor()` returns. This is
+  the auto-reassignment target for a Greek-East author mislabelled "Patristic",
+  so a missed rename here would have silently written a dead option.
+- `scripts/scout/taxonomy.test.ts`, `scripts/scout/README.md`, `CLAUDE.md`'s
+  mapping table, `PRODUCT.md`'s taxonomy tables and migration notes.
+
+**The Notion half is deliberately not done from here.** The DDL this connector
+exposes specifies select options by *name only* — `SELECT('opt':color, …)`, no
+option ids — so renaming through it would read as "drop Byzantine, add
+Imperial" and clear the field on every row currently set to it. The rename
+belongs in the Notion UI, which renames in place and preserves the rows.
+
+So `NOTION_TRADITIONS` lists **both** names for now, and says in a comment that
+the `Byzantine` line is transitional and should be deleted once the UI rename
+lands. That way the code can ship before or after the rename without a window
+where the Scout writes an option that does not exist — the trap that made this
+worth doing carefully rather than quickly.
+
+---
+
 ## 2026-09-21 — The sync reads the field that was checked
 
 **The Notion pre-run sync now prefers `Cleared edition URL` over `Reference
