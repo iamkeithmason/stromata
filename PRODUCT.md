@@ -93,7 +93,7 @@ These items are required before Phase 1 can be considered complete and the site 
 - [ ] **Donation prompt** — non-intrusive; footer of text pages is the natural placement; a single sentence with a link is sufficient for Phase 1
 
 **Taxonomy**
-- [ ] **Tradition revision** — migrate from the current 10-term list to the revised 11-term list (adds Byzantine, Oriental Orthodox; clarifies Early Church / Patristic split). This should happen before the library grows further, while author counts are still small. See migration notes in the taxonomy section below.
+- [ ] **Tradition revision** — migrate from the current 10-term list to the revised 11-term list (adds Imperial, Oriental Orthodox; clarifies Early Church / Patristic split). This should happen before the library grows further, while author counts are still small. See migration notes in the taxonomy section below. *(The term here was "Byzantine" until 2026-09-21; renamed to Imperial so the Notion prospect list matches the site's own controlled vocabulary, which has always used `imperial`.)*
 
 ### Should complete before launch
 
@@ -235,7 +235,7 @@ Problems with the current list:
 |---|---|---|
 | Early Church | to c. 325 | Ignatius, Justin Martyr, Origen, Tertullian |
 | Patristic | c. 325–600 | Augustine, Chrysostom, the Cappadocians, Ambrose, Jerome |
-| Byzantine | c. 600–1054 | Maximus the Confessor, John of Damascus, Bede, Gregory the Great |
+| Imperial | c. 600–1054 | Maximus the Confessor, John of Damascus, Bede, Gregory the Great |
 | Oriental Orthodox | All eras (Coptic, Syriac, Armenian, Ethiopian) | Ephrem the Syrian, Shenoute of Atripe |
 | Eastern Orthodox | post-1054 | |
 | Roman Catholic | post-1054 | |
@@ -247,9 +247,9 @@ Problems with the current list:
 | Ecumenical | Figures genuinely resistant to categorisation | |
 
 **Migration notes:**
-- Current "Early Church" entries: review — some belong under "Patristic" or "Byzantine" depending on dates
-- Current "Patristic" entries dated post-600: move to "Byzantine"
-- Current "Eastern Orthodox" and "Roman Catholic" entries dated pre-1054: move to "Patristic" or "Byzantine"
+- Current "Early Church" entries: review — some belong under "Patristic" or "Imperial" depending on dates
+- Current "Patristic" entries dated post-600: move to "Imperial"
+- Current "Eastern Orthodox" and "Roman Catholic" entries dated pre-1054: move to "Patristic" or "Imperial"
 - Update the Wikipedia tradition-suggestion logic in `NewAuthorForm.tsx` (`suggestTradition` function) to recognise the new terms
 
 **On liminal figures:** Writers like Wycliffe and Hus operate within Roman Catholic structures while prefiguring Reformation concerns. Assign the most historically accurate label (Roman Catholic for Wycliffe) and note the tension in the bio.
@@ -301,7 +301,7 @@ For gap-scoring and curatorial focus. These are editorial judgments, not algorit
 |---|---|---|
 | Early Church | High | |
 | Patristic | High | |
-| Byzantine | High | Distinct and underrepresented in English-language libraries |
+| Imperial | High | Distinct and underrepresented in English-language libraries |
 | Oriental Orthodox | Medium | Sparse by nature; valuable where it exists |
 | Eastern Orthodox | Medium | |
 | Roman Catholic | High | Medieval Latin tradition especially |

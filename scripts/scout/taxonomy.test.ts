@@ -31,22 +31,22 @@ test('Ignatius (d.108, Early Church) — unchanged, valid', () => {
   assert.equal(r.flag, null);
 });
 
-test('John of Damascus (d.749, proposed Patristic) — auto → Byzantine', () => {
+test('John of Damascus (d.749, proposed Patristic) — auto → Imperial', () => {
   const r = resolveTradition('Patristic', 749);
-  assert.equal(r.tradition, 'Byzantine');
+  assert.equal(r.tradition, 'Imperial');
   assert.equal(r.flag, 'auto');
-  assert.match(r.note ?? '', /↻ tradition auto-set «Byzantine»/);
+  assert.match(r.note ?? '', /↻ tradition auto-set «Imperial»/);
 });
 
-test('John Climacus (d.649, proposed Early Church) — auto → Byzantine', () => {
+test('John Climacus (d.649, proposed Early Church) — auto → Imperial', () => {
   const r = resolveTradition('Early Church', 649);
-  assert.equal(r.tradition, 'Byzantine');
+  assert.equal(r.tradition, 'Imperial');
   assert.equal(r.flag, 'auto');
 });
 
-test('Symeon the New Theologian (d.1022, proposed Patristic) — auto → Byzantine', () => {
+test('Symeon the New Theologian (d.1022, proposed Patristic) — auto → Imperial', () => {
   const r = resolveTradition('Patristic', 1022);
-  assert.equal(r.tradition, 'Byzantine');
+  assert.equal(r.tradition, 'Imperial');
   assert.equal(r.flag, 'auto');
 });
 
