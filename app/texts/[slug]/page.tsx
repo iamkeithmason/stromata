@@ -19,6 +19,7 @@ import { AuthorAside } from '@/app/components/AuthorAside'
 import { DownloadLinks } from '@/app/components/DownloadLinks'
 import { ReaderSettings } from '@/app/components/ReaderSettings'
 import { CitationButton } from '@/app/components/CitationButton'
+import { resolveLicense } from '@/lib/licenses'
 
 // Incremental Static Regeneration: cache the rendered page and revalidate
 // hourly. Safe given the manual publish cadence — a newly published or edited
@@ -92,7 +93,7 @@ export default async function TextPage({ params }: Props) {
       .select(`
         accession_number, author_id, body, collection_id, collection_order,
         created_at, editorial_introduction, featured, featured_from, featured_note,
-        genre_id, id, ocr_quality, provenance_notes, published, published_at,
+        genre_id, id, license, ocr_quality, provenance_notes, published, published_at,
         slug, source_attribution, source_url, summary, title, translation_notes,
         updated_at, word_count,
         author:authors(name, slug, bio, birth_year, death_year, image_url, image_focus_x, image_focus_y, image_zoom, loc:locations(name, slug), tradition:traditions(slug, name), era:eras(label, slug)),
@@ -222,6 +223,8 @@ export default async function TextPage({ params }: Props) {
       { '@type': 'ListItem', position: author?.slug ? 3 : 2, name: text.title, item: canonicalUrl },
     ],
   }
+
+  const license = resolveLicense(text.license)
 
   return (
     <div id="reader-page" style={{ background: 'var(--paper)', paddingTop: '4rem' }} className="min-h-screen">
@@ -377,7 +380,7 @@ export default async function TextPage({ params }: Props) {
 
               {/* Provenance — sourced metadata. The accession number is no longer
                   repeated here: it now leads the frontispiece as the hero kicker. */}
-              {(text.source_attribution || text.provenance_notes || text.translation_notes) && (
+              {(text.source_attribution || text.provenance_notes || text.translation_notes || license) && (
                 <section
                   className="flex flex-col gap-3 text-xs"
                   style={{ color: 'var(--ink-mute)' }}
@@ -385,6 +388,19 @@ export default async function TextPage({ params }: Props) {
                   {text.source_attribution && <p>Source: {text.source_attribution}</p>}
                   {text.provenance_notes && <p>{text.provenance_notes}</p>}
                   {text.translation_notes && <p>Translation: {text.translation_notes}</p>}
+                  {license && (
+                    <p>
+                      License:{' '}
+                      <a
+                        href={license.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="underline underline-offset-2 hover:opacity-70 transition-opacity"
+                      >
+                        {license.name}
+                      </a>
+                    </p>
+                  )}
                 </section>
               )}
 
@@ -538,6 +554,8 @@ export default async function TextPage({ params }: Props) {
               slug={slug}
               sourceAttribution={text.source_attribution ?? null}
               accessionNumber={text.accession_number ?? null}
+              licenseName={license?.name ?? null}
+              licenseUrl={license?.url ?? null}
             />
           </p>
       </footer>

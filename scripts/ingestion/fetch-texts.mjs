@@ -320,6 +320,14 @@ function generateFrontmatter(title, index, cfg, noteDraft = "", suggestedThemes 
     ? `themes: [${themeSlugs.join(", ")}]`
     : `themes: []  # TODO — choose from: ${themeList}`;
 
+  // Omitted entirely (not written as an empty string) when unset, so
+  // parseFrontmatter() leaves data.license undefined and the importer treats
+  // the text as public domain by default — the same convention as every
+  // other optional field here.
+  const licenseLine = cfg.knownFields.license
+    ? `license: "${cfg.knownFields.license}"\n`
+    : "";
+
   return `---
 title: "${title}"
 slug: "${slug}"
@@ -334,7 +342,7 @@ translation_notes: "${cfg.knownFields.translationNotes || "# TODO — confirm tr
 ocr_quality: "high"
 published: false
 copyright_safe: ${cfg.knownFields.copyrightSafe ?? true}
-note_draft: "${escapedDraft}"
+${licenseLine}note_draft: "${escapedDraft}"
 ---
 
 <!-- EDITORIAL INTRO — write 2–4 sentences here explaining what this text is and why it matters. This appears above the text on the reader page. -->

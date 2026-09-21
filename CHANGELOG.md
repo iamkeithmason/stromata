@@ -7,6 +7,23 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-09-21 — Built the license infrastructure the CC-catechism prospect is blocked on
+
+Added `texts.license` (migration `030_text_license.sql`, nullable, `null` = public domain —
+the default for every text so far) and `lib/licenses.ts`, a slug → `{name, url}` lookup
+(currently just `cc-by-sa-4.0`). The reader page (`app/texts/[slug]/page.tsx`) now renders a
+linked license line in the provenance rail when a text has one, and `CitationButton` folds it
+into the copied citation. `pipeline-import.mjs` refuses to import any staged text carrying a
+non-null `license` unless `source_attribution` and `source_url` are both also present, since an
+unattributed licensed text is worse than an unattributed public-domain one; `fetch-texts.mjs`
+writes the field from `cfg.knownFields.license` when set.
+
+This is infrastructure only — it does not touch the `small-catechism-elce-cc` prospect's status
+or `translation_copyright_clear`, and does not wire up `wordpress_rest` fetching. Actually using
+it stays gated on Keith confirming the ELCE translation's terms with the minister who shared it.
+
+---
+
 ## 2026-09-21 — Queued the CC-licensed Small Catechism, blocked on purpose
 
 `thesmallcatechism.org` — the ELCE's 2016 contemporary translation, offered in the same Discord

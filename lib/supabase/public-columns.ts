@@ -54,6 +54,7 @@ export const PUBLIC_TEXT_COLUMNS = [
   'featured_note',
   'genre_id',
   'id',
+  'license',
   'ocr_quality',
   'provenance_notes',
   'published',

@@ -474,6 +474,7 @@ pending → stage-1-done → stage-2-done → stage-3-done → staged → import
       "translation_copyright_clear": true,
       "translator": "James Barmby",
       "translator_death_year": 1887,
+      "license": null,
       "stage_1_notes": "",
       "stage_2_output": "",
       "stage_3_themes": [],
@@ -482,6 +483,19 @@ pending → stage-1-done → stage-2-done → stage-3-done → staged → import
   ]
 }
 ```
+
+**`license`** — `null` (the default; omit the field entirely for a public-domain
+prospect) or a slug into `lib/licenses.ts` (currently only `"cc-by-sa-4.0"`) for a
+work offered under an open license rather than being in the public domain. This is
+a genuinely different case from public domain: a licensed work carries its own
+display+attribution obligation the site has to meet on the reader page, not just a
+copyright status to verify. `fetch-texts.mjs` writes it into frontmatter only when
+`cfg.knownFields.license` is set; `pipeline-import.mjs` **refuses to import** any
+staged text with a non-null `license` unless `source_attribution` and `source_url`
+are both also present, since an unattributed licensed text is worse than an
+unattributed public-domain one. Do not set this field to queue or import a
+CC-licensed text without Keith's explicit go-ahead on that specific source — the
+schema/pipeline/reader support existing is not itself authorization to use it.
 
 **source_type options:** `newadvent` | `gutenberg` | `wikisource` | `wittenberg` | `archive_online` | `archive_ocr`
 
