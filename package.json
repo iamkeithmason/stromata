@@ -28,7 +28,8 @@
     "test:research": "tsx --test scripts/research/*.test.ts",
     "design:critic": "node scripts/design/critic-loop.mjs",
     "test": "tsx --test \"lib/**/*.test.ts\" \"scripts/**/*.test.ts\" \"scripts/**/*.test.mjs\"",
-    "check:tests-in-ci": "node scripts/check-tests-in-ci.mjs"
+    "check:tests-in-ci": "node scripts/check-tests-in-ci.mjs",
+    "check:prospect-urls": "node scripts/check-prospect-urls.mjs"
   },
   "dependencies": {
     "@react-pdf/renderer": "^4.9.0",

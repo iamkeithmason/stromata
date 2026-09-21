@@ -20,6 +20,27 @@ on:
   # "not yet" and never resolves. Note the limit — GitHub only offers the
   # dispatch button for workflows present on the DEFAULT branch, so this helps
   # branches cut after it lands, never the PR that adds it.
+  #
+  # Seen again on #116 (2026-09-21), and the "bounded" reading above held: one
+  # push there (d4ca788) produced no run from its `synchronize` event — none,
+  # for any workflow, and still none ten minutes later, so a manual dispatch
+  # was what produced a green. The NEXT push (a5a2e90) started runs normally.
+  # The gap skips a push; it does not persist across them.
+  #
+  # The trap is in how you CHECK for it, and it is easy to get wrong in the
+  # expensive direction. A run takes twenty seconds or so to appear in the API
+  # after a push, and during that window the run list looks identical to the
+  # gap: no run for your SHA. That false positive happened on #116 — the list
+  # was queried seconds after pushing a5a2e90, read as "CI is not firing",
+  # reported as such, and answered with a redundant dispatch, leaving the PR
+  # with two lint-and-types runs for one commit.
+  #
+  # So before concluding that a push produced no run: give it a minute, and
+  # check the PR's own check runs rather than the workflow list. The check
+  # runs are keyed to the head SHA and show the push's run and any dispatch
+  # together, which distinguishes "never started" from "not yet indexed". The
+  # workflow list alone cannot tell those apart, and the difference decides
+  # whether you are fixing a real gap or inventing one.
   workflow_dispatch:
 
 concurrency:

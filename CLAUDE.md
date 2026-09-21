@@ -18,12 +18,22 @@ reach for these before falling back:
   `SELECT`, `WHERE`, `GROUP BY … HAVING`, CTEs, `group_concat`. Use the `collection://…` URL as the
   table name. This is the cheapest way to read the list, because you project just the columns you
   need — pulling whole rows drags every prospect's long `Editorial notes` into context.
-  On a non-Business plan it draws on a **shared workspace usage limit**, so it is metered rather
-  than free: prefer one precise query to ten exploratory ones, and expect it to start refusing if
-  the workspace burns that budget.
 - **`notion-query-data-sources` in `rows` mode.** Faithful rich text (mentions, links, formatting
   survive, which SQL text flattens). Max 100 rows, no pagination cursor — partition with a filter
   (e.g. ranges of `userDefined:ID`) when there are more.
+
+**Both are metered, off one shared budget — `rows` is NOT a fallback for an exhausted SQL quota.**
+On a non-Business plan `notion-query-data-sources` draws on a shared workspace usage limit and
+starts answering `reached the usage limit for Query Data Source`. Verified 2026-09-21: the budget
+ran out three times in an afternoon, and once it does, **`rows` mode refuses with the same error as
+SQL** — they are one quota, not two. (An earlier version of this section implied `rows` could be
+used to keep going; it cannot.) It does replenish — roughly 45 minutes between exhaustion and the
+next successful query that day — so a refusal is a wait, not a dead end.
+
+Budget it: prefer one precise query to ten exploratory ones, project only the columns you need,
+and get page ids in the same query you read fields with, so you don't pay twice for the same rows.
+When the budget is gone, **`notion-search` and `notion-fetch` still work and are not metered** —
+slower and page-at-a-time, but enough to finish a job you have already planned.
 
 **Still gated:** `notion-query-database-view` / view mode. `notion-search` + `notion-fetch` remain
 the right tool for *finding* a page by keyword and for reading one page's full properties and body.
@@ -960,6 +970,7 @@ still apply per-file, still parallelize the same way. What changes is Stage 2/5a
 | `scripts/pipeline-import.mjs` | Import staged output into Supabase as `published: false` | Stage 5a |
 | `scripts/rejoin-text-paragraphs.mjs` | Heal mid-sentence page-break splits in already-imported Supabase texts (dry-run default, `--write` to apply; `--slug=`/`--id=` to scope) | Maintenance only |
 | `scripts/dedup-draft-texts.mjs` | Find draft texts that duplicate a published text (matches on title + author *name*, so it catches the draft-author-stub case) and optionally delete the redundant draft (dry-run default, `--write` deletes HIGH-confidence body matches, `--force` includes lower-confidence, `--slug=` to scope, `--fuzzy` lists near-title matches). Never touches published rows, authors, or collections. | Maintenance only |
+| `scripts/check-prospect-urls.mjs` | Fetch every `Cleared edition URL` / `Additional edition URLs` / `Reference URL` in the Notion prospect list and report the ones that no longer answer. Read-only, and uses the **REST API with `NOTION_TOKEN`**, so it does not spend the MCP query budget. Distinguishes **dead (404/410) from blocked (403, e.g. sacred-texts behind Cloudflare)** — only dead exits non-zero, because failing on a 403 every run is how a check stops being read. **Reachability only: a 200 does not mean the URL holds the right work** — the read-the-title check before Stage 2 still stands. `--cleared-only`, `--status=`, `--json`, `--fail-on=any`. Assertion half in `scripts/lib/url-check.mjs`, unit-tested | Maintenance; before a sync |
 | `scripts/generate-note-drafts.mjs` | Backfill note_draft in Supabase for existing texts | Maintenance only |
 | `scripts/generate-summaries.mjs` | Backfill summaries in Supabase | Maintenance only |
 | `scripts/repair-summaries.mjs` | Repair truncated summaries | Maintenance only |
