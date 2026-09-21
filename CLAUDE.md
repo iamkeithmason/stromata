@@ -474,7 +474,7 @@ Before each pipeline run, pull new candidates from the Notion Content Prospect L
    - `"Text available" site:notion.so stromata content`
    - Fetch the database page directly and follow linked prospect pages
 
-2. **Fetch each candidate.** For each result, call `notion-fetch` with the page ID to read its full properties: Title, Author, Era, Tradition, Genre, Reference URL, Translation notes, Status, Score, Complexity, Effort.
+2. **Fetch each candidate.** For each result, call `notion-fetch` with the page ID to read its full properties: Title, Author, Era, Tradition, Genre, **Cleared edition URL**, Reference URL, Translation notes, Status, Score, Complexity, Effort.
 
 3. **Skip already-handled items.** Do not add a prospect if:
    - Its `Status` in Notion is `Live`, `In progress`, or `Needs investigation`
@@ -490,7 +490,7 @@ Before each pipeline run, pull new candidates from the Notion Content Prospect L
    | Era | `era` | Convert label to slug (see mapping below) |
    | Tradition | `tradition` | Convert name to slug (see mapping below) |
    | Genre | `genre` | Use as-is (names match) |
-   | Reference URL | `source_url` | Use as the starting source URL |
+   | **Cleared edition URL** → else Reference URL | `source_url` | **Prefer `Cleared edition URL` whenever it is populated**, and fall back to `Reference URL` only when it is empty. See the warning below. |
    | Translation notes | `translator` / `translator_death_year` | Parse name and death year from the note |
    | Editorial notes | `notes` | Carry over as a `notes` field for Stage 1 context |
 
@@ -500,7 +500,26 @@ Before each pipeline run, pull new candidates from the Notion Content Prospect L
    **Tradition name → slug:**
    `Early Church` → `early-church` · `Patristic` → `patristic` · `Byzantine` → `imperial` · `Oriental Orthodox` → `oriental-orthodox` · `Eastern Orthodox` → `eastern-orthodox` · `Roman Catholic` → `roman-catholic` · `Anglican` → `anglican` · `Reformed` → `reformed` · `Lutheran` → `lutheran` · `Ecumenical` → `ecumenical`
 
-   **source_type inference from Reference URL:**
+   > **Why the preference, and it is not cosmetic.** `Cleared edition URL` is the
+   > exact edition an editor pinned and checked; `Reference URL` is whatever
+   > candidate link the row was created with, and nothing has verified it. On
+   > 2026-09-21 the *All of Grace* row carried a correct `Cleared edition URL`
+   > (an Archive.org scan of the right book) **and** a `Reference URL` of
+   > `gutenberg.org/ebooks/27570` — which is *Buchanan's Journal of Man, July
+   > 1887*. The sync took `Reference URL`, Stage 2 fetched it, and 108 KB of the
+   > wrong work was imported under Spurgeon's name. A row cleared against a
+   > correct edition was fetched from an uncleared, wrong one. The Sourcer
+   > already gets this right — `scripts/sourcer/gate.ts` refuses a row with no
+   > `Cleared edition URL` at all — so this brings the agent-driven sync into
+   > line with it.
+   >
+   > Record which field was used in `stage_1_notes`, and **verify the URL
+   > resolves to the right work before Stage 2**, whichever field it came from:
+   > fetch it and check the title and author in the first few hundred bytes. A
+   > queue note saying "CONFIRM at Stage 2" is not a check; that exact note was
+   > on the row above and Stage 2 fetched it anyway.
+
+   **source_type inference from the chosen source URL:**
    - `newadvent.org` → `newadvent` (the June 2026 `/fathers/` breakage was **resolved by 2026-08-29** — chapter pages serve normally again, verified via direct URL + `curl` returning no redirect)
    - `gutenberg.org` → `gutenberg`
    - `wikisource.org` → `wikisource`

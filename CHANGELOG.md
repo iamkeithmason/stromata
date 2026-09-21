@@ -7,6 +7,31 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-09-21 — The sync reads the field that was checked
+
+**The Notion pre-run sync now prefers `Cleared edition URL` over `Reference
+URL`.** `Cleared edition URL` is the edition an editor pinned and verified;
+`Reference URL` is whatever candidate link the row was created with, and nothing
+has checked it. The *All of Grace* row had a correct value in the first and
+`gutenberg.org/ebooks/27570` in the second, the sync took the second, and the
+wrong book was imported — a row cleared against a correct edition, fetched from
+an uncleared wrong one.
+
+`scripts/sourcer/gate.ts` already had this right: it refuses a row with no
+`Cleared edition URL` at all (`no-cleared-edition`). The change brings the
+agent-driven sync documented in this file into line with the code that already
+worked, rather than inventing a rule. CLAUDE.md's mapping table now names the
+preference, explains it with the case that caused it, and adds the step that was
+actually missing: **verify the URL resolves to the right work before Stage 2** —
+fetch it and read the title and author out of the first few hundred bytes. The
+queue note on that row said "CONFIRM the exact plain-text URL at Stage 2" and
+Stage 2 fetched it anyway, so a note is not a check.
+
+Also dropped the duplicate *Hymns of the Eastern Church (selection)* prospect
+(#243, superseded by #265) — soft-dropped to `Unplanned` with the title marked,
+since the sync only reads `Text available` rows. The Notion connector available
+here has no delete, so removing the row outright needs a click in Notion.
+
 ## 2026-09-21 — Three bad prospects traced to source; none needed removing
 
 All three of the drafts flagged earlier turned out to have a working source. The
