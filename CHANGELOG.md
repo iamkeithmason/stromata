@@ -7,6 +7,33 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-09-21 — Un-nested the Small Catechism's fake blockquotes and stray underscore-dividers
+
+More noise Keith spotted after the chrome cleanup above: every line of the catechism's Q&A content
+was prefixed `> > ` (or `> ` on the 95 Theses), and a `\_\_\_\_\_\_\_\_\_\_` underscore-rule divider
+was still glued onto two titles/citations that `wittenberg-orphaned-divider`/`wittenberg-underscore-rule`
+had correctly left alone (dropping the whole block would have deleted real content with it — see the
+entry above). Both are markup artefacts from how Project Wittenberg's older pages indent Q&A content —
+`<blockquote><blockquote>` used purely for visual indentation, never for an actual quotation — so
+turndown renders every line of it with a leading `>`. Keith judged removing both safe for these texts.
+
+New `scripts/lib/dewittenberg-blockquote.mjs` (`dewittenbergBlockquote()`) strips the leading `>`
+markers line-by-line and the underscore-divider wherever it sits, including glued to real content.
+Deliberately **not** a `source-chrome.mjs` rule — that module's whole invariant is whole-block-only,
+and this edits inside blocks that must survive. A first version was dry-run against the whole `texts`
+table before going anywhere near `--write` and matched 76 texts, most of them nothing to do with
+Wittenberg — a genuine quoted line of poetry in Clement's *Stromata* among them, since a line starting
+`>` is just ordinary markdown for a real quotation, and this corpus has plenty. The maintenance script,
+`scripts/dewittenberg-blockquotes.mjs`, therefore has **no whole-corpus mode at all** — `--slug=` is
+required, with no way to omit it and scan everything by accident.
+
+Ran it against exactly the 7 remaining catechism/theses drafts (confirmed scoped correctly with a dry
+run first) plus `--files` to align the staged output. `small-catechism-ten-commandments` — already
+hand-cleaned and published by Keith — was outside the slug list and untouched, as was the rest of the
+corpus (spot-checked: the Stromata quotation above is still there, byte for byte).
+
+---
+
 ## 2026-09-21 — Healed the Summa and Pilgrim's Progress drafts, and taught source-chrome.mjs two new tells
 
 Keith spotted raw scrape/print artefacts reading through on two large drafts: the Summa Theologica
@@ -125,6 +152,9 @@ transcriber's. It reads `jo[y],` in brackets so the hand is visible.
 Known and not fixable from this source: leaf 69's scan is cropped at the foot,
 so one or two verse lines are absent from the image. Hence `medium`, not `high`.
 Still `published: false`.
+
+---
+
 ## 2026-09-21 — Six new Project Wittenberg chrome rules, and healed the drafts they were left in
 
 Keith reviewing the Small Catechism drafts (from #123) found real noise still in the body: the
