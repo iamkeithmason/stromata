@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { disableAnalyticsOnThisDevice } from '@/lib/analytics/device-opt-out'
 
 export default function AdminLogin() {
   const router = useRouter()
@@ -21,6 +22,10 @@ export default function AdminLogin() {
     })
 
     if (res.ok) {
+      // A device used for admin is the founder's, not a reader's — exclude it
+      // from Umami so his own browsing never shows up in the site's numbers.
+      // Cleared from the admin header when he wants this device counted again.
+      disableAnalyticsOnThisDevice()
       router.push('/admin')
     } else {
       setError('Incorrect password.')

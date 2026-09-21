@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import LogoutButton from './LogoutButton'
+import AnalyticsDeviceNote from './AnalyticsDeviceNote'
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -8,7 +9,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         <Link href="/admin" className="text-sm font-medium hover:text-stone-300 transition-colors">
           Stromata Admin
         </Link>
-        <LogoutButton />
+        <div className="flex items-center gap-4">
+          <AnalyticsDeviceNote />
+          <LogoutButton />
+        </div>
       </header>
       <div className="max-w-3xl mx-auto px-4 sm:px-8 py-6 sm:py-8">{children}</div>
     </div>
