@@ -7,6 +7,24 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-09-21 — Research: an absence is a hypothesis, not a finding
+
+`docs/research/2026-09-21-absence-is-not-evidence.md`. Four times in one session
+a claim that something was missing turned out to be an inference from a symptom
+rather than a reading of the source — two backlog cards, `reader-return`, and a
+provenance gate that was already built end to end. The `published_at` backfill's
+first heuristic failed the same way, and so did the outage: a permissions
+refusal and "no such text" were the same thing to a page that only checked for
+a row.
+
+Extends the existing *A fix that exists is not a fix that ran* and supports
+*Invisible failures need a witness, not an argument*. The new half is the prior
+it argues for: in a system with history, "it exists and something about the path
+is broken" beats "it was never built", and an absence in data is a question to
+take to the code.
+
+---
+
 ## 2026-09-21 — The convention became a lint rule, and it found a fourth bug
 
 The mount-effect analytics fix above was a documented convention that three of
@@ -111,6 +129,42 @@ pre-existing unused-import warning in `app/about/page.tsx`.
 unique visitors who fired `reader-return`, while `lib/analytics/dashboard.ts` and the weekly
 digest use repeat visits (`visits − visitors`). Two definitions for one number. The weekly
 digest's proxy is unaffected by this change and stays as it is.
+## 2026-09-21 — Every text page on the site was 404ing
+
+`select('*')` on `texts` from the public client. Migration 026 narrowed anon's
+SELECT to a column-level grant so the editorial columns (`note_draft`,
+`summary_draft`, `review_state`, `review_note`) are no longer readable — which is
+right. But PostgREST refuses the **whole request** when `select=*` expands to
+include an unreadable column: not a partial row, not a warning naming the
+column, a flat `permission denied for table texts`.
+
+`app/texts/[slug]/page.tsx` then did `if (!text) notFound()`, so a permissions
+refusal and "no such text" were the same thing to the page. Every reading page
+on the site answered 404 while `/`, `/texts`, `/authors`, `/collections/…` and
+every other route kept working, because they all select explicit columns. It
+shipped silently and stayed silent.
+
+- **Fixed** by spelling out the anon-granted columns in that query.
+  `generateMetadata` and the collection-siblings query on the same page were
+  already explicit, which is why titles and indexes looked healthy throughout.
+- **`lib/supabase/public-columns.ts`** now holds the readable set for `texts`
+  and `collections` with the reasoning next to it. `app/authors/[slug]/page.tsx`
+  already carried a comment about this on one count query — the lesson had been
+  learned in one place and written down nowhere the next `select('*')` would
+  meet it.
+- **The list is spelled out in the page rather than interpolated** from the
+  constant, because supabase-js parses the select string at the *type* level; a
+  template substitution makes it a `ParserError` and every field on the row goes
+  untyped. A test reads the page back and asserts the two have not drifted, and
+  fails on a bare `*` or any editorial column.
+- The page's embed casts now go through `unknown`. With `*` the row type was
+  loose enough for the direct casts to compile; a literal column list makes
+  supabase-js infer the embeds structurally. The runtime shape is unchanged.
+
+Verified against the live database with the real anon key — `select('*')` errors,
+the explicit list returns the row, and no editorial column comes back — then
+end to end on a production build, where three previously-404ing texts serve 200
+with their real titles.
 ## 2026-09-21 — The rename lands, and the Notion gating note turns out to be wrong
 
 **The UI rename is done, so the transitional bridge comes out.** Keith renamed

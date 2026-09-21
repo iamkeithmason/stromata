@@ -71,8 +71,24 @@ export default async function TextPage({ params }: Props) {
 
   const { data: text } = await supabase
     .from('texts')
+    // The anon-granted columns spelled out, not `*`. Anon holds a column-level
+    // grant on `texts`
+    // (026), and PostgREST refuses the WHOLE request when select=* expands to
+    // include an unreadable column — so `*` here returned no row and this page
+    // answered 404 for every text on the site.
+    //
+    // Spelled out rather than interpolated from PUBLIC_TEXT_COLUMNS because
+    // supabase-js parses the select string at the TYPE level and needs a
+    // literal; a template substitution makes it a ParserError and every field
+    // on the row becomes untyped. lib/supabase/public-columns.ts holds the
+    // canonical list and the reasoning, and its test reads this file back to
+    // check the two have not drifted.
     .select(`
-      *,
+      accession_number, author_id, body, collection_id, collection_order,
+      created_at, editorial_introduction, featured, featured_from, featured_note,
+      genre_id, id, ocr_quality, provenance_notes, published, published_at,
+      slug, source_attribution, source_url, summary, title, translation_notes,
+      updated_at,
       author:authors(name, slug, bio, birth_year, death_year, image_url, image_focus_x, image_focus_y, image_zoom, loc:locations(name, slug), tradition:traditions(slug, name), era:eras(label, slug)),
       genre:genres(name),
       text_themes(theme:themes(name, slug)),
@@ -84,8 +100,13 @@ export default async function TextPage({ params }: Props) {
 
   if (!text) notFound()
 
-  // author and genre are many-to-one → plain objects
-  const author = text.author as {
+  // author and genre are many-to-one → plain objects at runtime. The casts go
+  // through `unknown` because the select is now a literal column list, so
+  // supabase-js infers the embeds structurally (as arrays) where `*` left the
+  // whole row loose and the direct casts compiled. The runtime shape is
+  // unchanged — PostgREST returns an object for a to-one embed — so these
+  // assert exactly what they asserted before.
+  const author = text.author as unknown as {
     name: string
     slug: string | null
     bio: string | null
@@ -99,15 +120,15 @@ export default async function TextPage({ params }: Props) {
     tradition: { slug: string; name: string } | null
     era: { label: string; slug: string } | null
   } | null
-  const genre = text.genre as { name: string } | null
+  const genre = text.genre as unknown as { name: string } | null
   // Treat an unpublished collection as no collection at all — the collection
   // page 404s unpublished slugs, so its breadcrumb / return links would be
   // dead. A published text under an unpublished collection reads as standalone.
-  const collectionRaw = text.collection as { id: string; title: string; slug: string; published: boolean } | null
+  const collectionRaw = text.collection as unknown as { id: string; title: string; slug: string; published: boolean } | null
   const collection = collectionRaw?.published ? collectionRaw : null
 
   // text_themes is one-to-many → array; theme within it is many-to-one → object
-  const themes = (text.text_themes as { theme: { name: string; slug: string } | null }[])
+  const themes = (text.text_themes as unknown as { theme: { name: string; slug: string } | null }[])
     .map(tt => tt.theme)
     .filter(Boolean) as { name: string; slug: string }[]
 
