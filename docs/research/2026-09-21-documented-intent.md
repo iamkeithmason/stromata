@@ -1,6 +1,6 @@
 # Documented intent is not enforced state
 
-*The Stromata · 21 September 2026 · from the Supabase security remediation ([#101](https://github.com/iamkeithmason/stromata/pull/101))*
+*The Stromata · 21 September 2026 · from the Supabase security remediation ([#101](https://github.com/iamkeithmason/stromata/pull/101)) and its column-level follow-up ([#106](https://github.com/iamkeithmason/stromata/pull/106))*
 
 ## In one line
 
@@ -96,6 +96,40 @@ Recomputing both sides inside **one transaction** against a temp snapshot gave
 identical fingerprints. A comparison is only evidence if both sides observe the
 same instant.
 
+**5. The fix for all this had a hole of exactly the same shape.** Moving public
+reads behind `using (published = true)` reads as a pure tightening. It is —
+**at the row level**. RLS filters rows; it says nothing about columns. Once a
+row is admitted every column on it is readable, and the review queue had landed
+back-office columns on those same tables hours earlier: a generated summary
+awaiting approval, a review state, and `review_note` — *why a text was held, in
+Keith's words*. On published rows the public key could read all of them. The
+change that closed the row-level hole opened a column-level one, and the field
+that matters most was empty only because the feature was a day old.
+
+**6. And the migration that fixed *that* ran clean and did nothing.**
+
+```sql
+revoke select (review_note) on public.texts from anon;   -- no effect whatsoever
+```
+
+A column-level `REVOKE` removes only column-level grants. An earlier migration
+had issued `grant select on all tables in schema public to anon` — table-level,
+which confers every column regardless. There was no column grant to remove, so
+the statement matched nothing and the table grant kept conferring the column.
+Postgres reported success. `has_column_privilege(...)`, read back immediately
+afterwards, still returned `true`.
+
+This is the third check in one session to pass while testing nothing, and the
+first where the false reassurance came from **the database itself** rather than
+from my own tooling. A probe I wrote badly is my mistake; a `REVOKE` that
+returns success having matched nothing is the system's normal behaviour. The
+instrument was never mine to trust in the first place.
+
+The working form drops the table grant and re-grants the allowed columns. A
+side effect worth having: the table then **fails closed** — a column added later
+is unreadable until granted, so the next workflow column cannot leak the way
+these did.
+
 ## The principle, stated generally
 
 Two claims about a system are routinely confused with the system:
@@ -133,6 +167,11 @@ too, because the next reader will trust it exactly as much as you did.
 - **Any "this is fine, it's already safe" conclusion** — in a security review, a
   threat model, a code review. Name the control. If nobody chose it, it is not a
   control, it is luck with good timing.
+- **Any access-control change, on the axis it does *not* constrain.** Row rules
+  and column rules are separate; so are read rules and write rules, and
+  authentication and authorisation. Tightening one leaves the others exactly
+  where they were — and a neighbouring feature may have just put something new
+  on one of them.
 - **Any before/after measurement on a live system**: analytics digests, corpus
   counts, migration verification. Snapshot both sides, or the drift is your
   result.
@@ -154,6 +193,12 @@ too, because the next reader will trust it exactly as much as you did.
    live system are two different systems.
 6. **When a description turns out to be false, fix the description in the same
    change.** Otherwise the next reader inherits your surprise.
-7. **Corroborate, don't restate.** A lesson that recurs within a single session
+7. **A statement that succeeded is not a statement that did something.** DDL,
+   a migration, a `REVOKE`, an idempotent script: read the resulting state back
+   and assert on it. Matching nothing is not an error in SQL.
+8. **Name the axis your access control constrains, then check the others.**
+   Rows are not columns; reads are not writes; visible is not writable. The
+   guarantee is always narrower than the sentence describing it.
+9. **Corroborate, don't restate.** A lesson that recurs within a single session
    is evidence the existing rule isn't yet reflex — say so on the existing rule
    rather than minting a new one.
