@@ -78,6 +78,88 @@ all multiples of five, and *Dialogue with Trypho* still reads 350.
 
 ---
 
+## 2026-09-21 — "CI is not firing" was a false positive, and nearly became a note
+
+A comment in `.github/workflows/ci.yml` records a real gap: a PR opened by an
+agent can get no workflow run from its `opened` event, and the file says the
+gap is *bounded* — the next push starts one.
+
+Working #116 I decided that reading was too optimistic. One push (`d4ca788`)
+produced no run at all, which is a genuine instance: it still had none ten
+minutes later, and a manual `workflow_dispatch` was what produced a green. But
+I then reported that the following push (`a5a2e90`) had also produced nothing,
+concluded the gap persists across pushes, and offered to correct the comment.
+
+That second half was wrong. `a5a2e90` started runs normally — `pull_request`
+run 35642647467, created 19:05:50. I had queried the run list within about
+fifteen seconds of pushing, before GitHub surfaced it. A run takes roughly
+twenty seconds to appear, and in that window **the run list is indistinguishable
+from the gap**: no run for your SHA either way. The redundant dispatch left the
+PR with two `lint-and-types` runs for one commit.
+
+The comment now records both: that the bounded reading held, and how the check
+itself misleads. Check the PR's **check runs** by head SHA, not the workflow
+list — they show the push's run and any dispatch together, so "never started"
+and "not yet indexed" stop looking the same.
+
+Worth stating plainly, because it happened while writing up exactly this: the
+correction I proposed would have put an unverified claim into a file nobody
+re-tests, which is the failure `docs/research/2026-09-21-notes-that-foreclose.md`
+is about. The rule that caught it is the same one that file ends on — run it
+against the real thing before writing it down. It was caught only because
+verifying the claim was the first step of acting on it.
+
+---
+
+## 2026-09-21 — A URL in a field is a claim, not a fact
+
+**`node scripts/check-prospect-urls.mjs`** fetches every `Cleared edition URL`,
+`Additional edition URLs` and `Reference URL` in the Notion prospect list and
+reports the ones that no longer answer. It reads Notion over the REST API with
+`NOTION_TOKEN`, not the MCP connector, so it does not spend the MCP query
+budget, and it writes nothing.
+
+It exists because five of these were checked by hand today and four were rotted:
+`ccel.org/ccel/anonymous/cloud`, `ccel.org/ccel/andrewes/preces` and
+`archive.org/details/lamentationofsinner00parr` all 404, and
+`sacred-texts.com/chr/hec/` 403s behind Cloudflare. None had ever been fetched,
+because a URL sitting in a field reads as something someone checked. The most
+expensive instance was not even a 404: *All of Grace* carried a `Reference URL`
+pointing at a **different book**, which was synced, fetched, and imported as
+108 KB of Buchanan's *Journal of Man* under Spurgeon's name.
+
+**The distinction the tool is built around: a 403 is not a dead link.** The
+sacred-texts URL is correct — the pipeline just cannot fetch it. So `dead`
+(404/410), `blocked` (401/403/429), `server-error`, `unreachable` and
+`unexpected` are separate verdicts, and **only `dead` exits non-zero**. Failing
+the run on a 403 would mean crying wolf about sacred-texts every single run
+until nobody read the output, which is how a check stops working without ever
+going red. `--fail-on=any` widens it when that is what you want.
+
+Two things learned by writing it rather than reasoning about it. Hosts including
+Archive.org answer `HEAD` with 405/403 while serving `GET` fine, so the probe
+falls back rather than believing the first refusal. And the whole thing was run
+against the seven URLs whose answers were already known — four dead, two live,
+one blocked — and matched on all seven before being committed.
+
+**What it deliberately does not do:** it answers "does this address respond?",
+never "does it hold the right work". The URL that caused the Spurgeon incident
+answered 200 and would pass. CLAUDE.md's rule is unchanged and still the one
+that catches that — before Stage 2, fetch the source and read the title and
+author out of the first few hundred bytes.
+
+The judgement half is `scripts/lib/url-check.mjs` with 21 unit tests, on the
+same principle as `wire-check.mjs`: a sweep that looks in the wrong place goes
+green, and a green sweep is worse than no sweep.
+
+Also corrects the "Notion access" section again. It said `rows` mode was the
+fallback when SQL is metered out; today's work exhausted the budget three times
+and proved **the quota is shared — `rows` refuses with the same error**. Only
+`notion-search` and `notion-fetch` stay available, and the budget replenishes in
+roughly 45 minutes.
+
+---
+
 ## 2026-09-21 — Research: an absence is a hypothesis, not a finding
 
 `docs/research/2026-09-21-absence-is-not-evidence.md`. Four times in one session
@@ -200,6 +282,8 @@ pre-existing unused-import warning in `app/about/page.tsx`.
 unique visitors who fired `reader-return`, while `lib/analytics/dashboard.ts` and the weekly
 digest use repeat visits (`visits − visitors`). Two definitions for one number. The weekly
 digest's proxy is unaffected by this change and stays as it is.
+---
+
 ## 2026-09-21 — Every text page on the site was 404ing
 
 `select('*')` on `texts` from the public client. Migration 026 narrowed anon's
@@ -302,6 +386,15 @@ order that still looks ranked. Caught by running the query before documenting it
 rather than after — `("Value" * 1.0) / …` is the fix, and the `* 1.0` is now
 flagged as load-bearing. The columns are declared `FLOAT` in the schema, which
 does not help.
+
+Written up for the research bank as
+`docs/research/2026-09-21-notes-that-foreclose.md` — the generalisable half is
+the asymmetry between the two kinds of claim a doc can make. "X works like this"
+is re-tested by everyone who uses X, so it self-heals; "X is impossible" is
+tested by nobody, because nobody attempts what the file forbids, so it outlives
+the limitation it describes and only a reader ignoring the file ever corrects
+it. Negative capability claims therefore need what positive ones get free: a
+date and a method, so staleness can be judged rather than inherited.
 
 ---
 
