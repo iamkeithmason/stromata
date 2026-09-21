@@ -7,6 +7,17 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-09-21 — Ingestion splitter: `--kind` to force the boundary marker for nested works
+
+`scripts/ingestion/split-into-chapters.mjs` auto-picks the *most frequent* marker kind as the
+chapter boundary. That's right for flat OCR works, but wrong for nested works whose finer level
+outnumbers the real chapters — Jeremy Taylor's *Holy Dying* has 5 `CHAPTER`s but 36 `SECTION`s, so
+the heuristic split it into ten mis-detected "sections". Added a `--kind=CHAPTER` flag (threaded
+through `splitToFiles` into `detectChapters`): when set, it forces that marker kind and errors
+cleanly if none are present; unset, the dominant-kind auto-pick is unchanged. This unlocks the
+CCEL Reformation-era lane (Calvin's *Institutes*, Hooker's *Laws*, Taylor), all of which nest
+chapters under books/sections. The content import itself is in the run-log, not here.
+
 ## 2026-09-15 — One glob replaces nine chained test scripts
 
 Adding `lib/authors/` earlier today meant adding a `test:authors` script, purely

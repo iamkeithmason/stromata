@@ -15,7 +15,11 @@
  *
  * Usage:
  *   node split-into-chapters.mjs <input.txt> --slug=<slug> --title="…" \
- *     --author="…" --genre="…" [--min-chapters=3] [--dry]
+ *     --author="…" --genre="…" [--kind=CHAPTER] [--min-chapters=3] [--dry]
+ *
+ * --kind=<MARKER> forces the boundary marker (CHAPTER, BOOK, SECTION, …) instead
+ * of auto-picking the most frequent — use it for nested works where the finer
+ * level outnumbers the real chapter level (e.g. a work with 5 chapters × 8 sections).
  *
  * --dry prints the detected chapters (number, title, size) without writing.
  */
@@ -84,10 +88,27 @@ export function detectChapters(raw, opts = {}) {
   }
   if (markers.length === 0) return { chapters: [], frontMatterLines: lines.length, backMatterFrom: null, warnings: ['No chapter markers found.'] }
 
-  // Keep the dominant marker kind (e.g. CHAPTER) — ignore stray BOOK/PART noise.
+  // Choose the marker kind. By default keep the dominant kind (e.g. CHAPTER) and
+  // ignore stray BOOK/PART noise. But an explicit opts.kind wins — needed for
+  // nested works whose finer level outnumbers the real boundary (e.g. Holy Dying
+  // has 5 CHAPTERs but 36 SECTIONs, so the dominant-kind heuristic would split at
+  // SECTION). Pass --kind=CHAPTER to force the coarser level.
   const counts = {}
   for (const mk of markers) counts[mk.kind] = (counts[mk.kind] || 0) + 1
-  const kind = Object.entries(counts).sort((a, b) => b[1] - a[1])[0][0]
+  let kind
+  if (opts.kind) {
+    kind = String(opts.kind).toUpperCase().replace(/\.$/, '')
+    if (!counts[kind]) {
+      return {
+        chapters: [],
+        frontMatterLines: lines.length,
+        backMatterFrom: null,
+        warnings: [`No "${kind}" markers found (present marker kinds: ${Object.keys(counts).join(', ') || 'none'}).`],
+      }
+    }
+  } else {
+    kind = Object.entries(counts).sort((a, b) => b[1] - a[1])[0][0]
+  }
 
   // Enforce strictly ascending numbering: drop out-of-sequence markers, which
   // are almost always inline cross-references ("as shown in Chapter XVIII")
@@ -285,7 +306,7 @@ if (isMain) {
   const { opts, positional } = parseArgs(process.argv.slice(2))
   const input = positional[0]
   if (!input || !opts.slug) {
-    console.error('Usage: node split-into-chapters.mjs <input.txt> --slug=<slug> --title="…" --author="…" --genre="…" [--min-chapters=3] [--footnotes=endnotes] [--dry]')
+    console.error('Usage: node split-into-chapters.mjs <input.txt> --slug=<slug> --title="…" --author="…" --genre="…" [--kind=CHAPTER] [--min-chapters=3] [--footnotes=endnotes] [--dry]')
     process.exit(1)
   }
   const raw = fs.readFileSync(input, 'utf8')
@@ -303,6 +324,8 @@ if (isMain) {
     minChapters: opts['min-chapters'] ? Number(opts['min-chapters']) : 3,
     // Footnotes dropped by default; --footnotes=endnotes (or --keep-footnotes) keeps them.
     footnotes: opts.footnotes === 'endnotes' || opts['keep-footnotes'] ? 'endnotes' : 'drop',
+    // Force the boundary marker kind (e.g. CHAPTER) for nested works; undefined = auto-pick.
+    kind: opts.kind,
   })
 
   console.log(`\nDetected ${res.chapters.length} ${res.kind || 'chapter'}(s); front matter = ${res.frontMatterLines} lines${res.backMatterFrom ? `; back matter from line ${res.backMatterFrom}` : ''}`)
