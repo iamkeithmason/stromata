@@ -7,6 +7,55 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-09-21 — A URL in a field is a claim, not a fact
+
+**`node scripts/check-prospect-urls.mjs`** fetches every `Cleared edition URL`,
+`Additional edition URLs` and `Reference URL` in the Notion prospect list and
+reports the ones that no longer answer. It reads Notion over the REST API with
+`NOTION_TOKEN`, not the MCP connector, so it does not spend the MCP query
+budget, and it writes nothing.
+
+It exists because five of these were checked by hand today and four were rotted:
+`ccel.org/ccel/anonymous/cloud`, `ccel.org/ccel/andrewes/preces` and
+`archive.org/details/lamentationofsinner00parr` all 404, and
+`sacred-texts.com/chr/hec/` 403s behind Cloudflare. None had ever been fetched,
+because a URL sitting in a field reads as something someone checked. The most
+expensive instance was not even a 404: *All of Grace* carried a `Reference URL`
+pointing at a **different book**, which was synced, fetched, and imported as
+108 KB of Buchanan's *Journal of Man* under Spurgeon's name.
+
+**The distinction the tool is built around: a 403 is not a dead link.** The
+sacred-texts URL is correct — the pipeline just cannot fetch it. So `dead`
+(404/410), `blocked` (401/403/429), `server-error`, `unreachable` and
+`unexpected` are separate verdicts, and **only `dead` exits non-zero**. Failing
+the run on a 403 would mean crying wolf about sacred-texts every single run
+until nobody read the output, which is how a check stops working without ever
+going red. `--fail-on=any` widens it when that is what you want.
+
+Two things learned by writing it rather than reasoning about it. Hosts including
+Archive.org answer `HEAD` with 405/403 while serving `GET` fine, so the probe
+falls back rather than believing the first refusal. And the whole thing was run
+against the seven URLs whose answers were already known — four dead, two live,
+one blocked — and matched on all seven before being committed.
+
+**What it deliberately does not do:** it answers "does this address respond?",
+never "does it hold the right work". The URL that caused the Spurgeon incident
+answered 200 and would pass. CLAUDE.md's rule is unchanged and still the one
+that catches that — before Stage 2, fetch the source and read the title and
+author out of the first few hundred bytes.
+
+The judgement half is `scripts/lib/url-check.mjs` with 21 unit tests, on the
+same principle as `wire-check.mjs`: a sweep that looks in the wrong place goes
+green, and a green sweep is worse than no sweep.
+
+Also corrects the "Notion access" section again. It said `rows` mode was the
+fallback when SQL is metered out; today's work exhausted the budget three times
+and proved **the quota is shared — `rows` refuses with the same error**. Only
+`notion-search` and `notion-fetch` stay available, and the budget replenishes in
+roughly 45 minutes.
+
+---
+
 ## 2026-09-21 — Every text page on the site was 404ing
 
 `select('*')` on `texts` from the public client. Migration 026 narrowed anon's
