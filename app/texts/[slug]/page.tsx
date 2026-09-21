@@ -88,7 +88,7 @@ export default async function TextPage({ params }: Props) {
       created_at, editorial_introduction, featured, featured_from, featured_note,
       genre_id, id, ocr_quality, provenance_notes, published, published_at,
       slug, source_attribution, source_url, summary, title, translation_notes,
-      updated_at,
+      updated_at, word_count,
       author:authors(name, slug, bio, birth_year, death_year, image_url, image_focus_x, image_focus_y, image_zoom, loc:locations(name, slug), tradition:traditions(slug, name), era:eras(label, slug)),
       genre:genres(name),
       text_themes(theme:themes(name, slug)),

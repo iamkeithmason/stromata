@@ -5,7 +5,7 @@ import { SiteHeader } from '@/app/components/SiteHeader'
 import { TrackPageEvent } from '@/app/components/TrackPageEvent'
 import { DownloadLinks } from '@/app/components/DownloadLinks'
 import { JsonLd } from '@/app/components/JsonLd'
-import { readingTime } from '@/lib/reading-time'
+import { readingMinutes } from '@/lib/reading-time'
 import { fetchCollectionAuthors, formatAuthorNames, isLinkable } from '@/lib/collections/author'
 import { OG_IMAGE, SITE_URL } from '@/lib/metadata'
 
@@ -71,7 +71,7 @@ export default async function CollectionPage({ params }: Props) {
   // Fetch published texts in this collection, ordered by collection_order then title
   const { data: texts } = await supabase
     .from('texts')
-    .select('id, title, slug, body, collection_order, genre:genres(name)')
+    .select('id, title, slug, word_count, collection_order, genre:genres(name)')
     .eq('collection_id', collection.id)
     .eq('published', true)
     .order('collection_order', { ascending: true, nullsFirst: false })
@@ -214,7 +214,7 @@ export default async function CollectionPage({ params }: Props) {
                         )}
                       </span>
                       <span className="block text-xs mt-0.5" style={{ color: '#9c9589' }}>
-                        approx. {readingTime((text as unknown as { body: string }).body)} min read
+                        approx. {readingMinutes((text as unknown as { word_count: number | null }).word_count)} min read
                       </span>
                     </span>
                     <span className="text-xs shrink-0 mt-0.5" style={{ color: '#c8c3bb' }}>→</span>

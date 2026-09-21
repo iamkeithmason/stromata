@@ -9,7 +9,7 @@ import { FeaturedAuthors } from './components/FeaturedAuthors'
 import { SeasonalPanel } from './components/SeasonalPanel'
 import { ChurchYearRow } from './components/ChurchYearRow'
 import { resolveSeason } from '@/lib/liturgical/year'
-import { readingTime } from '@/lib/reading-time'
+import { readingMinutes } from '@/lib/reading-time'
 import { ThemeChip } from './components/ThemeChip'
 
 // Incremental Static Regeneration: cache the rendered home page and revalidate
@@ -34,24 +34,18 @@ type CollectionRef = {
   published: boolean
 }
 
-// ── Markdown stripping for body excerpt fallback ───────────────────────────
-function stripMarkdown(text: string): string {
-  return text
-    .replace(/#{1,6}\s+/gm, '')
-    .replace(/\*\*(.+?)\*\*/g, '$1')
-    .replace(/\*(.+?)\*/g, '$1')
-    .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
-    .replace(/`(.+?)`/g, '$1')
-    .replace(/^\s*>+\s?/gm, '')
-    .replace(/\n+/g, ' ')
-    .trim()
-}
-
-function bodyExcerpt(body: string, wordCount = 40): string {
-  const stripped = stripMarkdown(body)
-  const parts = stripped.split(/\s+/).filter(Boolean)
-  if (parts.length <= wordCount) return stripped
-  return parts.slice(0, wordCount).join(' ') + '…'
+// The homepage lead paragraph, in order of preference.
+//
+// This used to fall back to an excerpt of the text's `body`, which meant the
+// homepage selected all fifty recent bodies (~2.7 MB) on the off-chance that
+// one of them had neither a summary nor an editorial introduction. Every
+// published text has one or the other, so the body was never actually read —
+// but 28 of 40 published collections have no `description`, so the fallback
+// itself is live and could not simply be deleted. It now falls through to the
+// representative text's own summary: editorial prose written for the purpose,
+// and already in the query. See migration 028 for the wider change.
+function leadParagraph(...candidates: (string | null | undefined)[]): string {
+  return candidates.find(c => c && c.trim().length > 0)?.trim() ?? ''
 }
 
 /** Truncate at the last whole word before `max` chars — never cuts mid-word. */
@@ -66,7 +60,7 @@ type TextRow = {
   id: string
   title: string
   slug: string
-  body: string
+  word_count: number | null
   summary: string | null
   editorial_introduction: string | null
   accession_number: number | null
@@ -159,7 +153,7 @@ export default async function Home() {
   const { data: recentRaw } = await supabase
     .from('texts')
     .select(`
-      id, title, slug, body, summary, editorial_introduction,
+      id, title, slug, word_count, summary, editorial_introduction,
       accession_number, created_at, collection_id,
       collection:collections(id, title, slug, description, published),
       author:authors(name, slug, death_year, tradition:traditions(slug)),
@@ -460,7 +454,7 @@ function FeedLead({ entry }: { entry: FeedEntry }) {
 function TextLead({ text }: { text: TextRow }) {
   const author = text.author
   const themes = text.text_themes.map(tt => tt.theme).filter(Boolean) as { name: string; slug: string }[]
-  const editorialPara = text.summary ?? text.editorial_introduction ?? bodyExcerpt(text.body)
+  const editorialPara = leadParagraph(text.summary, text.editorial_introduction)
 
   return (
     <div className="flex flex-col sm:flex-row gap-8 mb-14 pb-12" style={{ borderBottom: '1px solid var(--gold-rule)' }}>
@@ -492,7 +486,7 @@ function TextLead({ text }: { text: TextRow }) {
             Begin reading →
           </Link>
           <span style={{ color: 'var(--ink-faint)', fontSize: 'var(--text-sm)', fontFamily: 'var(--serif)' }}>
-            ~ {readingTime(text.body)} min
+            ~ {readingMinutes(text.word_count)} min
           </span>
         </div>
         {themes.length > 0 && (
@@ -510,7 +504,7 @@ function TextLead({ text }: { text: TextRow }) {
 function CollectionLead({ entry }: { entry: Extract<FeedEntry, { kind: 'collection' }> }) {
   const { collection, representative, bookCount, accessionRange } = entry
   const author = representative.author
-  const editorialPara = collection.description ?? bodyExcerpt(representative.body)
+  const editorialPara = leadParagraph(collection.description, representative.summary, representative.editorial_introduction)
   const accessionDisplay = accessionRange ? `№ ${accessionRange.min}–${accessionRange.max}` : null
 
   return (
@@ -652,7 +646,7 @@ function FeedGridCard({ entry, index }: { entry: FeedEntry; index: number }) {
         />
       </Link>
       <div className="px-0.5 mt-3">
-        <p className="caption mb-2">~ {readingTime(text.body)} min</p>
+        <p className="caption mb-2">~ {readingMinutes(text.word_count)} min</p>
         {themes.length > 0 && (
           <div className="flex flex-wrap gap-1">
             {themes.map(t => (

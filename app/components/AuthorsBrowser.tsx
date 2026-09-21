@@ -1,8 +1,10 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo } from 'react'
 import Link from 'next/link'
 import { FilterPill } from './FilterPill'
+import { useUrlFilters } from '@/lib/use-url-filters'
+import { pickFacet } from '@/lib/facets'
 import { LancetArch } from './LancetArch'
 
 declare global {
@@ -38,27 +40,36 @@ const SORTS: { key: SortKey; label: string }[] = [
 
 type Filters = { tradition: string; era: string; sort: SortKey }
 
+const DEFAULTS: Filters = { tradition: '', era: '', sort: 'name' }
+
 export function AuthorsBrowser({
   items,
   facets,
-  initial,
   from,
 }: {
   items: AuthorItem[]
   facets: { traditions: Facet[]; eras: Facet[] }
-  initial: Filters
   from: string
 }) {
-  const [filters, setFilters] = useState<Filters>(initial)
-
-  useEffect(() => {
-    const params = new URLSearchParams()
-    if (filters.tradition) params.set('tradition', filters.tradition)
-    if (filters.era) params.set('era', filters.era)
-    if (filters.sort !== 'name') params.set('sort', filters.sort)
-    const qs = params.toString()
-    window.history.replaceState(null, '', qs ? `?${qs}` : window.location.pathname)
-  }, [filters])
+  // Read from the URL on the client so /authors stays statically cacheable —
+  // see lib/use-url-filters.ts, and TextsBrowser for the same shape.
+  const [filters, setFilters] = useUrlFilters<Filters>(
+    DEFAULTS,
+    params => ({
+      tradition: pickFacet(params.get('tradition') ?? undefined, facets.traditions),
+      era: pickFacet(params.get('era') ?? undefined, facets.eras),
+      sort: SORTS.some(s => s.key === params.get('sort'))
+        ? (params.get('sort') as SortKey)
+        : 'name',
+    }),
+    f => {
+      const params = new URLSearchParams()
+      if (f.tradition) params.set('tradition', f.tradition)
+      if (f.era) params.set('era', f.era)
+      if (f.sort !== 'name') params.set('sort', f.sort)
+      return params
+    },
+  )
 
   // Toggle a facet; fire an analytics event only when a filter is applied (not cleared).
   const set = (key: 'tradition' | 'era', value: string) => {

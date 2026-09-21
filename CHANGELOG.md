@@ -7,6 +7,77 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-09-21 — The egress bill: listing pages were downloading the whole corpus
+
+Supabase's free-plan egress allowance (5 GB) was exceeded at **11.07 GB** last
+cycle, and the new one was on the same path — 2.67 GB in four days. None of that
+traffic was anyone reading a text. It was listing pages computing "approx. N min
+read".
+
+Every index — `/texts`, the theme, scripture, author, era, tradition, collection
+and location pages, the homepage feed and four of search's five queries —
+selected `body` and used it for exactly one thing: `readingTime(t.body)`. The
+corpus is 549 published texts totalling **29 MB**, averaging 55 kB each, so
+`/texts` transferred the entire library to derive one small integer per row, and
+`/search` moved ~5 MB per query.
+
+**Verified, not assumed.** The diagnosis arrived as a claim and was checked
+against the database and the running app before anything was changed. It held,
+and the check turned up two things the claim had not:
+
+- **`/texts` was not slow, it was broken.** The old query now answers
+  `57014 canceling statement due to statement timeout` — the library index had
+  already outgrown itself and was failing in production, not merely costing
+  money.
+- **The big theme pages were 500ing for a second reason.** The page read every
+  `text_id` for a theme and passed them back as an `id=in.(…)` filter. At ~37
+  characters per UUID, the largest theme (264 texts) built a ~10 kB URL, past
+  what the gateway accepts. The busiest theme pages failed while the small ones
+  worked. Now filtered through an embedded `text_themes!inner`, so the theme id
+  travels as a single value and the URL no longer grows with the corpus.
+
+Three changes, in order of how much they matter:
+
+- **`texts.word_count`** (migration 028) — a `GENERATED ALWAYS … STORED` column,
+  not a backfill script, because a derived value maintained by hand is one that
+  eventually disagrees with its source. Admin edits, pipeline imports, the
+  paragraph-rejoin and chrome-strip repairs and direct SQL all recompute it for
+  free. The SQL mirrors `lib/reading-time.ts` exactly, including the quirk that
+  an empty body counts as one word; `reading-time.test.ts` pins the pair against
+  the figures Postgres actually returned. Listings now select a 4-byte integer.
+  `/texts` went from a 29 MB timeout to **310 kB**; the largest theme page to
+  95 kB; a search's metadata queries to ~1 kB.
+- **The public Supabase client caches its reads for an hour**
+  (`lib/supabase/public.ts`). This is the half that a `revalidate` export could
+  not do: Next 15 sends `fetch` with `no-store`, and the pages without
+  `generateStaticParams` — `/texts/[slug]`, `/authors/[slug]`,
+  `/collections/[slug]`, and all 4,268 `/scripture/[ref]` routes — are classed
+  dynamic and never enter the route cache, so their `revalidate` was inert.
+  Measured on a production build: eight identical page requests now cost
+  Supabase **three API calls** (one render's worth) instead of twenty-four. The
+  feeds opt out with `createPublicClient({ live: true })`, since `/rss`,
+  `/sitemap.xml` and `/llms.txt` declare `revalidate = 0` and meant it.
+- **`/texts` and `/authors` are static again.** Both read `searchParams` only to
+  seed a filter that was always applied client-side — and a page that reads
+  `searchParams` is dynamic, which is why `revalidate` did nothing for the two
+  most-crawled pages on the site. The seed moved into the browser
+  (`lib/use-url-filters.ts`); both now prerender with a 1h window. The trap that
+  cost a round: the mirror-state-to-URL effect must skip its first run, or it
+  writes empty filters over the query string a moment before the seeding effect
+  reads it, and every shared filtered link opens unfiltered.
+
+Also: `revalidate = 3600` added to the public pages that had none, and the
+homepage stopped selecting 50 bodies (~2.7 MB) for a lead-paragraph fallback
+that no published text can reach — every one has a summary. The fallback itself
+is live, though: 28 of 40 published collections have no `description`, so it now
+falls through to the representative text's summary, which is better prose than a
+stripped body excerpt anyway.
+
+Reading times are unchanged to the minute — all 549 labels render, none zero,
+all multiples of five, and *Dialogue with Trypho* still reads 350.
+
+---
+
 ## 2026-09-21 — Research: an absence is a hypothesis, not a finding
 
 `docs/research/2026-09-21-absence-is-not-evidence.md`. Four times in one session

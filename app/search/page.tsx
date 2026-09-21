@@ -3,7 +3,7 @@ import { createPublicClient } from '@/lib/supabase/public'
 import { BookCover } from '@/app/components/BookCover'
 import { SiteHeader } from '@/app/components/SiteHeader'
 import { TrackPageEvent } from '@/app/components/TrackPageEvent'
-import { readingTime } from '@/lib/reading-time'
+import { readingMinutes } from '@/lib/reading-time'
 
 type Props = { searchParams: Promise<{ q?: string }> }
 
@@ -11,7 +11,10 @@ type TextResult = {
   id: string
   title: string
   slug: string
-  body: string
+  // Only the body-match query selects `body` — see the two selects below.
+  body?: string
+  summary: string | null
+  word_count: number | null
   accession_number: number | null
   author: {
     name: string
@@ -117,9 +120,21 @@ export default async function SearchPage({ searchParams }: Props) {
   let authors: AuthorResult[] = []
   let suggested: SuggestedText[] | null = null
 
-  const textSelect = `id, title, slug, body, accession_number,
+  // TWO SELECTS, DELIBERATELY.
+  //
+  // A search ran five text queries, each asking for `body`, each capped at
+  // 10–20 rows: up to ~90 bodies averaging 55 kB, so roughly 5 MB of egress per
+  // search. Only one of those queries needs the body at all — the one matching
+  // *within* it, where the snippet is centred on the hit. The other four match
+  // on title, genre, theme or author and show the opening of the text, which
+  // `summary` gives more usefully and in a couple of hundred bytes.
+  const textSelect = `id, title, slug, summary, word_count, accession_number,
     author:authors(name, slug, death_year, tradition:traditions(name, slug), era:eras(label, slug)),
     genre:genres(name)`
+
+  // Body-match results only: the full text, so the snippet can be centred on
+  // the search term rather than starting at the top.
+  const bodyMatchSelect = `${textSelect}, body`
 
   if (query) {
     const pattern = `%${query}%`
@@ -179,7 +194,7 @@ export default async function SearchPage({ searchParams }: Props) {
         ? [supabase.from('texts').select(textSelect).eq('published', true).in('author_id', uniqueAuthorIds).order('title').limit(20)]
         : []),
       // Body search — runs last so title/metadata matches take priority in dedup
-      supabase.from('texts').select(textSelect).eq('published', true).ilike('body', pattern).order('title').limit(10),
+      supabase.from('texts').select(bodyMatchSelect).eq('published', true).ilike('body', pattern).order('title').limit(10),
     ]
 
     const textResults = await Promise.all(textQueryPromises)
@@ -308,8 +323,8 @@ export default async function SearchPage({ searchParams }: Props) {
                 const tradition = author?.tradition?.name
                 const eraLabel = author?.era?.label
                 const eraSlug = author?.era?.slug
-                const snippet = t.body ? bodySnippet(t.body, query) : ''
-                const readTime = `approx. ${readingTime(t.body)} min read`
+                const snippet = t.body ? bodySnippet(t.body, query) : (t.summary ?? '')
+                const readTime = `approx. ${readingMinutes(t.word_count)} min read`
                 return (
                   <li key={t.id} className="relative group">
                     <div className="flex items-start py-4 gap-4">

@@ -4,7 +4,7 @@ import { createPublicClient } from '@/lib/supabase/public'
 import { SiteHeader } from '@/app/components/SiteHeader'
 import { TrackPageEvent } from '@/app/components/TrackPageEvent'
 import { TRADITIONS } from '@/lib/constants'
-import { readingTime } from '@/lib/reading-time'
+import { readingMinutes } from '@/lib/reading-time'
 import { JsonLd } from '@/app/components/JsonLd'
 import { SITE_URL } from '@/lib/metadata'
 
@@ -19,7 +19,7 @@ type TextRow = {
   id: string
   title: string
   slug: string
-  body: string
+  word_count: number | null
   genre: { name: string } | null
   author: {
     name: string
@@ -66,7 +66,7 @@ export default async function TraditionPage({ params }: Props) {
   if (authorIds.length > 0) {
     const { data } = await supabase
       .from('texts')
-      .select('id, title, slug, body, genre:genres(name), author:authors(name, slug, era:eras(label, slug))')
+      .select('id, title, slug, word_count, genre:genres(name), author:authors(name, slug, era:eras(label, slug))')
       .in('author_id', authorIds)
       .eq('published', true)
       .order('title')
@@ -165,7 +165,7 @@ export default async function TraditionPage({ params }: Props) {
                         )}
                       </div>
                       <div className="text-xs mt-0.5" style={{ color: 'var(--ink-faint)' }}>
-                        approx. {readingTime(t.body)} min read
+                        approx. {readingMinutes(t.word_count)} min read
                       </div>
                     </div>
                     <span className="text-xs ml-4 shrink-0 mt-0.5" style={{ color: 'var(--ink-mute)' }}>
