@@ -1,6 +1,7 @@
 'use client'
 import { useEffect, useRef, useCallback } from 'react'
 import { updateProgress, getHistory } from '@/lib/reading-history'
+import { whenTrackerReady } from '@/lib/analytics/track-when-ready'
 
 const THROTTLE_MS = 100
 const READ_THRESHOLD = 0.75
@@ -14,6 +15,7 @@ export function ReadingProgressBar({ slug }: { slug: string }) {
   const lastTickRef = useRef(0)
   const lastPersistRef = useRef(0)
   const rafRef = useRef(0)
+  const cancelTrackRef = useRef<(() => void) | null>(null)
 
   const computeProgress = useCallback(() => {
     const doc = document.documentElement
@@ -62,7 +64,23 @@ export function ReadingProgressBar({ slug }: { slug: string }) {
         firedReadEvent.current = true
         // Send the slug (not the title) so text-read joins to Supabase and
         // matches text-open, per the slug rule in CLAUDE.md's analytics section.
-        window.umami?.track('text-read', { text: slug })
+        //
+        // Through whenTrackerReady, because this is NOT always a scroll-time
+        // call. `onScroll()` runs once synchronously below, at mount, and
+        // computeProgress() returns 1 outright when the document is shorter
+        // than the viewport — so on any short text the threshold is already met
+        // on that first call, before the deferred tracker exists. The same
+        // happens for a returning reader, whose maxRef is seeded from reading
+        // history above. Both cases fired into `window.umami?.` and vanished.
+        //
+        // The latch stays outside the callback here, unlike TrackWeeklyReader's
+        // session flag: this handler runs at up to 10Hz, so latching on attempt
+        // is what stops one poller per scroll tick, and the helper's own wait
+        // already covers a tracker that arrives late. The ref dies with the
+        // page view, so a retry could not recover anything the wait did not.
+        cancelTrackRef.current = whenTrackerReady((tracker) => {
+          tracker.track('text-read', { text: slug })
+        })
       }
 
       const now2 = performance.now()
@@ -87,6 +105,8 @@ export function ReadingProgressBar({ slug }: { slug: string }) {
       document.removeEventListener('visibilitychange', onVisibilityChange)
       window.removeEventListener('pagehide', persist)
       if (rafRef.current) cancelAnimationFrame(rafRef.current)
+      // Stop waiting on a tracker for a page the reader has already left.
+      cancelTrackRef.current?.()
       persist()
     }
   }, [slug, computeProgress, persist])
