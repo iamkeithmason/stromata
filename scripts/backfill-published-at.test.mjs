@@ -56,3 +56,23 @@ test('ignores updated_at entirely', () => {
   const without = classify(row(), NOW)
   assert.deepEqual(withUpdated, without)
 })
+
+test('importing the module has no side effects and needs no credentials', async () => {
+  // The regression this pins: the script used to read .env.local, demand
+  // credentials and call process.exit(1) at module scope. Importing it for
+  // `classify` therefore killed the test process — green locally where
+  // .env.local exists, red in CI where it does not. A fresh import with the
+  // Supabase variables cleared must simply resolve.
+  const { execFileSync } = await import('node:child_process')
+  const env = { ...process.env }
+  delete env.NEXT_PUBLIC_SUPABASE_URL
+  delete env.SUPABASE_SERVICE_ROLE_KEY
+
+  const out = execFileSync(
+    process.execPath,
+    ['--input-type=module', '-e',
+     "import('./scripts/backfill-published-at.mjs').then(m => console.log(typeof m.classify))"],
+    { env, encoding: 'utf8', cwd: process.cwd() }
+  )
+  assert.match(out, /function/)
+})

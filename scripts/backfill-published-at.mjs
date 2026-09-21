@@ -61,10 +61,10 @@
  * published_at — re-running is safe and is a no-op once applied.
  */
 
+import path from 'node:path'
+import { fileURLToPath } from 'node:url'
 import { createClient } from '@supabase/supabase-js'
 import { config } from 'dotenv'
-
-config({ path: '.env.local' })
 
 /**
  * The review queue landed and `published_at` began being written on
@@ -72,20 +72,6 @@ config({ path: '.env.local' })
  * draft-then-publish path, so created_at is no longer a safe proxy for it.
  */
 const REVIEW_QUEUE_ERA = Date.parse('2026-09-01T00:00:00Z')
-
-const args = process.argv.slice(2)
-const WRITE = args.includes('--write')
-const VERBOSE = args.includes('--verbose')
-const slug = args.find((a) => a.startsWith('--slug='))?.slice('--slug='.length)
-const id = args.find((a) => a.startsWith('--id='))?.slice('--id='.length)
-
-const url = process.env.NEXT_PUBLIC_SUPABASE_URL
-const key = process.env.SUPABASE_SERVICE_ROLE_KEY
-if (!url || !key) {
-  console.error('Missing NEXT_PUBLIC_SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY (.env.local).')
-  process.exit(1)
-}
-const supabase = createClient(url, key)
 
 /**
  * Decide whether a row's created_at can stand in for its publish date.
@@ -123,6 +109,27 @@ function histogram(rows, pick) {
 }
 
 async function main() {
+  // Everything with a side effect lives in here, not at module scope: reading
+  // .env.local, demanding credentials, and building the client. `classify` is
+  // pure and its test imports this module, so a module-level `process.exit(1)`
+  // on missing credentials killed the test process outright — green locally
+  // where .env.local exists, red in CI where it does not.
+  config({ path: '.env.local' })
+
+  const args = process.argv.slice(2)
+  const WRITE = args.includes('--write')
+  const VERBOSE = args.includes('--verbose')
+  const slug = args.find((a) => a.startsWith('--slug='))?.slice('--slug='.length)
+  const id = args.find((a) => a.startsWith('--id='))?.slice('--id='.length)
+
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY
+  if (!url || !key) {
+    console.error('Missing NEXT_PUBLIC_SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY (.env.local).')
+    process.exit(1)
+  }
+  const supabase = createClient(url, key)
+
   let query = supabase
     .from('texts')
     .select('id, slug, title, published, published_at, created_at')
@@ -207,7 +214,14 @@ async function main() {
   console.log()
 }
 
-main().catch((err) => {
-  console.error(err)
-  process.exit(1)
-})
+// Same guard as scripts/normalise-markdown.mjs: run as a CLI, import as a
+// module. Without it, importing for `classify` would run the whole backfill.
+const invokedDirectly =
+  process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)
+
+if (invokedDirectly) {
+  main().catch((err) => {
+    console.error(err)
+    process.exit(1)
+  })
+}

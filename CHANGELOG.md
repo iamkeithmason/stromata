@@ -50,6 +50,15 @@ cleared on 21 September were created on the 12th, and writing created_at there
 would put a demonstrably wrong date in the one column charts are meant to trust.
 A row it cannot date stays undated and is drawn as an explicit gap.
 
+**A second thing was wrong, and CI caught it.** The script validated credentials
+and built its Supabase client at module scope, then called `main()` unconditionally.
+`classify` is pure and its test imports the module — so that `process.exit(1)` on
+missing credentials killed the test process outright. Green locally, where
+`.env.local` exists; red in CI, where it does not. The side effects moved inside
+`main()`, and the CLI entry is guarded with the same `invokedDirectly` check
+`scripts/normalise-markdown.mjs` already uses. A test now imports the module with
+the Supabase variables cleared and asserts it simply resolves.
+
 **The first heuristic was wrong and the dry run caught it.** It also required
 `updated_at` to sit close to `created_at`, on the theory that a row created
 published and never re-saved would not have moved. The dry run rejected all 207
