@@ -57,6 +57,23 @@ alone found 12 groups and **missed 3**, because Scout rows are titled
 `Author — Work` while hand-made rows carry a bare title. Two passes, union the
 results.
 
+**A postscript that makes the point twice.** Correcting the "Notion access"
+section left the *Pre-run sync* section still telling future runs the query
+tools were gated — the stale claim survived inside the very file now warning
+against stale claims, which is how these things actually persist. That step now
+gives the one ranked query instead of a page-at-a-time search.
+
+Writing that query surfaced a trap worth the entry on its own. Score is a Notion
+formula and comes back empty from SQL (`notAvailableInQuerySql`), so it has to
+be recomputed as `Value ÷ (Complexity + Effort)` — and because the three inputs
+are stored as integers, the obvious expression is **integer division**. A
+`Value 3 · Complexity 1 · Effort 2` row scores `1`, not `1.5`; every row
+collapses onto a few integers and `ORDER BY score DESC` returns an arbitrary
+order that still looks ranked. Caught by running the query before documenting it
+rather than after — `("Value" * 1.0) / …` is the fix, and the `* 1.0` is now
+flagged as load-bearing. The columns are declared `FLOAT` in the schema, which
+does not help.
+
 ---
 
 ## 2026-09-21 — The Notion tradition option becomes `Imperial`

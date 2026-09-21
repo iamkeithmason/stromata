@@ -488,13 +488,36 @@ Before each pipeline run, pull new candidates from the Notion Content Prospect L
 
 ### Steps
 
-1. **Search for ready prospects.** Use the Notion MCP `search` tool to find pages in the Content Prospect List with `Status = "Text available"`, sorted by Score descending, then `fetch` each result page to read its properties (see "Notion access" note at the top of this file — the query/view tools are plan-gated on this workspace).
+1. **Query for ready prospects.** SQL mode works on this plan (see the "Notion access" note at
+   the top of this file — it is *not* gated, whatever an older copy of this section said). Ask for
+   the ranked shortlist in one call rather than searching page-by-page:
 
-   Useful search queries to try in sequence:
-   - `"Text available" site:notion.so stromata content`
-   - Fetch the database page directly and follow linked prospect pages
+   ```sql
+   SELECT "userDefined:ID", "Title", "Author", "Era", "Tradition", "Genre",
+          "Cleared edition URL", "Reference URL", "Translation notes",
+          "Value", "Complexity", "Effort",
+          ("Value" * 1.0) / ("Complexity" + "Effort") AS score
+   FROM "collection://e3236509-a018-494c-93cf-9a035f3d10a8"
+   WHERE "Status" = 'Text available'
+   ORDER BY score DESC
+   ```
 
-2. **Fetch each candidate.** For each result, call `notion-fetch` with the page ID to read its full properties: Title, Author, Era, Tradition, Genre, **Cleared edition URL**, Reference URL, Translation notes, Status, Score, Complexity, Effort.
+   **Compute Score yourself — the stored formula is unreadable from SQL.** The data source lists
+   `Score` under `notAvailableInQuerySql`, so selecting it returns nothing; `Value`, `Complexity`
+   and `Effort` are plain numbers, and Score is defined as `Value ÷ (Complexity + Effort)`, so the
+   expression above reproduces it. (`rows` mode *can* sort on the formula directly if you need the
+   stored value.)
+
+   **The `* 1.0` is load-bearing — do not drop it.** The three inputs are stored as integers, so
+   `"Value" / ("Complexity" + "Effort")` is **integer division**: a 3/(1+2) row scores `1`, not
+   `1.5`, every row collapses onto a handful of integers, and `ORDER BY score DESC` silently
+   returns an arbitrary order that still *looks* ranked. Verified 2026-09-21 — the uncast form
+   really does return `1` for `Value 3 · Complexity 1 · Effort 2`. The schema declaring these
+   columns `FLOAT` does not save you.
+
+2. **Read anything the query flattened.** The projection above is enough to choose candidates.
+   Fall back to `notion-fetch` on a page ID when you need `Editorial notes` with its links and
+   mentions intact, or the page body — SQL flattens rich text (see the footguns note).
 
 3. **Skip already-handled items.** Do not add a prospect if:
    - Its `Status` in Notion is `Live`, `In progress`, or `Needs investigation`
