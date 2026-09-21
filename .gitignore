@@ -25,3 +25,4 @@ scripts/_*
 
 # Transient agent worktrees (created by Claude Code subagent isolation)
 .claude/worktrees/
+scripts/ingestion/work/

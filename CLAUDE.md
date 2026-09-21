@@ -965,6 +965,8 @@ still apply per-file, still parallelize the same way. What changes is Stage 2/5a
 | `scripts/normalise-markdown.mjs` | Insert paragraph block boundaries / flag verse / **rejoin mid-sentence page-break splits** (dry-run default, `--write` to apply) | Auto via extract-docx; manual cleanup; rejoin applied to the body in Stage 5a |
 | `scripts/ingestion/clean-archive-ocr.mjs` | Clean Archive.org djvu.txt OCR | Stage 2, archive_ocr, PROSE |
 | `scripts/ingestion/extract-djvu-xml.mjs` | Stage an Archive.org scan from its **`_djvu.xml`** instead of its `_djvu.txt`, so the page layout survives: one line per printed line, in reading order, with page numbers/catchwords/signature marks told from text by **where they sit on the page** rather than by what they look like. Writes a second `{slug}-review.md` listing every dropped line, every place the line pitch says the scan LOST a line, and every line the OCR itself was unsure of. Config lives in `archive-ocr-config.mjs` (`xmlFile`, `pages`, `headings`, `wordFixes`) | Stage 2, archive_ocr, **VERSE** or any layout-bearing scan |
+| `scripts/ingestion/ocr-pages-vision.mjs` | Re-read a scan from its **page images** rather than anyone's OCR text. `prepare` crops every leaf via IIIF (geometry from the XML's own body block) and writes a manifest; `assemble` reads the transcripts back, **stops on any leaf whose line count disagrees with the XML's pitch prediction**, and writes the staged markdown plus a review file. The transcription itself is deliberately not wired in — fill it with subagents (subscription tokens) or a scripted API pass; same crops, same verification either way | Stage 2, `archive_ocr`, wherever the OCR is poor — **try this before `wordFixes`** |
+| `scripts/lib/couplet-check.mjs` | The verse form as a checksum: pairs lines of a couplet poem and reports `garbled` (a numeral in the line, or an ending that is not a word — near enough always a fault) and `noRhyme` (deliberately noisy; this text rhymes seat/State). `rhymeRate` is the before/after number — 30.5% for the djvu OCR of the Psychomachia. Pure, unit-tested against real couplets from the 1743 | Auto via ocr-pages-vision; any verse text |
 | `scripts/lib/djvu-layout.mjs` | The judgement half of the above — parse/classify/assemble/`stripStrayMarks`/`applyWordFixes`/`markVerseBreaks`, pure and unit-tested against real lines from the 1743 Psychomachia | Auto via extract-djvu-xml |
 | `scripts/ingestion/split-into-chapters.mjs` | Split one long text (OCR/markdown) into a per-chapter collection: detects `CHAPTER N`/`BOOK N`/etc. boundaries, extracts titles from the body, de-interleaves footnotes, reflows each chapter, writes the `output/{slug}/` multi-file layout. **Footnotes are dropped by default** (reading editions; apparatus is regenerable from the raw OCR) — pass `--footnotes=endnotes` (GUI: "Keep footnotes as endnotes") to retain them. `--dry` previews boundaries; exports `detectChapters()` for a GUI preview. | Long multi-chapter works |
 | `scripts/ingestion/footnote-deinterleave.mjs` | Pull page-bottom footnotes out of OCR prose (djvu.txt interleaves them at page breaks), rejoin words split across the break, drop inline markers. Returns clean prose + the notes (appended as per-chapter endnotes by the splitter). | Auto via split-into-chapters |
@@ -1015,6 +1017,32 @@ still apply per-file, still parallelize the same way. What changes is Stage 2/5a
   confidently wrong. Name each correction individually in `wordFixes` (case-preserving — 18th-century
   printing capitalises nouns, and a `gi` regex silently flattens that), and only where the `f`-form
   is not English at all and the sense of the line confirms the `s`-form.
+
+- **Before you enter that trap, ask whether you need to at all — the page IMAGES are right
+  there.** The two traps above are real, and the whole `wordFixes` apparatus they call for is
+  what you owe the text *if you are stuck with somebody else's OCR*. You usually are not.
+  Archive.org serves every leaf through IIIF at full scan resolution, croppable and scalable in
+  the URL:
+  `https://iiif.archive.org/iiif/{identifier}%24{leaf}/{x},{y},{w},{h}/{width},/0/default.jpg`
+  — and the `_djvu.xml` page dimensions are in the *same pixel space*, so the XML's own body-block
+  coordinates can drive the crop. A model that can see the page handles the long s in both its
+  disguises, the ligatures, and the italic, with no rules written at all. On the 1743 Psychomachia
+  the difference was not marginal: the djvu OCR had dropped 72 lines outright (5.5% of the poem,
+  leaving no mark in the text), and scored 30.5% on the couplet-rhyme check against ~100% for the
+  same pages read from the images. **Reach for `ocr-pages-vision.mjs` before `wordFixes` on any
+  pre-1800 scan.** Keep `wordFixes` for the residue.
+
+- **The structure/letters split, and why both halves are needed.** `extract-djvu-xml.mjs` recovers
+  the *arrangement* (which lines, in what order, where the scan lost some); the page images
+  recover the *letters*. Run them together: the XML's line-pitch analysis predicts how many lines
+  each leaf holds, and a transcription that disagrees is stopped for a human. That guard catches
+  the one failure mode a vision pass has and OCR does not — **a faint line comes back plausible,
+  metrical, and wrong**, which no reader can spot afterwards. Two cautions, both learned on the
+  first run: never tell the transcriber the predicted count (it becomes a target to pad toward,
+  and the check stops being independent), and never treat the prediction as truth — on leaf 26 the
+  pitch test nailed three separate gaps at 4, 2 and 1 lines and *still* over-counted the page by
+  two, reading a wide space between couplets as dropped type. A mismatch is a queue; adjudicate it
+  against the scan and record the finding in `visionLineCountAccepted` with its reason.
 
 For multi-volume NPNF works on Archive.org, the djvu.txt identifier pattern is typically:
 `https://archive.org/download/{identifier}/{identifier}_djvu.txt`
