@@ -42,7 +42,7 @@ so a flag here is a suggestion to glance, never evidence of a fault.
 - [ ] line 175: …flies / …eyes
 - [ ] line 179: …low / …foe
 - [ ] line 181: …thrown / …bone
-- [ ] line 191: …jo / …lie
+- [ ] line 191: …joy / …lie
 - [ ] line 197: …men / …again
 - [ ] line 217: …womb / …come
 - [ ] line 272: …flies / …eyes

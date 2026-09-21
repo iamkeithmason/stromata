@@ -57,6 +57,11 @@ Three things this got wrong before it got them right, all now in the code:
 - **Never tell the transcriber the predicted line count.** It becomes a target
   to pad toward and the check stops being independent.
 
+One editorial supply, in `visionSupplies` with its justification: leaf 12 ends
+a line "with jo" and a speck, no further type on the page. The transcriber left
+it unfinished, which was right — completing it is a person's call, not a
+transcriber's. It reads `jo[y],` in brackets so the hand is visible.
+
 Known and not fixable from this source: leaf 69's scan is cropped at the foot,
 so one or two verse lines are absent from the image. Hence `medium`, not `high`.
 Still `published: false`.

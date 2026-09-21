@@ -208,7 +208,7 @@ Thro' the tough neck the sword a passage found,\
 And thick corruption issued from the wound,\
 Which in its course a nauseous stench exhales,\
 Spreads thro' the air, and taints the ambient gales.\
-This be thy fate, the Queen proclaims with jo[?]\
+This be thy fate, the Queen proclaims with jo[y],\
 Thus inoffensive on the earth to lie;\
 No longer shalt thou wave thy *flaming brand*,\
 Hot plagues to scatter o'er a wasted land;\

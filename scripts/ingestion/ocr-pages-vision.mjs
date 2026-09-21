@@ -511,6 +511,25 @@ function assemble(config, { dry, db }) {
     folded.push(line);
   }
 
+  // Editorial supplies: a letter the page does not carry, named one at a time
+  // with its justification, and rendered in square brackets so the reader can
+  // see it is ours. Distinct from a wordFix, which corrects a misREAD letter;
+  // here the type is simply absent. The transcriber leaves `[?]` and a person
+  // decides — never the transcriber, whose whole instruction is not to invent.
+  const supplies = Object.entries(config.visionSupplies ?? {});
+  for (const [from, to] of supplies) {
+    if (!folded.some((l) => l.includes(from))) {
+      console.warn(`  ! supply never matched: "${from}"`);
+      continue;
+    }
+    for (let i = 0; i < folded.length; i++) folded[i] = folded[i].split(from).join(to);
+  }
+  const unresolved = folded.filter((l) => l.includes('[?]'));
+  if (unresolved.length) {
+    console.warn(`\n! ${unresolved.length} lines still carry an unresolved [?]:`);
+    for (const l of unresolved) console.warn(`    ${l}`);
+  }
+
   let text = folded.join('\n').replace(/\n{3,}/g, '\n\n').trim();
   if (config.verse) text = markVerseBreaks(text.split('\n')).join('\n');
 

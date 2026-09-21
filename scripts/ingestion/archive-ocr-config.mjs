@@ -323,6 +323,18 @@ const PRUDENTIUS_PSYCHOMACHIA = {
   // The dominant category is not a defect in this pass. The pitch test already
   // said these pages were missing lines; it simply under-counted how many, and
   // the images show the full measure of 20.
+  // Letters the page does not carry, supplied by an editor and shown in
+  // square brackets so a reader can see the hand. One entry so far.
+  visionSupplies: {
+    // Leaf 12. The line ends "with jo" and a faint speck; no further type is
+    // on the page, so the transcriber correctly left it unfinished rather
+    // than completing it. Verified against the scan at high zoom. The word is
+    // `joy`: the metre needs the syllable, the sense requires it, and it
+    // rhymes with `lie` two lines on — an ordinary eighteenth-century pairing
+    // of /oi/ with /ai/, the same class as this text's join/divine.
+    'proclaims with jo[?]': 'proclaims with jo[y],',
+  },
+
   visionLineCountAccepted: {
     2: 'Preface: the printed display heading "PREFACE." is a real ninth heading, written as one markdown line the OCR never read as text (+1).',
     4: 'Old OCR under-read a full-measure page; the image has the standard 20 lines.',
