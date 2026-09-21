@@ -7,6 +7,50 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-09-21 — Three mount-time events were never reaching Umami
+
+`lib/analytics/track-when-ready.ts` was written because `window.umami?.track()` in a mount
+effect is a silent coin toss: the tracker loads `defer` + `afterInteractive`, React's effects
+routinely run first, and the optional chaining swallows the event without a trace. The helper
+landed, was unit-tested, and documented the evidence — then only one component was ever moved
+onto it. The three older ones were left as they were.
+
+An all-time Umami event tally taken while prototyping the admin growth panel shows what that
+cost: 23 event names, roughly 600 events, and **`reader-return` and `weekly-reader` appear in
+neither**. `reader-return` is the Growth Model's North Star measured as an event. It has never
+once reached the wire in the site's history.
+
+- **`TrackReaderReturn`, `TrackWeeklyReader` and `TrackPageEvent` now fire through
+  `whenTrackerReady`.** `TrackTextSessionDepth` already did, and is unchanged.
+- **The ledger writes moved inside the callback, which is the half that is easy to miss.**
+  `TrackWeeklyReader` set its `sessionStorage` "already fired" flag *before* the track call, so a
+  dropped event marked the session as reported and made the miss unrecoverable for the rest of
+  that visit. `TrackReaderReturn` advanced its week marker unconditionally, spending a reader's
+  return without reporting it. Both now record only once the event has actually gone out. The
+  distinction that matters: `TrackWeeklyReader` still records the *visit history* outside the
+  callback, because that is genuine reader history and is true whether or not analytics loaded —
+  it is the record *of the report* that belongs beside the report.
+- **`TrackPageEvent` is the component the helper's doc comment was written about.** It carries
+  the `*-page-view` family, `text-view`, `collection-view` and `search-no-results` across eleven
+  pages. The comment measured `text-view` at 8 against `text-read`'s 52; the all-time tally still
+  reads 49 against 109, and a mount cannot be outnumbered by a scroll that happens on it.
+  `era-page-view` and `scripture-lookup-view` were absent from Umami altogether despite being
+  mounted on live routes.
+
+**Verified on the wire, not in the JSX.** A production build served locally, driven by a real
+browser with the tracker script allowed to load, intercepting Umami's collection endpoint and
+aborting each request so no synthetic event lands in the dataset. `/` now sends `weekly-reader`
+and `reader-return`; `/eras/apostolic` now sends `era-page-view` carrying `era: "Apostolic"`.
+All three were previously absent. 312 tests pass, `tsc` is clean, lint carries only a
+pre-existing unused-import warning in `app/about/page.tsx`.
+
+**Still to do, deliberately not in this PR:** the Growth Model page defines the North Star as
+unique visitors who fired `reader-return`, while `lib/analytics/dashboard.ts` and the weekly
+digest use repeat visits (`visits − visitors`). Two definitions for one number. The weekly
+digest's proxy is unaffected by this change and stays as it is.
+
+---
+
 ## 2026-09-21 — The sync reads the field that was checked
 
 **The Notion pre-run sync now prefers `Cleared edition URL` over `Reference
