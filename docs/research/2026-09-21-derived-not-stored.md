@@ -86,12 +86,25 @@ line of my code changing, and all 311 tests passed on both sides of it, because
 the resolver is pure and the privilege lives at the boundary. Nothing was wrong;
 the *claim* was wrong, and only reading the merge caught it.
 
-**3. The CI badge was absent, not red, and absence reads as fine.** A
-`pull_request` event raised by a GitHub App's token does not start a workflow
-run, so the PR sat with no checks at all. "No checks yet" and "checks that will
-never run" look identical on the page. Fixed here with a `workflow_dispatch`
-trigger, but the general shape is the trap: a missing signal is not a passing
-one, and nothing will tell you which you have.
+**3. The CI badge was absent, not red, and absence reads as fine.** The PR sat
+with zero workflow runs for ten minutes — every workflow, not just one. I
+diagnosed that as a GitHub App's token being unable to start a run at all, added
+a `workflow_dispatch` trigger, and told Keith CI would never fire for this PR.
+The next push disproved half of it: the `pull_request: synchronize` event from
+that push started run #88, which passed.
+
+So the accurate claim is narrower than the one I shipped. **The `opened` event
+from a PR created through the GitHub App produced no run; a later push to the
+branch did.** The window is real — a PR can sit looking unchecked from the
+moment it is opened until something else is pushed — but "an agent-opened PR
+never gets CI" was wrong, and I had already written it into a PR body, a
+changelog and a research finding before the evidence arrived.
+
+Which makes this an instance of the trap rather than a report on it. An absent
+signal invites a causal story, and a confident story about *why* a signal is
+missing is still a story: I had the observation (zero runs) and reached the
+explanation (App tokens can't trigger) without a way to test it. The cheap test
+existed and I hadn't run it — push something and watch.
 
 ## The principle, stated generally
 
@@ -141,3 +154,6 @@ but a place to be wrong.
    them.** In a long session, a number you gathered an hour ago is a guess.
 8. **A missing check is not a passing one.** When a gate reports nothing, find
    out whether it ran.
+9. **Don't ship a causal story about an absent signal until you've tried to
+   make it appear.** "It reported nothing" is an observation; "it can never
+   report" is a claim, and the test is usually one push away.

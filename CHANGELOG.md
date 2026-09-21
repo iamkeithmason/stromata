@@ -69,10 +69,20 @@ collection by nobody.
   indistinguishable from the derived value; applying it just means a non-null
   value is a deliberate one.
 
-Verified with `tsc --noEmit`, `npm run lint`, and the full suite (309 tests, 31
-files). Not verified in the rendered admin or collection page — `/admin` needs
-Keith's login, and `next build` needs Supabase credentials CI deliberately
-doesn't carry.
+Also adds a `workflow_dispatch` trigger to `ci.yml`. This PR sat with zero
+workflow runs for ten minutes after being opened through the GitHub MCP server —
+no checks at all rather than failing ones, which reads as "not yet" and never
+resolves. The next push started a run (`pull_request: synchronize`) and it
+passed, so the gap is bounded rather than permanent: it's a PR opened and then
+not pushed to that can sit looking unchecked. The dispatch button only appears
+for workflows on the default branch, so it helps the next branch, not this one.
+
+Verified with `tsc --noEmit`, `npm run lint`, and the full suite (311 tests, 31
+files) — and by CI itself on the current head. Not verified in the rendered
+admin or collection page: `/admin` needs Keith's login, the Vercel preview is
+behind Deployment Protection, and the collection route has no
+`generateStaticParams`, so the build compiled the derivation without executing
+it.
 
 ## 2026-09-21 — RLS guards rows; the draft columns needed a column grant
 
