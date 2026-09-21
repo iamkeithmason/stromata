@@ -19,8 +19,6 @@ note_draft: "Written by the bishop who would later stand at Nicaea as Constantin
 
    
 
-# Church History (Book VIII)
-
 ## Introduction.
 
 As we have described in seven books the events from the time of the apostles, we think it proper in this eighth book to record for the information of posterity a few of the most important occurrences of our own times, which are worthy of permanent record. Our account will begin at this point.

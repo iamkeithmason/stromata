@@ -19,8 +19,6 @@ note_draft: "The third and final book of Clement's manual for Christian living t
 
    
 
-# The Instructor (Book III)
-
 ## Chapter 1. On the True Beauty
 
 It is then, as appears, the greatest of all lessons to know one's self. For if one knows himself, he will know God; and knowing God, he will be made like God, not by wearing gold or long robes, but by well-doing, and by requiring as few things as possible.

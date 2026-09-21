@@ -19,8 +19,6 @@ note_draft: "Framed as the sequel to a day-long debate between a Christian and a
 
    
 
-# An Answer to the Jews
-
 ## Chapter 1. Occasion of Writing. Relative Position of Jews and Gentiles Illustrated.
 
 It happened very recently a dispute was held between a Christian and a Jewish proselyte. Alternately with contentious cable they each spun out the day until evening. By the opposing din, moreover, of some partisans of the individuals, truth began to be overcast by a sort of cloud. It was therefore our pleasure that that which, owing to the confused noise of disputation, could be less fully elucidated point by point, should be more carefully looked into, and that the pen should determine, for reading purposes, the questions handled.

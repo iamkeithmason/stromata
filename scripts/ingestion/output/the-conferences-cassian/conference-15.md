@@ -19,8 +19,6 @@ note_draft: "Delivered in the voice of Abbot Nesteros, one of the Egyptian deser
 
    
 
-# Conference 15
-
 **_BY ST. JOHN CASSIAN_**
 
 THE SECOND CONFERENCE OF ABBOT NESTEROS. ON DIVINE GIFTS.

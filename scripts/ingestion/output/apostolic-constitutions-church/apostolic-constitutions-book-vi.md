@@ -19,8 +19,6 @@ note_draft: "Compiled in Syria toward the end of the fourth century, the sixth b
 
    
 
-# Apostolic Constitutions (Book VI)
-
 ## Section 1. On Heresies
 
 ### Who They Were that Ventured to Make Schisms, and Did Not Escape Punishment.

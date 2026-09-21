@@ -19,8 +19,6 @@ note_draft: "A compact demonstration that the gods of the nations are no gods at
 
    
 
-# Treatise 6
-
 **On the Vanity of Idols**
 
 Showing that the Idols are Not Gods, and that God is One, and that Through Christ Salvation is Given to Believers.

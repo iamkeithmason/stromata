@@ -19,8 +19,6 @@ note_draft: "This letter answers those who celebrated the eucharist with water a
 
    
 
-# Epistle 62
-
 **Caecilius, on the Sacrament of the Cup of the Lord.**
 
 _Argument.— Cyprian Teaches, in Opposition to Those Who Used Water in the Lord's Supper, that Not Water Alone, But Wine Mixed with Water, Was to Be Offered; That by Water Was Designated in Scripture, Baptism, But Certainly Not the Eucharist. By Types Drawn from the Old Testament, the Use of Wine in the Sacrament of the Lord's Body is Illustrated; And It is Declared that by the Symbol of Water is Understood the Christian Congregation._

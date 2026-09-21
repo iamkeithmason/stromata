@@ -18,14 +18,6 @@ copyright_safe: true
 
    
 
- A  B  C  D  E  F  G  H  I  J  K  L  M  N  O  P  Q  R  S  T  U  V  W  X  Y  Z 
-
-![New Advent](../images/logo.gif)
-
-Home > Fathers of the Church > Catechetical Lectures (Cyril of Jerusalem) > Lecture 20
-
-# Catechetical Lecture 20
-
 **(On the Mysteries. II.)**
 
 **Of Baptism.**
@@ -49,5 +41,3 @@ Do you not know, that so many of us as were baptized into Jesus Christ, were bap
 7\. In order therefore that we might learn, that whatsoever things Christ endured, for us and for our salvation He suffered them in reality and not in appearance, and that we also are made partakers of His sufferings, Paul cried with all exactness of truth, _For if we have been planted together with the likeness of His death, we shall be also with the likeness of His resurrection_. Well has he said, _planted together_. For since the true Vine was planted in this place, we also by partaking in the Baptism of death have been _planted together_ with Him. And fix your mind with much attention on the words of the Apostle. He said not, For if we have been planted together with His death, but, _with the likeness of His death_. For in Christ's case there was death in reality, for His soul was really separated from His body, and real burial, for His holy body was wrapt in pure linen; and everything happened really to Him; but in your case there was only a likeness of death and sufferings, whereas of salvation there was not a likeness but a reality.
 
 8\. Having been sufficiently instructed in these things, keep them, I beseech you, in your remembrance; that I also, unworthy though I be, may say of you, _Now I love you_ , _because ye always remember me, and hold fast the traditions, which I delivered unto you_. And God, who has presented you _as it were alive from the dead_ Romans 6:13, is able to grant unto you _to walk in newness of life_ : because His is the glory and the power, now and forever. Amen.
-
-CONTACT US | ADVERTISE WITH NEW ADVENT

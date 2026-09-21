@@ -19,8 +19,6 @@ note_draft: "A homily hinges on a puzzle in the text itself: why does John cite 
 
    
 
-# Tractate 16 (John 4:43-54)
-
 1\. The Gospel Lesson of today follows that of yesterday, and this is the subject of our discourse. In this passage the meaning, indeed, is not difficult of investigation, but worthy of preaching, worthy of admiration and praise. Accordingly, in reciting this passage of the Gospel, we must commend it to your attention, rather than laboriously expound it.
 
 Now Jesus, after His stay of two days in Samaria, departed into Galilee, where He was brought up. And the evangelist, as he goes on, says, For Jesus Himself testified that a prophet has no honor in his own country. It was not because He had no honor in Samaria that Jesus departed thence after two days; for Samaria was not His own country, but Galilee. Whilst, therefore, He left Samaria so quickly, and came to Galilee, where He had been brought up, how does He testify that a prophet has no honor in his own country? Rather does it seem that He might have testified that a prophet has no honor in his own country, had He disdained to go into Galilee, and had stayed in Samaria.

@@ -19,8 +19,6 @@ note_draft: "Book V turns from Augustine's assault on Roman religion to a harder
 
    
 
-# The City of God (Book V)
-
 Augustine first discusses the doctrine of fate, for the sake of confuting those who are disposed to refer to fate the power and increase of the Roman empire, which could not be attributed to false gods, as has been shown in the preceding book. After that, he proves that there is no contradiction between God's prescience and our free will. He then speaks of the manners of the ancient Romans, and shows in what sense it was due to the virtue of the Romans themselves, and in how far to the counsel of God, that he increased their dominion, though they did not worship him. Finally, he explains what is to be accounted the true happiness of the Christian emperors.
 
 ## Preface.

@@ -7,6 +7,285 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-09-21 — The sync reads the field that was checked
+
+**The Notion pre-run sync now prefers `Cleared edition URL` over `Reference
+URL`.** `Cleared edition URL` is the edition an editor pinned and verified;
+`Reference URL` is whatever candidate link the row was created with, and nothing
+has checked it. The *All of Grace* row had a correct value in the first and
+`gutenberg.org/ebooks/27570` in the second, the sync took the second, and the
+wrong book was imported — a row cleared against a correct edition, fetched from
+an uncleared wrong one.
+
+`scripts/sourcer/gate.ts` already had this right: it refuses a row with no
+`Cleared edition URL` at all (`no-cleared-edition`). The change brings the
+agent-driven sync documented in this file into line with the code that already
+worked, rather than inventing a rule. CLAUDE.md's mapping table now names the
+preference, explains it with the case that caused it, and adds the step that was
+actually missing: **verify the URL resolves to the right work before Stage 2** —
+fetch it and read the title and author out of the first few hundred bytes. The
+queue note on that row said "CONFIRM the exact plain-text URL at Stage 2" and
+Stage 2 fetched it anyway, so a note is not a check.
+
+Also dropped the duplicate *Hymns of the Eastern Church (selection)* prospect
+(#243, superseded by #265) — soft-dropped to `Unplanned` with the title marked,
+since the sync only reads `Text available` rows. The Notion connector available
+here has no delete, so removing the row outright needs a click in Notion.
+
+## 2026-09-21 — Three bad prospects traced to source; none needed removing
+
+All three of the drafts flagged earlier turned out to have a working source. The
+faults were in what the queue pointed at, not in whether a source existed, so
+every row was corrected rather than dropped. The three bad drafts are deleted
+(corpus 552 → 549).
+
+| Prospect | What was wrong | Now |
+|---|---|---|
+| *All of Grace* | Reference URL was PG 27570 — *Buchanan's Journal of Man* | CCEL transcription, 190 KB, verified title + author |
+| Large Catechism Pt 5 | URL was the work's **table of contents**, so Stage 2 imported 1,317 characters of nav links | `large12a.asc`, verified to open `[Part Fifth.] OF THE SACRAMENT OF THE ALTAR.` |
+| Hymns of the Eastern Church | URL was correct; it was typed `archive_online` and imported with **no start landmark**, so the body began at the library stamp | still the same URL, retyped `archive_ocr` with `PREFACE TO FIRST EDITION` as the landmark |
+
+**The worst of these was a field-mapping problem, not a research failure.** The
+*All of Grace* row already carried a **`Cleared edition URL`** pointing at a real
+scan of the right book. The sync reads `Reference URL` (per this file's own
+mapping table), which held the wrong id — so a row that had been cleared against
+a correct edition was fetched from an uncleared, wrong one. Worth deciding
+whether the sync should prefer `Cleared edition URL` when it is populated; that
+one change would have prevented this entirely.
+
+Two further findings while tracing them:
+
+- **`sacred-texts.com` is not fetchable.** It answers HTTP 403 behind a
+  Cloudflare challenge, so however clean its transcriptions are, the pipeline
+  cannot read them. It is the Reference URL on at least one live prospect.
+- **Two prospect rows describe the same Hymns of the Eastern Church.** Flagged
+  in Notion as duplicates and one set to `Needs investigation`; not deleted,
+  since deduplicating the list is Keith's call rather than a cleanup.
+
+## 2026-09-21 — The file sweep stops depending on the database; Cyprian's two numberings
+
+**`--files` was DB-driven, which was the wrong shape.** It aligned a staged file
+only for a text the database pass had touched — so the ~50 collections that are
+staged and not yet imported had no row to drive from, and they are exactly the
+files where fixing the artefact now means the problem never reaches Supabase at
+all. The sweep is now driven by **each file's own frontmatter**, which also
+means it runs without credentials: `--files-only`. 357 staged files aligned,
+idempotent on re-run.
+
+**`pipeline-import.mjs` applies the leading-H1 verdict too.** The verdict is
+conservative — it keeps any heading it cannot prove is the work's name, and
+never touches one naming a division — so it belongs at the gate, not only in the
+healer. Without it a staged file predating the last sweep imports with the
+duplicate.
+
+**Cyprian's letters carry two numberings, and the bare heading was the dangerous
+one.** The titles here use the modern Hartel/CSEL sequence that scholarship
+cites ("Cyprian Ep. 63"); the ANF translation these bodies follow uses the older
+Oxford sequence, and New Advent's page title — which became the body heading —
+is that older number. A bare `# Epistle 62` under the title `Epistle 63 to
+Caecilius` is worse than untidy: **New Advent also has an `Epistle 63`, which in
+the ANF sequence is a different letter**, so a reader cross-checking the heading
+lands on the wrong text. Resolution: the ANF number goes into
+`translation_notes`, labelled, *before* the heading is removed from the body —
+relabelled rather than lost. Four published letters (63, 64, 73, 75).
+
+**`all-of-grace` deleted, and the cause fixed.** Gutenberg ebook 27570 is
+*Buchanan's Journal of Man, July 1887*. The queue's own note had flagged the id
+as unverified — "CONFIRM the exact plain-text URL at Stage 2" — and Stage 2
+fetched it anyway. Checked against Gutenberg's `GUTINDEX.ALL` on a mirror:
+**All of Grace is not on Project Gutenberg at all** (Spurgeon's PG works are
+60669, 42657, 42558, 42518 and a Finnish volume), so no id substitution would
+have fixed it. The prospect now points at CCEL's plain-text export, verified to
+open "Title: All of Grace / Creator(s): Spurgeon, Charles Haddon". The Notion
+row still carries the wrong Reference URL and will re-introduce it on the next
+sync.
+
+**The corpus moves while you work on it.** `apostolic-constitutions-book-iv` was
+not among the 42 left after the apply, and is now — published, where it was a
+draft. It is an exact-duplicate heading, so the rule takes it; the point is that
+a corpus-wide sweep is only true as of the moment it ran. The import-time
+verdict above is what stops that class recurring.
+
+Corpus now: **38 texts open with a heading, all of them content; zero chrome of
+any kind across 551 texts.**
+
+## 2026-09-21 — Two rule gaps, found by texts another run imported
+
+Verifying the leading-H1 apply against the database turned up four drafts
+imported during the session by a different run, three of them carrying source
+chrome the guard did not catch. Two were gaps in the rules and are now closed:
+
+- **The breadcrumb rule named one section of the site.** It matched
+  `Home > Fathers of the Church >` and nothing else, so `Home > Summa Theologiae
+  > First Part > Question 2` walked straight into a body. It now matches any
+  block opening `Home >` and carrying a second `>` — still structurally
+  unmistakable (a sentence does not open that way), and no longer specific to
+  the one section that happened to be in front of me when it was written.
+- **The Gutenberg header rule keyed on `*** START OF`.** A newer plain-text file
+  whose licence paragraph turndown flattened into one block, with no `***`
+  marker, put its whole header in front of the work. There is now a block rule
+  matching the flattened form by its own wording.
+
+Both verified against the real stored bodies, not just fixtures.
+
+Reported and **not** fixed, because they are not chrome problems:
+
+- `all-of-grace` is **the wrong work**. Its `source_url` is Gutenberg ebook
+  27570, which is *Buchanan's Journal of Man, July 1887* — not Spurgeon. 108 KB
+  of the wrong text is filed under his name. Needs the prospect's ebook id
+  corrected and a re-fetch, not a clean.
+- `the-large-catechism-part-5-of-the-sacrament-of-the-altar` is 1,317 characters
+  of ctsfw.edu's **table of contents**, not Part 5.
+- `hymns-of-the-eastern-church-neale` is raw Archive.org OCR from the scan's
+  first page — library stamp, "Digitized by the Internet Archive in 2016",
+  title page. No start landmark was set.
+- The Summa text also leaks the page's HTML `<title>` as its first line
+  (`SUMMA THEOLOGIAE: The existence of God (Prima Pars, Q. 2)`). Deliberately
+  not encoded: a rule for "first line looks like a page title" would be guessing
+  at prose.
+
+All four are drafts. None is live.
+
+## 2026-09-21 — The leading-H1 rule, and the two stores kept in step
+
+The corpus-wide follow-up to the entry below. 333 texts open with an `# H1`
+repeating the title the reader already renders above the body — but some of
+those headings are content, so the question is which.
+
+**`scripts/lib/leading-h1.mjs`** answers it in four ordered steps, with 14
+tests: a keep-list (12 texts a rule cannot reach); a structural veto (a heading
+opening `Chapter` / `Caput` / `Section` / `Part` / `Preface` / … is a division
+of the work); a name test (identical after stripping punctuation, or one
+containing the other); and a reviewed drop-list for the work under a name no
+string test can connect — `Contra Faustum, Book I` and `Reply to Faustus, Book
+I` share no substring. Over the corpus: **291 drop, 42 keep**.
+
+Three things the dry run settled that reading the rule would not have:
+
+- **The veto must run before the name test.** `Of Patience` is a Tertullian
+  treatise whose first heading is `Chapter 1. Of Patience Generally; And
+  Tertullian's Own Unworthiness to Treat of It` — the heading contains the
+  title, so the name test takes it and the chapter head is gone. Two texts in
+  the corpus hit exactly that; both are now kept.
+- **`Tractate`, `Conference`, `Dialogue`, `Epistle`, `Book` are not structural
+  words here.** The first cut of the veto included them, on the reasonable
+  assumption that they name divisions. In this corpus each titles a whole text,
+  so the veto kept 144 duplicated titles. Caught by two tests failing.
+- **A rule cannot see a translation.** The 45 texts whose heading is the work
+  under another name are a list, reviewed individually, not a cleverer regex.
+  Everything the rule cannot prove is kept and reported.
+
+**`--files`** on `strip-source-chrome.mjs` puts the same verdict through the
+staged `scripts/ingestion/output` markdown for every text it touches. Without
+it the two stores drift on every heal — the database gets cleaned and the file
+it was imported from keeps the artefact. One decision, both stores, one run.
+`firstContentBlock` now skips the `<!-- EDITORIAL INTRO -->` placeholder the
+fetcher writes, which had made the leading-H1 handling a silent no-op on every
+staged file while working on the same text in the database.
+
+Reported, not fixed: four Cyprian epistles whose title and body heading disagree
+on the numbering (63/62, 64/58, 73/72, 75/74 — ANF vs Oxford), all published.
+The rule keeps the heading, since dropping it hides the discrepancy rather than
+resolving it.
+
+## 2026-09-21 — Duplicated title headings, and the Pilgrim's Progress plates
+
+Follow-up to the source-chrome entry below, on Keith's calls for the two things that entry
+deliberately reported rather than stripped.
+
+**The duplicated leading H1 — and the bug the dry run caught.** The 11 New Advent drafts opened with
+an `# H1` repeating the title the reader already renders above the body; those are gone. The first
+attempt at extending the same drop to staged files surfaced a real bug in what had just shipped:
+`dropLeadingHeading: source === "newadvent"` would have **deleted a real chapter heading**. New
+Advent serves each book of Clement's *Stromata* as one page whose `<h1>` on some fetches is
+`Chapter 1. Introductory.` — content, not a title. `dropLeadingHeading` now takes the title as a
+string and drops the heading only when it *is* that title; `true` remains for the healer, where a
+human reads the diff first. Verified against the live page: the page title goes, `Chapter 1.`
+stays.
+
+Corpus-wide, **343 texts open with an H1** (96 of them published). Only the 11 were touched — the
+rest are a separate call, since for many of them the heading is likely genuine.
+
+**The plates.** *The Pilgrim's Progress* carried 7 images pathed relative to Gutenberg
+(`images/i_020.jpg`), which resolved to nothing. The seven plates from the same 1909 Winston edition
+now live in `public/plates/<slug>/` and the body points at them. Two things came with it:
+
+- **`scripts/ingestion/fetch-gutenberg-plates.mjs`** — downloads an illustrated PG edition's plates
+  and rewrites the markdown. It also normalises the caption: Gutenberg puts it in the alt text, the
+  title attribute *and* a line of prose after the image, so a naive conversion renders it twice and
+  follows it with a `See page 15` pointing at a pagination that does not exist online. Only the alt
+  text is kept. `www.gutenberg.org` is blocked from the cloud agent environment (the same egress
+  constraint `backfill-author-images.mjs` documents for Wikipedia), so it reads from mirrors.
+- **`MarkdownBody` renders a plate as a `<figure>`** with the alt text as a figcaption, via a shared
+  helper in `lib/markdown/plate.ts`. Markdown has no figure syntax, so an illustration always
+  arrives wrapped in a paragraph; the remark plugin and the `p` renderer both have to recognise that
+  and agree, or a `<figure>` lands inside a `<p>` — invalid HTML. One tested helper, used twice.
+  Server-rendered to check rather than assumed: the figure sits between the paragraphs, and the
+  paragraph numbers run 1, 2 across it, so a plate consumes no number.
+
+Also corrected the edition's attribution while in there: it recorded "editor uncredited", but the
+source itself names **Rev. Jesse Lyman Hurlbut, D.D.** Copyright reasoning is unchanged — 1909
+publication is public domain outright regardless of Hurlbut's dates (d. 1930).
+
+Write-up: `docs/research/2026-09-21-fix-that-never-ran.md`. Five findings filed to the research
+bank, all linked as evidence to existing conventions (the mutation-test one, the green-signal one,
+and the invariant/judgement discriminator — the `dropLeadingHeading` bug is a textbook instance of
+the last). No new convention proposed: all five come from one project and the bar is two.
+
+## 2026-09-21 — New Advent site chrome in text bodies: stripped, healed, and made loud
+
+Fourteen texts carried New Advent's furniture in their reading body — the `A B C … Z` encyclopedia
+bar, `![New Advent](../images/logo.gif)`, a `Home > Fathers of the Church >` breadcrumb, and
+`CONTACT US | ADVERTISE WITH NEW ADVENT` at the foot. Origen's *Commentary on John* was the one
+spotted; the Hippolytus *Refutation* books had it too, and three **published** texts (*Commonitory*,
+*On the Duties of the Clergy*, *Prescription Against Heretics*) ended on New Advent's "About this
+page" citation block.
+
+**The fetcher was not the bug.** Its cheerio selectors strip all of this correctly and were verified
+against the live page this session. The fourteen bodies were fetched at 09:01 on 2026-09-12; the
+selectors landed at 10:18 the same morning. The staged `.md` files were already poisoned, and
+`pipeline-import.mjs` imported them without a murmur — **nothing between the fetcher and the
+database was looking.** That gap is the actual finding: a DOM selector that stops matching removes
+nothing, reports nothing, and the chrome flows all the way to a reader.
+
+- **`scripts/lib/source-chrome.mjs`** — a second line of defence over the *markdown*, after
+  turndown, where chrome has a handful of stable textual shapes. `stripChrome` removes them,
+  `detectChrome` reports them, `assertNoChrome` throws. Rules act on whole paragraph blocks, never
+  on substrings, so prose that merely mentions its source survives. Idempotent: a clean body comes
+  back byte-for-byte identical.
+- **The safety invariant, and the test that holds it.** A rule may only exist if it cannot match
+  ordinary prose — either it names its site, or it is `structural` (21 consecutive capitals B–Z is
+  not a sentence), or it is `requires`-conditional, held back until an unconditional rule has
+  proved the document is a scrape of that site. That last one is what lets a lone `Fathers` block
+  or a heading reading `About this page` be stripped from a New Advent scrape and never from a
+  patristic text. 17 unit tests, including a corpus of real prose that no rule may fire on, and a
+  fixture built from genuine U+00A0 — New Advent's A–Z bar is `&nbsp;`-separated, so a rule written
+  with a literal space silently never fires.
+- **Wired into both ends.** `fetch-texts.mjs` strips and then asserts: a known tell that survives
+  aborts the page instead of writing it. `pipeline-import.mjs` strips before insert and logs the
+  count as a correction, the way it already does for page-break rejoins — import is the last gate
+  before the database, so it now checks the file rather than trusting it.
+- **Proved by bypassing the primary defence**, not by reasoning about it. Fetching the live Origen
+  page under the `generic` profile — selectors that know nothing about New Advent, i.e. exactly what
+  selector drift looks like — produced a clean body through the markdown pass alone. The first run
+  of that experiment left a search box and the masthead tabs behind, which is how those rules got
+  written.
+- **64 staged output files healed** on disk. Only 14 had reached Supabase; the rest — *Confessions*,
+  the *Mystagogical Catecheses*, the *Divine Institutes*, *The Stromata* — are staged and not yet
+  imported, so this is ~50 dirty rows that now never happen.
+- **All 14 rows healed in Supabase**, verified by the same detector queries that found them: zero
+  hits for every tell across 550 texts. Before stripping the published trio's citation block, its
+  content was checked against `source_attribution` (already complete) and the New Advent URL was
+  written into the empty `source_url` column, so nothing was lost. One more draft, *The Pilgrim's
+  Progress*, had Project Gutenberg's transcriber's note and licence tail; healed the same way.
+- **`scripts/strip-source-chrome.mjs`** (`npm run strip:source-chrome`) — the maintenance healer,
+  dry-run by default, for the next time something slips through.
+
+Two things are deliberately reported and **not** stripped: a body opening with an `H1` that
+duplicates the title the reader already renders above it, and images whose paths are relative to
+the source site (*The Pilgrim's Progress* has 7). Both are editorial calls, not mechanical ones.
+`--drop-leading-h1` opts into the first.
+
 ## 2026-09-21 — Admin normalises Supabase to-one relations before using them
 
 The admin dashboard could crash on every request after the collection-byline

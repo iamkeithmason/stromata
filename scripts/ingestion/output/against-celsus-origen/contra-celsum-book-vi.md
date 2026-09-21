@@ -19,8 +19,6 @@ note_draft: "The sixth book of Origen's reply to the pagan philosopher Celsus ta
 
    
 
-# Contra Celsum, Book VI
-
 ## Chapter 1
 
 In beginning this our sixth book, we desire, my reverend Ambrosius, to answer in it those accusations which Celsus brings against the _Christians_, not, as might be supposed, those objections which he has adduced from _writers on philosophy_. For he has quoted a considerable number of passages, chiefly from Plato, and has placed alongside of these such declarations of holy Scripture as are fitted to impress even the intelligent mind; subjoining the assertion that these things are stated much better among the Greeks (than in the Scriptures), and in a manner which is free from all exaggerations and promises on the part of God, or the Son of God. Now we maintain, that if it is the object of the ambassadors of the truth to confer benefits upon the greatest possible number, and, so far as they can, to win over to its side, through their love to men, every one without exception — intelligent as well as simple — not Greeks only, but also Barbarians (and great, indeed, is the humanity which should succeed in converting the rustic and the ignorant ), it is manifest that they must adopt a style of address fitted to do good to all, and to gain over to them men of every sort. Those, on the other hand, who turn away from the ignorant as being mere slaves, and unable to understand the flowing periods of a polished and logical discourse, and so devote their attention solely to such as have been brought up among literary pursuits, confine their views of the public good within very strait and narrow limits.

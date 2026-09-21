@@ -19,14 +19,6 @@ note_draft: "The Docetae, Hippolytus reports, imagined God as a fig seed — min
 
    
 
- A  B  C  D  E  F  G  H  I  J  K  L  M  N  O  P  Q  R  S  T  U  V  W  X  Y  Z 
-
-![New Advent](../images/logo.gif)
-
-Home > Fathers of the Church > Refutation of All Heresies (Hippolytus) > Book VIII
-
-# Refutation of All Heresies (Book VIII)
-
 ## Contents.
 
 The following are the contents of the eighth book of the _Refutation of all Heresies_: —
@@ -104,5 +96,3 @@ But there are others who themselves are even more heretical in nature (than the 
 ## Chapter 13. The Doctrines of the Encratites.
 
 Others, however, styling themselves Encratites, acknowledge some things concerning God and Christ in like manner with the Church. In respect, however, of their mode of life, they pass their days inflated with pride. They suppose, that by meats they magnify themselves, while abstaining from animal food, (and) being water-drinkers, and forbidding to marry, and devoting themselves during the remainder of life to habits of asceticism. But persons of this description are estimated Cynics rather than Christians, inasmuch as they do not attend unto the words spoken against them through the Apostle Paul. Now he, predicting the novelties that were to be hereafter introduced ineffectually by certain (heretics), made a statement thus: The Spirit speaks expressly, In the latter times certain will depart from sound doctrine, giving heed to seducing spirits and doctrines of devils, uttering falsehoods in hypocrisy, having their own conscience seared with a hot iron, forbidding to marry, to abstain from meats, which God has created to be partaken of with thanksgiving by the faithful, and those who know the truth; because every creature of God is good, and nothing to be rejected which is received with thanksgiving; for it is sanctified by the word of God and prayer. 1 Timothy 4:1-5 This voice, then, of the blessed Paul, is sufficient for the refutation of those who live in this manner, and plume themselves on being just; (and) for the purpose of proving that also, this (tenet of the Encratites) constitutes a heresy. But even though there have been denominated certain other heresies— I mean those of the Cainites, Ophites, or Noachites, and of others of this description — I have not deemed it requisite to explain the things said or done by these, test on this account they may consider themselves somebody, or deserving of consideration. Since, however, the statements concerning these appear to be sufficient, let us pass on to the cause of evils to all, (viz.,) the heresy of the Noetians. Now, after we have laid bare the root of this (heresy), and stigmatized openly the venom, as it were, lurking within it, let us seek to deter from an error of this description those who have been impelled into it by a violent spirit, as it were by a swollen torrent.
-
-CONTACT US | ADVERTISE WITH NEW ADVENT

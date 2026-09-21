@@ -19,8 +19,6 @@ note_draft: "Book V opens onto one of the most harrowing documents to survive fr
 
    
 
-# Church History (Book V)
-
 ## Introduction.
 
 1\. Soter, bishop of the church of Rome, died after an episcopate of eight years, and was succeeded by Eleutherus, the twelfth from the apostles. In the seventeenth year of the Emperor Antoninus Verus, the persecution of our people was rekindled more fiercely in certain districts on account of an insurrection of the masses in the cities; and judging by the number in a single nation, myriads suffered martyrdom throughout the world. A record of this was written for posterity, and in truth it is worthy of perpetual remembrance.

@@ -19,8 +19,6 @@ note_draft: "Delivered in the Egyptian desert and preserved by a Latin-speaking 
 
    
 
-# Conference 5
-
 **_BY ST. JOHN CASSIAN_**
 
 CONFERENCE OF ABBOT SERAPION. ON THE EIGHT PRINCIPAL FAULTS.

@@ -19,8 +19,6 @@ note_draft: "Book XIII marks the hinge of Augustine's vast work, where the argum
 
    
 
-# The City of God (Book XIII)
-
 In this book it is taught that death is penal, and had its origin in Adam's sin.
 
 ## Chapter 1.— Of the Fall of the First Man, Through Which Mortality Has Been Contracted.

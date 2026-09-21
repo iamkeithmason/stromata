@@ -18,14 +18,6 @@ copyright_safe: true
 
    
 
- A  B  C  D  E  F  G  H  I  J  K  L  M  N  O  P  Q  R  S  T  U  V  W  X  Y  Z 
-
-![New Advent](../images/logo.gif)
-
-Home > Fathers of the Church > Catechetical Lectures (Cyril of Jerusalem) > Lecture 3
-
-# Catechetical Lecture 3
-
 **On Baptism.**
 
 Romans 6:3-4
@@ -67,5 +59,3 @@ But there is perhaps among you some hypocrite, a man-pleaser, and one who makes 
 15\. Make ready then the vessel of your soul, that you may become a son of God, and _an heir of God, and joint-heir with Christ_ Romans 8:17; if, indeed, you are preparing yourself that you may receive; if you are drawing near in faith that you may be made faithful; if of set purpose you are putting off the old man. For all things whatsoever you have done shall be forgiven you, whether it be fornication, or adultery, or any other such form of licentiousness. What can be a greater sin than to crucify Christ? Yet even of this Baptism can purify. For so spoke Peter to the three thousand who came to him, to those who had crucified the Lord, when they asked him, saying, _Men and brethren, what shall we do_ Acts 2:37? For the wound is great. You have made us think of our fall, O Peter, by saying, _You killed the Prince of Life_. What salve is there for so great a wound? What cleansing for such foulness? What is the salvation for such perdition? _Repent_, says he, _and be baptized every one of you in the name of Jesus Christ our Lord, for the remission of sins, and you shall receive the gift of the Holy Ghost_. O unspeakable loving-kindness of God! They have no hope of being saved, and yet they are thought worthy of the Holy Ghost. You see the power of Baptism! If any of you has crucified the Christ by blasphemous words; if any of you in ignorance has denied Him before men; if any by wicked works has caused the doctrine to be blasphemed; let him repent and be of good hope, for the same grace is present even now.
 
 16\. _Be of good courage, O Jerusalem; the Lord will take away all your iniquities_. _The Lord will wash away the filth of His sons and of His daughters by the Spirit of judgment, and by the Spirit of burning_ Isaiah 4:4. _He will sprinkle clean water upon you, and you shall be cleansed from all your sin_. Ezekiel 36:25 Angels shall dance around you, and say, Who is this that comes up in white array, leaning upon her beloved ? For the soul that was formerly a slave has now adopted her Master Himself as her kinsman: and He accepting the unfeigned purpose will answer: _Behold, you are fair, my love; behold, you are fair: your teeth are like flocks of sheep new shorn_, (because of the confession of a good conscience: and further) _which have all of them twins_ ; because of the twofold grace, I mean that which is perfected of water and of the Spirit , or that which is announced by the Old and by the New Testament. And God grant that all of you when you have finished the course of the fast, may remember what I say, and bringing forth fruit in good works, may stand blameless beside the Spiritual Bridegroom, and obtain the remission of your sins from God; to whom with the Son and Holy Spirit be the glory forever. Amen.
-
-CONTACT US | ADVERTISE WITH NEW ADVENT

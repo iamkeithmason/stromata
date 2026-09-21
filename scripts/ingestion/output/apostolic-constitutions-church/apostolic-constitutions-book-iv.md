@@ -19,8 +19,6 @@ note_draft: "Compiled in Syria around the late fourth century, Book IV of the Ap
 
    
 
-# Apostolic Constitutions (Book IV)
-
 ## Section 1. On Helping the Poor
 
 ### Those Who Have No Children Should Adopt Orphans, and Treat Them as Their Own Children.

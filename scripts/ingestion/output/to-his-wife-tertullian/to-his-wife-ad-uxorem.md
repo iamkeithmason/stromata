@@ -19,8 +19,6 @@ note_draft: "Written by Tertullian to his own wife as counsel for the event of h
 
    
 
-# To His Wife
-
 ## Book I
 
 ### Chapter 1. Design of the Treatise. Disavowal of Personal Motives in Writing It

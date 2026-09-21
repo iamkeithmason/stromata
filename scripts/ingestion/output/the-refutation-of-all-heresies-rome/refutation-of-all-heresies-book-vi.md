@@ -19,14 +19,6 @@ note_draft: "Hippolytus opens this sixth book by promising to leave \"not one sp
 
    
 
- A  B  C  D  E  F  G  H  I  J  K  L  M  N  O  P  Q  R  S  T  U  V  W  X  Y  Z 
-
-![New Advent](../images/logo.gif)
-
-Home > Fathers of the Church > Refutation of All Heresies (Hippolytus) > Book VI
-
-# Refutation of All Heresies (Book VI)
-
 ## Contents.
 
 The following are the contents of the sixth book of the _Refutation of all Heresies_: —
@@ -284,5 +276,3 @@ And in addition to these (points, they lay down) that the Demiurge of the supern
 ## Chapter 50. Marcus and Colarbasus Refuted by Irenaeus.
 
 These assertions, then, those who are of the school of Valentinus advance concerning both the creation and the universe, in each case propagating opinions still more empty. And they suppose this to constitute productiveness (in their system), if any one in like manner, making some greater discovery, will appear to work wonders. And finding, (as they insinuate,) each of the particulars of Scripture to accord with the aforesaid numbers, they (attempt to) criminate Moses and the prophets, alleging that these speak allegorically of the measures of the Aeons. And inasmuch as these statements are trifling and unstable, it does not appear to me expedient to bring them before (the reader. This, however, is the less requisite,) as now the blessed presbyter Irenaeus has powerfully and elaborately refuted the opinions of these (heretics). And to him we are indebted for a knowledge of their inventions, (and have thereby succeeded in) proving that these heretics, appropriating these opinions from the Pythagorean philosophy, and from over-spun theories of the astrologers, cast an imputation upon Christ, as though He had delivered these (doctrines). But since I suppose that the worthless opinions of these men have been sufficiently explained, and that it has been clearly proved whose disciples are Marcus and Colarbasus, who were successors of the school of Valentinus, let us see what statement likewise Basilides advances.
-
-CONTACT US | ADVERTISE WITH NEW ADVENT

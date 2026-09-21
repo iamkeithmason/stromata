@@ -18,14 +18,6 @@ copyright_safe: true
 
    
 
- A  B  C  D  E  F  G  H  I  J  K  L  M  N  O  P  Q  R  S  T  U  V  W  X  Y  Z 
-
-![New Advent](../images/logo.gif)
-
-Home > Fathers of the Church > Catechetical Lectures (Cyril of Jerusalem) > Lecture 17
-
-# Catechetical Lecture 17
-
 **Continuation of the Discourse on the Holy Ghost.**
 
 1 Corinthians 12:8
@@ -107,5 +99,3 @@ For to one is given by the Spirit the word of wisdom, etc.
 37\. If you believe, you shall not only receive remission of sins, but also do things which pass man's power. receivest now remission of thy sins, and the gifts of the King's spiritual bounty.}}--> And may thou be worthy of the gift of prophecy also! For you shall receive grace according to the measure of your capacity and not of my words; for I may possibly speak of but small things, yet you may receive greater; since faith is a large affair. All your life long will your guardian the Comforter abide with you; He will care for you, as for his own soldier; for your goings out, and your comings in, and your plotting foes. And He will give you gifts of grace of every kind, if you grieve Him not by sin; for it is written, _And grieve not the Holy Spirit of God, whereby you were sealed unto the day of redemption_. Ephesians 4:30 What then, beloved, is it to preserve grace? Be ready to receive grace, and when you have received it, cast it not away.
 
 38\. And may the very God of All, who spoke by the Holy Ghost through the prophets, who sent Him forth upon the Apostles on the day of Pentecost in this place, Himself send Him forth at this time also upon you; and by Him keep us also, imparting His benefit in common to us all, that we may ever render up the fruits of the Holy Ghost, _love, joy, peace, long-suffering, gentleness, goodness, faith, meekness, temperance_ Galatians 5:22-23, in Christ Jesus our Lord:— By whom and with whom, together with the Holy Ghost, be glory to the Father, both now, and ever, and for ever and ever. Amen.
-
-CONTACT US | ADVERTISE WITH NEW ADVENT

@@ -18,14 +18,6 @@ copyright_safe: true
 
    
 
- A  B  C  D  E  F  G  H  I  J  K  L  M  N  O  P  Q  R  S  T  U  V  W  X  Y  Z 
-
-![New Advent](../images/logo.gif)
-
-Home > Fathers of the Church > The Confessions > Book IV
-
-# The Confessions (Book IV)
-
 Then follows a period of nine years from the nineteenth year of his age, during which having lost a friend, he followed the Manichæans — and wrote books on the fair and fit, and published a work on the liberal arts, and the categories of Aristotle.
 
 ## Chapter 1. Concerning that Most Unhappy Time in Which He, Being Deceived, Deceived Others; And Concerning the Mockers of His Confession.
@@ -121,5 +113,3 @@ Then follows a period of nine years from the nineteenth year of his age, during 
 30\. And what did it profit me that I, the base slave of vile affections, read unaided, and understood, all the books that I could get of the so-called liberal arts? And I took delight in them, but knew not whence came whatever in them was true and certain. For my back then was to the light, and my face towards the things enlightened; whence my face, with which I discerned the things enlightened, was not itself enlightened. Whatever was written either on rhetoric or logic, geometry, music, or arithmetic, did I, without any great difficulty, and without the teaching of any man, understand, as You know, O Lord my God, because both quickness of comprehension and acuteness of perception are Your gifts. Yet did I not thereupon sacrifice to You. So, then, it served not to my use, but rather to my destruction, since I went about to get so good a portion of my substance Luke 15:12 into my own power; and I kept not my strength for You, but went away from You into a far country, to waste it upon harlotries. Luke 15:13 For what did good abilities profit me, if I did not employ them to good uses? For I did not perceive that those arts were acquired with great difficulty, even by the studious and those gifted with genius, until I endeavoured to explain them to such; and he was the most proficient in them who followed my explanations not too slowly.
 
 31\. But what did this profit me, supposing that Thou, O Lord God, the Truth, were a bright and vast body, and I a piece of that body? Perverseness too great! But such was I. Nor do I blush, O my God, to confess to You Your mercies towards me, and to call upon You — I, who blushed not then to avow before men my blasphemies, and to bark against You. What profited me then my nimble wit in those sciences and all those knotty volumes, disentangled by me without help from a human master, seeing that I erred so odiously, and with such sacrilegious baseness, in the doctrine of piety? Or what impediment was it to Your little ones to have a far slower wit, seeing that they departed not far from You, that in the nest of Your Church they might safely become fledged, and nourish the wings of charity by the food of a sound faith? O Lord our God, under the shadow of Your wings let us hope, defend us, and carry us. You will carry us both when little, and even to grey hairs will You carry us; Isaiah 46:4 for our firmness, when it is Thou, then is it firmness; but when it is our own, then it is infirmity. Our good lives always with You, from which when we are averted we are perverted. Let us now, O Lord, return, that we be not overturned, because with You our good lives without any eclipse, which good You Yourself art. And we need not fear lest we should find no place unto which to return because we fell away from it; for when we were absent, our home — Your Eternity — fell not.
-
-CONTACT US | ADVERTISE WITH NEW ADVENT

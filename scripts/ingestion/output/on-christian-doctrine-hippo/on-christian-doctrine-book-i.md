@@ -19,8 +19,6 @@ note_draft: "Begun in 396 and set aside for nearly thirty years before Augustine
 
    
 
-# On Christian Doctrine (Book I)
-
 Containing a general view of the subjects treated in Holy Scripture
 
 ## Chapter 1.— The Interpretation of Scripture Depends on the Discovery and Enunciation of the Meaning, and is to Be Undertaken in Dependence on God's Aid.

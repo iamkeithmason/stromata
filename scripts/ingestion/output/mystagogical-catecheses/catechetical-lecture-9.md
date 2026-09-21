@@ -18,14 +18,6 @@ copyright_safe: true
 
    
 
- A  B  C  D  E  F  G  H  I  J  K  L  M  N  O  P  Q  R  S  T  U  V  W  X  Y  Z 
-
-![New Advent](../images/logo.gif)
-
-Home > Fathers of the Church > Catechetical Lectures (Cyril of Jerusalem) > Lecture 9
-
-# Catechetical Lecture 9
-
 **On the Words, Maker of Heaven and Earth, and of All Things Visible and Invisible.**
 
 Job 38:2-3
@@ -79,5 +71,3 @@ Adam at first was without clothing, faring daintily in Paradise: and after he ha
 At the end of the same section, after the words Wise Creator, this is found: Glorify Him in His unsearchable works, and concerning Him whom you are not capable of knowing, inquire not curiously what His essence is. It is better for you to keep silence, and in faith adore, according to the divine Word, than daringly to search after things which neither you can reach, nor Holy Scripture has delivered to you. These points my discourse has now treated at large, that you may abhor those who blaspheme the wise and good Artificer, and rather may yourself also say, _How wonderful are Your works O Lord; in wisdom have You made them all_. To You be the glory, and power, and worship, with the Holy Spirit, now and ever, and throughout all ages. Amen.
 
 t I greatly appreciate your feedback — especially notifications about typographical errors and inappropriate ads.
-
-CONTACT US | ADVERTISE WITH NEW ADVENT

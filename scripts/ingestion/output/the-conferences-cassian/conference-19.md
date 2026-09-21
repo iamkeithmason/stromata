@@ -19,8 +19,6 @@ note_draft: "Recorded by Cassian during his travels through the monastic settlem
 
    
 
-# Conference 19
-
 **_BY ST. JOHN CASSIAN_**
 
 CONFERENCE OF ABBOT JOHN. ON THE AIM OF THE COENOBITE AND HERMIT.

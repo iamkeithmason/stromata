@@ -19,8 +19,6 @@ note_draft: "Written in the immediate aftermath of Constantine's victory and the
 
    
 
-# Church History (Book X)
-
 ## Chapter 1. The Peace granted us by God.
 
 1\. Thanks for all things be given unto God the Omnipotent Ruler and King of the universe, and the greatest thanks to Jesus Christ the Saviour and Redeemer of our souls, through whom we pray that peace may be always preserved for us firm and undisturbed by external troubles and by troubles of the mind.

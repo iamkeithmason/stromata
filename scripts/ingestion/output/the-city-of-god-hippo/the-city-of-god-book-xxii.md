@@ -19,8 +19,6 @@ note_draft: "The closing book of Augustine's twenty-two-volume answer to those w
 
    
 
-# The City of God (Book XXII)
-
 This book treats of the end of the city of God, that is to say, of the eternal happiness of the saints; the faith of the resurrection of the body is established and explained; and the work concludes by showing how the saints, clothed in immortal and spiritual bodies, shall be employed.
 
 ## Chapter 1.— Of the Creation of Angels and Men.

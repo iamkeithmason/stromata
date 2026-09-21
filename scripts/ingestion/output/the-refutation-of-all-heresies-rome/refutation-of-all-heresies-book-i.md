@@ -19,14 +19,6 @@ note_draft: "The strategy is bracing in its oddness: to unmask Christian heretic
 
    
 
- A  B  C  D  E  F  G  H  I  J  K  L  M  N  O  P  Q  R  S  T  U  V  W  X  Y  Z 
-
-![New Advent](../images/logo.gif)
-
-Home > Fathers of the Church > Refutation of All Heresies (Hippolytus) > Book I
-
-# Refutation of All Heresies (Book I)
-
 ## Contents.
 
 The following are the contents of the first book of _The Refutation of all Heresies_.
@@ -203,5 +195,3 @@ And all the rest of the giants from Cronus, Hesiod enumerates, and somewhere aft
 The opinions, therefore, of those who have attempted to frame systems of philosophy among the Greeks, I consider that we have sufficiently explained; and from these the heretics, taking occasion, have endeavoured to establish the tenets that will be after a short time declared. It seems, however, expedient, that first explaining the mystical rites and whatever imaginary doctrines some have laboriously framed concerning the stars, or magnitudes, to declare these; for heretics likewise, taking occasion from them, are considered by the multitude to utter prodigies. Next in order we shall elucidate the feeble opinions advanced by these.
 
 Books 2 and 3 are wanting.
-
-CONTACT US | ADVERTISE WITH NEW ADVENT

@@ -19,8 +19,6 @@ note_draft: "Every one of these twenty canons condemns the opposite of what a mo
 
    
 
-# Synod of Gangra (4th Century)
-
 ## Background
 
 With regard to the Synod of Gangra we know little beside what we learn from its own synodal letter. Three great questions naturally arise with regard to it.

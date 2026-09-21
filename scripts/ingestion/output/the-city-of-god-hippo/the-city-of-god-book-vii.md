@@ -19,8 +19,6 @@ note_draft: "Book VII continues Augustine's dismantling of Roman civic religion,
 
    
 
-# The City of God (Book VII)
-
 In this book it is shown that eternal life is not obtained by the worship of Janus, Jupiter, Saturn, and the other select gods of the civil theology.
 
 ## Preface.

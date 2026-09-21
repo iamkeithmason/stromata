@@ -19,8 +19,6 @@ note_draft: "Compiled in Syria around 380, the Constitutions gather earlier chur
 
    
 
-# Apostolic Constitutions (Book II)
-
 **Of Bishops, Presbyters, and Deacons.**
 
 ## Section 1. On Examining Candidates for the Episcopal Office

@@ -19,8 +19,6 @@ note_draft: "Faustus the Manichee concedes that Christ may indeed have said he c
 
    
 
-# Contra Faustum, Book XIX
-
 **Faustus is willing to admit that Christ may have said that He came not to destroy the law and the prophets, but to fulfill them; but if He did, it was to pacify the Jews and in a modified sense. Augustine replies, and still further elaborates the Catholic view of prophecy and its fulfillment.**
 
 1\. _Faustus_ said: I will grant that Christ said that he came not to destroy the law and the prophets, but to fulfill them. But why did Jesus say this? Was it to pacify the Jews, who were enraged at seeing their sacred institutions trampled upon by Christ, and regarded him as a wild blasphemer, not to be listened to, much less to be followed? Or was it for our instruction as Gentile believers, that we might learn meekly and patiently to bear the yoke of commandment laid on our necks by the law and the prophets of the Jews? You yourself can hardly suppose that Christ's words were intended to bring us under the authority of the law and the prophets of the Hebrews. So that the other explanation which I have given of the words must be the true one. Every one knows that the Jews were always ready to attack Christ, both with words and with actual violence. Naturally, then, they would be enraged at the idea that Christ was destroying their law and their prophets; and, to appease them, Christ might very well tell them not to think that he came to destroy the law, but that he came to fulfill it. There was no falsehood or deceit in this, for he used the word law in a general sense, not of any particular law.

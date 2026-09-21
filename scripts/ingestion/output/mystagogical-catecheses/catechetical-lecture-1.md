@@ -18,14 +18,6 @@ copyright_safe: true
 
    
 
- A  B  C  D  E  F  G  H  I  J  K  L  M  N  O  P  Q  R  S  T  U  V  W  X  Y  Z 
-
-![New Advent](../images/logo.gif)
-
-Home > Fathers of the Church > Catechetical Lectures (Cyril of Jerusalem) > Lecture 1
-
-# Catechetical Lecture 1
-
 **To those who are to be Enlightened, delivered extempore at Jerusalem, as an Introductory Lecture to those who had come forward for Baptism :**
 
 With a reading from Isaiah
@@ -43,5 +35,3 @@ _Wash you, make you clean; put away your iniquities from your souls, from before
 5\. The present is the season of confession: confess what you have done in word or in deed, by night or by day; _confess in an acceptable time, and in the day of salvation_ 2 Corinthians 6:2 receive the heavenly treasure. Devote your time to the Exorcisms: be assiduous at the Catechisings, and remember the things that shall be spoken, for they are spoken not for your ears only, but that by faith you may seal them up in the memory. Blot out from your mind all earthly care: for you are running for your soul. You are utterly forsaking the things of the world: little are the things which you are forsaking, great what the Lord is giving. Forsake things present, and put your trust in things to come. Have you run so many circles of the years busied in vain about the world, and have you not forty days to be free (for prayer ), for your own soul's sake? _Be still_ , _and know that I am God_, says the Scripture. Excuse yourself from talking many idle words: neither backbite, nor lend a willing ear to backbiters; but rather be prompt to prayer. Show in ascetic exercise that your heart is nerved. Cleanse your vessel, that you may receive grace more abundantly. For though remission of sins is given equally to all, the communion of the Holy Ghost is bestowed in proportion to each man's faith. If you have laboured little, you receive little; but if you have wrought much, the reward is great. You are running for yourself, see to your own interest.
 
 6\. If you have anything against any man, forgive it: you come here to receive forgiveness of sins, and thou also must forgive him that has sinned against you. Else with what face will you say to the Lord, Forgive me my many sins, if you have not yourself forgiven your fellow-servant even his little sins. Attend diligently the Church assemblies ; not only now when diligent attendance is required of you by the Clergy, but also after you have received the grace. For if, before you have received it, the practice is good, is it not also good after the bestowal? If before thou be grafted in, it is a safe course to be watered and tended, is it not far better after the planting? Wrestle for your own soul, especially in such days as these. Nourish your soul with sacred readings; for the Lord has prepared for you a spiritual table; therefore say thou also after the Psalmist, _The Lord is my shepherd, and I shall lack nothing: in a place of grass, there has He made me rest; He has fed me beside the waters of comfort, He has converted my soul_ :— that Angels also may share your joy, and Christ Himself the great High Priest, having accepted your resolve, may present you all to the Father, saying, _Behold, I and the children whom God has given Me_. May He keep you all well-pleasing in His sight! To whom be the glory, and the power unto the endless ages of eternity. Amen.
-
-CONTACT US | ADVERTISE WITH NEW ADVENT

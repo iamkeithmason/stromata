@@ -18,14 +18,6 @@ copyright_safe: true
 
    
 
- A  B  C  D  E  F  G  H  I  J  K  L  M  N  O  P  Q  R  S  T  U  V  W  X  Y  Z 
-
-![New Advent](../images/logo.gif)
-
-Home > Fathers of the Church > Catechetical Lectures (Cyril of Jerusalem) > Lecture 23
-
-# Catechetical Lecture 23
-
 **(On the Mysteries. V.)**
 
 **On the Sacred Liturgy and Communion.**
@@ -79,5 +71,3 @@ _Wherefore putting away all filthiness, and all guile, and evil speaking_ _, etc
 22\. Then after you have partaken of the Body of Christ, draw near also to the Cup of His Blood; not stretching forth your hands, but bending , and saying with an air of worship and reverence, _Amen_ , hallow yourself by partaking also of the Blood of Christ. And while the moisture is still upon your lips, touch it with your hands, and hallow your eyes and brow and the other organs of sense. Then wait for the prayer, and give thanks unto God, who has accounted you worthy of so great mysteries.
 
 23\. Hold fast these traditions undefiled and, keep yourselves free from offense. Sever not yourselves from the Communion; deprive not yourselves, through the pollution of sins, of these Holy and Spiritual Mysteries. _And the God of peace sanctify you wholly; and may your spirit, and soul, and body be preserved entire without blame at the coming of our Lord Jesus Christ_ 1 Thessalonians 5:23:— To whom be glory and honour and might, with the Father and the Holy Spirit, now and ever, and world without end. Amen.
-
-CONTACT US | ADVERTISE WITH NEW ADVENT

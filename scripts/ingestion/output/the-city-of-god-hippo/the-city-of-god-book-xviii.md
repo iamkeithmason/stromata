@@ -19,8 +19,6 @@ note_draft: "With the eighteenth book, Augustine sets the two cities side by sid
 
    
 
-# The City of God (Book XVIII)
-
 Augustine traces the parallel courses of the earthly and heavenly cities from the time of Abraham to the end of the world; and alludes to the oracles regarding Christ, both those uttered by the Sibyls, and those of the sacred prophets who wrote after the foundation of Rome, Hosea, Amos, Isaiah, Micah, and their successors.
 
 ## Chapter 1.— Of Those Things Down to the Times of the Saviour Which Have Been Discussed in the Seventeen Books.

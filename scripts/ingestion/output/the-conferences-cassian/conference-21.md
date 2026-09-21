@@ -19,8 +19,6 @@ note_draft: "Set in the deserts of fourth-century Egypt, this conference opens t
 
    
 
-# Conference 21
-
 **_BY ST. JOHN CASSIAN_**
 
 THE FIRST CONFERENCE OF ABBOT THEONAS. ON THE RELAXATION DURING THE FIFTY DAYS.

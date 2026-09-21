@@ -19,8 +19,6 @@ note_draft: "Book II turns from first principles to the world itself: its origin
 
    
 
-# De Principiis (Book II)
-
 ## Chapter 1. On the World.
 
 1\. Although all the discussions in the preceding book have had reference to the world and its arrangements, it now seems to follow that we should specially re-discuss a few points respecting the world itself, i.e., its beginning and end, or those dispensations of Divine Providence which have taken place between the beginning and the end, or those events which are supposed to have occurred before the creation of the world, or are to take place after the end.

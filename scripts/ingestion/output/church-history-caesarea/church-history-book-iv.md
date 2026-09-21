@@ -19,8 +19,6 @@ note_draft: "Composed in the early fourth century by the bishop of Caesarea, thi
 
    
 
-# Church History (Book IV)
-
 ## Chapter 1. The Bishops of Rome and of Alexandria during the Reign of Trajan.
 
 1\. About the twelfth year of the reign of Trajan the above-mentioned bishop of the parish of Alexandria died, and Primus, the fourth in succession from the apostles, was chosen to the office.

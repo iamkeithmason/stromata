@@ -19,8 +19,6 @@ note_draft: "Faustus the Manichee proposes a tidy solution to the moral scandals
 
    
 
-# Contra Faustum, Book XXII
-
 **Faustus states his objections to the morality of the law and the prophets, and Augustine seeks by the application of the type and the allegory to explain away the moral difficulties of the Old Testament.**
 
 1\. _Faustus_ said: You ask why we blaspheme the law and the prophets. We are so far from professing or feeling any hostility to the law and the prophets, that we are ready, if you will allow us, to declare the falsehood of all the writings which make the law and the prophets appear objectionable. But this you refuse to admit, and by maintaining the authority of your writers, you bring a perhaps unmerited reproach upon the prophets; you slander the patriarchs, and dishonor the law. You are so unreasonable as to deny that your writers are false, while you uphold the piety and sanctity of those who are described in these writings as guilty of the worst crimes, and as leading wicked lives. These opinions are inconsistent; for either these were bad characters, or the writers were untruthful.

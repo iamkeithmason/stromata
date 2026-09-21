@@ -17,8 +17,6 @@ note_draft: "Written around 375 in the heat of the Arian controversy, Basil's tr
 
    
 
-# De Spiritu Sancto
-
 ## Chapter 1
 
 **Prefatory remarks on the need of exact investigation of the most minute portions of theology.**

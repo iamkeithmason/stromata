@@ -19,8 +19,6 @@ note_draft: "Addressed to Christian women, this pair of short books argues that 
 
    
 
-# On the Apparel of Women
-
 ## Book I
 
 ### Chapter 1. Introduction. Modesty in Apparel Becoming to Women, in Memory of the Introduction of Sin into the World Through a Woman

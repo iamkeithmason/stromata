@@ -19,8 +19,6 @@ note_draft: "Delivered in the Egyptian desert in the early fifth century, this d
 
    
 
-# Conference 10
-
 **_BY ST. JOHN CASSIAN_**
 
 THE SECOND CONFERENCE OF ABBOT ISAAC. ON PRAYER.

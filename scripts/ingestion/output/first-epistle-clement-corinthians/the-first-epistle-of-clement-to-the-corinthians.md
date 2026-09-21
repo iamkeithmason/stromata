@@ -19,8 +19,6 @@ note_draft: "When the Corinthian church expelled several of its presbyters in a 
 
    
 
-# Letter to the Corinthians (Clement)
-
 ## Chapter 1. The Salutation. Praise of the Corinthians Before the Breaking Forth of Schism Among Them.
 
 The church of God which sojourns at Rome, to the church of God sojourning at Corinth, to them that are called and sanctified by the will of God, through our Lord Jesus Christ: Grace unto you, and peace, from Almighty God through Jesus Christ, be multiplied.

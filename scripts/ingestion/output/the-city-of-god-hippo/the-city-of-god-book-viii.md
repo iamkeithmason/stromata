@@ -19,8 +19,6 @@ note_draft: "Book VIII marks the pivot in Augustine's vast apologetic from the p
 
    
 
-# The City of God (Book VIII)
-
 Augustine comes now to the third kind of theology, that is, the natural, and takes up the question, whether the worship of the gods of the natural theology is of any avail towards securing blessedness in the life to come. This question he prefers to discuss with the Platonists, because the Platonic system is facile princeps among philosophies, and makes the nearest approximation to Christian truth. In pursuing this argument, he first refutes Apuleius, and all who maintain that the demons should be worshipped as messengers and mediators between gods and men; demonstrating that by no possibility can men be reconciled to good gods by demons, who are the slaves of vice, and who delight in and patronize what good and wise men abhor and condemn— the blasphemous fictions of poets, theatrical exhibitions, and magical arts.
 
 ## Chapter 1.— That the Question of Natural Theology is to Be Discussed with Those Philosophers Who Sought a More Excellent Wisdom.

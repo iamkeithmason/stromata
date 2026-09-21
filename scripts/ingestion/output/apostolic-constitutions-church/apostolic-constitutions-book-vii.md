@@ -19,8 +19,6 @@ note_draft: "Book VII of the fourth-century compilation known as the Apostolic C
 
    
 
-# Apostolic Constitutions (Book VII)
-
 **Concerning the Christian Life, and the Eucharist, and the Initiation into Christ.**
 
 ## Section 1. On the Two Ways, — The Way of Life and the Way of Death

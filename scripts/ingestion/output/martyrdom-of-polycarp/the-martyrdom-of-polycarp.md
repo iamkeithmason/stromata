@@ -19,8 +19,6 @@ note_draft: "When the proconsul urges the old bishop to swear by the fortune of 
 
    
 
-# The Martyrdom of Polycarp
-
 ## Greeting
 
 The Church of God which sojourns at Smyrna, to the Church of God sojourning in Philomelium, and to all the congregations of the Holy and Catholic Church in every place: Mercy, peace, and love from God the Father, and our Lord Jesus Christ, be multiplied.

@@ -19,8 +19,6 @@ note_draft: "Recorded by John Cassian after his sojourn among the desert fathers
 
    
 
-# Conference 8
-
 **_BY ST. JOHN CASSIAN_**
 
 THE SECOND CONFERENCE OF ABBOT SERENUS. ON PRINCIPALITIES.

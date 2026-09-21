@@ -19,8 +19,6 @@ note_draft: "A rare verbatim record of an early Church council: in 256, eighty-s
 
    
 
-# On the Baptism of Heretics
-
 _The Seventh Council of Carthage Under Cyprian._
 
 _Concerning the Baptism of Heretics. The Judgment of Eighty-Seven Bishops on the Baptism of Heretics._

@@ -18,14 +18,6 @@ copyright_safe: true
 
    
 
- A  B  C  D  E  F  G  H  I  J  K  L  M  N  O  P  Q  R  S  T  U  V  W  X  Y  Z 
-
-![New Advent](../images/logo.gif)
-
-Home > Fathers of the Church > Catechetical Lectures (Cyril of Jerusalem) > Lecture 14
-
-# Catechetical Lecture 14
-
 **On the Words, And Rose Again from the Dead on the Third Day, and Ascended into the Heavens, and Sat on the Right Hand of the Father.**
 
 1 Corinthians 15:1-4
@@ -99,5 +91,3 @@ At that time God said, let us make man after our image and after our likeness. A
 29\. But I must remind you also of a few other testimonies in like manner concerning the Son's sitting at the right hand of the Father. For in the Gospel according to Matthew it is written, _Nevertheless, I say unto you, Henceforth you shall see the Son of Man sitting on the right hand of power_ Matthew 26:64, and the rest: in accordance with which the Apostle Peter also writes, _By the Resurrection of Jesus Christ, who is on the right hand of God, having gone into heaven_. 1 Peter 3:22 And the Apostle Paul, writing to the Romans, says, _It is Christ that died, yea rather, that is risen again, who is even at the right hand of God_. Romans 8:34 And charging the Ephesians, he thus speaks, _According to the working of His mighty power, which He wrought in Christ when He raised Him from the dead, and set Him at His own right hand_ Ephesians 1:19-20; and the rest. And the Colossians he taught thus, _If you then be risen with Christ, seek the things above, where Christ is seated at the right hand of God_. Colossians 3:1 And in the Epistle to the Hebrews he says, _When He had made purification of our sins, He sat down on the right hand of the Majesty on high_. Hebrews 1:3 And again, _But unto which of the Angels has He said at any time, Sit thou at My right hand, until I make your enemies your footstool_ ? And again, _But He, when He had offered one sacrifice for all men, for ever sat down on the right hand of God; from henceforth expecting till His enemies be made His footstool_. And again, _Looking unto Jesus, the author and perfecter of our faith; Who for the joy that was set before Him endured the Cross, despising shame, and is set down on the right hand of the throne of God_.
 
 30\. And though there are many other texts concerning the session of the Only-begotten on the right hand of God, yet these may suffice us at present; with a repetition of my remark, that it was not after His coming in the flesh that He obtained the dignity of this seat; no, for even before all ages, the Only-begotten Son of God, our Lord Jesus Christ, ever possesses the throne on the right hand of the Father. Now may He Himself, the God of all, who is Father of the Christ, and our Lord Jesus Christ, who came down, and ascended, and sits together with the Father, watch over your souls; keep unshaken and unchanged your hope in Him who rose again; raise you together with Him from your dead sins unto His heavenly gift; count you worthy to be _caught up in the clouds, to meet the Lord in the air_ 1 Thessalonians 4:17, in His fitting time; and, until that time arrive of His glorious second advent, write all your names in the Book of the living, and having written them, never blot them out (for the names of many, who fall away, are blotted out); and may He grant to all of you to believe in Him who rose again, and to look for Him who is gone up, and is to come again, (to come, but not from the earth; for be on your guard, O man, because of the deceivers who are to come;) Who sits on high, and is here present together with us, _beholding the_ _order of each, and the steadfastness of his faith_. Colossians 2:5 For think not that because He is now absent in the flesh, He is therefore absent also in the Spirit. He is here present in the midst of us, listening to what is said of Him, and beholding your inward thoughts, and _trying the reins and hearts_ — who also is now ready to present those who are coming to baptism, and all of you, in the Holy Ghost to the Father, and to say, _Behold, I and the children whom God has given Me_ :— To whom be glory forever. Amen.
-
-CONTACT US | ADVERTISE WITH NEW ADVENT

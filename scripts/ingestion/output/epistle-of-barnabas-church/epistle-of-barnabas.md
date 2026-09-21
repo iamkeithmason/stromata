@@ -19,8 +19,6 @@ note_draft: "Barnabas finds Christ hidden in the strangest corners of the Old Te
 
    
 
-# The Epistle of Barnabas
-
 ## Chapter 1. After the salutation, the writer declares that he would communicate to his brethren something of that which he had himself received
 
 All hail, you sons and daughters, in the name of our Lord Jesus Christ, who loved us in peace.

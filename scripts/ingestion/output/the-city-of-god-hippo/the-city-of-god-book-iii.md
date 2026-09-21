@@ -19,8 +19,6 @@ note_draft: "Book III narrows Augustine's argument to a single, concrete questio
 
    
 
-# The City of God (Book III)
-
 As in the foregoing book Augustine has proved regarding moral and spiritual calamities, so in this book he proves regarding external and bodily disasters, that since the foundation of the city the Romans have been continually subject to them; and that even when the false gods were worshipped without a rival, before the advent of Christ, they afforded no relief from such calamities.
 
 ## Chapter 1.— Of the Ills Which Alone the Wicked Fear, and Which the World Continually Suffered, Even When the Gods Were Worshipped.

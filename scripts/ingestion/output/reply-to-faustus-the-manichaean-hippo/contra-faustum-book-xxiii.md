@@ -19,8 +19,6 @@ note_draft: "A Manichean interlocutor presses the point: Matthew's opening verse
 
    
 
-# Contra Faustum, Book XXIII
-
 **Faustus recurs to the genealogical difficulty and insists that even according to Matthew Jesus was not Son of God until His baptism. Augustine sets forth the Catholic view of the relation of the divine and the human in the person of Christ.**
 
 1\. _Faustus_ said: On one occasion, when addressing a large audience, I was asked by one of the crowd, Do you believe that Jesus was born of Mary? I replied, Which Jesus do you mean? For in the Hebrew it is the name of several people. One was the son of Nun, the follower of Moses; Exodus 23:11 another was the son of Josedech the high priest; Haggai 1:1 again, another is spoken of as the son of David; Romans 1:1-3 and another is the Son of God. Mark 1:1 Of which of these do you ask whether I believe him to have been born of Mary? His answer was, The Son of God, of course. On what evidence, said I, oral or written, am I to believe this? He replied, On the authority of Matthew. What, said I, did Matthew write? He replied, "The book of the generation of Jesus Christ, the son of David, the son of Abraham" Matthew 1:1. Then said I, I was afraid you were going to say, The book of the generation of Jesus Christ, the Son of God; and I was prepared to correct you. Now that you have quoted the verse accurately, you must nevertheless be advised to pay attention to the words. Matthew does not profess to give an account of the generation of the Son of God, but of the son of David.

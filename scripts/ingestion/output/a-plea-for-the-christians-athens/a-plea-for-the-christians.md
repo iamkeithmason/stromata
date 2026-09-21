@@ -19,8 +19,6 @@ note_draft: "Addressed directly to Marcus Aurelius and his son Commodus, 'conque
 
    
 
-# A Plea for the Christians
-
 **By Athenagoras the Athenian: Philosopher and Christian**
 
 _To the Emperors Marcus Aurelius Antoninus and Lucius Aurelius Commodus, conquerors of Armenia and Sarmatia, and more than all, philosophers._

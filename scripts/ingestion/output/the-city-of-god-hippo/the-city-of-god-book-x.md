@@ -19,8 +19,6 @@ note_draft: "Book X marks the hinge of Augustine's vast apologetic project, wher
 
    
 
-# The City of God (Book X)
-
 In this book Augustine teaches that the good angels wish God alone, whom they themselves serve, to receive that divine honor which is rendered by sacrifice, and which is called latreia. He then goes on to dispute against Porphyry about the principle and way of the soul's cleansing and deliverance.
 
 ## Chapter 1.— That the Platonists Themselves Have Determined that God Alone Can Confer Happiness Either on Angels or Men, But that It Yet Remains a Question Whether Those Spirits Whom They Direct Us to Worship, that We May Obtain Happiness, Wish Sacrifice to Be Offered to Themselves, or to the One God Only.

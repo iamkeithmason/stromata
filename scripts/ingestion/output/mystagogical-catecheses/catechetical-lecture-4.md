@@ -18,14 +18,6 @@ copyright_safe: true
 
    
 
- A  B  C  D  E  F  G  H  I  J  K  L  M  N  O  P  Q  R  S  T  U  V  W  X  Y  Z 
-
-![New Advent](../images/logo.gif)
-
-Home > Fathers of the Church > Catechetical Lectures (Cyril of Jerusalem) > Lecture 4
-
-# Catechetical Lecture 4
-
 **On the Ten Points of Doctrine.**
 
 Colossians 2:8.
@@ -139,5 +131,3 @@ For the throne at God's right hand He received not, as some have thought, becaus
 36\. Then of the New Testament there are the four Gospels only, for the rest have false titles and are mischievous. The Manichæans also wrote a Gospel according to Thomas, which being tinctured with the fragrance of the evangelic title corrupts the souls of the simple sort. Receive also the Acts of the Twelve Apostles; and in addition to these the seven Catholic Epistles of James, Peter, John, and Jude; and as a seal upon them all, and the last work of the disciples, the fourteen Epistles of Paul. But let all the rest be put aside in a secondary rank. And whatever books are not read in Churches, these read not even by yourself, as you have heard me say. Thus much of these subjects.
 
 37\. But shun thou every diabolical operation, and believe not the apostate Serpent, whose transformation from a good nature was of his own free choice: who can over-persuade the willing, but can compel no one. Also give heed neither to observations of the stars nor auguries, nor omens, nor to the fabulous divinations of the Greeks. Witchcraft, and enchantment, and the wicked practices of necromancy, admit not even to a hearing. From every kind of intemperance stand aloof, giving yourself neither to gluttony nor licentiousness, rising superior to all covetousness and usury. Neither venture yourself at heathen assemblies for public spectacles, nor ever use amulets in sicknesses; shun also all the vulgarity of tavern-haunting. Fall not away either into the sect of the Samaritans, or into Judaism: for Jesus Christ henceforth has ransomed you. Stand aloof from all observance of Sabbaths , and from calling any indifferent meats _common or unclean_. But especially abhor all the assemblies of wicked heretics; and in every way make your own soul safe, by fastings, prayers, almsgivings, and reading the oracles of God; that having lived the rest of your life in the flesh in soberness and godly doctrine, you may enjoy the one salvation which flows from Baptism; and thus enrolled in the armies of heaven by God and the Father, may also be deemed worthy of the heavenly crowns, in Christ Jesus our Lord, to Whom be the glory for ever and ever. Amen.
-
-CONTACT US | ADVERTISE WITH NEW ADVENT

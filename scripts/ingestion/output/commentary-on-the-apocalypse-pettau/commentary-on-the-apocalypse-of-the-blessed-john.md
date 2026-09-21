@@ -19,8 +19,6 @@ note_draft: "The oldest surviving commentary on Revelation opens by insisting th
 
    
 
-# Commentary on the Apocalypse
-
 ## From the First Chapter
 
 1\. The Revelation of Jesus Christ, which God gave to Him, and showed unto His servants things which must shortly come to pass, and signified it. Blessed are they who read and hear the words of this prophecy, and keep the things which are written. The beginning of the book promises blessing to him that reads and hears and keeps, that he who takes pains about the reading may thence learn to do works, and may keep the precepts.

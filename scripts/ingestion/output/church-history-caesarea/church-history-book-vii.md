@@ -19,8 +19,6 @@ note_draft: "Composed in the 320s by the bishop who served as Constantine's eccl
 
    
 
-# Church History (Book VII)
-
 ## Introduction.
 
 In this seventh book of the Church History, the great bishop of Alexandria, Dionysius, shall again assist us by his own words; relating the several affairs of his time in the epistles which he has left. I will begin with them.

@@ -18,14 +18,6 @@ copyright_safe: true
 
    
 
- A  B  C  D  E  F  G  H  I  J  K  L  M  N  O  P  Q  R  S  T  U  V  W  X  Y  Z 
-
-![New Advent](../images/logo.gif)
-
-Home > Fathers of the Church > The Confessions > Book XIII
-
-# The Confessions (Book XIII)
-
 Of the goodness of God explained in the creation of things, and of the Trinity as found in the first words of Genesis. The story concerning the origin of the world (Genesis 1) is allegorically explained, and he applies it to those things which God works for sanctified and blessed man. Finally, he makes an end of this work, having implored eternal rest from God.
 
 ## Chapter 1. He Calls Upon God, and Proposes to Himself to Worship Him.
@@ -209,5 +201,3 @@ Of the goodness of God explained in the creation of things, and of the Trinity a
 ## Chapter 38. Of the Difference Between the Knowledge of God and of Men, and of the Repose Which is to Be Sought from God Only.
 
 53\. We therefore see those things which You made, because they are; but they are because You see them. And we see without that they are, and within that they are good, but You saw them there, when made, where You saw them to be made. And we were at another time moved to do well, after our hearts had conceived of Your Spirit; but in the former time, forsaking You, we were moved to do evil; but You, the One, the Good God, hast never ceased to do good. And we also have certain good works, of Your gift, but not eternal; after these we hope to rest in Your great hallowing. But You, being the Good, needing no good, art ever at rest, because You Yourself art Your rest. And what man will teach man to understand this? Or what angel, an angel? Or what angel, a man? Let it be asked of You, sought in You, knocked for at You; so, even so shall it be received, so shall it be found, so shall it be opened. Matthew 7:7 _Amen_.
-
-CONTACT US | ADVERTISE WITH NEW ADVENT

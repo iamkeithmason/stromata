@@ -17,8 +17,6 @@ note_draft: "Written late in Augustine's life, around 426, in response to a genu
 
    
 
-# On Grace and Free Will
-
 **Written by St. Augustine of Hippo in A.D. 426 or 427**
 
 **Extract from Augustine's Retractions (Book II, Chapter 66):** There are some persons who suppose that the freedom of the will is denied whenever God's grace is maintained, and who on their side defend their liberty of will so peremptorily as to deny the grace of God. This grace, as they assert, is bestowed according to our own merits. It is in consequence of their opinions that I wrote the book entitled _On Grace and Free Will._ This work I addressed to the monks of Adrumetum, in whose monastry first arose the controversy on that subject, and that in such a manner that some of them were obliged to consult me thereon. The work begins with these words: "With reference to those persons who so preach the liberty of the human will."

@@ -19,8 +19,6 @@ note_draft: "Written in the early fourth century by the bishop of Caesarea, this
 
    
 
-# Church History (Book I)
-
 ## Chapter 1. The Plan of the Work.
 
 1\. It is my purpose to write an account of the lines of succession of the holy apostles, as well as of the times that have elapsed from the days of our Saviour to our own; and to relate the many important events that are said to have occurred in the history of the Church; and to mention those who have governed and presided over the Church in the most prominent parishes, and those who in each generation have proclaimed the divine word either orally or in writing.

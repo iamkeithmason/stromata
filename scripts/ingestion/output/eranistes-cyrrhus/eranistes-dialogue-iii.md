@@ -19,8 +19,6 @@ note_draft: "The third of Theodoret's dialogues between Orthodoxus and Eranistes
 
    
 
-# Dialogue 3
-
 **Orthodoxus and Eranistes.**
 
 _Orth._— In our former discussions we have proved that God the Word is immutable, and became incarnate not by being changed into flesh, but by taking perfect human nature. The divine Scripture, and the teachers of the churches and luminaries of the world have clearly taught us that, after the union, He remained as He was, unmixed, impassible, unchanged, uncircumscribed; and that He preserved unimpaired the nature which He had taken. For the future then the subject before us is that of His passion, and it will be a very profitable one, for thence have been brought to us the waters of salvation.

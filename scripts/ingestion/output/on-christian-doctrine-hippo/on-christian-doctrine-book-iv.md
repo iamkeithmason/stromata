@@ -19,8 +19,6 @@ note_draft: "The fourth and final book of Augustine's manual on scriptural inter
 
    
 
-# On Christian Doctrine (Book IV)
-
 ## Chapter 1.— This Work Not Intended as a Treatise on Rhetoric.
 
 1\. This work of mine, which is entitled _On Christian Doctrine_, was at the commencement divided into two parts. For, after a preface, in which I answered by anticipation those who were likely to take exception to the work, I said, There are two things on which all interpretation of Scripture depends: the mode of ascertaining the proper meaning, and the mode of making known the meaning when it is ascertained. I shall treat first of the mode of ascertaining, next of the mode of making known, the meaning. As, then, I have already said a great deal about the mode of ascertaining the meaning, and have given three books to this one part of the subject, I shall only say a few things about the mode of making known the meaning, in order if possible to bring them all within the compass of one book, and so finish the whole work in four books.

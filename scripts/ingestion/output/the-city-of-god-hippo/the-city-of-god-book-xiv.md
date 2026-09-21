@@ -19,8 +19,6 @@ note_draft: "Book XIV is the hinge of Augustine's massive apologetic project, th
 
    
 
-# The City of God (Book XIV)
-
 Augustine again treats of the sin of the first man, and teaches that it is the cause of the carnal life and vicious affections of man. Especially he proves that the shame which accompanies lust is the just punishment of that disobedience, and inquires how man, if he had not sinned, would have been able without lust to propagate his kind.
 
 ## Chapter 1.— That the Disobedience of the First Man Would Have Plunged All Men into the Endless Misery of the Second Death, Had Not the Grace of God Rescued Many.

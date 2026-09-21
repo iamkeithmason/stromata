@@ -19,8 +19,6 @@ note_draft: "Compiled in Syria around the late fourth century, the eighth book o
 
    
 
-# Apostolic Constitutions (Book VIII)
-
 **Concerning Gifts, and Ordinations, and the Ecclesiastical Canons.**
 
 ## Section 1. On the Diversity of Spiritual Gifts

@@ -18,14 +18,6 @@ copyright_safe: true
 
    
 
- A  B  C  D  E  F  G  H  I  J  K  L  M  N  O  P  Q  R  S  T  U  V  W  X  Y  Z 
-
-![New Advent](../images/logo.gif)
-
-Home > Fathers of the Church > The Stromata (Clement of Alexandria)
-
-# The Stromata (Book VIII)
-
 ## Chapter 1. The Object of Philosophical and Theological Inquiry — The Discovery of Truth.
 
 But the most ancient of the philosophers were not carried away to disputing and doubting, much less are we, who are attached to the really true philosophy, on whom the Scripture enjoins examination and investigation. For it is the more recent of the Hellenic philosophers who, by empty and futile love of fame, are led into useless babbling in refuting and wrangling. But, on the contrary, the Barbarian philosophy, expelling all contention, said, Seek, and you shall find; knock, and it shall be opened unto you; ask, and it shall be given you.
@@ -263,5 +255,3 @@ And if the cause manifests an operation sufficient in itself, the co-operating c
 The Joint-cause belongs also to the genus of causes, as a fellow-soldier is a soldier, and as a fellow-youth is a youth.
 
 The Co-operating cause further aids the Synectic, in the way of intensifying what is produced by it. But the Joint-cause does not fall under the same notion. For a thing may be a Joint-cause, though it be not a Synectic cause. For the Joint-cause is conceived in conjunction with another, which is not capable of producing the effect by itself, being a cause along with a cause. And the Co-operating cause differs from the Joint-cause in this particular, that the Joint-cause produces the effect in that which by itself does not act. But the Co-operating cause, while effecting nothing by itself, yet by its accession to that which acts by itself, co-operates with it, in order to the production of the effect in the intensest degree. But especially is that which becomes co-operating from being Procatarctic, effective in intensifying the force of the cause.
-
-CONTACT US | ADVERTISE WITH NEW ADVENT

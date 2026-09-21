@@ -19,8 +19,6 @@ note_draft: "Written in the early fourth century by the bishop of Caesarea, this
 
    
 
-# Church History (Book III)
-
 ## Chapter 1. The Parts of the World in which the Apostles preached Christ.
 
 1\. Such was the condition of the Jews. Meanwhile the holy apostles and disciples of our Saviour were dispersed throughout the world. Parthia, according to tradition, was allotted to Thomas as his field of labor, Scythia to Andrew, and Asia to John, who, after he had lived some time there, died at Ephesus.

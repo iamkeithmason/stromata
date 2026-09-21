@@ -19,8 +19,6 @@ note_draft: "Picking up where Book I left off, Augustine turns from mercy to pur
 
    
 
-# On the Sermon on the Mount, Book II
-
 **MATTHEW 6-7**
 
 ## Chapter 1

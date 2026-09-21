@@ -19,8 +19,6 @@ note_draft: "With Conference 11, Cassian opens the second installment of his con
 
    
 
-# Conference 11
-
 **_BY ST. JOHN CASSIAN_**
 
 THE FIRST CONFERENCE OF ABBOT CHAEREMON. ON PERFECTION.

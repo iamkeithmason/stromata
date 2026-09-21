@@ -18,14 +18,6 @@ copyright_safe: true
 
    
 
- A  B  C  D  E  F  G  H  I  J  K  L  M  N  O  P  Q  R  S  T  U  V  W  X  Y  Z 
-
-![New Advent](../images/logo.gif)
-
-Home > Fathers of the Church > Catechetical Lectures (Cyril of Jerusalem) > Lecture 7
-
-# Catechetical Lecture 7
-
 **The Father.**
 
 Ephesians 3:14, 15
@@ -65,5 +57,3 @@ For we shall not tolerate those who give a wrong meaning to that saying, _Hereby
 15\. But while honouring our heavenly Father let us honour also _the fathers of our flesh_ Hebrews 12:9: since the Lord Himself has evidently so appointed in the Law and the Prophets, saying, _Honour your father and your mother, that it may be well with you, and your days shall be long in the land_. Deuteronomy 5:16 And let this commandment be especially observed by those here present who have fathers and mothers. _Children, obey your parents in all things: for this is well pleasing to the Lord_. Colossians 3:20 For the Lord said not, _He that loves father or mother is not worthy of Me_, lest you from ignorance should perversely mistake what was rightly written, but He added, _more than Me_. Matthew 10:37 For when our fathers on earth are of a contrary mind to our Father in heaven, then we must obey Christ's word. But when they put no obstacle to godliness in our way, if we are ever carried away by ingratitude, and, forgetting their benefits to us, hold them in contempt, then the oracle will have place which says, _He that curses father or mother, let him die the death_.
 
 16\. The first virtue of godliness in Christians is to honour their parents, to requite the troubles of those who begot them , and with all their might to confer on them what tends to their comfort (for if we should repay them ever so much, yet we shall never be able to return their gift of life ), that they also may enjoy the comfort provided by us, and may confirm us in those blessings which Jacob the supplanter shrewdly seized; and that our Father in heaven may accept our good purpose, and judge us worthy _to shine amid righteous as the sun in the kingdom of our Father Matthew 13:43_ : To whom be the glory, with the Only-begotten our Saviour Jesus Christ, and with the Holy and Life-giving Spirit, now and ever, to all eternity. Amen.
-
-CONTACT US | ADVERTISE WITH NEW ADVENT

@@ -19,12 +19,6 @@ note_draft: "Origen has reached his tenth book, and he pauses to wonder aloud wh
 
    
 
- A  B  C  D  E  F  G  H  I  J  K  L  M  N  O  P  Q  R  S  T  U  V  W  X  Y  Z 
-
-![New Advent](../images/logo.gif)
-
-Home > Fathers of the Church > Commentary on John (Origen) > Book X
-
 # Commentary on the Gospel of John (Book X)
 
 ## 1\. Jesus Comes to Capernaum. Statements of the Four Evangelists Regarding This.
@@ -148,5 +142,3 @@ The words, He needed not that any should testify of man, may fitly be used to sh
 ## 30\. How Jesus Knew the Powers, Better or Worse, Which Reside in Man.
 
 It may also be asked what signs those many saw Him do who believed on Him, for it is not recorded that He did any signs at Jerusalem, though some may have been done which are not recorded. One may, however, consider if what He did may be called signs, when He made a scourge of small cords, and cast them all out of the temple, and the sheep, and the oxen, and poured out the changers' money, and overthrew the tables. As for those who suppose that it was only about men that He had no need of witnesses, it has to be said that the Evangelist attributes to Him two things, that He knew all beings, and that He had no need that any one should testify of man. If He knew all beings, then He knew not only men but the beings above men, all beings who are without such bodies as ours; and He knew what was in man, since He was greater than those who reproved and judged by prophesying, and who brought to the light the secret things of the hearts of those whom the Spirit suggested to them to be thus dealt with. The words, He knew what was in man, could also be taken as referring to the powers, better or worse, which work in men. For if any one gives place to the devil, Satan enters into him; thus did Judas give place, and thus did the devil put it in his heart to betray Jesus, and after the sop, therefore, the devil entered into him. John 13:2-27 But if any one gives place to God, he becomes blessed; for blessed is the man whose help is from God, and the ascent is in his heart from God. You know what is in man, Thou who know all things, O Son of God. And now that our tenth book has come to be large enough we will here pause in our theme.
-
-CONTACT US | ADVERTISE WITH NEW ADVENT

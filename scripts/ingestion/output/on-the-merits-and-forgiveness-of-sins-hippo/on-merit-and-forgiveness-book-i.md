@@ -19,8 +19,6 @@ note_draft: "Written in 412 as the Pelagian controversy was just beginning to sh
 
    
 
-# On Merit and the Forgiveness of Sins, and the Baptism of Infants (Book I)
-
 _In which he refutes those who maintain, that Adam must have died even if he had never sinned; and that nothing of his sin has been transmitted to his posterity by natural descent. He also shows, that death has not accrued to man by any necessity of his nature, but as the penalty of sin; He then proceeds to prove that in Adam's sin his entire offspring is implicated, showing that infants are baptized for the express purpose of receiving the remission of original sin._
 
 ## Chapter 1 \[I.\]— Introductory, in the Shape of an Inscription to His Friend Marcellinus.

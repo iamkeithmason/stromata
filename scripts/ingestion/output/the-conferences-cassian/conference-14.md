@@ -19,8 +19,6 @@ note_draft: "Delivered by Abba Nesteros to Cassian and his companion Germanus du
 
    
 
-# Conference 14
-
 **_BY ST. JOHN CASSIAN_**
 
 THE FIRST CONFERENCE OF ABBOT NESTEROS. ON SPIRITUAL KNOWLEDGE.

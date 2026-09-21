@@ -18,14 +18,6 @@ copyright_safe: true
 
    
 
- A  B  C  D  E  F  G  H  I  J  K  L  M  N  O  P  Q  R  S  T  U  V  W  X  Y  Z 
-
-![New Advent](../images/logo.gif)
-
-Home > Fathers of the Church > Catechetical Lectures (Cyril of Jerusalem) > Lecture 8
-
-# Catechetical Lecture 8
-
 **Almighty.**
 
 Jeremiah 39:18, 19 (Septuagint).
@@ -47,5 +39,3 @@ _The Great, the strong God, Lord of great Counsel, and mighty in His works, the 
 7\. Now I have made these remarks because of those heretics who count possessions, and money, and men's bodies accursed. For I neither wish you to be a slave of money, nor to treat as enemies the things which God has given you for use. Never say then that riches are the devil's: for though he say, _All these will I give you, for they are delivered unto me_ , one may indeed even reject his assertion; for we need not believe the liar: and yet perhaps he spoke the truth, being compelled by the power of His presence: for he said not, _All these will I give you_, for they are mine, but, _for they are delivered unto me_. He grasped not the dominion of them, but confessed that he had been entrusted with them, and was for a time dispensing them. But at a proper time interpreters should inquire whether his statement is false or true.
 
 8\. God then is One, the Father, the Almighty, whom the brood of heretics have dared to blaspheme. Yea, they have dared to blaspheme the Lord of Sabaoth , _who sits above the Cherubim_ : they have dared to blaspheme the Lord Adonai : they have dared to blaspheme Him who is in the Prophets the Almighty God. But worship thou One God the Almighty, the Father of our Lord Jesus Christ. Flee from the error of many gods, flee also from every heresy, and say like Job, _But I will call upon the Almighty Lord, which does great things and unsearchable, glorious things and marvellous without number_ , and, _For all these things there is honour from the Almighty_ : to Whom be the glory for ever and ever. Amen.
-
-CONTACT US | ADVERTISE WITH NEW ADVENT

@@ -18,14 +18,6 @@ copyright_safe: true
 
    
 
- A  B  C  D  E  F  G  H  I  J  K  L  M  N  O  P  Q  R  S  T  U  V  W  X  Y  Z 
-
-![New Advent](../images/logo.gif)
-
-Home > Fathers of the Church > The Stromata (Clement of Alexandria)
-
-# The Stromata (Book I)
-
 ## Chapter 1. Preface — The Author's Object — The Utility of Written Compositions.
 
 \[_Wants the beginning_\] . . . . . . . . . . that you may read them under your hand, and may be able to preserve them. Whether written compositions are not to be left behind at all; or if they are, by whom? And if the former, what need there is for written compositions? And if the latter, is the composition of them to be assigned to earnest men, or the opposite? It were certainly ridiculous for one to disapprove of the writing of earnest men, and approve of those, who are not such, engaging in the work of composition. Theopompus and Timæus, who composed fables and slanders, and Epicurus the leader of atheism, and Hipponax and Archilochus, are to be allowed to write in their own shameful manner. But he who proclaims the truth is to be prevented from leaving behind him what is to benefit posterity. It is a good thing, I reckon, to leave to posterity good children. This is the case with children of our bodies. But words are the progeny of the soul. Hence we call those who have instructed us, fathers. Wisdom is a communicative and philanthropic thing. Accordingly, Solomon says, My son, if you receive the saying of my commandment, and hide it with you, your ear shall hear wisdom. Proverbs 2:1-2 He points out that the word that is sown is hidden in the soul of the learner, as in the earth, and this is spiritual planting. Wherefore also he adds, And you shall apply your heart to understanding, and apply it for the admonition of your son. For soul, methinks, joined with soul, and spirit with spirit, in the sowing of the word, will make that which is sown grow and germinate. And every one who is instructed, is in respect of subjection the son of his instructor. Son, says he, forget not my laws. Proverbs 3:1
@@ -596,5 +588,3 @@ Similarly, also, demonstrations from the resources of erudition, strengthen, con
 > But Right (by far the best) to men he gave.
 
 Whether, then, it be the law which is connate and natural, or that given afterwards, which is meant, it is certainly of God; and both the law of nature and that of instruction are one. Thus also Plato, in _The Statesman_, says that the lawgiver is one; and in _The Laws_, that he who shall understand music is one; teaching by these words that the Word is one, and God is one. And Moses manifestly calls the Lord a covenant: Behold I am my Covenant with you, having previously told him not to seek the covenant in writing. For it is a covenant which God, the Author of all, makes. For God is called Θεός, from θέσις (placing), and order or arrangement. And in the _Preaching_ of Peter you will find the Lord called Law and Word. But at this point, let our first Miscellany of gnostic notes, according to the true philosophy, come to a close.
-
-CONTACT US | ADVERTISE WITH NEW ADVENT

@@ -19,8 +19,6 @@ note_draft: "Faustus, the Manichaean, thinks he has trapped the Christians on th
 
    
 
-# Contra Faustum, Book X
-
 **Faustus insists that the Old Testament promises are radically different from those of the New. Augustine admits a difference, but maintains that the moral precepts are the same in both.**
 
 1\. _Faustus_ said: Another reason for not receiving the Old Testament is, that both the Old and the New teach us not to covet what belongs to others. Everything in the Old Testament is of this kind. It promises riches, and plenty, and children, and children's children, and long life, and withal the land of Canaan; but only to the circumcised, the Sabbath observers, those offering sacrifices, and abstaining from swine's flesh. Now I, like every other Christian, pay no attention to these things, as being trifling and useless for the salvation of the soul. I conclude, therefore, that the promises do not belong to me. And mindful of the commandment, You shall not covet, I gladly leave to the Jews their own property, and content myself with the gospel, and with the bright inheritance of the kingdom of heaven. If a Jew were to claim part in the gospel, I should justly reproach him with claiming what he had no right to, because he does not obey its precepts. And a Jew might say the same to me if I professed to receive the Old Testament while I disregard its requirements.

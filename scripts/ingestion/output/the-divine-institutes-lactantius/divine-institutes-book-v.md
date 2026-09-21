@@ -19,14 +19,6 @@ note_draft: "Book V opens with Lactantius addressing Constantine directly, deman
 
    
 
- A  B  C  D  E  F  G  H  I  J  K  L  M  N  O  P  Q  R  S  T  U  V  W  X  Y  Z 
-
-![New Advent](../images/logo.gif)
-
-Home > Fathers of the Church > Divine Institutes (Lactantius) > Book V
-
-# Divine Institutes, Book V (Of Justice)
-
 ## Chapter 1. Of the Non-Condemnation of Accused Persons Without a Hearing of Their Cause; From What Cause Philosophers Despised the Sacred Writings; Of the First Advocates of the Christian Religion.
 
 I Entertain no doubt, O mighty Emperor Constantine, — since they are impatient through excessive superstition — that if any one of those who are foolishly religious should take in hand this work of ours, in which that matchless Creator of all things and Ruler of this boundless world is asserted, he would even assail it with abusive language, and perhaps, having scarcely read the beginning, would dash it to the ground, cast it from him, curse it, and think himself contaminated and bound by inexpiable guilt if he should patiently read or hear these things. We demand, however, from this man, if it is possible, by the right of human nature, that he should not condemn before that he knows the whole matter. For if the right of defending themselves is given to sacrilegious persons, and to traitors and sorcerers, and if it is lawful for no one to be condemned beforehand, his cause being as yet untried, we do not appear to ask unjustly, that if there shall be any one who shall have fallen upon this subject, if he shall read it, he read it throughout; if he shall hear it, that he put off the forming of an opinion until the end. But I know the obstinacy of men; we shall never succeed in obtaining this. For they fear lest they should be overcome by us, and be compelled at length to yield, truth itself crying out. They interrupt, therefore, and make hindrances, that they may not hear; and close their eyes, that they may not see the light which we present to them. Wherefore they themselves plainly show their distrust in their own abandoned system, since they neither venture to investigate, nor to engage with as, because they know that they are easily overpowered. And therefore, discussion being taken away,
@@ -316,5 +308,3 @@ There is also another cause why He permits persecutions to be carried on against
 ## Chapter 24. Of the Divine Vengeance Inflicted on the Torturers of the Christians.
 
 Whatever, therefore, wicked princes plan against us, God Himself permits to be done. And yet most unjust persecutors, to whom the name of God was a subject of reproach and mockery, must not think that they will escape with impunity, because they have been, as it were, the ministers of His indignation against us. For they will be punished with the judgment of God, who, having received power, have abused it to an inhuman degree, and have even insulted God in their arrogance, and placed His eternal name beneath their feet, to be impiously and wickedly trampled upon. On this account He promises that He will quickly take vengeance upon them, and exterminate the evil monsters from the earth. But He also, although He is accustomed to avenge the persecutions of His people even in the present world, commands us, however, to await patiently that day of heavenly judgment, in which He Himself will honour or punish every man according to his deserts. Therefore let not the souls of the sacrilegious expect that those whom they thus trample upon will be despised and unavenged. Those ravenous and voracious wolves who have tormented just and innocent souls, without the commission of any crimes, will surely meet with their reward. Only let us labour, that nothing else in us may be punished by men but righteousness alone: let us strive with all our power that we may at once deserve at the hands of God the avenging of our suffering and a reward.
-
-CONTACT US | ADVERTISE WITH NEW ADVENT

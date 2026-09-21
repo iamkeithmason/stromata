@@ -19,8 +19,6 @@ note_draft: "The occasion is small and vivid: a Christian soldier refuses to wea
 
    
 
-# The Chaplet
-
 _The Chaplet, or De Corona._
 
 ## Chapter 1

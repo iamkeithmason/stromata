@@ -19,8 +19,6 @@ note_draft: "Picking up immediately after the Ascension, this second book of Eus
 
    
 
-# Church History (Book II)
-
 ## Introduction.
 
 1\. We have discussed in the preceding book those subjects in ecclesiastical history which it was necessary to treat by way of introduction, and have accompanied them with brief proofs. Such were the divinity of the saving Word, and the antiquity of the doctrines which we teach, as well as of that evangelical life which is led by Christians, together with the events which have taken place in connection with Christ's recent appearance, and in connection with his passion and with the choice of the apostles.

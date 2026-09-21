@@ -18,14 +18,6 @@ copyright_safe: true
 
    
 
- A  B  C  D  E  F  G  H  I  J  K  L  M  N  O  P  Q  R  S  T  U  V  W  X  Y  Z 
-
-![New Advent](../images/logo.gif)
-
-Home > Fathers of the Church > Catechetical Lectures (Cyril of Jerusalem) > Lecture 16
-
-# Catechetical Lecture 16
-
 **On the Article, And in One Holy Ghost, the Comforter, Which Spoke in the Prophets.**
 
 1 Corinthians 12:1, 4
@@ -95,5 +87,3 @@ Now concerning spiritual gifts, brethren, I would not have you ignorant....Now t
 31\. He endued with wisdom the soul of Daniel, that young as he was he should become a judge of Elders. The chaste Susanna was condemned as a wanton; there was none to plead her cause; for who was to deliver her from the rulers? She was led away to death, she was now in the hands of the executioners. But her Helper was at hand, the Comforter, the Spirit who sanctifies every rational nature. Come hither to me, He says to Daniel; young though thou be, convict old men infected with the sins of youth; for it is written, _God raised up the Holy Spirit upon a young stripling_ ; and nevertheless, (to pass on quickly,) by the sentence of Daniel that chaste lady was saved. We bring this forward as a testimony; for this is not the season for expounding. Nebuchadnezzar also knew that the Holy Spirit was in Daniel; for he says to him, _O Belteshazzar, master of the magicians, of whom I know, that the Holy Spirit of God is in you_. Daniel 4:9 One thing he said truly, and one falsely; for that he had the Holy Spirit was true, but he was not the _master of the magicians_, for he was no magician, but was wise through the Holy Ghost. And before this also, he interpreted to him the vision of the Image, which he who had seen it himself knew not; for he says, Tell me the vision, which I who saw it know not. You see the power of the Holy Ghost; that which they who saw it, know not, they who saw it not, know and interpret.
 
 32\. And indeed it were easy to collect very many texts out of the Old Testament, and to discourse more largely concerning the Holy Ghost. But the time is short; and we must be careful of the proper length of the lecture. Wherefore, being for the present content awhile with passages from the Old Testament, we will, if it be God's pleasure, proceed in the next Lecture to the remaining texts out of the New Testament. And may the God of peace, through our Lord Jesus Christ, and through the love of the Spirit, count all of you worthy of His spiritual and heavenly gifts: — To whom be glory and power for ever and ever. Amen.
-
-CONTACT US | ADVERTISE WITH NEW ADVENT

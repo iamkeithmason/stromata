@@ -19,8 +19,6 @@ note_draft: "Compiled in Syria around the late fourth century, the *Apostolic Co
 
    
 
-# Apostolic Constitutions (Book III)
-
 ## Section 1. Concerning Widows
 
 ### The Age at Which Widows Should Be Chosen.

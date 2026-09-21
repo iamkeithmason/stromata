@@ -19,8 +19,6 @@ note_draft: "Against heretics who held the flesh too corrupt to be saved, this i
 
    
 
-# On the Resurrection of the Flesh
-
 The heretics against whom this work is directed, were the same who maintained that the demiurge, or the god who created this world and gave the Mosaic dispensation, was opposed to the supreme God. Hence they attached an idea of inherent corruption and worthlessness to all his works — among the rest, to the flesh or body of man; affirming that it could not rise again, and that the soul alone was capable of inheriting immortality.
 
 ## Chapter 1. The Doctrine of the Resurrection of the Body Brought to Light by the Gospel. The Faintest Glimpses of Something Like It Occasionally Met with in Heathenism. Inconsistencies of Pagan Teaching.

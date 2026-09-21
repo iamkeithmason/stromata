@@ -19,8 +19,6 @@ note_draft: "Written around AD 198 by the convert-philosopher who led the catech
 
    
 
-# The Paedagogus (Book I)
-
 **(The Instructor)**
 
 ## Chapter 1. The Office of the Instructor

@@ -19,8 +19,6 @@ note_draft: "\"If it bequeaths anything to me, I believe it; if not, I reject it
 
    
 
-# Contra Faustum, Book IV
-
 **Faustus's reasons for rejecting the Old Testament, and Augustine's animadversions thereon.**
 
 1\. _Faustus_ said: Do I believe the Old Testament? If it bequeaths anything to me, I believe it; if not, I reject it. It would be an excess of forwardness to take the documents of others which pronounce me disinherited. Remember that the promise of Canaan in the Old Testament is made to Jews, that is, to the circumcised, who offer sacrifice, and abstain from swine's flesh, and from the other animals which Moses pronounces unclean, and observe Sabbaths, and the feast of unleavened bread, and other things of the same kind which the author of the Testament enjoined. Christians have not adopted these observances, and no one keeps them; so that if we will not take the inheritance, we should surrender the documents. This is my first reason for rejecting the Old Testament, unless you teach me better. My second reason is, that this inheritance is such a poor fleshly thing, without any spiritual blessings, that after the New Testament, and its glorious promise of the kingdom of heaven and eternal life, I think it not worth the taking.

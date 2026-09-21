@@ -19,8 +19,6 @@ note_draft: "Faustus, pressed on the genealogies, tries a clever pivot: don't ar
 
    
 
-# Contra Faustum, Book XXVIII
-
 **Faustus recurs to the genealogy and insists upon examining it as regards its consistency with itself. Augustine takes his stand on Scripture authority and maintains that Matthew's statements as to the birth of Christ must be accepted as final.**
 
 1\. _Faustus_ said: Christ, you say, could not have died, had He not been born. I reply, If He was born, He cannot have been God; or if He could both be God and be born, why could He not both be born and die? Plainly, arguments and necessary consequences are not applicable to those matters, where the question is of the account to be given of Jesus. The answer must be obtained from His own statements, or from the statements of His apostles regarding Him. The genealogy must be examined as regards its consistency with itself, instead of arguing from the supposition of Christ's death to the fact of His birth; for He might have suffered without having been born, or He might have been born, and yet never have suffered; for you yourselves acknowledge that with God nothing is impossible, which is inconsistent with the denial that Christ could have suffered without having been born.

@@ -19,8 +19,6 @@ note_draft: "Composed in Syriac around 337 in the Persian Empire, this is the op
 
    
 
-# Demonstration 1 (Of Faith)
-
 ## Letter of an Inquirer
 
 1\. Beloved, I send you inquiries and questions, for I am compelled to seek further instruction of you on many points. Do not refuse to hear me. My spirit urges me to warn you about many topics that you may unfold for me the spiritual perceptions of your mind, and may show me of all that you have apprehended from the holy books, that so my deficiency may be supplied by you and my hunger satisfied by your doctrine, and that you may assuage my thirst from the fountain of your instruction. Yet though many things are set in my thought to ask you, they all are notwithstanding reserved with me, that when I come to you, you may instruct me on all subjects.

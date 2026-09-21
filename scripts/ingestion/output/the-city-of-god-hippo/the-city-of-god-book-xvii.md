@@ -19,8 +19,6 @@ note_draft: "Book XVII carries Augustine's vast argument into the age of Samuel,
 
    
 
-# The City of God (Book XVII)
-
 In this book the history of the city of God is traced during the period of the kings and prophets from Samuel to David, even to Christ; and the prophecies which are recorded in the books of Kings, Psalms, and those of Solomon, are interpreted of Christ and the church.
 
 ## Chapter 1.— Of the Prophetic Age.

@@ -19,8 +19,6 @@ note_draft: "Composed in late second-century Alexandria by a convert trained in 
 
    
 
-# The Instructor (Book II)
-
 ## Chapter 1. On Eating.
 
 Keeping, then, to our aim, and selecting the Scriptures which bear on the usefulness of training for life, we must now compendiously describe what the man who is called a Christian ought to be during the whole of his life. We must accordingly begin with ourselves, and how we ought to regulate ourselves. We have therefore, preserving a due regard to the symmetry of this work, to say how each of us ought to conduct himself in respect to his body, or rather how to regulate the body itself. For whenever any one, who has been brought away by the Word from external things, and from attention to the body itself to the mind, acquires a clear view of what happens according to nature in man, he will know that he is not to be earnestly occupied about external things, but about what is proper and peculiar to man — to purge the eye of the soul, and to sanctify also his flesh. For he that is clean rid of those things which constitute him still dust, what else has he more serviceable than himself for walking in the way which leads to the comprehension of God.
