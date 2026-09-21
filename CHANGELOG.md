@@ -110,6 +110,15 @@ rather than after — `("Value" * 1.0) / …` is the fix, and the `* 1.0` is now
 flagged as load-bearing. The columns are declared `FLOAT` in the schema, which
 does not help.
 
+Written up for the research bank as
+`docs/research/2026-09-21-notes-that-foreclose.md` — the generalisable half is
+the asymmetry between the two kinds of claim a doc can make. "X works like this"
+is re-tested by everyone who uses X, so it self-heals; "X is impossible" is
+tested by nobody, because nobody attempts what the file forbids, so it outlives
+the limitation it describes and only a reader ignoring the file ever corrects
+it. Negative capability claims therefore need what positive ones get free: a
+date and a method, so staleness can be judged rather than inherited.
+
 ---
 
 ## 2026-09-21 — The Notion tradition option becomes `Imperial`
