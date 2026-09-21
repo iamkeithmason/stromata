@@ -7,6 +7,43 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-09-21 — Two rule gaps, found by texts another run imported
+
+Verifying the leading-H1 apply against the database turned up four drafts
+imported during the session by a different run, three of them carrying source
+chrome the guard did not catch. Two were gaps in the rules and are now closed:
+
+- **The breadcrumb rule named one section of the site.** It matched
+  `Home > Fathers of the Church >` and nothing else, so `Home > Summa Theologiae
+  > First Part > Question 2` walked straight into a body. It now matches any
+  block opening `Home >` and carrying a second `>` — still structurally
+  unmistakable (a sentence does not open that way), and no longer specific to
+  the one section that happened to be in front of me when it was written.
+- **The Gutenberg header rule keyed on `*** START OF`.** A newer plain-text file
+  whose licence paragraph turndown flattened into one block, with no `***`
+  marker, put its whole header in front of the work. There is now a block rule
+  matching the flattened form by its own wording.
+
+Both verified against the real stored bodies, not just fixtures.
+
+Reported and **not** fixed, because they are not chrome problems:
+
+- `all-of-grace` is **the wrong work**. Its `source_url` is Gutenberg ebook
+  27570, which is *Buchanan's Journal of Man, July 1887* — not Spurgeon. 108 KB
+  of the wrong text is filed under his name. Needs the prospect's ebook id
+  corrected and a re-fetch, not a clean.
+- `the-large-catechism-part-5-of-the-sacrament-of-the-altar` is 1,317 characters
+  of ctsfw.edu's **table of contents**, not Part 5.
+- `hymns-of-the-eastern-church-neale` is raw Archive.org OCR from the scan's
+  first page — library stamp, "Digitized by the Internet Archive in 2016",
+  title page. No start landmark was set.
+- The Summa text also leaks the page's HTML `<title>` as its first line
+  (`SUMMA THEOLOGIAE: The existence of God (Prima Pars, Q. 2)`). Deliberately
+  not encoded: a rule for "first line looks like a page title" would be guessing
+  at prose.
+
+All four are drafts. None is live.
+
 ## 2026-09-21 — The leading-H1 rule, and the two stores kept in step
 
 The corpus-wide follow-up to the entry below. 333 texts open with an `# H1`

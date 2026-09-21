@@ -86,13 +86,15 @@ export const CHROME_RULES = [
     id: 'newadvent-breadcrumb',
     source: 'newadvent',
     kind: 'block',
-    // "Home > Fathers of the Church > <work> > <part>". Structural rather than
-    // site-named: a block *opening* with `Home >` is a breadcrumb, never a
-    // sentence — prose that happens to say "Fathers of the Church" is untouched
-    // because the rule is anchored to that opening.
+    // "Home > Fathers of the Church > <work> > <part>", and the same shape over
+    // the site's other sections — "Home > Summa Theologiae > First Part >
+    // Question 2" reached the corpus on 2026-09-21 because the first version of
+    // this rule named only the Fathers section. Structural rather than
+    // site-named: a block *opening* `Home >` and carrying a second `>` is a
+    // breadcrumb, never a sentence, whatever sits between them.
     structural: true,
-    match: new RegExp(`^Home${WS}*>${WS}*Fathers of the Church${WS}*>`),
-    why: 'New Advent breadcrumb trail',
+    match: new RegExp(`^Home${WS}*>[^\n]*>`),
+    why: 'site breadcrumb trail',
   },
   {
     id: 'newadvent-footer-nav',
@@ -181,6 +183,17 @@ export const CHROME_RULES = [
     kind: 'head',
     match: /^\*\*\*\s*START OF (?:THE|THIS) PROJECT GUTENBERG/i,
     why: 'Project Gutenberg header boilerplate',
+  },
+  {
+    id: 'gutenberg-flat-header',
+    source: 'gutenberg',
+    kind: 'block',
+    // Newer PG plain-text files open with a licence paragraph that turndown
+    // flattens into one block, and it does not always carry the `*** START OF`
+    // marker the head rule keys on — so that rule alone let a whole PG header
+    // through into a body on 2026-09-21.
+    match: /Project Gutenberg eBook of[\s\S]*This eBook is for the use of anyone anywhere/,
+    why: 'Project Gutenberg licence header (flattened, no *** marker)',
   },
   {
     id: 'gutenberg-footer',

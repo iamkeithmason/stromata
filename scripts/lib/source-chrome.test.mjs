@@ -83,6 +83,33 @@ test('a bare New Advent URL on its own line goes too', () => {
   assert.equal(output, 'The last paragraph of the treatise.');
 });
 
+test('the breadcrumb rule covers every section of the site, not one', () => {
+  // The Fathers-only version of this rule let a Summa breadcrumb into the
+  // corpus on 2026-09-21. Any `Home > … > …` block is a breadcrumb.
+  for (const crumb of [
+    'Home > Fathers of the Church > Commentary on John (Origen) > Book II',
+    'Home > Summa Theologiae > First Part > Question 2',
+    'Home > Catholic Encyclopedia > A > Abbey',
+  ]) {
+    assert.deepEqual(stripChrome(`${crumb}\n\nThe body.`).removed.map(r => r.rule), ['newadvent-breadcrumb']);
+  }
+  // ...but it still needs the second `>`, so a sentence cannot match.
+  const prose = 'Home is where the heart is > and nowhere else';
+  assert.deepEqual(stripChrome(prose).removed, []);
+});
+
+test('a flattened Gutenberg header is caught even without the *** marker', () => {
+  // The head rule keys on `*** START OF`; this body had none, and 108 KB of
+  // licence text reached Supabase in front of the work.
+  const body = [
+    "Project Gutenberg eBook of Buchanan's Journal of Man, July 1887 This eBook is for the use of anyone anywhere in the United States and most other parts of the world at no cost.",
+    'Chapter the first, in which the book actually begins.',
+  ].join('\n\n');
+  const { output, removed } = stripChrome(body);
+  assert.deepEqual(removed.map(r => r.rule), ['gutenberg-flat-header']);
+  assert.equal(output, 'Chapter the first, in which the book actually begins.');
+});
+
 test('Gutenberg boilerplate truncates head and tail, keeping the book', () => {
   const body = [
     'The Project Gutenberg EBook of Something, by Someone',
