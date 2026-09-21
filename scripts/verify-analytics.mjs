@@ -103,7 +103,15 @@ async function installInterceptor(context) {
   if (VIA_NODE) {
     await context.route('**/*', async (route) => {
       try {
-        await route.fulfill({ response: await route.fetch({ maxRedirects: 5 }) });
+        // The timeout is explicit and generous ON PURPOSE. route.fetch()
+        // otherwise inherits the context default — which is the per-CHECK
+        // timeout, a few seconds — and proxying a document through Node is far
+        // slower than the browser fetching it directly. /texts (222 entries,
+        // ~300KB) takes 7-13s this way, so it was intermittently exceeding the
+        // check timeout; the handler then aborted, and the page load surfaced
+        // as net::ERR_FAILED. That looks exactly like a site or instrumentation
+        // failure and is neither.
+        await route.fulfill({ response: await route.fetch({ maxRedirects: 5, timeout: 60000 }) });
       } catch {
         // The context is torn down at the end of the run while requests are
         // still in flight; nothing useful to do but drop them.
@@ -149,10 +157,30 @@ async function waitForEvent(name, { timeout = TIMEOUT } = {}) {
   }
 }
 
+/**
+ * Navigate, retrying once on a transport failure.
+ *
+ * A page that fails to arrive is not evidence about the attribute we came to
+ * check, and a check that goes red for reasons of its own teaches readers to
+ * ignore red. The /texts index — 222 entries, ~300KB — intermittently returned
+ * ERR_FAILED while curl fetched it fine and three successive loads in isolation
+ * all succeeded, so one retry is the difference between a real signal and a
+ * flaky one. A second failure is reported as a failure.
+ */
+async function gotoOnce(page, url) {
+  try {
+    return await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 30000 });
+  } catch (first) {
+    log(`load failed, retrying once: ${url} — ${String(first.message).split('\n')[0]}`);
+    await page.waitForTimeout(1500);
+    return await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 30000 });
+  }
+}
+
 /** Open a URL in a FRESH TAB — a fresh tab is a fresh sessionStorage. */
 async function open(context, path) {
   const page = await context.newPage();
-  await page.goto(BASE + path, { waitUntil: 'domcontentloaded', timeout: 30000 });
+  await gotoOnce(page, BASE + path);
   await ensureTracker(page);
   return page;
 }
@@ -273,7 +301,7 @@ async function findPageWith(context, candidates, selector, { limit = 8 } = {}) {
   for (const path of candidates.slice(0, limit)) {
     const page = await context.newPage();
     try {
-      await page.goto(BASE + path, { waitUntil: 'domcontentloaded', timeout: 30000 });
+      await gotoOnce(page, BASE + path);
       loaded += 1;
       if (await page.locator(selector).first().count()) {
         await ensureTracker(page);
@@ -395,7 +423,7 @@ async function checkNavEvents(context, site) {
         // Second try: let the click navigate for real. Slower and racier, but
         // it reaches elements the neutralised click cannot drive.
         async () => {
-          await found.page.goto(BASE + found.path, { waitUntil: 'domcontentloaded' });
+          await gotoOnce(found.page, BASE + found.path);
           await ensureTracker(found.page);
           await clickFirst(found.page, selector, { nav: true });
         },
@@ -434,7 +462,7 @@ async function checkSessionDepth(context, site) {
     case: 'depth 2 · text-open click',
     expect: { depth: 2, text: SLUG },
     action: async () => {
-      await indexPage.goto(BASE + '/texts', { waitUntil: 'domcontentloaded' });
+      await gotoOnce(indexPage, BASE + '/texts');
       await ensureTracker(indexPage);
       await clickFirst(indexPage, '[data-umami-event="text-open"]', { nav: true });
       await indexPage.waitForURL(/\/texts\/.+/, { timeout: 15000 }).catch(() => {});
@@ -461,7 +489,7 @@ async function checkSessionDepth(context, site) {
     event: 'text-session-depth',
     case: 'depth 3 never fires',
     action: async () => {
-      await page.goto(BASE + c, { waitUntil: 'domcontentloaded' });
+      await gotoOnce(page, BASE + c);
       await ensureTracker(page);
     },
   });
@@ -643,7 +671,7 @@ async function main() {
   site.scripture = await (async () => {
     const page = await context.newPage();
     try {
-      await page.goto(BASE + '/scripture', { waitUntil: 'domcontentloaded' });
+      await gotoOnce(page, BASE + '/scripture');
       return await page.$$eval('a[href^="/scripture/"]', (as) =>
         [...new Set(as.map((a) => a.getAttribute('href')))].slice(0, 10)
       );
