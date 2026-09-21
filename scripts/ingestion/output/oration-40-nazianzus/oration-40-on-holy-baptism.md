@@ -19,8 +19,6 @@ note_draft: "Preached the morning after his sermon on the Holy Lights, Gregory r
 
    
 
-# Oration 40
-
 **The Oration on Holy Baptism.**
 
 Preached at Constantinople Jan. 6, 381, being the day following the delivery of that on the Holy Lights.

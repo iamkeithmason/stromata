@@ -19,8 +19,6 @@ note_draft: "A shorter companion to the First Apology, prompted by the summary e
 
    
 
-# The Second Apology of St. Justin Martyr
-
 Addressed to the Roman Senate
 
 ## Chapter 1. Introduction

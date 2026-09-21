@@ -19,8 +19,6 @@ note_draft: "Written in 412 as the second book of Augustine's response to the tr
 
    
 
-# On Merit and the Forgiveness of Sins, and the Baptism of Infants (Book II)
-
 _In which Augustine argues against such as say that in the present life there are, have been, and will be, men who have absolutely no sin at all. He lays down four propositions on this head: and teaches, first, that a man might possibly live in the present life without sin, by the grace of God and his own free will; he next shows that nevertheless in fact there is no man who lives quite free from sin in this life; thirdly, he sets forth the reason of this — because there is no man who exactly confines his wishes within the limits of the just requirement of each case, which just requirement he either fails to perceive, or is unwilling to carry out in practice; in the fourth place, he proves that there is not, nor has been, nor ever will be, a human being — except the one mediator, Christ — who is free from all sin._
 
 ## Chapter 1 \[I.\]— What Has Thus Far Been Dwelt On; And What is to Be Treated in This Book.

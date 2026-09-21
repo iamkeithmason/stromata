@@ -19,8 +19,6 @@ note_draft: "The serpent gives the sect its name: *naas* in Hebrew, whence the N
 
    
 
-# Refutation of All Heresies (Book V)
-
 ## Contents.
 
 The following are the contents of the fifth book of the _Refutation of all Heresies_: —

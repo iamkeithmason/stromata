@@ -18,8 +18,6 @@ copyright_safe: true
 
    
 
-# Catechetical Lecture 6
-
 **Concerning the Unity of God. On the Article, I Believe in One God. Also Concerning Heresies.**
 
 Isaiah 45:16, 17. (Sept.)

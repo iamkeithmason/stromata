@@ -19,8 +19,6 @@ note_draft: "Book XVI carries Augustine's vast historical argument through its m
 
    
 
-# The City of God (Book XVI)
-
 In the former part of this book, from the first to the twelfth chapter, the progress of the two cities, the earthly and the heavenly, from Noah to Abraham, is exhibited from Holy Scripture: In the latter part, the progress of the heavenly alone, from Abraham to the kings of Israel, is the subject.
 
 ## Chapter 1.— Whether, After the Deluge, from Noah to Abraham, Any Families Can Be Found Who Lived According to God.

@@ -19,8 +19,6 @@ note_draft: "Athanasius opens on a young Egyptian landowner who hears the Gospel
 
    
 
-# Life of St. Anthony
-
 _Athanasius the bishop to the brethren in foreign parts._
 
 ## Prologue

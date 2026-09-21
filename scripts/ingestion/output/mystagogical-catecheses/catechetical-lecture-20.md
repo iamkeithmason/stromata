@@ -18,8 +18,6 @@ copyright_safe: true
 
    
 
-# Catechetical Lecture 20
-
 **(On the Mysteries. II.)**
 
 **Of Baptism.**

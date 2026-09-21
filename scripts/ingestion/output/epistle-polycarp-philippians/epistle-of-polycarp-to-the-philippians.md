@@ -19,8 +19,6 @@ note_draft: "Polycarp writes to Philippi mostly as a courier — forwarding, at 
 
    
 
-# Epistle of Polycarp to the Philippians
-
 ## Greeting
 
 Polycarp, and the presbyters with him, to the Church of God sojourning at Philippi: Mercy to you, and peace from God Almighty, and from the Lord Jesus Christ, our Saviour, be multiplied.

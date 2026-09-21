@@ -19,8 +19,6 @@ note_draft: "Composed in Caesarea around 248, Origen's reply to the pagan philos
 
    
 
-# Contra Celsum, Book VII
-
 ## Chapter 1
 
 In the six former books we have endeavoured, reverend brother Ambrosius, according to our ability to meet the charges brought by Celsus against the Christians, and have as far as possible passed over nothing without first subjecting it to a full and close examination. And now, while we enter upon the seventh book, we call upon God through Jesus Christ, whom Celsus accuses, that He who is the truth of God would shed light into our hearts and scatter the darkness of error, in accordance with that saying of the prophet which we now offer as our prayer, Destroy them by Your truth. For it is evidently the words and reasonings opposed to the truth that God destroys by His truth; so that when these are destroyed, all who are delivered from deception may go on with the prophet to say, I will freely sacrifice unto You, and may offer to the Most High a reasonable and smokeless sacrifice.

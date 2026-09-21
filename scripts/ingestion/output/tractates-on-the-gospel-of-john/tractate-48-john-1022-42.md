@@ -19,8 +19,6 @@ note_draft: "It was winter, Augustine notes, and the Jews were chill — slow to
 
    
 
-# Tractate 48 (John 10:22-42)
-
 1\. As I have already charged you, beloved, you ought steadfastly to bear in mind that Saint John the evangelist would not have us be always nourished with milk, but fed with solid food. Still, whoever is hardly able as yet to partake of the solid food of God's word, let him find nourishment in the milk of faith; and the word which he cannot understand, let him not hesitate to believe. For faith is the deserving: understanding, the reward. In the very labor of intent application the eye of our mind struggles to get rid of the foul films of human mists, and be cleared up to the word of God. Labor, then, will not be declined if love is present; for you know that he who loves his labor is insensible to its pain. For no labor is grievous to those who love it. If cupidity on the part of the avaricious endures so great toils, what in our case will not love endure?
 
 2\. Listen to the Gospel: And it was at Jerusalem the Encœnia. Encoenia was the festival of the dedication of the temple. For in Greek _kainos_ means _new_; and whenever there was some new dedication, it was called Encœnia. And now this word has come into common use; if one puts on a new coat, he is said encœniare (to renovate, or to hold an _encœnia_). For the Jews celebrated in a solemn manner the day on which the temple was dedicated; and it was the very feast day when the Lord spoke what has just been read.

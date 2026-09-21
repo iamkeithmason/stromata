@@ -18,8 +18,6 @@ copyright_safe: true
 
    
 
-# The Confessions (Book XII)
-
 He continues his explanation of the first Chapter of Genesis according to the Septuagint, and by its assistance he argues, especially, concerning the double heaven, and the formless matter out of which the whole world may have been created; afterwards of the interpretations of others not disallowed, and sets forth at great length the sense of the Holy Scripture.
 
 ## Chapter 1 .— The Discovery of Truth is Difficult, But God Has Promised that He Who Seeks Shall Find.

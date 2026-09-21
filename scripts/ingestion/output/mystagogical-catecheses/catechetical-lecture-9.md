@@ -18,8 +18,6 @@ copyright_safe: true
 
    
 
-# Catechetical Lecture 9
-
 **On the Words, Maker of Heaven and Earth, and of All Things Visible and Invisible.**
 
 Job 38:2-3

@@ -19,8 +19,6 @@ note_draft: "Written as Rome reeled from Alaric's sack in 410, Augustine's vast 
 
    
 
-# The City of God (Book VI)
-
 Hitherto the argument has been conducted against those who believe that the gods are to be worshipped for the sake of temporal advantages, now it is directed against those who believe that they are to be worshipped for the sake of eternal life. Augustine devotes the five following books to the confutation of this latter belief, and first of all shows how mean an opinion of the gods was held by Varro himself, the most esteemed writer on heathen theology. Of this theology Augustine adopts Varro's division into three kinds, mythical, natural, and civil; and at once demonstrates that neither the mythical nor the civil can contribute anything to the happiness of the future life.
 
 ## Preface.

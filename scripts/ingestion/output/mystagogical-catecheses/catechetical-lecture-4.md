@@ -18,8 +18,6 @@ copyright_safe: true
 
    
 
-# Catechetical Lecture 4
-
 **On the Ten Points of Doctrine.**
 
 Colossians 2:8.

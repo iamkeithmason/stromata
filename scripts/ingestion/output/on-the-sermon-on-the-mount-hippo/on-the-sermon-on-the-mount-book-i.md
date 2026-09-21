@@ -19,8 +19,6 @@ note_draft: "Delivered as a series of homilies in the 390s, shortly after August
 
    
 
-# On the Sermon on the Mount, Book I
-
 **MATTHEW 5**
 
 ## Chapter 1

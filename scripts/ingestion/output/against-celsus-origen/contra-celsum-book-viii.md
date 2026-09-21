@@ -19,8 +19,6 @@ note_draft: "Composed in Caesarea around 248, Origen's point-by-point rebuttal o
 
    
 
-# Contra Celsum, Book VIII
-
 ## Chapter 1
 
 Having completed seven books, I now propose to begin the eighth. And may God and His Only-begotten Son the Word be with us, to enable us effectively to refute the falsehoods which Celsus has published under the delusive title of _A True Discourse_, and at the same time to unfold the truths of Christianity with such fullness as our purpose requires. And as Paul said, We are ambassadors for Christ, as though God did beseech you by us, so would we in the same spirit and language earnestly desire to be ambassadors for Christ to men, even as the Word of God beseeches them to the love of Himself, seeking to win over to righteousness, truth, and the other virtues, those who, until they receive the doctrines of Jesus Christ, live in darkness about God and in ignorance of their Creator. Again, then, I would say, may God bestow upon us His pure and true Word, even the Lord strong and mighty in battle against sin. We must now proceed to state the next objection of Celsus, and afterwards to answer it.

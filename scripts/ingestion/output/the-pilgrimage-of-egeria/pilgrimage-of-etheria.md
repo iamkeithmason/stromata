@@ -16,8 +16,6 @@ copyright_safe: true
 
 <!-- EDITORIAL INTRO — write 2–4 sentences here explaining what this text is and why it matters. This appears above the text on the reader page. -->
 
-# Pilgrimage of Etheria
-
 ### by M. L. McClure
 
      

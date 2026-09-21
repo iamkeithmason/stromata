@@ -19,8 +19,6 @@ note_draft: "Faustus the Manichaean presses a sharp question: if Christ came not
 
    
 
-# Contra Faustum, Book XVIII
-
 **The relation of Christ to prophecy, continued.**
 
 1\. _Faustus_ said: "I came not to destroy the law, but to fulfill it." If these are Christ's words, unless they have some other meaning, they are as much against you as against me. Your Christianity as well as mine is based on the belief that Christ came to destroy the law and the prophets. Your actions prove this, even though in words you deny it. It is on this ground that you disregard the precepts of the law and the prophets. It is on this ground that we both acknowledge Jesus as the founder of the New Testament, in which is implied the acknowledgment that the Old Testament is destroyed. How, then, can we believe that Christ said these words without first confessing that hitherto we have been wholly in error, and without showing our repentance by entering on a course of obedience to the law and the prophets, and of careful observance of their requirements, whatever they may be? This done, we may honestly believe that Jesus said that he came not to destroy the law, but to fulfill it. As it is, you accuse me of not believing what you do not believe yourself, and what therefore is false.

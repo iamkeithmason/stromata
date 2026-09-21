@@ -18,8 +18,6 @@ copyright_safe: true
 
    
 
-# Catechetical Lecture 2
-
 **On Repentance and Remission of Sins, and Concerning the Adversary.**
 
 Ezekiel 18:20-23

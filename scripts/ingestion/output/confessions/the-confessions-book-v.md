@@ -18,8 +18,6 @@ copyright_safe: true
 
    
 
-# The Confessions (Book V)
-
 He describes the twenty-ninth year of his age, in which, having discovered the fallacies of the Manichæans, he professed rhetoric at Rome and Milan. Having heard Ambrose, he begins to come to himself.
 
 ## Chapter 1. That It Becomes the Soul to Praise God, and to Confess Unto Him.

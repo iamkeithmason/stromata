@@ -19,8 +19,6 @@ note_draft: "Preached to a Milanese congregation in the week after their own bap
 
    
 
-# On the Mysteries
-
 ## Introduction.
 
 The writer explains in the commencement of this treatise that his object was to set forth, for the benefit of those about to be baptized, the rites and meaning of that Sacrament, as well as of Confirmation and the Holy Eucharist. For all these matters were treated with the greatest reserve in the Early Church, for fear of profanation by the heathen, and it was the custom, as in the case of the well-known Catechetical Lectures of St. Cyril of Jerusalem, to explain them to the catechumens during the latter part of Lent.

@@ -19,8 +19,6 @@ note_draft: "Composed in the 420s for the monks of Gaul, the Conferences purport
 
    
 
-# Conference 17
-
 **_BY ST. JOHN CASSIAN_**
 
 THE SECOND CONFERENCE OF ABBOT JOSEPH. ON MAKING PROMISES.

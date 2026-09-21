@@ -18,8 +18,6 @@ copyright_safe: true
 
    
 
-# The Confessions (Book VIII)
-
 He finally describes the thirty-second year of his age, the most memorable of his whole life, in which, being instructed by Simplicianus concerning the conversion of others, and the manner of acting, he is, after a severe struggle, renewed in his whole mind, and is converted unto God.
 
 ## Chapter 1. He, Now Given to Divine Things, and Yet Entangled by the Lusts of Love, Consults Simplicianus in Reference to the Renewing of His Mind.

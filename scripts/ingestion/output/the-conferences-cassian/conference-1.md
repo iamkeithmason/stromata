@@ -19,8 +19,6 @@ note_draft: "Composed in early fifth-century Gaul by a monk who had spent years 
 
    
 
-# Conference 1
-
 **_BY ST. JOHN CASSIAN_**
 
 FIRST CONFERENCE OF ABBOT MOSES.

@@ -19,8 +19,6 @@ note_draft: "Lactantius spends this third book prosecuting a single charge again
 
    
 
-# Divine Institutes, Book III (Of the False Wisdom of Philosophers)
-
 ## Chapter 1. A Comparison of the Truth with Eloquence: Why the Philosophers Did Not Attain to It. Of the Simple Style of the Scriptures.
 
 Since it is supposed that the truth still lies hidden in obscurity — either through the error and ignorance of the common people, who are the slaves of various and foolish superstitions, or through the philosophers, who by the perverseness of their minds confuse rather than throw light upon it — I could wish that the power of eloquence had fallen to my lot, though not such as it was in Marcus Tullius, for that was extraordinary and admirable, but in some degree approaching it; that, being supported as much by the strength of talent as it has weight by its own force, the truth might at length come forth, and having dispelled and refuted public errors, and the errors of those who are considered wise, might introduce among the human race a brilliant light. And I could wish that this were so, for two reasons: either that men might more readily believe the truth when adorned with embellishments, since they even believe falsehood, being captivated by the adornment of speech and the enticement of words; or, at all events, that the philosophers themselves might be overpowered by us, most of all by their own arms, in which they are accustomed to pride themselves and to place confidence.

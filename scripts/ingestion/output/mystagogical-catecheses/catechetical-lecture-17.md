@@ -18,8 +18,6 @@ copyright_safe: true
 
    
 
-# Catechetical Lecture 17
-
 **Continuation of the Discourse on the Holy Ghost.**
 
 1 Corinthians 12:8

@@ -19,8 +19,6 @@ note_draft: "Basilides, Hippolytus insists, did not receive his cosmology by rev
 
    
 
-# Refutation of All Heresies (Book VII)
-
 ## Contents.
 
 The following are the contents of the seventh book of the _Refutation of all Heresies_: —

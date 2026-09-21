@@ -19,8 +19,6 @@ note_draft: "The fourth of Cassian's twenty-four Conferences, transmitting the t
 
    
 
-# Conference 4
-
 **_BY ST. JOHN CASSIAN_**
 
 CONFERENCE OF ABBOT DANIEL. ON THE LUST OF THE FLESH AND OF THE SPIRIT.

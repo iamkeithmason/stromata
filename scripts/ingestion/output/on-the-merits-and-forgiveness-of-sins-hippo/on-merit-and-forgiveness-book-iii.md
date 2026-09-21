@@ -19,8 +19,6 @@ note_draft: "Composed in 412 as a hastily appended third book to a longer treati
 
    
 
-# On Merit and the Forgiveness of Sins, and the Baptism of Infants (Book III)
-
 _In the Shape of a Letter Addressed to the Same Marcellinus._
 
 _In which Augustine refutes some errors of Pelagius on the question of the merits of sins and the baptism of infants — being sundry arguments of his which he had interspersed among his expositions of Saint Paul, in opposition to original sin._

@@ -19,8 +19,6 @@ note_draft: "Compiled in Syria toward the end of the fourth century, the Constit
 
    
 
-# Apostolic Constitutions (Book I)
-
 **Concerning the Laity.**
 
 ## Section 1. General Commandments

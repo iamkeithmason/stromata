@@ -19,8 +19,6 @@ note_draft: "Hermas opens with an oddly personal confession: he once thought adm
 
    
 
-# The Shepherd of Hermas (Book I)
-
 ## Vision 1
 
 **Against Filthy and Proud Thoughts, and the Carelessness of Hermas in Chastising His Sons.**

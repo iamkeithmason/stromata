@@ -18,8 +18,6 @@ copyright_safe: true
 
    
 
-# Catechetical Lecture 10
-
 **On the Clause, and in One Lord Jesus Christ, with a Reading from the First Epistle to the Corinthians**
 
 _For though there be that are called gods, whether in heaven or on earth_ _; yet to us there is One God, the Father, of whom are all things, and we in Him; and One Lord Jesus Christ, through whom are all things, and we through Him._

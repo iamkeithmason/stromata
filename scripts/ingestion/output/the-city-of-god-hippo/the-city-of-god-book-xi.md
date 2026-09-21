@@ -19,8 +19,6 @@ note_draft: "With Book XI, Augustine turns from refuting Rome's pagan critics to
 
    
 
-# The City of God (Book XI)
-
 Here begins the second part of this work, which treats of the origin, history, and destinies of the two cities, the earthly and the heavenly. In the first place, Augustine shows in this book how the two cities were formed originally, by the separation of the good and bad angels; and takes occasion to treat of the creation of the world, as it is described in Holy Scripture in the beginning of the book of Genesis.
 
 ## Chapter 1.— Of This Part of the Work, Wherein We Begin to Explain the Origin and End of the Two Cities.

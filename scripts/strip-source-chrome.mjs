@@ -29,6 +29,7 @@
  *   node scripts/strip-source-chrome.mjs --drafts           # unpublished texts only
  *   node scripts/strip-source-chrome.mjs --drop-leading-h1  # also drop a duplicated title heading
  *   node scripts/strip-source-chrome.mjs --drop-leading-h1 --files   # …and the staged .md too
+ *   node scripts/strip-source-chrome.mjs --files-only --drop-leading-h1  # the files alone, no DB
  *   node scripts/strip-source-chrome.mjs --write            # apply
  */
 
@@ -43,7 +44,9 @@ import { leadingH1Verdict } from './lib/leading-h1.mjs';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 dotenv.config({ path: path.join(__dirname, '..', '.env.local'), override: true });
 
-const supabase = createClient(
+// `--files-only` needs no database, so the client is built lazily — that mode
+// has to work on a checkout with no credentials.
+const supabase = () => createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
   process.env.SUPABASE_SERVICE_ROLE_KEY,
 );
@@ -52,7 +55,8 @@ const args = process.argv.slice(2);
 const write = args.includes('--write');
 const draftsOnly = args.includes('--drafts');
 const dropLeadingHeading = args.includes('--drop-leading-h1');
-const alsoFiles = args.includes('--files');
+const filesOnly = args.includes('--files-only');
+const alsoFiles = args.includes('--files') || filesOnly;
 const slug = args.find(a => a.startsWith('--slug='))?.slice('--slug='.length);
 const id = args.find(a => a.startsWith('--id='))?.slice('--id='.length);
 
@@ -62,43 +66,79 @@ const id = args.find(a => a.startsWith('--id='))?.slice('--id='.length);
 
 const OUTPUT_DIR = path.join(__dirname, 'ingestion', 'output');
 
-/** The staged markdown for a slug, or null. Mirrors pipeline-import's layout. */
-function findOutputFile(slug) {
-  const flat = path.join(OUTPUT_DIR, `${slug}.md`);
-  if (fs.existsSync(flat)) return flat;
-  if (!fs.existsSync(OUTPUT_DIR)) return null;
+/** Every staged markdown file, review summaries excluded. */
+function stagedFiles() {
+  if (!fs.existsSync(OUTPUT_DIR)) return [];
+  const out = [];
   const stack = [OUTPUT_DIR];
   while (stack.length) {
     const dir = stack.pop();
     for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
       const full = path.join(dir, entry.name);
       if (entry.isDirectory()) stack.push(full);
-      else if (entry.name === `${slug}.md`) return full;
+      else if (entry.name.endsWith('.md') && !entry.name.endsWith('review-summary.md')) out.push(full);
     }
   }
-  return null;
+  return out.sort();
 }
 
 /**
- * Apply the same transformation to the staged file, leaving its frontmatter
- * alone. Returns what changed, or null if there is no file or nothing to do.
+ * Sweep the staged output files, applying the same rules the database pass
+ * applies — but driven by **each file's own frontmatter**, not by the rows.
+ *
+ * Driving this off the database rows was the obvious design and the wrong one:
+ * roughly fifty staged collections have never been imported, so they have no
+ * row to drive from, and they are precisely the files where fixing the artefact
+ * now means the problem never reaches Supabase at all. Reading the file's own
+ * `title` and `slug` also means this half runs without credentials.
  */
-function alignOutputFile(slug, { dropHeading }, write) {
-  const file = findOutputFile(slug);
-  if (!file) return null;
-  const raw = fs.readFileSync(file, 'utf-8');
-  const end = raw.startsWith('---') ? raw.indexOf('\n---\n', 3) : -1;
-  const head = end === -1 ? '' : raw.slice(0, end + 5);
-  const body = end === -1 ? raw : raw.slice(end + 5);
+function alignStagedFiles({ dropLeadingHeading, write }) {
+  const results = [];
+  for (const file of stagedFiles()) {
+    const raw = fs.readFileSync(file, 'utf-8');
+    const end = raw.startsWith('---') ? raw.indexOf('\n---\n', 3) : -1;
+    if (end === -1) continue;
+    const head = raw.slice(0, end + 5);
+    const body = raw.slice(end + 5);
+    const slug = head.match(/^slug:\s*"?([^"\n]+?)"?\s*$/m)?.[1];
+    const title = head.match(/^title:\s*"?(.+?)"?\s*$/m)?.[1];
+    if (!slug || !title) continue;
 
-  const { output, removed } = stripChrome(body, { dropLeadingHeading: dropHeading || false });
-  if (removed.length === 0) return null;
-  if (write) fs.writeFileSync(file, head + (head ? '\n' : '') + output + '\n');
-  return { file: path.relative(path.join(__dirname, '..'), file), removed };
+    // The fetcher writes an `<!-- EDITORIAL INTRO … -->` placeholder above the
+    // body; the verdict must see the heading the reader would, so look past it.
+    const afterComment = body.replace(/^\s*<!--[\s\S]*?-->\s*/, '');
+    const verdict = dropLeadingHeading
+      ? leadingH1Verdict({ slug, title, body: afterComment })
+      : { drop: false };
+
+    const { output, removed } = stripChrome(body, {
+      dropLeadingHeading: verdict.drop ? verdict.heading : false,
+    });
+    if (removed.length === 0) continue;
+    if (write) fs.writeFileSync(file, head + '\n' + output + '\n');
+    results.push({
+      file: path.relative(path.join(__dirname, '..'), file),
+      slug,
+      removed,
+      why: verdict.drop ? verdict.why : null,
+    });
+  }
+  return results;
 }
 
 async function main() {
-  let query = supabase.from('texts').select('id, slug, title, published, body');
+  if (filesOnly) {
+    const aligned = alignStagedFiles({ dropLeadingHeading, write });
+    for (const a of aligned) {
+      console.log(`${write ? '✓' : '·'} ${a.file}`);
+      console.log(`    ${a.removed.map(r => r.rule).join(', ')}${a.why ? ` (${a.why})` : ''}`);
+    }
+    console.log(`\n${aligned.length} staged output file(s) ${write ? 'aligned' : 'would be aligned'}`);
+    if (!write && aligned.length > 0) console.log('Dry run — re-run with --write to apply.');
+    return;
+  }
+
+  let query = supabase().from('texts').select('id, slug, title, published, body');
   if (slug) query = query.eq('slug', slug);
   if (id) query = query.eq('id', id);
   if (draftsOnly) query = query.eq('published', false);
@@ -144,16 +184,8 @@ async function main() {
       const delta = (text.body?.length ?? 0) - output.length;
       console.log(`  ${removed.length} block(s), ${delta} chars`);
 
-      if (alsoFiles) {
-        const aligned = alignOutputFile(text.slug, { dropHeading }, write);
-        if (aligned) {
-          filesTouched++;
-          console.log(`  ${write ? '✓' : '·'} staged file ${aligned.file} (${aligned.removed.map(r => r.rule).join(', ')})`);
-        }
-      }
-
       if (write) {
-        const { error: updateError } = await supabase
+        const { error: updateError } = await supabase()
           .from('texts')
           .update({ body: output })
           .eq('id', text.id);
@@ -187,7 +219,14 @@ async function main() {
     console.log(`${headingsKept} leading heading(s) kept — structural, keep-listed, or not the work's name`);
   }
   if (alsoFiles) {
-    console.log(`${filesTouched} staged output file(s) ${write ? 'aligned' : 'would be aligned'}`);
+    const aligned = alignStagedFiles({ dropLeadingHeading, write });
+    filesTouched = aligned.length;
+    console.log('');
+    for (const a of aligned) {
+      console.log(`  ${write ? '✓' : '·'} ${a.file}`);
+      console.log(`      ${a.removed.map(r => r.rule).join(', ')}${a.why ? ` (${a.why})` : ''}`);
+    }
+    console.log(`\n${filesTouched} staged output file(s) ${write ? 'aligned' : 'would be aligned'}`);
   } else if (dirty > 0) {
     console.log('Staged output files untouched — pass --files to keep them in step.');
   }

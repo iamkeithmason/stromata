@@ -18,8 +18,6 @@ copyright_safe: true
 
    
 
-# Catechetical Lecture 16
-
 **On the Article, And in One Holy Ghost, the Comforter, Which Spoke in the Prophets.**
 
 1 Corinthians 12:1, 4

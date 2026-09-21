@@ -1806,17 +1806,17 @@
       "era": "modern",
       "title": "All of Grace",
       "genre": "Treatise",
-      "source_type": "gutenberg",
-      "source_url": "https://www.gutenberg.org/cache/epub/27570/pg27570.txt",
+      "source_type": "ccel",
+      "source_url": "https://ccel.org/ccel/spurgeon/grace/cache/grace.txt",
       "collection_slug": "all-of-grace-spurgeon",
       "translation_copyright_clear": true,
       "translator": "",
       "translator_death_year": null,
-      "stage_1_notes": "",
+      "stage_1_notes": "Source corrected 2026-09-21. Gutenberg ebook 27570 is NOT this work — it is *Buchanan's Journal of Man, July 1887*. The id came from Notion and the queue's own note flagged it as unverified ('CONFIRM the exact plain-text URL at Stage 2'); Stage 2 fetched it anyway and 108 KB of the wrong text was imported under Spurgeon's name and has now been deleted. Checked against Gutenberg's GUTINDEX.ALL on a mirror: All of Grace is not on Project Gutenberg at all. Spurgeon's PG works are 60669, 42657, 42558, 42518 and a Finnish volume (58297), so no id substitution would have fixed this. Re-pointed at CCEL's plain-text export (HTTP 200, 190,682 bytes, verified to open 'Title: All of Grace / Creator(s): Spurgeon, Charles Haddon'). Copyright basis unchanged: Spurgeon d. 1892, original English composition.",
       "stage_2_output": "",
       "stage_3_themes": [],
       "rejection_reason": "",
-      "notes": "Synced from Notion Content Prospect List (Status: Text available, Value 3, Complexity 1, Effort 1), 2026-09-08. Spurgeon's short evangelistic treatise (1886), arguably his most widely read single work; original English composition, Spurgeon d. 1892 (<1900) so copyright is clear outright. Notion cites gutenberg.org/ebooks/27570; source_url here is the standard Gutenberg plain-text cache path inferred from that ebook id — CONFIRM the exact plain-text URL at Stage 2 (network access was unavailable this session to verify it directly)."
+      "notes": "Synced from Notion Content Prospect List (Status: Text available, Value 3, Complexity 1, Effort 1), 2026-09-08. Spurgeon's short evangelistic treatise (1886), arguably his most widely read single work; original English composition, Spurgeon d. 1892 (<1900) so copyright is clear outright. The Notion row cites gutenberg.org/ebooks/27570, which is the wrong work — see stage_1_notes. **Fix the Notion row's Reference URL too, or the next sync re-introduces it.**"
     },
     {
       "id": "cloud-of-unknowing",

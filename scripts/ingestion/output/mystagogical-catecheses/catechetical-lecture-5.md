@@ -18,8 +18,6 @@ copyright_safe: true
 
    
 
-# Catechetical Lecture 5
-
 **Of Faith.**
 
 Hebrews 11:1, 2

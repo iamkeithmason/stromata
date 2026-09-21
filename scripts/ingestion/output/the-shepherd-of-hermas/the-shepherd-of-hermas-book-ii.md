@@ -19,8 +19,6 @@ note_draft: "The Shepherd's commandments open with the plainest of Hermas's teac
 
    
 
-# The Shepherd of Hermas (Book II)
-
 ## Commandment 1
 
 **On Faith in God.**

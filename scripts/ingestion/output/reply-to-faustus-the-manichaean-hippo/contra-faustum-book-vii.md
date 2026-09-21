@@ -19,8 +19,6 @@ note_draft: "Faustus presses a shrewd point: the evangelists who compiled the ge
 
    
 
-# Contra Faustum, Book VII
-
 **The genealogical question is again taken up and argued on both sides.**
 
 1\. _Faustus_ said: You ask why I do not believe in the genealogy of Jesus. There are many reasons; but the principal is, that He never declares with His own lips that He had an earthly father or descent, but on the contrary, that he is not of this world, that He came forth from God the Father, that He descended from heaven, that He has no mother or brethren except those who do the will of His Father in heaven. Besides, the framers of these genealogies do not seem to have known Jesus before His birth or soon after it, so as to have the credibility of eye-witnesses of what they narrate. They became acquainted with Jesus as a young man of about thirty years of age, if it is not blasphemy to speak of the age of a divine being. Now the question regarding a witness is always whether he has seen or heard what he testifies to. But the writers of these genealogies never assert that they heard the account from Jesus Himself, nor even the fact of His birth; nor did they see Him till they came to know Him after his baptism, many years after the time of His birth. To me, therefore, and to every sensible man, it appears as foolish to believe this account, as it would be to call into court a blind and deaf witness.

@@ -19,8 +19,6 @@ note_draft: "This letter is not by Cyprian but to him — the reply of Firmilian
 
    
 
-# Epistle 74
-
 **Firmilian, Bishop of Caesarea in Cappadocia, to Cyprian, Against the Letter of Stephen. A.D. 256.**
 
 _Argument.— The Argument of This Letter is Exactly the Same as that of the Previous One, But Written with a Little More Vehemence and Acerbity Than Becomes a Bishop_, _Chiefly for the Reason, as May Be Suspected, that Stephen Had Also Written Another Letter to Firmilianus, Helenus, and Other Bishops of Those Parts._

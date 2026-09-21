@@ -19,8 +19,6 @@ note_draft: "'Christian, acknowledge your dignity' — the line this sermon is r
 
    
 
-# Sermon 21
-
 _On the Feast of the Nativity, I._
 
 ## I. All share in the joy of Christmas

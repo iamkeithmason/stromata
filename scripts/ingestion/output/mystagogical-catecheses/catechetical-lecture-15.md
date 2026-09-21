@@ -18,8 +18,6 @@ copyright_safe: true
 
    
 
-# Catechetical Lecture 15
-
 **On the Clause, And Shall Come in Glory to Judge the Quick and the Dead; Of Whose Kingdom There Shall Be No End.**
 
 Daniel 7:9-14

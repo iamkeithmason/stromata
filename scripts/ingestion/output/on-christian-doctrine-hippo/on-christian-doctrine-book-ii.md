@@ -19,8 +19,6 @@ note_draft: "Book II of Augustine's treatise on scriptural interpretation opens 
 
    
 
-# On Christian Doctrine (Book II)
-
 ## Chapter 1.— Signs, Their Nature and Variety.
 
 1\. As when I was writing about things, I introduced the subject with a warning against attending to anything but what they are in themselves, even though they are signs of something else, so now, when I come in its turn to discuss the subject of signs, I lay down this direction, not to attend to what they are in themselves, but to the fact that they are signs, that is, to what they signify. For a sign is a thing which, over and above the impression it makes on the senses, causes something else to come into the mind as a consequence of itself: as when we see a footprint, we conclude that an animal whose footprint this is has passed by; and when we see smoke, we know that there is fire beneath; and when we hear the voice of a living man, we think of the feeling in his mind; and when the trumpet sounds, soldiers know that they are to advance or retreat, or do whatever else the state of the battle requires.

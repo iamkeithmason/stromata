@@ -19,8 +19,6 @@ note_draft: "Book III of Origen's reply to the pagan philosopher Celsus takes up
 
    
 
-# Contra Celsum, Book III
-
 ## Chapter 1
 
 In the first book of our answer to the work of Celsus, who had boastfully entitled the treatise which he had composed against us _A True Discourse_, we have gone through, as you enjoined, my faithful Ambrosius, to the best of our ability, his preface, and the parts immediately following it, testing each one of his assertions as we went along, until we finished with the tirade of this Jew of his, feigned to have been delivered against Jesus. And in the second book we met, as we best could, all the charges contained in the invective of the said Jew, which were levelled at us who are believers in God through Christ; and now we enter upon this third division of our discourse, in which our object is to refute the allegations which he makes in his own person.

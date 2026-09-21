@@ -18,8 +18,6 @@ copyright_safe: true
 
    
 
-# Catechetical Lecture 12
-
 **On the words Incarnate, and Made Man.**
 
 Isaiah 7:10-14

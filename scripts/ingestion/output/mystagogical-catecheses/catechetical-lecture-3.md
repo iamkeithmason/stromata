@@ -18,8 +18,6 @@ copyright_safe: true
 
    
 
-# Catechetical Lecture 3
-
 **On Baptism.**
 
 Romans 6:3-4

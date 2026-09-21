@@ -19,8 +19,6 @@ note_draft: "Before Hippolytus gets to the Peratics and their talk of Aeons in r
 
    
 
-# Refutation of All Heresies (Book IV)
-
 ## Chapter 1. System of the Astrologers; Sidereal Influence; Configuration of the Stars.
 
 But in each zodiacal sign they call limits of the stars those in which each of the stars, from any one quarter to another, can exert the greatest amount of influence; in regard of which there is among them, according to their writings, no mere casual divergency of opinion. But they say that the stars are attended as if by satellites when they are in the midst of other stars, in continuity with the signs of the Zodiac; as if, when any particular star may have occupied the first portions of the same sign of the Zodiac, and another the last, and another those portions in the middle, that which is in the middle is said to be guarded by those holding the portions at the extremities. And they are said to look upon one another, and to be in conjunction with one another, as if appearing in a triangular or quadrangular figure. They assume, therefore, the figure of a triangle, and look upon one another, which have an intervening distance extending for three zodiacal signs; and they assume the figure of a square those which have an interval extending for two signs. But as the underlying parts sympathize with the head, and the head with the underlying parts, so also things terrestrial with superlunar objects. But there is of these a certain difference and want of sympathy, so that they do not involve one and the same point of juncture.

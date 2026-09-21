@@ -18,8 +18,6 @@ copyright_safe: true
 
    
 
-# Catechetical Lecture 13
-
 **On the words, Crucified and Buried.**
 
 Isaiah 53:1, 7

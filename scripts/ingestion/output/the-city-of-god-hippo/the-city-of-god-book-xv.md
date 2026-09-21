@@ -19,8 +19,6 @@ note_draft: "With Book XV, Augustine turns from the origins of the earthly and h
 
    
 
-# The City of God (Book XV)
-
 Having treated in the four preceding books of the origin of the two cities, the earthly and the heavenly, Augustine explains their growth and progress in the four books which follow; and, in order to do so, he explains the chief passages of the sacred history which bear upon this subject. In this fifteenth book he opens this part of his work by explaining the events recorded in Genesis from the time of Cain and Abel to the deluge.
 
 ## Chapter 1.— Of the Two Lines of the Human Race Which from First to Last Divide It.

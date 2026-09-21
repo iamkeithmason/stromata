@@ -18,8 +18,6 @@ copyright_safe: true
 
    
 
-# Catechetical Lecture 8
-
 **Almighty.**
 
 Jeremiah 39:18, 19 (Septuagint).

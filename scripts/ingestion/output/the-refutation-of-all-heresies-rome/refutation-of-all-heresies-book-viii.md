@@ -19,8 +19,6 @@ note_draft: "The Docetae, Hippolytus reports, imagined God as a fig seed — min
 
    
 
-# Refutation of All Heresies (Book VIII)
-
 ## Contents.
 
 The following are the contents of the eighth book of the _Refutation of all Heresies_: —

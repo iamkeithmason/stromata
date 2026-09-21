@@ -18,8 +18,6 @@ copyright_safe: true
 
    
 
-# Catechetical Lecture 1
-
 **To those who are to be Enlightened, delivered extempore at Jerusalem, as an Introductory Lecture to those who had come forward for Baptism :**
 
 With a reading from Isaiah

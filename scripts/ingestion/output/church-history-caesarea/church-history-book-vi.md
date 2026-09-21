@@ -19,8 +19,6 @@ note_draft: "Book VI of the *Ecclesiastical History* is largely given over to Or
 
    
 
-# Church History (Book VI)
-
 ## Chapter 1. The Persecution under Severus.
 
 When Severus began to persecute the churches, glorious testimonies were given everywhere by the athletes of religion. This was especially the case in Alexandria, to which city, as to a most prominent theater, athletes of God were brought from Egypt and all Thebais according to their merit, and won crowns from God through their great patience under many tortures and every mode of death. Among these was Leonides, who was called the father of Origen, and who was beheaded while his son was still young. How remarkable the predilection of this son was for the Divine Word, in consequence of his father's instruction, it will not be amiss to state briefly, as his fame has been very greatly celebrated by many.

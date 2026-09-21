@@ -19,8 +19,6 @@ note_draft: "Delivered in the Egyptian desert and set down for Latin monastic re
 
    
 
-# Conference 13
-
 **_BY ST. JOHN CASSIAN_**
 
 THE THIRD CONFERENCE OF ABBOT CHAEREMON. ON THE PROTECTION OF GOD.

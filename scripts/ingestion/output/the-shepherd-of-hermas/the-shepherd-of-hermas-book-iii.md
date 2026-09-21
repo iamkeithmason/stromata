@@ -19,8 +19,6 @@ note_draft: "The Similitudes return to the tower begun in the Visions and finish
 
    
 
-# The Shepherd of Hermas (Book III)
-
 ## Similitude 1
 
 **As in This World We Have No Abiding City, We Ought to Seek One to Come.**

@@ -18,8 +18,6 @@ copyright_safe: true
 
    
 
-# Catechetical Lecture 18
-
 **On the Words, And in One Holy Catholic Church, and in the Resurrection of the Flesh, and the Life Everlasting.**
 
 Ezekiel 37:1

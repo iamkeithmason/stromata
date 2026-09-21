@@ -19,8 +19,6 @@ note_draft: "Compiled in Syria around the late fourth century, the *Apostolic Co
 
    
 
-# Apostolic Constitutions (Book V)
-
 ## Section 1. Concerning the Martyrs
 
 ### That It is Reasonable for the Faithful to Supply the Wants of Those Who are Afflicted for the Sake of Christ by the Unbelievers, According to the Constitution of the Lord.

@@ -18,8 +18,6 @@ copyright_safe: true
 
    
 
-# The Confessions (Book XI)
-
 The design of his confessions being declared, he seeks from God the knowledge of the Holy Scriptures, and begins to expound the words of Genesis 1:1, concerning the creation of the world. The questions of rash disputers being refuted, What did God before he created the world? That he might the better overcome his opponents, he adds a copious disquisition concerning time.
 
 ## Chapter 1. By Confession He Desires to Stimulate Towards God His Own Love and That of His Readers.

@@ -19,8 +19,6 @@ note_draft: "Delivered as the second of fifteen dialogues Cassian recorded from 
 
    
 
-# Conference 2
-
 **_BY ST. JOHN CASSIAN_**
 
 SECOND CONFERENCE OF ABBOT MOSES.

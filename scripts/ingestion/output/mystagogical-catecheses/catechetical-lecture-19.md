@@ -18,8 +18,6 @@ copyright_safe: true
 
    
 
-# Catechetical Lecture 19
-
 **First Lecture on the Mysteries.**
 
 With a Lesson from the First General Epistle of Peter, beginning at _Be sober, be vigilant_, to the end of the Epistle.

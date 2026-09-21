@@ -19,8 +19,6 @@ note_draft: "Passing through a village called Anablatha on his way to a church s
 
    
 
-# Letter 51
-
 Letter LI. From Epiphanius, Bishop of Salamis, in Cyprus, to John, Bishop of Jerusalem.
 
 A coolness had arisen between these two bishops in connection with the Origenistic controversy, which at this time was at its height. Epiphanius had openly charged John with being an Origenist, and had also uncanonically conferred priests' orders on Jerome's brother Paulinian, in order that the monastery at Bethlehem might henceforth be entirely independent of John. Naturally, John resented this conduct and showed his resentment. The present letter is a kind of half-apology made by Epiphanius for what he had done, and like all such, it only seems to have made matters worse. The controversy is fully detailed in the treatise Against John of Jerusalem in this volume, esp. §11-14.

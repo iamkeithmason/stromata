@@ -19,8 +19,6 @@ note_draft: "Delivered in the voice of Abba Isaac, a desert elder Cassian sought
 
    
 
-# Conference 9
-
 **_BY ST. JOHN CASSIAN_**
 
 THE FIRST CONFERENCE OF ABBOT ISAAC. ON PRAYER.

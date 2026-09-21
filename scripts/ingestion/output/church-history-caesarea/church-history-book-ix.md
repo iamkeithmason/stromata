@@ -19,8 +19,6 @@ note_draft: "Book IX picks up the narrative in 311, tracing the final convulsion
 
    
 
-# Church History (Book IX)
-
 ## Chapter 1. The Pretended Relaxation.
 
 1\. The imperial edict of recantation, which has been quoted above, was posted in all parts of Asia and in the adjoining provinces. After this had been done, Maximinus, the tyrant in the East — a most impious man, if there ever was one, and most hostile to the religion of the God of the universe — being by no means satisfied with its contents, instead of sending the above-quoted decree to the governors under him, gave them verbal commands to relax the war against us.

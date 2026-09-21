@@ -18,8 +18,6 @@ copyright_safe: true
 
    
 
-# Catechetical Lecture 14
-
 **On the Words, And Rose Again from the Dead on the Third Day, and Ascended into the Heavens, and Sat on the Right Hand of the Father.**
 
 1 Corinthians 15:1-4

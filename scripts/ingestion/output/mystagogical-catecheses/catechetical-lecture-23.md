@@ -18,8 +18,6 @@ copyright_safe: true
 
    
 
-# Catechetical Lecture 23
-
 **(On the Mysteries. V.)**
 
 **On the Sacred Liturgy and Communion.**

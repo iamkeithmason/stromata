@@ -19,8 +19,6 @@ note_draft: "A God who cannot be charged with arrogance for calling Himself Lord
 
    
 
-# Tractate 58 (John 13:10-15)
-
 1\. We have already, beloved, as the Lord was pleased to enable us, expounded to you those words of the Gospel, where the Lord, in washing His disciples' feet, says, He that is once washed needs not save to wash his feet, but is clean every whit. Let us now look at what follows. And ye, He says, are clean, but not all. And to remove the need of inquiry on our part, the evangelist has himself explained its meaning, by adding: For He knew who it was that should betray Him; therefore said He, You are not all clean. Can anything be clearer? Let us therefore pass to what follows.
 
 2\. So, after He had washed their feet, and had taken His garments, and was set down again, He said to them, Know ye what I have done to you? Now it is that the blessed Peter gets that promise fulfilled: for he had been put off when, in the midst of his trembling and asserting, You shall never wash my feet, he received the answer, What I do, you know not now, but you shall know hereafter (vers. 7-8). Here, then, is that very hereafter; it is now time to tell what was a little ago deferred. Accordingly, the Lord, mindful of His foregoing promise to make him understand an act of His so unexpected, so wonderful, so frightening, and, but for His own still more terrifying rejoinder, impossible to be permitted, that the Master not only of themselves, but of angels, and the Lord not only of them, but of all things, should wash the feet of His own disciples and servants: having then promised to let him know the meaning of so important an act, when He said, You shall know afterwards, begins now to show them what it was that He did.

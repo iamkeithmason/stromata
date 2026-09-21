@@ -19,8 +19,6 @@ note_draft: "Lactantius spends a hundred pages doing one thing: cataloguing, emp
 
    
 
-# Of the Manner in Which the Persecutors Died
-
 Addressed to Donatus
 
 ## Chapter 1.

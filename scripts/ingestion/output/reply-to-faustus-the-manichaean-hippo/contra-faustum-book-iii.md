@@ -19,8 +19,6 @@ note_draft: "Faustus the Manichee thought he had caught the evangelists in the a
 
    
 
-# Contra Faustum, Book III
-
 **Faustus objects to the incarnation of God on the ground that the evangelists are at variance with each other, and that incarnation is unsuitable to deity. Augustine attempts to remove the critical and theological difficulties.**
 
 1\. _Faustus_ said: Do I believe in the incarnation? For my part, this is the very thing I long tried to persuade myself of, that God was born; but the discrepancy in the genealogies of Luke and Matthew stumbled me, as I knew not which to follow. For I thought it might happen that, from not being omniscient, I might take the true for false, and the false for true. So, in despair of settling this dispute, I betook myself to Mark and John, two authorities still, and evangelists as much as the others. I approved with good reason of the beginning of Mark and John, for they have nothing of David, or Mary, or Joseph. John says, "In the beginning was the Word, and the Word was with God, and the Word was God," meaning Christ. Mark says, "The gospel of Jesus Christ, the Son of God," as if correcting Matthew, who calls him the Son of David. Perhaps, however, the Jesus of Matthew is a different person from the Jesus of Mark. This is my reason for not believing in the birth of Christ.

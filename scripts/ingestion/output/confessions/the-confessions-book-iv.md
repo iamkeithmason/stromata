@@ -18,8 +18,6 @@ copyright_safe: true
 
    
 
-# The Confessions (Book IV)
-
 Then follows a period of nine years from the nineteenth year of his age, during which having lost a friend, he followed the Manichæans — and wrote books on the fair and fit, and published a work on the liberal arts, and the categories of Aristotle.
 
 ## Chapter 1. Concerning that Most Unhappy Time in Which He, Being Deceived, Deceived Others; And Concerning the Mockers of His Confession.

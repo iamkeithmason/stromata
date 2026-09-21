@@ -19,8 +19,6 @@ note_draft: "The strategy is bracing in its oddness: to unmask Christian heretic
 
    
 
-# Refutation of All Heresies (Book I)
-
 ## Contents.
 
 The following are the contents of the first book of _The Refutation of all Heresies_.

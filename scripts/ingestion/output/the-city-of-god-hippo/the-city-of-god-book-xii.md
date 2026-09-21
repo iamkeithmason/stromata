@@ -19,8 +19,6 @@ note_draft: "Book XII stands at the hinge of Augustine's vast argument, turning 
 
    
 
-# The City of God (Book XII)
-
 Augustine first institutes two inquiries regarding the angels; namely, whence is there in some a good, and in others an evil will? And, what is the reason of the blessedness of the good, and the misery of the evil? Afterwards he treats of the creation of man, and teaches that he is not from eternity, but was created, and by none other than God.
 
 ## Chapter 1.— That the Nature of the Angels, Both Good and Bad, is One and the Same.

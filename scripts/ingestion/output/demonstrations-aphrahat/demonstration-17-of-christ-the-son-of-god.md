@@ -19,8 +19,6 @@ note_draft: "Composed in fourth-century Persian Mesopotamia, this is the sevente
 
    
 
-# Demonstration 17 (Of Christ the Son of God)
-
 1\. (This is) a reply against the Jews, who blaspheme the people gathered from among the Gentiles; for they say thus, You worship and serve a man who was begotten, a son of man who was crucified, and you call a son of men, God. And though God has no son, you say concerning this crucified Jesus, that He is the Son of God. And they bring forward as an argument, that God said:— _I am God and there is none else beside Me._ Deuteronomy 32:39 And again he said:— _You shall not worship another God._ Exodus 34:14 Therefore, (say they), you are opposing God in that you call a man, God.
 
 2\. Concerning these things, my beloved, so far as I, in my insignificance, can comprehend, I will instruct you about them, that while we grant to them that He is man, and (while) we at the same time honour Him and call Him God and Lord, yet it is not in any novel fashion, that we have so called Him, nor that we have applied to Him a novel name, which they themselves did not employ. Yet it is a sure thing with us, that Jesus our Lord is God, the Son of God, and the King, the King's Son, Light of light, Creator and Counsellor, and Guide, and the Way, and Redeemer, and Shepherd, Gatherer, and the Door, and the Pearl, and the Lamp; and by many (such) names is He surnamed. But we shall leave aside all (the rest) of them, and prove concerning Him, that He Who came from God is the Son of God, and (is) God.

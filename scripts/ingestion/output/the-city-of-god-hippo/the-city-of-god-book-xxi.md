@@ -19,8 +19,6 @@ note_draft: "Late in his life, as the Roman world was visibly cracking, Augustin
 
    
 
-# The City of God (Book XXI)
-
 Of the end reserved for the city of the devil, namely, the eternal punishment of the damned; and of the arguments which unbelief brings against it.
 
 ## Chapter 1.— Of the Order of the Discussion, Which Requires that We First Speak of the Eternal Punishment of the Lost in Company with the Devil, and Then of the Eternal Happiness of the Saints.

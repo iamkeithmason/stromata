@@ -19,8 +19,6 @@ note_draft: "Faustus the Manichee thinks he has caught the Church in an obvious 
 
    
 
-# Contra Faustum, Book IX
-
 **Faustus argues that if the apostles born under the old covenant could lawfully depart from it, much more can he having been born a Gentile. Augustine explains the relation of Jews and Gentiles alike to the Gospel.**
 
 1\. _Faustus_ said: Another reason for not receiving the Old Testament is, that if it was allowable for the apostles, who were born under it, to abandon it, much more may I, who was not born under it, be excused for not thrusting myself into it. We Gentiles are not born Jews, nor Christians either. Out of the same Gentile world some are induced by the Old Testament to become Jews, and some by the New Testament to become Christians. It is as if two trees, a sweet and a bitter, drew from one soil the sap which each assimilates to its own nature. The apostle passed from the bitter to the sweet; it would be madness in me to change from the sweet to the bitter.

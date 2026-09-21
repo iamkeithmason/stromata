@@ -19,8 +19,6 @@ note_draft: "Written in the shocked aftermath of Alaric's sack of Rome in 410, w
 
    
 
-# The City of God (Book II)
-
 In this book Augustine reviews those calamities which the Romans suffered before the time of Christ, and while the worship of the false gods was universally practised; and demonstrates that, far from being preserved from misfortune by the gods, the Romans have been by them overwhelmed with the only, or at least the greatest, of all calamities — the corruption of manners, and the vices of the soul.
 
 ## Chapter 1.— Of the Limits Which Must Be Put to the Necessity of Replying to an Adversary.

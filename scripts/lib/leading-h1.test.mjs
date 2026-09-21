@@ -130,13 +130,33 @@ test('a heading unrelated to the title stays, and says so', () => {
     // A heading that is a division word but not on the veto list still stays,
     // because it does not name the work — belt and braces.
     ['Secular Authority: To What Extent It Should Be Obeyed', 'Letter of Dedication'],
-    // The Cyprian numbering mismatch: title says 63, the body's heading says 62.
-    // Dropping would hide the discrepancy, so the name test must not match.
-    ['Epistle 63 to Caecilius (on the cup of the Lord)', 'Epistle 62'],
   ]) {
     const v = leadingH1Verdict(text('x', title, heading));
     assert.equal(v.drop, false, `should keep ${JSON.stringify(heading)} under ${JSON.stringify(title)}`);
     assert.equal(v.why, 'heading does not name the work');
+  }
+});
+
+test("Cyprian's two numberings: the heading goes, by reviewed decision not by rule", () => {
+  // The name test cannot connect "Epistle 62" to "Epistle 63 to Caecilius" —
+  // correctly, since they are different numbers. Without the slug it stays.
+  assert.equal(
+    leadingH1Verdict(text('x', 'Epistle 63 to Caecilius (on the cup of the Lord)', 'Epistle 62')).drop,
+    false,
+  );
+  // With it, the reviewed list decides: the title carries the modern
+  // Hartel/CSEL number, the heading the older ANF one, and leaving a bare
+  // conflicting number in the body sends a cross-checking reader to a
+  // different letter entirely.
+  for (const [slug, title, heading] of [
+    ['epistle-63-to-caecilius-carthage', 'Epistle 63 to Caecilius (on the cup of the Lord)', 'Epistle 62'],
+    ['epistle-64-to-fidus-carthage', 'Epistle 64 to Fidus (on infant baptism)', 'Epistle 58'],
+    ['epistle-73-to-jubaianus-carthage', 'Epistle 73 to Jubaianus (on the baptism of heretics)', 'Epistle 72'],
+    ['epistle-75-carthage', 'Epistle 75 (Firmilian to Cyprian)', 'Epistle 74'],
+  ]) {
+    const v = leadingH1Verdict(text(slug, title, heading));
+    assert.equal(v.drop, true, `${slug} should drop`);
+    assert.equal(v.why, 'reviewed: heading is the work under another name');
   }
 });
 

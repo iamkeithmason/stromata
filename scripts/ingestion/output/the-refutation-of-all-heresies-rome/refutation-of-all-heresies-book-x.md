@@ -19,8 +19,6 @@ note_draft: "Book X is where Hippolytus stops chasing heretics through their lab
 
    
 
-# Refutation of All Heresies (Book X)
-
 ## Contents.
 
 The following are the contents of the tenth book of the _Refutation of all Heresies_: —

@@ -18,8 +18,6 @@ copyright_safe: true
 
    
 
-# The Confessions (Book X)
-
 Having manifested what he was and what he is, he shows the great fruit of his confession; and being about to examine by what method God and the happy life may be found, he enlarges on the nature and power of memory. Then he examines his own acts, thoughts and affections, viewed under the threefold division of temptation; and commemorates the Lord, the one mediator of God and men.
 
 ## Chapter 1. In God Alone is the Hope and Joy of Man.

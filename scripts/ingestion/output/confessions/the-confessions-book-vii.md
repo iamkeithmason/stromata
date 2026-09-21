@@ -18,8 +18,6 @@ copyright_safe: true
 
    
 
-# The Confessions (Book VII)
-
 He recalls the beginning of his youth, i.e. the thirty-first year of his age, in which very grave errors as to the nature of God and the origin of evil being distinguished, and the Sacred Books more accurately known, he at length arrives at a clear knowledge of God, not yet rightly apprehending Jesus Christ.
 
 ## Chapter 1. He Regarded Not God Indeed Under the Form of a Human Body, But as a Corporeal Substance Diffused Through Space.

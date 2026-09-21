@@ -19,8 +19,6 @@ note_draft: "Paphnutius, called \"the Buffalo\" for how rarely even his fellow a
 
    
 
-# Conference 3
-
 **_BY ST. JOHN CASSIAN_**
 
 CONFERENCE OF ABBOT PAPHNUTIUS. ON THE THREE SORTS OF RENUNCIATIONS.

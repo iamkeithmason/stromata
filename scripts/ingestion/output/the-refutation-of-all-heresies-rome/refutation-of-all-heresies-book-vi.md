@@ -19,8 +19,6 @@ note_draft: "Hippolytus opens this sixth book by promising to leave \"not one sp
 
    
 
-# Refutation of All Heresies (Book VI)
-
 ## Contents.
 
 The following are the contents of the sixth book of the _Refutation of all Heresies_: —

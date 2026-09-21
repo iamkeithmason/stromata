@@ -19,8 +19,6 @@ note_draft: "Book XX of Augustine's massive apology, written in the wake of Rome
 
    
 
-# The City of God (Book XX)
-
 Concerning the last judgment, and the declarations regarding it in the old and new testaments.
 
 ## Chapter 1.— That Although God is Always Judging, It is Nevertheless Reasonable to Confine Our Attention in This Book to His Last Judgment.

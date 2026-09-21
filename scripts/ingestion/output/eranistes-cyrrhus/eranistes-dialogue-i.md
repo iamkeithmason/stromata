@@ -19,8 +19,6 @@ note_draft: "Composed around 447 in the run-up to the Council of Chalcedon, the 
 
    
 
-# Dialogue 1
-
 **Orthodoxos and Eranistes.**
 
 _Orth._— Better were it for us to agree and abide by the apostolic doctrine in its purity. But since, I know not how, you have broken the harmony, and are now offering us new doctrines, let us, if you please, with no kind of quarrel, investigate the truth.

@@ -19,8 +19,6 @@ note_draft: "Cassian composed his *Conferences* in early fifth-century Gaul, tra
 
    
 
-# Conference 20
-
 **_BY ST. JOHN CASSIAN_**
 
 CONFERENCE OF ABBOT PINUFIUS. ON THE END OF PENITENCE AND THE MARKS OF SATISFACTION.

@@ -18,8 +18,6 @@ copyright_safe: true
 
    
 
-# The Confessions (Book VI)
-
 Attaining his thirtieth year, he, under the admonition of the discourses of Ambrose, discovered more and more the truth of the Catholic doctrine, and deliberates as to the better regulation of his life.
 
 ## Chapter 1. His Mother Having Followed Him to Milan, Declares that She Will Not Die Before Her Son Shall Have Embraced the Catholic Faith.

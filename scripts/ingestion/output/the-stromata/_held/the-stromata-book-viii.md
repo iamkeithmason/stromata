@@ -18,8 +18,6 @@ copyright_safe: true
 
    
 
-# The Stromata (Book VIII)
-
 ## Chapter 1. The Object of Philosophical and Theological Inquiry — The Discovery of Truth.
 
 But the most ancient of the philosophers were not carried away to disputing and doubting, much less are we, who are attached to the really true philosophy, on whom the Scripture enjoins examination and investigation. For it is the more recent of the Hellenic philosophers who, by empty and futile love of fame, are led into useless babbling in refuting and wrangling. But, on the contrary, the Barbarian philosophy, expelling all contention, said, Seek, and you shall find; knock, and it shall be opened unto you; ask, and it shall be given you.

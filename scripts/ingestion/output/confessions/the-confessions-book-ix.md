@@ -18,8 +18,6 @@ copyright_safe: true
 
    
 
-# The Confessions (Book IX)
-
 He speaks of his design of forsaking the profession of rhetoric; of the death of his friends, Nebridius and Verecundus; of having received baptism in the thirty-third year of his age; and of the virtues and death of his mother, Monica.
 
 ## Chapter 1. He Praises God, the Author of Safety, and Jesus Christ, the Redeemer, Acknowledging His Own Wickedness.

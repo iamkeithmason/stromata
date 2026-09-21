@@ -7,6 +7,53 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-09-21 — The file sweep stops depending on the database; Cyprian's two numberings
+
+**`--files` was DB-driven, which was the wrong shape.** It aligned a staged file
+only for a text the database pass had touched — so the ~50 collections that are
+staged and not yet imported had no row to drive from, and they are exactly the
+files where fixing the artefact now means the problem never reaches Supabase at
+all. The sweep is now driven by **each file's own frontmatter**, which also
+means it runs without credentials: `--files-only`. 357 staged files aligned,
+idempotent on re-run.
+
+**`pipeline-import.mjs` applies the leading-H1 verdict too.** The verdict is
+conservative — it keeps any heading it cannot prove is the work's name, and
+never touches one naming a division — so it belongs at the gate, not only in the
+healer. Without it a staged file predating the last sweep imports with the
+duplicate.
+
+**Cyprian's letters carry two numberings, and the bare heading was the dangerous
+one.** The titles here use the modern Hartel/CSEL sequence that scholarship
+cites ("Cyprian Ep. 63"); the ANF translation these bodies follow uses the older
+Oxford sequence, and New Advent's page title — which became the body heading —
+is that older number. A bare `# Epistle 62` under the title `Epistle 63 to
+Caecilius` is worse than untidy: **New Advent also has an `Epistle 63`, which in
+the ANF sequence is a different letter**, so a reader cross-checking the heading
+lands on the wrong text. Resolution: the ANF number goes into
+`translation_notes`, labelled, *before* the heading is removed from the body —
+relabelled rather than lost. Four published letters (63, 64, 73, 75).
+
+**`all-of-grace` deleted, and the cause fixed.** Gutenberg ebook 27570 is
+*Buchanan's Journal of Man, July 1887*. The queue's own note had flagged the id
+as unverified — "CONFIRM the exact plain-text URL at Stage 2" — and Stage 2
+fetched it anyway. Checked against Gutenberg's `GUTINDEX.ALL` on a mirror:
+**All of Grace is not on Project Gutenberg at all** (Spurgeon's PG works are
+60669, 42657, 42558, 42518 and a Finnish volume), so no id substitution would
+have fixed it. The prospect now points at CCEL's plain-text export, verified to
+open "Title: All of Grace / Creator(s): Spurgeon, Charles Haddon". The Notion
+row still carries the wrong Reference URL and will re-introduce it on the next
+sync.
+
+**The corpus moves while you work on it.** `apostolic-constitutions-book-iv` was
+not among the 42 left after the apply, and is now — published, where it was a
+draft. It is an exact-duplicate heading, so the rule takes it; the point is that
+a corpus-wide sweep is only true as of the moment it ran. The import-time
+verdict above is what stops that class recurring.
+
+Corpus now: **38 texts open with a heading, all of them content; zero chrome of
+any kind across 551 texts.**
+
 ## 2026-09-21 — Two rule gaps, found by texts another run imported
 
 Verifying the leading-H1 apply against the database turned up four drafts

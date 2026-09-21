@@ -19,8 +19,6 @@ note_draft: "Book IV belongs to the opening movement of Augustine's massive repl
 
    
 
-# The City of God (Book IV)
-
 In this book it is proved that the extent and long duration of the Roman empire is to be ascribed, not to Jove or the gods of the heathen, to whom individually scarce even single things and the very basest functions were believed to be entrusted, but to the one true God, the author of felicity, by whose power and judgment earthly kingdoms are founded and maintained.
 
 ## Chapter 1.— Of the Things Which Have Been Discussed in the First Book.

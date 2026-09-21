@@ -76,6 +76,20 @@ export const DROP_LEADING_H1 = [
   /^canons-of-the-synod-of-gangra$/, // heading "Synod of Gangra (4th Century)"
   /^second-epistle-of-clement$/,    // heading 'The "Second Epistle" of St. Clement'
   /^the-first-epistle-of-clement-to-the-corinthians$/, // heading "Letter to the Corinthians (Clement)"
+
+  // Cyprian's letters carry two numberings. The titles here use the modern
+  // Hartel/CSEL sequence that scholarship cites ("Cyprian Ep. 63"); the ANF
+  // translation these bodies follow uses the older Oxford sequence, and New
+  // Advent's page title — which became the body heading — is that older number.
+  //
+  // A bare `# Epistle 62` under the title `Epistle 63 to Caecilius` is worse
+  // than untidy: New Advent also has an `Epistle 63`, which in the ANF sequence
+  // is a DIFFERENT letter, so a reader cross-checking the heading lands on the
+  // wrong text. The number stays in translation_notes, where it is labelled.
+  /^epistle-63-to-caecilius-carthage$/,   // ANF 62
+  /^epistle-64-to-fidus-carthage$/,       // ANF 58
+  /^epistle-73-to-jubaianus-carthage$/,   // ANF 72
+  /^epistle-75-carthage$/,                // ANF 74
 ];
 
 /**

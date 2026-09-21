@@ -19,8 +19,6 @@ note_draft: "Faustus tries a clever trap: if you Christians reason from effect t
 
    
 
-# Contra Faustum, Book XXVII
-
 **Faustus warns against pressing too far the argument, that if Jesus was not born He cannot have suffered. Augustine accepts the birth and death alike on the testimony of the Gospel narrative, which is higher authority than the falsehood of Manichæus.**
 
 1\. _Faustus_ said: If Jesus was not born, He cannot have suffered; but since He did suffer, He must have been born. I advise you not to have recourse to logical inference in these matters, or else your whole faith will be shaken. For, even according to you, Jesus was born miraculously of a virgin; which the argument from consequents to antecedents shows to be false. For your argument might thus be turned against you: If Jesus was born of a woman, He must have been begotten by a man; but He was not begotten by a man, therefore He was not born of a woman. If, as you believe, He could be born without being begotten, why could He not also suffer without being brought forth?

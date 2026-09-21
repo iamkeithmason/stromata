@@ -18,8 +18,6 @@ copyright_safe: true
 
    
 
-# Catechetical Lecture 7
-
 **The Father.**
 
 Ephesians 3:14, 15

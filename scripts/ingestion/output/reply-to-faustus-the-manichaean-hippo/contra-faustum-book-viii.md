@@ -19,8 +19,6 @@ note_draft: "Faustus the Manichaean has an elegant argument ready: putting the O
 
    
 
-# Contra Faustum, Book VIII
-
 **Faustus maintains that to hold to the Old Testament after the giving of the New is putting new cloth on an old garment. Augustine further explains the relation of the Old Testament to the New, and reproaches the Manichæans with carnality.**
 
 1\. _Faustus_ said: Another reason for not receiving the Old Testament is, that I am provided with the New; and Scripture says that old and new do not agree. For "no one puts a piece of new cloth unto an old garment, otherwise the rent is made worse." Matthew 9:16 To avoid making a worse rent, as you have done, I do not mix Christian newness with Hebrew oldness. Every one accounts it mean, when a man has got a new dress, not to give the old one to his inferiors. So, even if I were a Jew by birth, as the apostles were, it would be proper for me, on receiving the New Testament, to discard the Old, as the apostles did. And having the advantage of being born free from the yoke of bondage, and being early introduced into the full liberty of Christ, what a foolish and ungrateful wretch I should be to put myself again under the yoke! This is what Paul blames the Galatians for; because, going back to circumcision, they turned again to the weak and beggarly elements, whereunto they desired again to be in bondage. Galatians 4:9 Why should I do what I see another blamed for doing? My going into bondage would be worse than their returning to it.

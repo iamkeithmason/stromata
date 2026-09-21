@@ -18,8 +18,6 @@ copyright_safe: true
 
    
 
-# The Confessions (Book III)
-
 Of the seventeenth, eighteenth, and nineteenth years of his age, passed at Carthage, when, having completed his course of studies, he is caught in the snares of a licentious passion, and falls into the errors of the Manichæans.
 
 ## Chapter 1. Deluded by an Insane Love, He, Though Foul and Dishonourable, Desires to Be Thought Elegant and Urbane.

@@ -19,8 +19,6 @@ note_draft: "Among the fifteen dialogues Cassian composed after settling in Gaul
 
    
 
-# Conference 6
-
 **_BY ST. JOHN CASSIAN_**
 
 CONFERENCE OF ABBOT THEODORE. ON THE DEATH OF THE SAINTS.

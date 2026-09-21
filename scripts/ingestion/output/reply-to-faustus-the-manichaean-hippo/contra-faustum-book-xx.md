@@ -19,8 +19,6 @@ note_draft: "Faustus, cornered on the charge of sun-worship, calmly maps the Man
 
    
 
-# Contra Faustum, Book XX
-
 **Faustus repels the charge of sun-worship, and maintains that while the Manichæans believe that God's power dwells in the sun and his wisdom in the moon, they yet worship one deity, Father, Son, and Holy Spirit. They are not a schism of the Gentiles, nor a sect. Augustine emphasizes the charge of polytheism, and goes into an elaborate comparison of Manichæan and pagan mythology.**
 
 1\. _Faustus_ said: You ask why we worship the sun, if we are a sect or separate religion, and not Pagans, or merely a schism of the Gentiles. It may therefore be as well to inquire into the matter, that we may see whether the name of Gentiles is more applicable to you or to us. Perhaps, in giving you in a friendly way this simple account of my faith, I shall appear to be making an apology for it, as if I were ashamed, which God forbid, of doing homage to the divine luminaries. You may take it as you please; but I shall not regret what I have done if I succeed in conveying to some at least this much knowledge, that our religion has nothing in common with that of the Gentiles.

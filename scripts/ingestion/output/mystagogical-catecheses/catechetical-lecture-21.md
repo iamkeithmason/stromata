@@ -18,8 +18,6 @@ copyright_safe: true
 
    
 
-# Catechetical Lecture 21
-
 **(On the Mysteries. III.)**
 
 **On Chrism.**

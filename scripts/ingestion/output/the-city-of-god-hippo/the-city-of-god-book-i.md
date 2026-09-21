@@ -19,8 +19,6 @@ note_draft: "Written in the immediate aftermath of Alaric's sack of Rome in 410,
 
    
 
-# The City of God (Book I)
-
 Augustine censures the pagans, who attributed the calamities of the world, and especially the recent sack of Rome by the Goths, to the Christian religion, and its prohibition of the worship of the gods. He speaks of the blessings and ills of life, which then, as always, happened to good and bad men alike. Finally, he rebukes the shamelessness of those who cast up to the Christians that their women had been violated by the soldiers.
 
 ## Preface, Explaining His Design in Undertaking This Work.

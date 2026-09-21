@@ -19,8 +19,6 @@ note_draft: "Faustus presses a sharp question: if Catholics feel free to keep th
 
    
 
-# Contra Faustum, Book XXXII
-
 **Faustus fails to understand why he should be required either to accept or reject the New Testament as a whole, while the Catholics accept or reject the various parts of the Old Testament at pleasure. Augustine denies that the Catholics treat the Old Testament arbitrarily, and explains their attitude towards it.**
 
 1\. _Faustus_ said: You say, that if we believe the Gospel, we must believe everything that is written in it. Why, then, since you believe the Old Testament, do you not believe all that is found in any part of it? Instead of that, you cull out only the prophecies telling of a future King of the Jews, for you suppose this to be Jesus, along with a few precepts of common morality, such as, You shall not kill, You shall not commit adultery; and all the rest you pass over, thinking of the other things as Paul thought of the things which he held to be dung. Philippians 3:8 Why, then, should it seem strange or singular in me that I select from the New Testament whatever is purest, and helpful for my salvation, while I set aside the interpolations of your predecessors, which impair its dignity and grace?

@@ -19,8 +19,6 @@ note_draft: "Cassian composed his *Conferences* in early fifth-century Gaul, tra
 
    
 
-# Conference 23
-
 **_BY ST. JOHN CASSIAN_**
 
 THE THIRD CONFERENCE OF ABBOT THEONAS. ON SINLESSNESS.

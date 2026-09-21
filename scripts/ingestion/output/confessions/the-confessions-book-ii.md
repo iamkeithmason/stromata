@@ -18,8 +18,6 @@ copyright_safe: true
 
    
 
-# The Confessions (Book II)
-
 He advances to puberty, and indeed to the early part of the sixteenth year of his age, in which, having abandoned his studies, he indulged in lustful pleasures, and, with his companions, committed theft.
 
 ## Chapter 1. He Deplores the Wickedness of His Youth.

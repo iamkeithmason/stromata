@@ -19,8 +19,6 @@ note_draft: "Among the sixteen conversations Cassian brought back from his years
 
    
 
-# Conference 16
-
 **_BY ST. JOHN CASSIAN_**
 
 THE FIRST CONFERENCE OF ABBOT JOSEPH. ON FRIENDSHIP.

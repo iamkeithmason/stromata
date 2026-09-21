@@ -19,8 +19,6 @@ note_draft: "Here the polemic turns personal. Hippolytus knew Callistus — knew
 
    
 
-# Refutation of All Heresies (Book IX)
-
 ## Contents.
 
 The following are the contents of the ninth book of the _Refutation of all Heresies_: —

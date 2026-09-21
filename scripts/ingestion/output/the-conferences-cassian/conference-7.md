@@ -19,8 +19,6 @@ note_draft: "Among the fourteenth of Cassian's *Conferences*—the record of con
 
    
 
-# Conference 7
-
 **_BY ST. JOHN CASSIAN_**
 
 FIRST CONFERENCE OF ABBOT SERENUS. ON INCONSTANCY OF MIND, AND SPIRITUAL WICKEDNESS.

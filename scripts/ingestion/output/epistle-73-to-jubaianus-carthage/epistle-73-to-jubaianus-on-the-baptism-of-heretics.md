@@ -19,8 +19,6 @@ note_draft: "Written during the mid-third-century controversy over whether conve
 
    
 
-# Epistle 72
-
 **To Jubaianus, Concerning the Baptism of Heretics.**
 
 _Argument.— Cyprian Refutes a Letter Enclosed to Him by Jubaianus, and with the Greatest Care Collects Whatever He Thinks Will Avail for the Defence of His Cause. Moreover, He Sends Jubaianus a Copy of the Letter to the Numidians and to Quintus, and Probably the Decrees of the Last Synod._

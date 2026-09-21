@@ -19,8 +19,6 @@ note_draft: "Book IX finds Augustine mid-campaign against the Platonists, whose 
 
    
 
-# The City of God (Book IX)
-
 Having in the preceding book shown that the worship of demons must be abjured, since they in a thousand ways proclaim themselves to be wicked spirits, Augustine in this book meets those who allege a distinction among demons, some being evil, while others are good; and, having exploded this distinction, he proves that to no demon, but to Christ alone, belongs the office of providing men with eternal blessedness.
 
 ## Chapter 1.— The Point at Which the Discussion Has Arrived, and What Remains to Be Handled.

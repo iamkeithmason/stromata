@@ -18,8 +18,6 @@ copyright_safe: true
 
    
 
-# Catechetical Lecture 22
-
 **(On the Mysteries. IV.)**
 
 **On the Body and Blood of Christ.**

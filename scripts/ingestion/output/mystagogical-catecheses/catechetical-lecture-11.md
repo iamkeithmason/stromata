@@ -18,8 +18,6 @@ copyright_safe: true
 
    
 
-# Catechetical Lecture 11
-
 **On the Words, the Only-Begotten Son of God, Begotten of the Father Very God Before All Ages, by Whom All Things Were Made.**
 
 Hebrews 1:1

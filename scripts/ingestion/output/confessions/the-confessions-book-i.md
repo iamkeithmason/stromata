@@ -18,8 +18,6 @@ copyright_safe: true
 
    
 
-# The Confessions (Book I)
-
 Commencing with the invocation of God, Augustine relates in detail the beginning of his life, his infancy and boyhood, up to his fifteenth year; at which age he acknowledges that he was more inclined to all youthful pleasures and vices than to the study of letters.
 
 ## Chapter 1. He Proclaims the Greatness of God, Whom He Desires to Seek and Invoke, Being Awakened by Him.

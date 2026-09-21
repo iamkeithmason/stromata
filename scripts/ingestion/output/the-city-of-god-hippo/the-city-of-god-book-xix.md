@@ -19,8 +19,6 @@ note_draft: "Book XIX stands apart from the rest of Augustine's massive work as 
 
    
 
-# The City of God (Book XIX)
-
 In this book the end of the two cities, the earthly and the heavenly, is discussed. Augustine reviews the opinions of the philosophers regarding the supreme good, and their vain efforts to make for themselves a happiness in this life; and, while he refutes these, he takes occasion to show what the peace and happiness belonging to the heavenly city, or the people of Christ, are both now and hereafter.
 
 ## Chapter 1.— That Varro Has Made Out that Two Hundred and Eighty-Eight Different Sects of Philosophy Might Be Formed by the Various Opinions Regarding the Supreme Good.

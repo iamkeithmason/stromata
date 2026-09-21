@@ -28,6 +28,7 @@ import { detectScannos, loadCorpus, loadAllowlist } from './detect-scannos.mjs';
 import { normaliseTitle, normaliseName } from './lib/dedup-match.mjs';
 import { parseFrontmatter } from './lib/frontmatter.mjs';
 import { stripChrome, assertNoChrome } from './lib/source-chrome.mjs';
+import { leadingH1Verdict } from './lib/leading-h1.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 dotenv.config({ path: path.join(__dirname, '..', '.env.local') });
@@ -285,8 +286,19 @@ async function importTextFile(filePath, prospect, authorId, collectionId) {
   // it is a self-check on this module rather than an independent detector — if
   // a strip ever leaves behind something its own detector still flags, the text
   // is refused rather than inserted half-cleaned.
+  // A body that opens with its own title shows it twice, since the reader page
+  // renders <h1>{title}</h1> above it. The verdict is conservative — it keeps
+  // any heading it cannot prove is the work's name, and never touches one that
+  // names a division (`Chapter 1.`, `Preface`) — so it is safe to apply here
+  // rather than only in the healer. Without it, a staged file that predates the
+  // last sweep imports with the duplicate; about fifty collections are staged
+  // and not yet imported at the time of writing.
+  const headingVerdict = leadingH1Verdict({ slug: data.slug, title: data.title, body: repairedBody });
+
   const { output: cleanBody, removed: chromeRemoved, advisories: chromeAdvisories } =
-    stripChrome(repairedBody);
+    stripChrome(repairedBody, {
+      dropLeadingHeading: headingVerdict.drop ? headingVerdict.heading : false,
+    });
   if (chromeRemoved.length > 0) {
     const detail = chromeRemoved.map(r => r.rule).join(', ');
     corrections.push(`${data.slug}: stripped ${chromeRemoved.length} source-chrome block(s) (${detail})`);

@@ -19,8 +19,6 @@ note_draft: "Composed around 447 in the thick of the Christological disputes tha
 
    
 
-# Dialogue 2
-
 **Eranistes and Orthodoxus.**
 
 _Eran._— I have come as I promised. 'Tis yours to adopt one of two alternatives, and either furnish a solution of my difficulties, or assent to what I and my friends lay down.

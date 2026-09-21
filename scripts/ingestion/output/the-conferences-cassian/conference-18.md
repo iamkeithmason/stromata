@@ -19,8 +19,6 @@ note_draft: "Composed in early fifth-century Gaul for a circle of bishops and mo
 
    
 
-# Conference 18
-
 **_BY ST. JOHN CASSIAN_**
 
 CONFERENCE OF ABBOT PIAMUN. ON THE THREE SORTS OF MONKS.
