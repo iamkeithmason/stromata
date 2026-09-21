@@ -7,6 +7,89 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-09-21 — The wire sweep is a command, and conversion has a number
+
+Two of the Monthly Log's numbers could not be trusted, and one did not exist.
+"Avg texts/session" (0.2 in July) came from `text-open`, which fires only on
+clicks — every reader landing on a text straight from Google counted as zero.
+First → second text conversion, now the success signal for *Reader Discovery &
+Accessibility*, had no measure at all. And eight events sat in the Events
+Register marked "wire-verification pending", which is the state the seasonal
+panel was in when it produced four weeks of unusable data.
+
+- **`text-session-depth`** fires at the 1st and 2nd **distinct** text of a
+  session, keyed on `sessionStorage['stromata-session-texts']`. A threshold
+  event like `text-read`: it says where the reader got to, not where they came
+  from, so it carries no `from`. Both depths fire because each fires at most
+  once per session — conversion is then `count(depth=2) ÷ count(depth=1)` from
+  one event, no session joins. Mounted on `/texts/[slug]`, so it counts every
+  route onto a text, organic landings included. Reloads, back/forward and depth
+  3+ stay silent; `lib/session-depth.ts` tests are the specification.
+
+- **`scripts/verify-analytics.mjs`** turns "observe the outgoing beacon" from a
+  console ritual into a command. Real browser, real deployment, every Umami
+  collection request recorded and then aborted — a verification run cannot land
+  a synthetic event in the dataset. **28 checks passed against production on the
+  first complete run**, clearing every one of the eight pending events:
+  `citation-copy`, `reader-setting-change` (all three settings separately),
+  `text-download` and `collection-download` (both formats), `collection-nav`,
+  `theme-click`, and all eight PR #93 `from` surfaces on `text-open` plus the
+  new `collection-open` ones. The assertion half (`scripts/lib/wire-check.mjs`)
+  is unit-tested, so the sweep cannot go green by looking in the wrong place.
+
+- **`scripts/monthly-metrics.mjs --month 2026-09`** prints the Monthly Log row.
+  Avg texts/session now counts `/texts/<slug>` pageviews: **0.84 for September
+  so far, against the 0.2 the click-derived version reported in July.** Same
+  readers; the old basis was simply blind to three quarters of them.
+
+- **Admin devices opt out.** Signing in to `/admin` sets
+  `localStorage['umami.disabled']`; the admin header says so and can clear it.
+
+### Three things the sweep found that nobody was looking for
+
+- **`text-open` has a second, undocumented emitter.** `app/texts/[slug]/page.tsx`
+  fires it again on page mount, with no `from` and a different payload shape.
+  Over 30 days: 31 `text-open`, of which 23 carry a `from`. The missing 8 are
+  exactly the 8 `text-view` events from the same place. *This* is why "only 64
+  of 151 carried a `from`" during the PR #93 audit — not missing instrumentation
+  but a second emitter. `from` shares are shares of the click subset only.
+
+- **Mount-time events are lost about six times in seven.** `text-view` and the
+  mount-fired `text-open` recorded 8 each over 30 days while `text-read`, on the
+  same pages, recorded 52 — and `text-read` cannot outnumber the mounts it
+  happens on. The cause: `window.umami?.track(...)` in a React mount effect,
+  while the tracker loads `defer`/`afterInteractive`. The effect usually wins the
+  race, `window.umami` is undefined, and the optional chaining swallows the event
+  silently. `lib/analytics/track-when-ready.ts` fixes this for
+  `text-session-depth` — and writes the session ledger *inside* the ready
+  callback, so a visit the tracker never reported cannot consume a depth and
+  leave an orphan `depth=2` inflating the very rate it measures. **The existing
+  two emitters are deliberately left alone** — fixing them step-changes a live
+  series, which is Keith's call, not the builder's.
+
+- **`text-read` fires without any scrolling on a text shorter than the
+  viewport.** Progress is `scrollTop / (scrollHeight - clientHeight)`, which
+  returns 1 when the denominator is ≤ 0. Observed directly on Ignatius to the
+  Magnesians.
+
+### And two the harness found about itself
+
+- **A failing check is the harness until proved otherwise.** `collection-nav`
+  direction=next showed no beacon while the structurally identical `prev` link
+  on the same page passed. Not a site bug: leaving the page is a race the beacon
+  loses. With navigation neutralised both fire, and production has 6 `next`
+  events to confirm it. Four diagnostic rounds to reach that; the cheap move
+  would have been to file a bug against the site.
+- **A page that failed to *load* must not report as a surface that is merely
+  absent.** The first production run returned 18 tidy "no element matching…"
+  dashes that were all one TLS failure. Fixed: the sweep now says so out loud.
+
+`text-session-depth` itself is **not yet wire-verified** — it is not deployed.
+`node scripts/verify-analytics.mjs --url=<preview>` covers its four entry paths
+and is the one command owed before this counts as done.
+
+---
+
 ## 2026-09-15 — One glob replaces nine chained test scripts
 
 Adding `lib/authors/` earlier today meant adding a `test:authors` script, purely

@@ -101,7 +101,8 @@ async function installInterceptor(context) {
 
   // Record and abort every Umami collection request. Abort, not fulfil: a 200
   // would be a lie the tracker might act on, and abort is the strongest
-  // guarantee that nothing reaches the real dataset.
+  // guarantee that nothing reaches the real dataset. The tracker swallows the
+  // failed send, so the page under test behaves as a reader's would.
   await context.route(
     (url) => isUmamiCollect(typeof url === 'string' ? url : url.toString()),
     async (route) => {
@@ -171,25 +172,38 @@ const row = (event, name, status, detail) => rows.push({ event, case: name, stat
 
 /**
  * Do `action`, then assert the named event arrived carrying `expect`.
+ *
+ * `actions` may hold more than one way of triggering the same event; they are
+ * tried in order until one passes. Driving a click without losing the beacon to
+ * a navigation is genuinely awkward — neutralising the link works for most
+ * elements and not for a few (a stretched next/link overlay, say) — and a check
+ * that fails intermittently because of the harness teaches readers to ignore
+ * red. Only the last outcome is recorded.
  */
-async function expectEvent({ event, case: label, expect, action }) {
+async function expectEvent({ event, case: label, expect, action, actions }) {
   const wanted = normaliseExpect(expect);
-  reset();
-  try {
-    await action();
-  } catch (err) {
-    row(event, label, 'fail', `action failed: ${String(err.message || err).slice(0, 90)}`);
-    return;
+  const attempts = actions ?? [action];
+  let outcome;
+
+  for (const [i, attempt] of attempts.entries()) {
+    reset();
+    try {
+      await attempt();
+    } catch (err) {
+      outcome = ['fail', `action failed: ${String(err.message || err).slice(0, 90)}`];
+      continue;
+    }
+    const hit = await waitForEvent(event);
+    const { ok, problems } = checkProps(hit, wanted);
+    if (ok) {
+      outcome = ['pass', JSON.stringify(hit.data) + (i > 0 ? ' (on retry)' : '')];
+      break;
+    }
+    const others = [...new Set(captured.filter((e) => e.name !== event).map((e) => e.name))];
+    const extra = !hit && others.length ? ` (saw: ${others.join(', ')})` : '';
+    outcome = ['fail', problems.join('; ') + extra];
   }
-  const hit = await waitForEvent(event);
-  const { ok, problems } = checkProps(hit, wanted);
-  if (ok) {
-    row(event, label, 'pass', JSON.stringify(hit.data));
-  } else {
-    const others = captured.filter((e) => e.name !== event).map((e) => e.name);
-    const extra = !hit && others.length ? ` (saw: ${[...new Set(others)].join(', ')})` : '';
-    row(event, label, 'fail', problems.join('; ') + extra);
-  }
+  row(event, label, ...outcome);
 }
 
 /** Assert that NO event of this name arrives — used for the once-per-session rule. */
@@ -262,10 +276,38 @@ async function findPageWith(context, candidates, selector, { limit = 8 } = {}) {
 const linkSelector = (event, from) =>
   `[data-umami-event="${event}"][data-umami-event-from="${from}"]`;
 
-/** Click the first matching element without waiting for the navigation it starts. */
-async function clickFirst(page, selector) {
+/**
+ * Click the first matching element.
+ *
+ * By default the link's `href` is first pinned to a same-page hash, because
+ * leaving the page is a race the beacon loses: the tracker issues the request
+ * and the unload cancels it before we ever see it. That produced a false
+ * failure on `collection-nav` direction=next while the identical `prev` link on
+ * the same page passed — with navigation neutralised, both fire correctly.
+ *
+ * The tracker's own behaviour is untouched: it still matches the element, still
+ * reads a non-empty `href`, still sends. Only its closing `location.href = …`
+ * becomes a hash change instead of a page load. Checks that genuinely need to
+ * arrive somewhere (reaching a second text, for depth 2) pass `nav: true`.
+ */
+async function clickFirst(page, selector, { nav = false } = {}) {
   const el = page.locator(selector).first();
   await el.scrollIntoViewIfNeeded();
+  if (!nav) {
+    await page
+      .$eval(selector, (node) => {
+        if (node.tagName !== 'A' || !node.getAttribute('href')) return;
+        // Replacing the anchor with a clone detaches it from React's fiber
+        // tree, so Next's <Link> no longer client-side-routes on the click —
+        // it was doing that from its own props and ignoring the DOM attribute.
+        // The clone keeps every data-umami-* attribute, so the tracker sees
+        // exactly the element under test; only where it points changes.
+        const clone = node.cloneNode(true);
+        clone.setAttribute('href', '#wire-check');
+        node.replaceWith(clone);
+      })
+      .catch(() => {});
+  }
   await el.click({ noWaitAfter: true, timeout: 5000 });
 }
 
@@ -279,7 +321,7 @@ function navSurfaces(site) {
   return [
     // text-open — every `from` PR #93 added, plus the surfaces already live.
     ['text-open', 'texts-index', ['/texts']],
-    ['text-open', 'search-results', ['/search?q=prayer']],
+    ['text-open', 'search-results', ['/search?q=augustine']],
     ['text-open', 'theme-page', site.themes],
     ['text-open', 'era-page', site.eras],
     ['text-open', 'tradition-page', site.traditions],
@@ -288,7 +330,7 @@ function navSurfaces(site) {
     ['text-open', 'scripture-page', site.scripture],
     // author-open
     ['author-open', 'authors-index', ['/authors']],
-    ['author-open', 'search-results', ['/search?q=prayer']],
+    ['author-open', 'search-results', ['/search?q=augustine']],
     ['author-open', 'collection-page', site.collections],
     ['author-open', 'text-reader', site.texts],
     ['author-open', 'featured-lead', ['/']],
@@ -331,7 +373,16 @@ async function checkNavEvents(context, site) {
       event,
       case: label,
       expect,
-      action: () => clickFirst(found.page, selector),
+      actions: [
+        () => clickFirst(found.page, selector),
+        // Second try: let the click navigate for real. Slower and racier, but
+        // it reaches elements the neutralised click cannot drive.
+        async () => {
+          await found.page.goto(BASE + found.path, { waitUntil: 'domcontentloaded' });
+          await ensureTracker(found.page);
+          await clickFirst(found.page, selector, { nav: true });
+        },
+      ],
     });
     await found.page.close();
   }
@@ -368,7 +419,7 @@ async function checkSessionDepth(context, site) {
     action: async () => {
       await indexPage.goto(BASE + '/texts', { waitUntil: 'domcontentloaded' });
       await ensureTracker(indexPage);
-      await clickFirst(indexPage, '[data-umami-event="text-open"]');
+      await clickFirst(indexPage, '[data-umami-event="text-open"]', { nav: true });
       await indexPage.waitForURL(/\/texts\/.+/, { timeout: 15000 }).catch(() => {});
       await ensureTracker(indexPage);
     },
@@ -440,8 +491,6 @@ async function checkCollectionNav(context, site) {
       expect: { from: 'text-reader', direction, collection: true },
       action: () => clickFirst(found.page, sel),
     });
-    await found.page.goto(BASE + found.path, { waitUntil: 'domcontentloaded' });
-    await ensureTracker(found.page);
   }
   await found.page.close();
 }
