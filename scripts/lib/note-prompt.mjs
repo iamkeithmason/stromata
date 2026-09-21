@@ -160,11 +160,23 @@ async function generateOnce({ anthropic, model, maxTokens, title, author, body, 
   });
   const raw = (message.content?.[0]?.text ?? '').trim();
   const truncated = message.stop_reason === 'max_tokens' || !endsOnCompleteSentence(raw);
-  return { text: trimToCompleteSentence(raw), truncated };
+  return { text: trimToCompleteSentence(raw), truncated, usage: usageOf(message) };
+}
+
+/**
+ * Token usage from one API response, in a shape the callers can sum.
+ * Generation here can take up to 3 attempts plus 2 critic calls, so a caller
+ * that wants to report what a batch cost cannot infer it from the text alone.
+ */
+function usageOf(message) {
+  return {
+    inputTokens: message?.usage?.input_tokens ?? 0,
+    outputTokens: message?.usage?.output_tokens ?? 0,
+  };
 }
 
 /** Fresh-context critic call. Returns { score, issues, guidance, ... } or null. */
-export async function critiqueNote({ anthropic, model = NOTE_MODEL, note, title, author, body }) {
+export async function critiqueNote({ anthropic, model = NOTE_MODEL, note, title, author, body, onUsage }) {
   const userMessage = [
     `Text being introduced — Title: ${title}; Author: ${author}.`,
     'First lines of the text, so you can judge whether the note is specific to it:',
@@ -180,6 +192,8 @@ export async function critiqueNote({ anthropic, model = NOTE_MODEL, note, title,
     system: CRITIC_PROMPT,
     messages: [{ role: 'user', content: userMessage }],
   });
+  if (onUsage) onUsage(usageOf(message));
+
   const raw = (message.content?.[0]?.text ?? '').trim();
   try {
     const start = raw.indexOf('{');
@@ -211,7 +225,7 @@ export async function critiqueNote({ anthropic, model = NOTE_MODEL, note, title,
  *   useCritic?: boolean,
  *   log?: (msg: string) => void,
  * }} opts
- * @returns {Promise<{ note: string, attempts: number, score: number|null, banned: string[], truncated: boolean }>}
+ * @returns {Promise<{ note: string, attempts: number, score: number|null, banned: string[], truncated: boolean, usage: { inputTokens: number, outputTokens: number } }>}
  */
 export async function generateNoteWithCritic({
   anthropic,
@@ -229,11 +243,16 @@ export async function generateNoteWithCritic({
 }) {
   let critique = null;
   let best = { note: '', score: -1, banned: [], truncated: false };
+  // Summed across every generation AND critic call, so a batch driver can
+  // report what the run actually cost rather than guessing from note count.
+  const usage = { inputTokens: 0, outputTokens: 0 };
+  const track = (u) => { usage.inputTokens += u.inputTokens; usage.outputTokens += u.outputTokens; };
 
   for (let attempt = 1; attempt <= maxAttempts; attempt++) {
-    const { text, truncated } = await generateOnce({
+    const { text, truncated, usage: genUsage } = await generateOnce({
       anthropic, model, maxTokens, title, author, body, siblingNotes, critique,
     });
+    track(genUsage);
 
     if (!text) {
       log(`    attempt ${attempt}: empty/uncompletable response, retrying`);
@@ -253,13 +272,13 @@ export async function generateNoteWithCritic({
       break;
     }
 
-    const verdict = await critiqueNote({ anthropic, model: criticModel, note: text, title, author, body });
+    const verdict = await critiqueNote({ anthropic, model: criticModel, note: text, title, author, body, onUsage: track });
     const score = verdict?.score ?? null;
     best = pickBetter(best, { note: text, score: score ?? (banned.length === 0 ? 6 : 3), banned, truncated });
 
     if (banned.length === 0 && score !== null && score >= scoreThreshold) {
       log(`    attempt ${attempt}: accepted (score ${score})`);
-      return { note: text, attempts: attempt, score, banned, truncated };
+      return { note: text, attempts: attempt, score, banned, truncated, usage };
     }
 
     const issues = [
@@ -271,7 +290,7 @@ export async function generateNoteWithCritic({
     log(`    attempt ${attempt}: score ${score ?? '—'}${banned.length ? `, banned: ${banned.join(', ')}` : ''} — regenerating`);
   }
 
-  return { note: best.note, attempts: maxAttempts, score: best.score >= 0 ? best.score : null, banned: best.banned, truncated: best.truncated };
+  return { note: best.note, attempts: maxAttempts, score: best.score >= 0 ? best.score : null, banned: best.banned, truncated: best.truncated, usage };
 }
 
 function pickBetter(a, b) {

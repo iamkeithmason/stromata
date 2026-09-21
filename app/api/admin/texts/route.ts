@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { revalidatePath } from 'next/cache'
+import { revalidateText } from '@/lib/publishing/publish-text'
 import { createServerClient } from '@/lib/supabase/server'
 
 export async function GET() {
@@ -87,17 +87,10 @@ export async function POST(request: NextRequest) {
     }
   }
 
-  const { data: author } = await supabase
-    .from('authors')
-    .select('slug')
-    .eq('id', author_id)
-    .single()
-
-  revalidatePath('/')
-  revalidatePath('/texts')
-  revalidatePath(`/texts/${slug}`)
-  if (author?.slug) revalidatePath(`/authors/${author.slug}`)
-  for (const themeSlug of theme_slugs ?? []) revalidatePath(`/themes/${themeSlug}`)
+  // One shared surface list (lib/publishing/publish-text.ts), not an inline one
+  // per route — this used to miss the collection, era, tradition and location
+  // pages, all of which are ISR and all of which render this text.
+  await revalidateText(supabase, text.id)
 
   return NextResponse.json({ ok: true })
 }
