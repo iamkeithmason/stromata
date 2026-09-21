@@ -3,7 +3,8 @@ import { SiteHeader } from '@/app/components/SiteHeader'
 import { TrackPageEvent } from '@/app/components/TrackPageEvent'
 import { notFound } from 'next/navigation'
 import { createPublicClient } from '@/lib/supabase/public'
-import { readingTime } from '@/lib/reading-time'
+import { orThrow } from '@/lib/supabase/query'
+import { readingMinutes } from '@/lib/reading-time'
 import MarkdownBody from '@/app/components/MarkdownBody'
 import { LancetArch } from '@/app/components/LancetArch'
 import { JsonLd } from '@/app/components/JsonLd'
@@ -22,7 +23,7 @@ type TextRow = {
   id: string
   title: string
   slug: string
-  body: string
+  word_count: number | null
   genre: { name: string } | null
   text_themes: { theme: { name: string } | null }[]
 }
@@ -148,20 +149,30 @@ export default async function AuthorPage({ params }: Props) {
   const { slug } = await params
   const supabase = createPublicClient()
 
-  const { data: author } = await supabase
-    .from('authors')
-    .select('*, tradition:traditions(name, slug), era:eras(label, slug), loc:locations(name, slug)')
-    .eq('slug', slug)
-    .single()
+  // Both reads guarded — see lib/supabase/query.ts. `.maybeSingle()` because
+  // `.single()` reports zero rows as an error, and the texts query because the
+  // draft check below 404s on an empty `rows`: a failed query there would hide
+  // a real author behind "no such page".
+  const author = orThrow(
+    await supabase
+      .from('authors')
+      .select('*, tradition:traditions(name, slug), era:eras(label, slug), loc:locations(name, slug)')
+      .eq('slug', slug)
+      .maybeSingle(),
+    'an author page',
+  )
 
   if (!author) notFound()
 
-  const { data: texts } = await supabase
-    .from('texts')
-    .select('id, title, slug, body, genre:genres(name), text_themes(theme:themes(name))')
-    .eq('author_id', author.id)
-    .eq('published', true)
-    .order('title')
+  const texts = orThrow(
+    await supabase
+      .from('texts')
+      .select('id, title, slug, word_count, genre:genres(name), text_themes(theme:themes(name))')
+      .eq('author_id', author.id)
+      .eq('published', true)
+      .order('title'),
+    "an author's texts",
+  )
 
   const rows = (texts ?? []) as unknown as TextRow[]
 
@@ -396,7 +407,7 @@ export default async function AuthorPage({ params }: Props) {
                           )}
                         </div>
                         <div className="text-xs mt-0.5" style={{ color: 'var(--ink-faint)' }}>
-                          approx. {readingTime(t.body)} min read
+                          approx. {readingMinutes(t.word_count)} min read
                         </div>
                       </div>
                       <span className="text-xs ml-4 shrink-0 mt-0.5" style={{ color: 'var(--ink-mute)' }}>

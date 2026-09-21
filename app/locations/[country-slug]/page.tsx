@@ -1,9 +1,15 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { createPublicClient } from '@/lib/supabase/public'
+import { orThrow } from '@/lib/supabase/query'
 import { SiteHeader } from '@/app/components/SiteHeader'
 import { TrackPageEvent } from '@/app/components/TrackPageEvent'
-import { readingTime } from '@/lib/reading-time'
+import { readingMinutes } from '@/lib/reading-time'
+
+// Incremental Static Regeneration: serve a cached render and refresh it at most
+// hourly, so a crawler sweep costs one Supabase query per page per hour rather
+// than one per request.
+export const revalidate = 3600
 
 type Props = { params: Promise<{ 'country-slug': string }> }
 
@@ -21,7 +27,7 @@ type TextRow = {
   id: string
   title: string
   slug: string
-  body: string
+  word_count: number | null
   author_id: string
   genre: { name: string } | null
 }
@@ -48,11 +54,19 @@ export default async function CountryPage({ params }: Props) {
   const slug = (await params)['country-slug']
   const supabase = createPublicClient()
 
-  const { data: location } = await supabase
-    .from('locations')
-    .select('id, name, slug, alternative_names, description')
-    .eq('slug', slug)
-    .single()
+  // `.maybeSingle()` + orThrow, not `.single()`: `.single()` reports zero
+  // rows as an ERROR, so a guard around it would turn a genuinely missing
+  // location into a 500. maybeSingle gives null for absence and an error only
+  // when the query really failed — so notFound() below means "no such
+  // location", never "Supabase was down". See lib/supabase/query.ts.
+  const location = orThrow(
+    await supabase
+      .from('locations')
+      .select('id, name, slug, alternative_names, description')
+      .eq('slug', slug)
+      .maybeSingle(),
+    'a location page',
+  )
 
   if (!location) notFound()
 
@@ -71,7 +85,7 @@ export default async function CountryPage({ params }: Props) {
     const authorIds = authors.map(a => a.id)
     const { data } = await supabase
       .from('texts')
-      .select('id, title, slug, body, author_id, genre:genres(name)')
+      .select('id, title, slug, word_count, author_id, genre:genres(name)')
       .in('author_id', authorIds)
       .eq('published', true)
       .order('title')
@@ -151,7 +165,7 @@ export default async function CountryPage({ params }: Props) {
                               {t.title}
                             </span>
                             <span className="text-xs ml-4 shrink-0" style={{ color: '#9c9589' }}>
-                              {readingTime(t.body)} min · {t.genre?.name}
+                              {readingMinutes(t.word_count)} min · {t.genre?.name}
                             </span>
                           </Link>
                         </li>

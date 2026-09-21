@@ -1,10 +1,11 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { createPublicClient } from '@/lib/supabase/public'
+import { orThrow } from '@/lib/supabase/query'
 import { SiteHeader } from '@/app/components/SiteHeader'
 import { TrackPageEvent } from '@/app/components/TrackPageEvent'
 import { TRADITIONS } from '@/lib/constants'
-import { readingTime } from '@/lib/reading-time'
+import { readingMinutes } from '@/lib/reading-time'
 import { JsonLd } from '@/app/components/JsonLd'
 import { SITE_URL } from '@/lib/metadata'
 
@@ -19,7 +20,7 @@ type TextRow = {
   id: string
   title: string
   slug: string
-  body: string
+  word_count: number | null
   genre: { name: string } | null
   author: {
     name: string
@@ -47,11 +48,19 @@ export default async function TraditionPage({ params }: Props) {
   const { slug } = await params
   const supabase = createPublicClient()
 
-  const { data: tradition } = await supabase
-    .from('traditions')
-    .select('id, slug, name, description')
-    .eq('slug', slug)
-    .single()
+  // `.maybeSingle()` + orThrow, not `.single()`: `.single()` reports zero
+  // rows as an ERROR, so a guard around it would turn a genuinely missing
+  // tradition into a 500. maybeSingle gives null for absence and an error only
+  // when the query really failed — so notFound() below means "no such
+  // tradition", never "Supabase was down". See lib/supabase/query.ts.
+  const tradition = orThrow(
+    await supabase
+      .from('traditions')
+      .select('id, slug, name, description')
+      .eq('slug', slug)
+      .maybeSingle(),
+    'a tradition page',
+  )
 
   if (!tradition) notFound()
 
@@ -66,7 +75,7 @@ export default async function TraditionPage({ params }: Props) {
   if (authorIds.length > 0) {
     const { data } = await supabase
       .from('texts')
-      .select('id, title, slug, body, genre:genres(name), author:authors(name, slug, era:eras(label, slug))')
+      .select('id, title, slug, word_count, genre:genres(name), author:authors(name, slug, era:eras(label, slug))')
       .in('author_id', authorIds)
       .eq('published', true)
       .order('title')
@@ -165,7 +174,7 @@ export default async function TraditionPage({ params }: Props) {
                         )}
                       </div>
                       <div className="text-xs mt-0.5" style={{ color: 'var(--ink-faint)' }}>
-                        approx. {readingTime(t.body)} min read
+                        approx. {readingMinutes(t.word_count)} min read
                       </div>
                     </div>
                     <span className="text-xs ml-4 shrink-0 mt-0.5" style={{ color: 'var(--ink-mute)' }}>

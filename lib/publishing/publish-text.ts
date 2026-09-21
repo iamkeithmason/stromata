@@ -40,12 +40,18 @@ import { fetchCollectionAuthors, type CollectionAuthorRef } from '@/lib/collecti
  *   /rss, /sitemap.xml, /llms.txt — `dynamic = 'force-dynamic'` + `revalidate = 0`.
  *     They are rendered per request and have nothing to invalidate.
  *   /texts/{slug}/download/*, /collections/{slug}/download/* — same.
- *   /search — renders from a live query, not ISR.
+ *   /search — rendered per request from the query string. Its Supabase reads go
+ *     through the public client's hourly data cache like everything else, so a
+ *     just-published text can take up to an hour to become findable by search.
+ *     Left out because search is keyed on arbitrary query strings, which are not
+ *     paths this function could enumerate.
  *   /locations — its query reads authors only, never texts.
  *   /scripture/{ref} — one text cites up to 200 distinct book+chapter pages
  *     (30 on average), so a 122-text collection publish would mean thousands of
  *     revalidations. The /scripture index is refreshed; the per-reference pages
- *     stay on their existing cache behaviour, unchanged from before this module.
+ *     pick the change up when their hour is out. (Those pages are not in the
+ *     route cache — they have no generateStaticParams — but their queries are
+ *     cached at the client, per lib/supabase/public.ts.)
  */
 export type TextSurfaces = {
   slug: string
