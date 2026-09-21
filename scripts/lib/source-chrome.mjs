@@ -333,8 +333,39 @@ function advisoriesIn(markdown, options) {
   return detectChrome(markdown, { source: options.source, advisory: true }).filter(f => f.kind === 'advisory');
 }
 
+/**
+ * The first block that is actual content.
+ *
+ * Skips blank blocks and HTML comments — `fetch-texts.mjs` writes an
+ * `<!-- EDITORIAL INTRO … -->` placeholder above the body, so in a staged file
+ * the leading heading is the *second* block even though it is the first thing
+ * a reader would see. Counting the comment made the leading-H1 handling a no-op
+ * on every staged file while working fine on the same text in the database.
+ */
 function firstContentBlock(blocks) {
-  return blocks.findIndex(b => b.text.trim() !== '');
+  return blocks.findIndex(b => {
+    const text = b.text.trim();
+    return text !== '' && !/^<!--[\s\S]*-->$/.test(text);
+  });
+}
+
+/**
+ * Does this heading name a structural division rather than the work?
+ *
+ * `Chapter 1. Introductory.`, `Section 1`, `Preface`, `Part One` are content:
+ * the reader loses something real if they go. Used as an absolute veto on
+ * dropping a leading heading, because it is the one signal available when no
+ * title is supplied to compare against.
+ *
+ * The list is deliberately short. `Tractate`, `Conference`, `Dialogue`,
+ * `Epistle`, `Book` and `Homily` all *look* structural and are not: in this
+ * corpus each names a whole text, so `# Tractate 1 (John 1:1-5)` under the
+ * title `Tractate 1 (John 1:1-5)` is a duplicated title, not a division. Only
+ * words that name a part of a work belong here.
+ */
+export function looksStructuralHeading(heading) {
+  return /^(chapter|caput|section|part|preface|prologue|prooemium|introduction|contents|argument)\b/i
+    .test(String(heading ?? '').replace(/^[*_`\s]+/, ''));
 }
 
 function excerpt(text) {
@@ -397,10 +428,14 @@ export function stripChrome(markdown, options = {}) {
   // title — and an unconditional drop deletes it. Pass `true` only where a human
   // is reading the diff before it is written.
   if (options.dropLeadingHeading) {
-    const at = blocks.findIndex(b => b.text.trim() !== '');
+    const at = firstContentBlock(blocks);
     const heading = at === -1 ? null : blocks[at].text.trim().match(/^#\s+(\S.*)$/);
     const wanted = typeof options.dropLeadingHeading === 'string' ? options.dropLeadingHeading : null;
-    if (heading && (wanted === null || sameHeading(heading[1], wanted))) {
+    // A structurally-worded heading is content whatever the title says, so it
+    // is never dropped — the backstop for the `true` form, which has no title
+    // to check against.
+    const structural = heading ? looksStructuralHeading(heading[1]) : false;
+    if (heading && !structural && (wanted === null || sameHeading(heading[1], wanted))) {
       removed.push({
         rule: 'leading-h1',
         why: 'leading H1 duplicating the rendered title',

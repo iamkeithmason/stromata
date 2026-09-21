@@ -7,6 +7,48 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-09-21 — The leading-H1 rule, and the two stores kept in step
+
+The corpus-wide follow-up to the entry below. 333 texts open with an `# H1`
+repeating the title the reader already renders above the body — but some of
+those headings are content, so the question is which.
+
+**`scripts/lib/leading-h1.mjs`** answers it in four ordered steps, with 14
+tests: a keep-list (12 texts a rule cannot reach); a structural veto (a heading
+opening `Chapter` / `Caput` / `Section` / `Part` / `Preface` / … is a division
+of the work); a name test (identical after stripping punctuation, or one
+containing the other); and a reviewed drop-list for the work under a name no
+string test can connect — `Contra Faustum, Book I` and `Reply to Faustus, Book
+I` share no substring. Over the corpus: **291 drop, 42 keep**.
+
+Three things the dry run settled that reading the rule would not have:
+
+- **The veto must run before the name test.** `Of Patience` is a Tertullian
+  treatise whose first heading is `Chapter 1. Of Patience Generally; And
+  Tertullian's Own Unworthiness to Treat of It` — the heading contains the
+  title, so the name test takes it and the chapter head is gone. Two texts in
+  the corpus hit exactly that; both are now kept.
+- **`Tractate`, `Conference`, `Dialogue`, `Epistle`, `Book` are not structural
+  words here.** The first cut of the veto included them, on the reasonable
+  assumption that they name divisions. In this corpus each titles a whole text,
+  so the veto kept 144 duplicated titles. Caught by two tests failing.
+- **A rule cannot see a translation.** The 45 texts whose heading is the work
+  under another name are a list, reviewed individually, not a cleverer regex.
+  Everything the rule cannot prove is kept and reported.
+
+**`--files`** on `strip-source-chrome.mjs` puts the same verdict through the
+staged `scripts/ingestion/output` markdown for every text it touches. Without
+it the two stores drift on every heal — the database gets cleaned and the file
+it was imported from keeps the artefact. One decision, both stores, one run.
+`firstContentBlock` now skips the `<!-- EDITORIAL INTRO -->` placeholder the
+fetcher writes, which had made the leading-H1 handling a silent no-op on every
+staged file while working on the same text in the database.
+
+Reported, not fixed: four Cyprian epistles whose title and body heading disagree
+on the numbering (63/62, 64/58, 73/72, 75/74 — ANF vs Oxford), all published.
+The rule keeps the heading, since dropping it hides the discrepancy rather than
+resolving it.
+
 ## 2026-09-21 — Duplicated title headings, and the Pilgrim's Progress plates
 
 Follow-up to the source-chrome entry below, on Keith's calls for the two things that entry
