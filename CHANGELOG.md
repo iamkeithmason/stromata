@@ -7,6 +7,39 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-09-21 — The admin session slides, so a phone review isn't logged out
+
+The review queue that shipped this morning is meant to be worked in spare
+minutes on a phone over weeks. The session cookie was 30 days — but 30 days
+from **login**, not from last use, so a reviewer working steadily through the
+Tractates would be thrown back to the sign-in page mid-queue on day 31 no
+matter how often they'd used it. Now the clock runs from the last request.
+
+- **`lib/admin/session.ts` owns the session**: cookie name, 30-day lifetime,
+  cookie options, and the `signSession` used for both first login and renewal.
+  The middleware renews the cookie; the login route mints it; both read the
+  same constants, so a renewed session can't quietly end up with weaker
+  attributes than a fresh one.
+- **Renewal is throttled, not per-request.** The queue autosaves every ~900ms
+  while you type and every one of those passes through the middleware —
+  renewing unconditionally would mean a `Set-Cookie` on hundreds of responses
+  per session. `shouldRenew` fires only below 25 days remaining, and because a
+  renewal resets to 30, it can't fire again for another 5 days of use. One
+  cookie write per 5 active days, whatever the request volume.
+- **Proven on the wire, not reasoned about.** Against a built server: a fresh
+  30-day cookie gets no `Set-Cookie`; a 24-day-old one and a 60-minute-from-
+  expiry one both do; the renewed token verifies as `role=admin` with its
+  expiry moved 24d → 30d and `HttpOnly` / `SameSite=Lax` / `Path=/` intact. No
+  cookie and a garbage cookie still 307 to login, and the API still 401s.
+- **The arithmetic is unit tested** (9 assertions) because a renewal threshold
+  is invisible when wrong — a session that never renews looks exactly like one
+  that does, until someone is logged out a month later. The tests pin the
+  boundary, the self-limiting property, and that expired or `exp`-less tokens
+  are never renewed (renewing an expired token would resurrect a dead session).
+- **A missing `ADMIN_COOKIE_SECRET` now fails closed.** Both paths used a `!`
+  assertion; the middleware would have thrown into its own catch and redirected,
+  but the login route would have minted a token signed with `undefined`.
+
 ## 2026-09-21 — The wire sweep is a command, and conversion has a number
 
 Two of the Monthly Log's numbers could not be trusted, and one did not exist.
