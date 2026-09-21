@@ -7,6 +7,62 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-09-21 — The egress fix shipped an empty library, and a query error is not an empty result
+
+An hour after #118 merged, production served **"Library — 0 texts — No texts
+match these filters"** at HTTP 200, `/authors` the same, and 404s on theme pages
+that exist. Supabase's REST API had stopped answering — HTTP 522 to everything,
+a one-row `select id limit 1` included, while the management API still reported
+`ACTIVE_HEALTHY` — and a deploy ran inside that window.
+
+Nothing in #118 was wrong. What it changed was what an outage *costs*. Those
+pages used to render per request, so a broken minute was a broken minute; making
+them prerendered meant the broken minute was captured and served until the next
+successful regeneration. **An optimisation that moves work earlier moves failure
+later.**
+
+The enabling condition was the error handling, not the caching:
+`const { data } = await supabase…` then `data ?? []` discards `error`, so a
+failed query and an empty library are the same value. Under a dynamic page that
+is a bad minute; under a prerender it is a confident, complete, wrong page that
+reports no problem anywhere.
+
+- **`lib/supabase/query.ts` — `orThrow`.** A query error now throws. At build
+  time that fails the deploy; during ISR regeneration it aborts and Next keeps
+  serving the last good copy. Both beat publishing an empty library. The trade
+  is deliberate and worth stating plainly: **a Supabase outage now fails
+  builds.** That is the point — the previous behaviour was a build that
+  "succeeded".
+- **`.single()` → `.maybeSingle()` wherever a lookup gates `notFound()`.**
+  `.single()` reports *zero rows* as an error, so a naive guard around it would
+  have turned a genuinely missing slug into a 500. `maybeSingle` gives null for
+  absence and an error only for failure, so `notFound()` once again means "no
+  such thing" and never "the database was unreachable". Applied on the reader,
+  author, theme, era, tradition, location and collection pages; the two indexes
+  and the homepage feed are guarded as list queries.
+- **Build errors stay readable.** Supabase returned a ~7 kB Cloudflare HTML
+  page as `error.message`; unabridged it buries the one useful line in the build
+  log. The thrown message summarises HTML bodies to their `<title>` and caps
+  plain text at 300 characters.
+
+**Verified against the live failure rather than by reasoning.** With Supabase
+still down, `npm run build` exits 1 with `Supabase query failed for a theme
+page: an HTML error page from the gateway … Supabase was most likely
+unreachable`. The same conditions that produced a green build shipping an empty
+library now produce no build at all.
+
+`lib/supabase/public-columns.ts` already carried a long note about this exact
+shape — migration 026 made a permission refusal "indistinguishable from 'no such
+text'", and every reading page 404ed while the indexes worked. That note fixed
+the cause it came from and the shape returned through a different door sixteen
+days later, with an outage in place of a refusal. Prose described the failure
+and could not prevent a new instance of it, which is the same argument this repo
+already makes for its colour-literal lint rule. Hence a guard, not another note.
+
+Write-up: `docs/research/2026-09-21-relocating-work-relocates-failure.md`.
+
+---
+
 ## 2026-09-21 — The egress bill: listing pages were downloading the whole corpus
 
 Supabase's free-plan egress allowance (5 GB) was exceeded at **11.07 GB** last

@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { createPublicClient } from '@/lib/supabase/public'
+import { orThrow } from '@/lib/supabase/query'
 import { SiteHeader } from '@/app/components/SiteHeader'
 import { TrackPageEvent } from '@/app/components/TrackPageEvent'
 import { THEME_CLUSTERS } from '@/lib/constants'
@@ -90,11 +91,19 @@ export default async function ThemePage({ params }: Props) {
   const { slug } = await params
   const supabase = createPublicClient()
 
-  const { data: theme } = await supabase
-    .from('themes')
-    .select('id, slug, name, description')
-    .eq('slug', slug)
-    .single()
+  // `.maybeSingle()` + orThrow, not `.single()`: `.single()` reports zero
+  // rows as an ERROR, so a guard around it would turn a genuinely missing
+  // theme into a 500. maybeSingle gives null for absence and an error only
+  // when the query really failed — so notFound() below means "no such
+  // theme", never "Supabase was down". See lib/supabase/query.ts.
+  const theme = orThrow(
+    await supabase
+      .from('themes')
+      .select('id, slug, name, description')
+      .eq('slug', slug)
+      .maybeSingle(),
+    'a theme page',
+  )
 
   if (!theme) notFound()
 

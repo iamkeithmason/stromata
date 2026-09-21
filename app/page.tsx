@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { createPublicClient } from '@/lib/supabase/public'
+import { orThrow } from '@/lib/supabase/query'
 import { THEME_CLUSTERS } from '@/lib/constants'
 import SearchBar from './SearchBar'
 import { BookCover } from './components/BookCover'
@@ -150,9 +151,12 @@ export default async function Home() {
   // Fetch a broad batch so collection grouping is accurate even for large
   // batch-ingested collections. Collections are represented by their most
   // recently added text (first occurrence in the desc-sorted list).
-  const { data: recentRaw } = await supabase
-    .from('texts')
-    .select(`
+  // Guarded: the homepage's whole feed comes from this one query, so a failure
+  // renders a library with nothing in it. See lib/supabase/query.ts.
+  const recentRaw = orThrow(
+    await supabase
+      .from('texts')
+      .select(`
       id, title, slug, word_count, summary, editorial_introduction,
       accession_number, created_at, collection_id,
       collection:collections(id, title, slug, description, published),
@@ -162,7 +166,9 @@ export default async function Home() {
     `)
     .eq('published', true)
     .order('created_at', { ascending: false })
-    .limit(50)
+    .limit(50),
+    'the homepage feed',
+  )
 
   const allTexts = (recentRaw ?? []) as unknown as TextRow[]
 

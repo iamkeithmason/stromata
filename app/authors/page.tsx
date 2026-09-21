@@ -1,4 +1,5 @@
 import { createPublicClient } from '@/lib/supabase/public'
+import { orThrow } from '@/lib/supabase/query'
 import { SiteHeader } from '@/app/components/SiteHeader'
 import { TrackPageEvent } from '@/app/components/TrackPageEvent'
 import { uniqueFacets } from '@/lib/facets'
@@ -36,7 +37,9 @@ export const metadata = {
 export default async function AuthorsPage() {
   const supabase = createPublicClient()
 
-  const [{ data: authors }, { data: textAuthorRows }] = await Promise.all([
+  // Both guarded: a failed query here rendered "No authors match these
+  // filters" as a confident 200. See lib/supabase/query.ts.
+  const [authorsRes, textAuthorsRes] = await Promise.all([
     supabase
       .from('authors')
       .select(
@@ -47,6 +50,9 @@ export default async function AuthorsPage() {
       .order('name'),
     supabase.from('texts').select('author_id').eq('published', true),
   ])
+
+  const authors = orThrow(authorsRes, 'the authors index')
+  const textAuthorRows = orThrow(textAuthorsRes, 'per-author text counts on the authors index')
 
   const rows = (authors ?? []) as unknown as AuthorRow[]
 
