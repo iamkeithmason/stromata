@@ -7,17 +7,37 @@ The Stromata is a curated digital library of public-domain Christian theological
 ## Notion access — this workspace is on the free tier
 
 Any time you use the Notion MCP tools against this workspace (not just for the content pipeline —
-this applies to the Feature Backlog, Growth Tracker, and any other Notion database too), the
-following tools are **plan-gated and will fail with a 400 "requires a Business plan" error**:
+this applies to the Feature Backlog, Growth Tracker, and any other Notion database too), some
+query paths are plan-gated and fail with a 400 "requires a Business plan" error. **The gating is
+narrower than this file claimed until 2026-09-21 — query first, don't assume.**
 
-- `notion-query-database-view` (view mode)
-- `notion-query-data-sources` in SQL mode against a single data source
+**Works on this plan — verified 2026-09-21 against the Content Prospect List** (291 rows), so
+reach for these before falling back:
 
-**Use instead:** `notion-search` (optionally scoped with `data_source_url` to search within one
-database) to find candidate pages, then `notion-fetch` each result by ID to read its full
-properties and content. This is slower and returns page-level results rather than a queryable
-table, but it's the only reliable path on this workspace's plan. Don't spend time retrying the
-gated tools with different parameters — they fail on plan, not on query shape.
+- **`notion-query-data-sources` in SQL mode against a single data source.** Full read-only SQLite:
+  `SELECT`, `WHERE`, `GROUP BY … HAVING`, CTEs, `group_concat`. Use the `collection://…` URL as the
+  table name. This is the cheapest way to read the list, because you project just the columns you
+  need — pulling whole rows drags every prospect's long `Editorial notes` into context.
+  On a non-Business plan it draws on a **shared workspace usage limit**, so it is metered rather
+  than free: prefer one precise query to ten exploratory ones, and expect it to start refusing if
+  the workspace burns that budget.
+- **`notion-query-data-sources` in `rows` mode.** Faithful rich text (mentions, links, formatting
+  survive, which SQL text flattens). Max 100 rows, no pagination cursor — partition with a filter
+  (e.g. ranges of `userDefined:ID`) when there are more.
+
+**Still gated:** `notion-query-database-view` / view mode. `notion-search` + `notion-fetch` remain
+the right tool for *finding* a page by keyword and for reading one page's full properties and body.
+
+Two footguns when reading this database with SQL:
+
+- **SQL text is lossy.** Rich-text mentions and link destinations flatten. Never conclude a
+  property is corrupt from SQL output — re-read it with `rows` mode or `notion-fetch` before
+  rewriting anything.
+- **Titles are written two ways.** Scout-created rows are titled `Author — Work`; hand-created
+  rows carry a bare work title, with the author in the `Author` property. Grouping on `Title`
+  alone therefore misses cross-format duplicates — key on `Author` plus the title's post-em-dash
+  remainder as well, and take the union. On 2026-09-21 the `Title`-only pass found 12 duplicate
+  groups and the author-keyed pass found 3 more that it had missed.
 
 ---
 
