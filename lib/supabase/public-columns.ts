@@ -65,6 +65,7 @@ export const PUBLIC_TEXT_COLUMNS = [
   'title',
   'translation_notes',
   'updated_at',
+  'word_count',
 ] as const
 
 /** Ready to drop into a PostgREST `.select()` in place of `*`. */

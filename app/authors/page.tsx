@@ -1,10 +1,16 @@
 import { createPublicClient } from '@/lib/supabase/public'
+import { orThrow } from '@/lib/supabase/query'
 import { SiteHeader } from '@/app/components/SiteHeader'
 import { TrackPageEvent } from '@/app/components/TrackPageEvent'
-import { uniqueFacets, pickFacet } from '@/lib/facets'
+import { uniqueFacets } from '@/lib/facets'
 import { AuthorsBrowser, type AuthorItem } from '@/app/components/AuthorsBrowser'
 
 // tradition and era are both direct FKs on authors.
+// Incremental Static Regeneration: serve a cached render and refresh it at most
+// hourly, so a crawler sweep costs one Supabase query per page per hour rather
+// than one per request.
+export const revalidate = 3600
+
 type AuthorRow = {
   id: string
   name: string
@@ -19,10 +25,6 @@ type AuthorRow = {
   era: { label: string; slug: string; year_start: number | null } | null
 }
 
-type Props = {
-  searchParams: Promise<{ tradition?: string; era?: string; sort?: string }>
-}
-
 export const metadata = {
   title: 'Authors — The Stromata',
   description:
@@ -32,13 +34,12 @@ export const metadata = {
   alternates: { canonical: '/authors' },
 }
 
-const SORT_KEYS = ['name', 'texts', 'chronological'] as const
-
-export default async function AuthorsPage({ searchParams }: Props) {
-  const sp = await searchParams
+export default async function AuthorsPage() {
   const supabase = createPublicClient()
 
-  const [{ data: authors }, { data: textAuthorRows }] = await Promise.all([
+  // Both guarded: a failed query here rendered "No authors match these
+  // filters" as a confident 200. See lib/supabase/query.ts.
+  const [authorsRes, textAuthorsRes] = await Promise.all([
     supabase
       .from('authors')
       .select(
@@ -49,6 +50,9 @@ export default async function AuthorsPage({ searchParams }: Props) {
       .order('name'),
     supabase.from('texts').select('author_id').eq('published', true),
   ])
+
+  const authors = orThrow(authorsRes, 'the authors index')
+  const textAuthorRows = orThrow(textAuthorsRes, 'per-author text counts on the authors index')
 
   const rows = (authors ?? []) as unknown as AuthorRow[]
 
@@ -87,16 +91,6 @@ export default async function AuthorsPage({ searchParams }: Props) {
     (a, b) => (eraOrder.get(a.slug) ?? 0) - (eraOrder.get(b.slug) ?? 0),
   )
 
-  const sort = SORT_KEYS.includes(sp.sort as (typeof SORT_KEYS)[number])
-    ? (sp.sort as (typeof SORT_KEYS)[number])
-    : 'name'
-
-  const initial = {
-    tradition: pickFacet(sp.tradition, traditions),
-    era: pickFacet(sp.era, eras),
-    sort,
-  }
-
   return (
     <div style={{ background: 'var(--paper)', paddingTop: '4rem' }} className="min-h-screen">
       <SiteHeader />
@@ -104,7 +98,6 @@ export default async function AuthorsPage({ searchParams }: Props) {
         <AuthorsBrowser
           items={items}
           facets={{ traditions, eras }}
-          initial={initial}
           from="authors-index"
         />
       </main>

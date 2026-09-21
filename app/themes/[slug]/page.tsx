@@ -1,10 +1,11 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { createPublicClient } from '@/lib/supabase/public'
+import { orThrow } from '@/lib/supabase/query'
 import { SiteHeader } from '@/app/components/SiteHeader'
 import { TrackPageEvent } from '@/app/components/TrackPageEvent'
 import { THEME_CLUSTERS } from '@/lib/constants'
-import { readingTime } from '@/lib/reading-time'
+import { readingMinutes } from '@/lib/reading-time'
 import { JsonLd } from '@/app/components/JsonLd'
 import { SITE_URL } from '@/lib/metadata'
 
@@ -19,7 +20,7 @@ type TextRow = {
   id: string
   title: string
   slug: string
-  body: string
+  word_count: number | null
   collection_id: string | null
   genre: { name: string } | null
   author: {
@@ -90,31 +91,41 @@ export default async function ThemePage({ params }: Props) {
   const { slug } = await params
   const supabase = createPublicClient()
 
-  const { data: theme } = await supabase
-    .from('themes')
-    .select('id, slug, name, description')
-    .eq('slug', slug)
-    .single()
+  // `.maybeSingle()` + orThrow, not `.single()`: `.single()` reports zero
+  // rows as an ERROR, so a guard around it would turn a genuinely missing
+  // theme into a 500. maybeSingle gives null for absence and an error only
+  // when the query really failed — so notFound() below means "no such
+  // theme", never "Supabase was down". See lib/supabase/query.ts.
+  const theme = orThrow(
+    await supabase
+      .from('themes')
+      .select('id, slug, name, description')
+      .eq('slug', slug)
+      .maybeSingle(),
+    'a theme page',
+  )
 
   if (!theme) notFound()
 
-  const { data: textThemeRows } = await supabase
-    .from('text_themes')
-    .select('text_id')
-    .eq('theme_id', theme.id)
+  // ONE QUERY, VIA AN INNER JOIN — NOT A TWO-STEP `.in('id', ids)`.
+  //
+  // This used to read every `text_id` for the theme and then pass them back as
+  // an `id=in.(…)` filter. PostgREST takes that filter in the query string, and
+  // a UUID costs ~37 characters: the largest theme here carries 264 texts,
+  // which is a ~10 kB URL. That is past what the gateway accepts, so the
+  // busiest theme pages — exactly the ones most worth serving — answered 500
+  // while the small ones worked, and the page had no way to tell.
+  //
+  // Filtering through the embedded `text_themes` row keeps the theme id in the
+  // request as a single value, so the URL no longer grows with the corpus.
+  const { data } = await supabase
+    .from('texts')
+    .select('id, title, slug, word_count, collection_id, genre:genres(name), author:authors(name, slug, tradition:traditions(name)), text_themes!inner(theme_id)')
+    .eq('text_themes.theme_id', theme.id)
+    .eq('published', true)
+    .order('title')
 
-  const textIds = (textThemeRows ?? []).map((r: { text_id: string }) => r.text_id)
-
-  let texts: TextRow[] = []
-  if (textIds.length > 0) {
-    const { data } = await supabase
-      .from('texts')
-      .select('id, title, slug, body, collection_id, genre:genres(name), author:authors(name, slug, tradition:traditions(name))')
-      .in('id', textIds)
-      .eq('published', true)
-      .order('title')
-    texts = sortByTitleWithRomanNumerals((data ?? []) as unknown as TextRow[])
-  }
+  const texts = sortByTitleWithRomanNumerals((data ?? []) as unknown as TextRow[])
 
   // Roll multi-chapter collections up into a single entry — a theme like "Prayer" shouldn't
   // be dominated by every individual chapter of one multi-book work.
@@ -245,7 +256,7 @@ export default async function ThemePage({ params }: Props) {
                             )}
                           </div>
                           <div className="text-xs mt-0.5" style={{ color: '#9c9589' }}>
-                            approx. {readingTime(t.body)} min read
+                            approx. {readingMinutes(t.word_count)} min read
                           </div>
                         </div>
                         <span className="text-xs ml-4 shrink-0 mt-0.5" style={{ color: '#6f6a60' }}>

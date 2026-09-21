@@ -1,7 +1,8 @@
 import { createPublicClient } from '@/lib/supabase/public'
+import { orThrow } from '@/lib/supabase/query'
 import { SiteHeader } from '@/app/components/SiteHeader'
-import { readingTime } from '@/lib/reading-time'
-import { uniqueFacets, pickFacet } from '@/lib/facets'
+import { readingMinutes } from '@/lib/reading-time'
+import { uniqueFacets } from '@/lib/facets'
 import { TextsBrowser, type TextItem } from '@/app/components/TextsBrowser'
 
 // tradition/era are author-level (one hop through authors); genre is a direct FK on texts.
@@ -9,7 +10,7 @@ type TextRow = {
   id: string
   title: string
   slug: string
-  body: string
+  word_count: number | null
   author: {
     name: string
     slug: string | null
@@ -18,10 +19,6 @@ type TextRow = {
   } | null
   genre: { name: string; slug: string } | null
   text_themes: { theme: { name: string } | null }[]
-}
-
-type Props = {
-  searchParams: Promise<{ tradition?: string; era?: string; genre?: string; sort?: string }>
 }
 
 export const metadata = {
@@ -33,19 +30,26 @@ export const metadata = {
   alternates: { canonical: '/texts' },
 }
 
-const SORT_KEYS = ['title', 'author', 'length'] as const
+// Incremental Static Regeneration. Without this the library index re-queried
+// Supabase on every request — including every crawler hit — and the page reads
+// the whole published corpus. See lib/reading-time.ts for the other half.
+export const revalidate = 3600
 
-export default async function TextsPage({ searchParams }: Props) {
-  const sp = await searchParams
+export default async function TextsPage() {
   const supabase = createPublicClient()
 
-  const { data } = await supabase
-    .from('texts')
-    .select(
-      'id, title, slug, body, author:authors(name, slug, tradition:traditions(name, slug), era:eras(label, slug, year_start)), genre:genres(name, slug), text_themes(theme:themes(name))',
-    )
-    .eq('published', true)
-    .order('title')
+  // orThrow, not `data ?? []`: a failed query here used to render "0 texts" as
+  // a confident 200. See lib/supabase/query.ts.
+  const data = orThrow(
+    await supabase
+      .from('texts')
+      .select(
+        'id, title, slug, word_count, author:authors(name, slug, tradition:traditions(name, slug), era:eras(label, slug, year_start)), genre:genres(name, slug), text_themes(theme:themes(name))',
+      )
+      .eq('published', true)
+      .order('title'),
+    'the library index',
+  )
 
   const rows = (data ?? []) as unknown as TextRow[]
 
@@ -53,7 +57,7 @@ export default async function TextsPage({ searchParams }: Props) {
     id: t.id,
     title: t.title,
     slug: t.slug,
-    minutes: readingTime(t.body),
+    minutes: readingMinutes(t.word_count),
     author: t.author ? { name: t.author.name, slug: t.author.slug } : null,
     tradition: t.author?.tradition ?? null,
     era: t.author?.era ? { slug: t.author.era.slug, label: t.author.era.label } : null,
@@ -77,17 +81,6 @@ export default async function TextsPage({ searchParams }: Props) {
   )
   const genres = uniqueFacets(items.map(i => i.genre)).sort((a, b) => a.label.localeCompare(b.label))
 
-  const sort = SORT_KEYS.includes(sp.sort as (typeof SORT_KEYS)[number])
-    ? (sp.sort as (typeof SORT_KEYS)[number])
-    : 'title'
-
-  const initial = {
-    tradition: pickFacet(sp.tradition, traditions),
-    era: pickFacet(sp.era, eras),
-    genre: pickFacet(sp.genre, genres),
-    sort,
-  }
-
   return (
     <div style={{ background: 'var(--paper)', paddingTop: '4rem' }} className="min-h-screen">
       <SiteHeader />
@@ -95,7 +88,6 @@ export default async function TextsPage({ searchParams }: Props) {
         <TextsBrowser
           items={items}
           facets={{ traditions, eras, genres }}
-          initial={initial}
           from="library-index"
         />
       </main>

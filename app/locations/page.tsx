@@ -3,6 +3,11 @@ import { createPublicClient } from '@/lib/supabase/public'
 import { SiteHeader } from '@/app/components/SiteHeader'
 import { TrackPageEvent } from '@/app/components/TrackPageEvent'
 
+// Incremental Static Regeneration: serve a cached render and refresh it at most
+// hourly, so a crawler sweep costs one Supabase query per page per hour rather
+// than one per request.
+export const revalidate = 3600
+
 export const metadata = {
   title: 'Locations — The Stromata',
   description:

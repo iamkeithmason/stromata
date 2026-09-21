@@ -1,11 +1,12 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { createPublicClient } from '@/lib/supabase/public'
+import { orThrow } from '@/lib/supabase/query'
 import { SiteHeader } from '@/app/components/SiteHeader'
 import { TrackPageEvent } from '@/app/components/TrackPageEvent'
 import { DownloadLinks } from '@/app/components/DownloadLinks'
 import { JsonLd } from '@/app/components/JsonLd'
-import { readingTime } from '@/lib/reading-time'
+import { readingMinutes } from '@/lib/reading-time'
 import { fetchCollectionAuthors, formatAuthorNames, isLinkable } from '@/lib/collections/author'
 import { OG_IMAGE, SITE_URL } from '@/lib/metadata'
 
@@ -55,23 +56,31 @@ export default async function CollectionPage({ params }: Props) {
   const { slug } = await params
   const supabase = createPublicClient()
 
-  const { data: collection } = await supabase
-    .from('collections')
-    // Explicit columns, not '*': anon cannot read description_draft /
-    // provenance_verified_at (026), and PostgREST rejects the whole request
-    // when select=* includes an unreadable column. Mirrors the shape the
-    // download routes already use.
-    .select('id, title, slug, description, published, author:authors(name, slug)')
-    .eq('slug', slug)
-    .eq('published', true)
-    .single()
+  // `.maybeSingle()` + orThrow, not `.single()`: `.single()` reports zero
+  // rows as an ERROR, so a guard around it would turn a genuinely missing
+  // collection into a 500. maybeSingle gives null for absence and an error only
+  // when the query really failed — so notFound() below means "no such
+  // collection", never "Supabase was down". See lib/supabase/query.ts.
+  const collection = orThrow(
+    await supabase
+      .from('collections')
+      // Explicit columns, not '*': anon cannot read description_draft /
+      // provenance_verified_at (026), and PostgREST rejects the whole request
+      // when select=* includes an unreadable column. Mirrors the shape the
+      // download routes already use.
+      .select('id, title, slug, description, published, author:authors(name, slug)')
+      .eq('slug', slug)
+      .eq('published', true)
+      .maybeSingle(),
+    'a collection page',
+  )
 
   if (!collection) notFound()
 
   // Fetch published texts in this collection, ordered by collection_order then title
   const { data: texts } = await supabase
     .from('texts')
-    .select('id, title, slug, body, collection_order, genre:genres(name)')
+    .select('id, title, slug, word_count, collection_order, genre:genres(name)')
     .eq('collection_id', collection.id)
     .eq('published', true)
     .order('collection_order', { ascending: true, nullsFirst: false })
@@ -214,7 +223,7 @@ export default async function CollectionPage({ params }: Props) {
                         )}
                       </span>
                       <span className="block text-xs mt-0.5" style={{ color: '#9c9589' }}>
-                        approx. {readingTime((text as unknown as { body: string }).body)} min read
+                        approx. {readingMinutes((text as unknown as { word_count: number | null }).word_count)} min read
                       </span>
                     </span>
                     <span className="text-xs shrink-0 mt-0.5" style={{ color: '#c8c3bb' }}>→</span>
