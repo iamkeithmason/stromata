@@ -7,7 +7,7 @@
  * Era is fully determined by dates, so the model never proposes it. Tradition
  * the model MAY propose, but this guard validates it: it auto-reassigns only
  * among the three date-settled traditions (Early Church / Patristic /
- * Byzantine), and otherwise flags `needs-editorial` rather than guess.
+ * Imperial), and otherwise flags `needs-editorial` rather than guess.
  */
 
 import type { TaxonomyFlag } from './types';
@@ -59,13 +59,13 @@ export function deriveEra(year: number | null): string | null {
 // ---------------------------------------------------------------------------
 
 /** The only traditions the death year fully settles — safe to auto-reassign among. */
-export const ERA_BUCKET_TRADITIONS = ['Early Church', 'Patristic', 'Byzantine'] as const;
+export const ERA_BUCKET_TRADITIONS = ['Early Church', 'Patristic', 'Imperial'] as const;
 
 /** Validity windows by death year. Empty object = no date constraint. */
 const TRADITION_WINDOWS: Record<string, { min?: number; max?: number }> = {
   'Early Church': { max: 325 },
   Patristic: { min: 325, max: 600 },
-  Byzantine: { min: 600, max: 1054 },
+  Imperial: { min: 600, max: 1054 },
   'Eastern Orthodox': { min: 1054 },
   'Roman Catholic': { min: 1054 },
   Anglican: { min: 1530 },
@@ -79,7 +79,7 @@ const TRADITION_WINDOWS: Record<string, { min?: number; max?: number }> = {
 function eraBucketFor(year: number): (typeof ERA_BUCKET_TRADITIONS)[number] | null {
   if (year <= 325) return 'Early Church';
   if (year <= 600) return 'Patristic';
-  if (year <= 1054) return 'Byzantine';
+  if (year <= 1054) return 'Imperial';
   return null; // post-1054 needs an East/West judgement code can't make
 }
 
