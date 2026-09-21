@@ -49,23 +49,25 @@ export const TRADITIONS: Array<{ canonical: string; band: PriorityBand; aliases:
 /**
  * Tradition options that actually exist on the Notion Content Prospect List.
  *
- * `Byzantine` and `Imperial` are both listed **during the rename transition**.
- * The option is being renamed to Imperial so Notion matches the site's own
- * controlled vocabulary; until that rename is made in the Notion UI, the live
- * option is still called Byzantine, and the Scout writing a value that does not
- * exist would either fail validation or silently create a stray option.
+ * This list is what the Scout is allowed to WRITE, so every entry must name a
+ * live Notion option: writing a value that does not exist either fails
+ * validation or silently creates a stray option, and a stray option is worse
+ * than a failure because nothing announces it.
  *
- * Listing both means neither ordering breaks: the code can ship before or after
- * the rename. **Delete the `Byzantine` line once the Notion option is renamed**
- * — it is transitional, not a permanent alias. (The permanent alias lives in
- * TRADITIONS above, which is what maps an older row's value to the canonical
- * name.)
+ * `Byzantine` was listed here transitionally while the option was being renamed
+ * to Imperial. Keith made that rename in the Notion UI on 2026-09-21 — verified
+ * in place, since the renamed option kept its id
+ * (`…/Rk9OPA/NDZhN2I2N2ItYjQ2MS00ZTMzLWExZGQtMTdlMzYxMGExYzYw`), so every row
+ * holding it kept its value — and the transitional entry came out with it.
+ *
+ * Reading an older export that still says `Byzantine` is a separate concern and
+ * still works: the permanent alias lives in TRADITIONS above, which maps it to
+ * the canonical name. Read and write are deliberately not the same list.
  */
 export const NOTION_TRADITIONS = [
   'Early Church',
   'Patristic',
   'Imperial',
-  'Byzantine', // transitional — remove after the Notion option is renamed
   'Oriental Orthodox',
   'Eastern Orthodox',
   'Roman Catholic',

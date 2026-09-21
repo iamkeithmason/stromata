@@ -7,17 +7,37 @@ The Stromata is a curated digital library of public-domain Christian theological
 ## Notion access — this workspace is on the free tier
 
 Any time you use the Notion MCP tools against this workspace (not just for the content pipeline —
-this applies to the Feature Backlog, Growth Tracker, and any other Notion database too), the
-following tools are **plan-gated and will fail with a 400 "requires a Business plan" error**:
+this applies to the Feature Backlog, Growth Tracker, and any other Notion database too), some
+query paths are plan-gated and fail with a 400 "requires a Business plan" error. **The gating is
+narrower than this file claimed until 2026-09-21 — query first, don't assume.**
 
-- `notion-query-database-view` (view mode)
-- `notion-query-data-sources` in SQL mode against a single data source
+**Works on this plan — verified 2026-09-21 against the Content Prospect List** (291 rows), so
+reach for these before falling back:
 
-**Use instead:** `notion-search` (optionally scoped with `data_source_url` to search within one
-database) to find candidate pages, then `notion-fetch` each result by ID to read its full
-properties and content. This is slower and returns page-level results rather than a queryable
-table, but it's the only reliable path on this workspace's plan. Don't spend time retrying the
-gated tools with different parameters — they fail on plan, not on query shape.
+- **`notion-query-data-sources` in SQL mode against a single data source.** Full read-only SQLite:
+  `SELECT`, `WHERE`, `GROUP BY … HAVING`, CTEs, `group_concat`. Use the `collection://…` URL as the
+  table name. This is the cheapest way to read the list, because you project just the columns you
+  need — pulling whole rows drags every prospect's long `Editorial notes` into context.
+  On a non-Business plan it draws on a **shared workspace usage limit**, so it is metered rather
+  than free: prefer one precise query to ten exploratory ones, and expect it to start refusing if
+  the workspace burns that budget.
+- **`notion-query-data-sources` in `rows` mode.** Faithful rich text (mentions, links, formatting
+  survive, which SQL text flattens). Max 100 rows, no pagination cursor — partition with a filter
+  (e.g. ranges of `userDefined:ID`) when there are more.
+
+**Still gated:** `notion-query-database-view` / view mode. `notion-search` + `notion-fetch` remain
+the right tool for *finding* a page by keyword and for reading one page's full properties and body.
+
+Two footguns when reading this database with SQL:
+
+- **SQL text is lossy.** Rich-text mentions and link destinations flatten. Never conclude a
+  property is corrupt from SQL output — re-read it with `rows` mode or `notion-fetch` before
+  rewriting anything.
+- **Titles are written two ways.** Scout-created rows are titled `Author — Work`; hand-created
+  rows carry a bare work title, with the author in the `Author` property. Grouping on `Title`
+  alone therefore misses cross-format duplicates — key on `Author` plus the title's post-em-dash
+  remainder as well, and take the union. On 2026-09-21 the `Title`-only pass found 12 duplicate
+  groups and the author-keyed pass found 3 more that it had missed.
 
 ---
 
@@ -468,13 +488,36 @@ Before each pipeline run, pull new candidates from the Notion Content Prospect L
 
 ### Steps
 
-1. **Search for ready prospects.** Use the Notion MCP `search` tool to find pages in the Content Prospect List with `Status = "Text available"`, sorted by Score descending, then `fetch` each result page to read its properties (see "Notion access" note at the top of this file — the query/view tools are plan-gated on this workspace).
+1. **Query for ready prospects.** SQL mode works on this plan (see the "Notion access" note at
+   the top of this file — it is *not* gated, whatever an older copy of this section said). Ask for
+   the ranked shortlist in one call rather than searching page-by-page:
 
-   Useful search queries to try in sequence:
-   - `"Text available" site:notion.so stromata content`
-   - Fetch the database page directly and follow linked prospect pages
+   ```sql
+   SELECT "userDefined:ID", "Title", "Author", "Era", "Tradition", "Genre",
+          "Cleared edition URL", "Reference URL", "Translation notes",
+          "Value", "Complexity", "Effort",
+          ("Value" * 1.0) / ("Complexity" + "Effort") AS score
+   FROM "collection://e3236509-a018-494c-93cf-9a035f3d10a8"
+   WHERE "Status" = 'Text available'
+   ORDER BY score DESC
+   ```
 
-2. **Fetch each candidate.** For each result, call `notion-fetch` with the page ID to read its full properties: Title, Author, Era, Tradition, Genre, **Cleared edition URL**, Reference URL, Translation notes, Status, Score, Complexity, Effort.
+   **Compute Score yourself — the stored formula is unreadable from SQL.** The data source lists
+   `Score` under `notAvailableInQuerySql`, so selecting it returns nothing; `Value`, `Complexity`
+   and `Effort` are plain numbers, and Score is defined as `Value ÷ (Complexity + Effort)`, so the
+   expression above reproduces it. (`rows` mode *can* sort on the formula directly if you need the
+   stored value.)
+
+   **The `* 1.0` is load-bearing — do not drop it.** The three inputs are stored as integers, so
+   `"Value" / ("Complexity" + "Effort")` is **integer division**: a 3/(1+2) row scores `1`, not
+   `1.5`, every row collapses onto a handful of integers, and `ORDER BY score DESC` silently
+   returns an arbitrary order that still *looks* ranked. Verified 2026-09-21 — the uncast form
+   really does return `1` for `Value 3 · Complexity 1 · Effort 2`. The schema declaring these
+   columns `FLOAT` does not save you.
+
+2. **Read anything the query flattened.** The projection above is enough to choose candidates.
+   Fall back to `notion-fetch` on a page ID when you need `Editorial notes` with its links and
+   mentions intact, or the page body — SQL flattens rich text (see the footguns note).
 
 3. **Skip already-handled items.** Do not add a prospect if:
    - Its `Status` in Notion is `Live`, `In progress`, or `Needs investigation`
