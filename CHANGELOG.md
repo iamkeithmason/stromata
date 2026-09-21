@@ -7,6 +7,22 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-09-21 — Queued the CC-licensed Small Catechism, blocked on purpose
+
+`thesmallcatechism.org` — the ELCE's 2016 contemporary translation, offered in the same Discord
+conversation that surfaced Project Wittenberg — is queued as `small-catechism-elce-cc`, but
+deliberately left at `status: "pending"` with `translation_copyright_clear: false`. It's the first
+CC-licensed (not public-domain) source this pipeline has ever considered, and Stromata's schema and
+reader page have no mechanism for the attribution and share-alike obligations CC BY-SA 4.0 carries —
+that gap, not a copyright problem, is what's blocking it. The queue entry's `notes` field carries the
+full brief: the licensing/share-alike questions that need Keith's call, a real dedup-collision risk
+against the just-imported Wittenberg translation (same title, same author, would silently skip at
+Stage 5a), and the fetch mechanics, which are the one part already solved (a clean WordPress REST API,
+far less chrome than Wittenberg). `source_type: "wordpress_rest"` is a placeholder label only — no
+`SOURCE_SELECTORS` entry exists for it, on purpose, until the licensing question is answered.
+
+---
+
 ## 2026-09-21 — Renumbered a migration collision; three older ones found, not touched
 
 Two branches both added a `028_*.sql` migration (`text_word_count`, from the egress fix a few
