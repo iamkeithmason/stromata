@@ -35,6 +35,12 @@ test('finalWord skips trailing punctuation and single-letter specks', () => {
 test('plausibleWord rejects OCR wreckage and accepts real endings', () => {
   assert.equal(plausibleWord('light'), true);
   assert.equal(plausibleWord('quelld'), true);
+  // Real words with heavy consonant clusters. Every one of these was reported
+  // as wreckage by an earlier, stricter rule; all four are in the poem.
+  assert.equal(plausibleWord('constrain'), true);
+  assert.equal(plausibleWord('overthrows'), true);
+  assert.equal(plausibleWord('oerthrown'), true);
+  assert.equal(plausibleWord('oerspreads'), true);
   // Digits and consonant runs: the endings the scan actually produced.
   assert.equal(plausibleWord('m4'), false);
   assert.equal(plausibleWord(''), false);
@@ -150,4 +156,26 @@ test('the same page from the djvu OCR scores worse than from the image', () => {
     checkCouplets(fromImage).rhymeRate > checkCouplets(fromDjvu).rhymeRate,
     'the page image should transcribe to a better-rhyming text than the djvu OCR',
   );
+});
+
+test('a triplet does not throw the rest of the poem out of phase', () => {
+  // Eighteenth-century couplet verse drops into a triplet every so often, and
+  // this printing braces them in the margin. A fixed pairing would count the
+  // triplet as one bad couplet AND mis-pair everything after it; the whole
+  // point of resynchronising is that the two sound couplets following still
+  // read as sound.
+  const withTriplet = [
+    'Still in the God unfaded glories shine,',   // triplet
+    'Our nature brighten, and exalt our line,',  //   (braced in the 1743)
+    'He still the same, but we become divine.',  //
+    'Here lies my safety, here I put my trust,',
+    'And hence my triumph, O infernal LUST;',
+    'Thou art the way to hell; thy flatt’ring path',
+    'Leads to the chambers of eternal Death;',
+  ];
+  const report = checkCouplets(withTriplet);
+  assert.equal(report.triplets.length, 1);
+  assert.equal(report.triplets[0].line, 1);
+  assert.equal(report.noRhyme.length, 0, 'nothing after the triplet should de-phase');
+  assert.equal(report.rhymeRate, 1);
 });

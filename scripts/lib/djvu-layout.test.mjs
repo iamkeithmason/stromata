@@ -213,3 +213,18 @@ test('applyWordFixes anchors on word boundaries only where there is one', () => 
     "FIRST, heav'n-born FaiTH",
   );
 });
+
+test('markVerseBreaks leaves a prose footnote unbroken', () => {
+  // The 1743 prints two prose footnotes inside the verse. They arrive as
+  // blockquotes, and a hard break at the compositor's line end would set
+  // prose as though it were verse.
+  const out = markVerseBreaks([
+    'Who spiritually can explain',
+    "What ABRAM's *mystick* \\* *Numbers* mean.",
+    '> \\* There are various Expositions of this Passage,',
+  ]);
+  assert.equal(out[0], 'Who spiritually can explain\\');
+  // Last verse line before the note: no break, the paragraph ends there.
+  assert.equal(out[1], "What ABRAM's *mystick* \\* *Numbers* mean.");
+  assert.equal(out[2], '> \\* There are various Expositions of this Passage,');
+});

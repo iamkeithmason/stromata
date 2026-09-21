@@ -54,9 +54,17 @@
  *
  * Usage:
  *   node scripts/ingestion/ocr-pages-vision.mjs prepare <config-key> [--force]
- *   node scripts/ingestion/ocr-pages-vision.mjs assemble <config-key> [--dry]
+ *   node scripts/ingestion/ocr-pages-vision.mjs assemble <config-key> [--dry] [--db]
  *
  * `prepare` is idempotent and skips crops already on disk; `--force` refetches.
+ *
+ * `--db` pushes the assembled body onto the text row that already carries this
+ * slug — for a text like the Psychomachia that was imported before the re-read,
+ * where pipeline-import.mjs will skip the slug as already present. It reads the
+ * body from the file it just wrote and touches nothing else: never `published`,
+ * never `editorial_introduction`, never an author. Needs
+ * SUPABASE_SERVICE_ROLE_KEY in .env.local, same as the other maintenance
+ * scripts, so it runs from a local checkout rather than an agent session.
  */
 
 import fs from 'fs';
@@ -97,6 +105,51 @@ function paths(slug) {
 }
 
 /**
+ * The catchword at the foot of a leaf: the next page's first word, which an
+ * eighteenth-century printer set there so the binder could check the gathering
+ * was in order. It is the period's own collation check, and it still works —
+ * chaining each leaf's catchword to the next leaf's opening word proves no
+ * leaf is missing, duplicated or out of sequence, which nothing else here
+ * tests. Free, because the OCR already read it and classified it as a footer.
+ *
+ * The rightmost footer on the page, because the catchword sits in the outer
+ * corner and the signature mark (`E`, `H 2`) sits nearer the centre.
+ */
+function catchwordOf(classified) {
+  const footers = classified.filter((l) => l.role === 'footer' && /[a-z]/i.test(l.text));
+  if (!footers.length) return null;
+  const outer = footers.reduce((a, b) => (b.x1 > a.x1 ? b : a));
+  const word = outer.text.trim().split(/\s+/).pop();
+  return word && /[a-z]/i.test(word) ? word : null;
+}
+
+/** Compare a catchword to the word that actually opens the next leaf. */
+function sameWord(a, b) {
+  const clean = (w) =>
+    String(w ?? '')
+      .toLowerCase()
+      .replace(/\u017f/g, 's')
+      .replace(/[^a-z]/g, '');
+  const x = clean(a);
+  const y = clean(b);
+  if (!x || !y) return true; // nothing to compare is not a failure
+
+  // Deliberately slack, and this is a judgement about the evidence rather
+  // than laziness. The catchword is read by the SAME OCR that mangled
+  // everything else on the page: across this book it produced `Wich` for
+  // `With`, `Wher` for `When`, `Sde` for `She`, `Tt` for `It`. A tight
+  // comparison turns every one of those into a false alarm, and a collation
+  // check that cries wolf eleven times is a check nobody reads.
+  //
+  // So: the same opening letter and roughly the same length, or a two-letter
+  // prefix. That still catches what the check is FOR — a leaf out of order or
+  // missing, where the catchword and the next opening word are unrelated
+  // words — while tolerating a scanner that cannot spell.
+  if (x.slice(0, 2) === y.slice(0, 2)) return true;
+  return x[0] === y[0] && Math.abs(x.length - y.length) <= 2;
+}
+
+/**
  * Everything the XML can tell us about one leaf, before anyone looks at it.
  *
  * `expectedLines` is the count the transcription has to match: the lines the
@@ -111,6 +164,7 @@ function pageFacts(page, index, isHeading) {
   const missing = suspectedGaps.reduce((n, g) => n + g.missing, 0);
   return {
     index,
+    catchword: catchwordOf(classified),
     width: page.width,
     height: page.height,
     scannedLines: kept.length,
@@ -141,6 +195,20 @@ function cropGeometry(page, facts) {
 
   const scale = Math.min(FIT_W / w, FIT_H / h, 1);
   return { x, y, w, h, renderWidth: Math.round(w * scale), pitch: Math.round(pitch * scale) };
+}
+
+/**
+ * The crop for a leaf whose body block could not be found, because the OCR
+ * read no lines on it. Generous margins and the whole leaf: there is no
+ * measurement to be had, so take everything and let the reader decide.
+ */
+function fullPageGeometry(page) {
+  const x = Math.round(page.width * 0.04);
+  const w = Math.round(page.width * 0.92);
+  const y = Math.round(page.height * 0.03);
+  const h = Math.round(page.height * 0.94);
+  const scale = Math.min(FIT_W / w, FIT_H / h, 1);
+  return { x, y, w, h, renderWidth: Math.round(w * scale), pitch: null };
 }
 
 function iiifUrl(archiveId, index, g) {
@@ -179,13 +247,20 @@ function prepare(config, { force }) {
   for (let i = first; i <= last; i++) {
     const page = pages[i];
     const facts = pageFacts(page, i, isHeading);
-    if (!facts.expectedLines) {
-      // A blank leaf or a plate. Recorded so the run is auditable, but nothing
-      // to crop and nothing to read.
-      leaves.push({ ...facts, image: null, skipped: 'no text on this leaf' });
-      continue;
-    }
-    const g = cropGeometry(page, facts);
+
+    // A leaf the old OCR found nothing on is cropped ANYWAY, and this is not
+    // belt-and-braces — it is the correctness fix that found the end of the
+    // poem. Skipping such leaves trusts the OCR to say where the text is, so
+    // the pages it failed hardest on are exactly the ones never looked at.
+    // Leaf 73 of this scan is printed page 72: four verse lines and "The
+    // END.", on paper foxed badly enough that the 2010 engine returned `r ee`,
+    // `HS dE` and eleven other specks. The config had it down as a rear
+    // endpaper and the poem was being staged without its last two couplets.
+    //
+    // There is no line-count prediction for such a leaf, so `expectedLines`
+    // is null and the guard stands down for it — recorded in the review file
+    // rather than passed over in silence.
+    const g = cropGeometry(page, facts) ?? fullPageGeometry(page);
     const name = `n${String(i).padStart(3, '0')}.jpg`;
     const file = path.join(p.images, name);
     if (force || !fs.existsSync(file)) {
@@ -194,6 +269,8 @@ function prepare(config, { force }) {
     }
     leaves.push({
       ...facts,
+      expectedLines: facts.expectedLines || null,
+      unpredicted: !facts.expectedLines,
       image: path.relative(ROOT, file),
       transcript: path.relative(ROOT, path.join(p.transcripts, `n${String(i).padStart(3, '0')}.txt`)),
       renderedPitch: g.pitch,
@@ -224,7 +301,76 @@ function prepare(config, { force }) {
 
 // ---------------------------------------------------------------------------
 
-function assemble(config, { dry }) {
+/**
+ * Replace an imported draft's body with the freshly assembled one.
+ *
+ * Reads from the file on disk rather than taking the text as an argument, and
+ * that is deliberate: nothing should retype 1,300 lines of verse on its way to
+ * the database. The staged markdown is the one copy, and this moves it.
+ */
+async function pushToDb(config, outFile) {
+  // Loaded here rather than at the top of the file: `prepare` and `assemble`
+  // are pure fs + curl and must keep working in a checkout with no
+  // node_modules (an agent session, a fresh clone). Only --db needs these.
+  let dotenv;
+  let createClient;
+  try {
+    ({ default: dotenv } = await import('dotenv'));
+    ({ createClient } = await import('@supabase/supabase-js'));
+  } catch {
+    console.error('\n✗ --db needs the project dependencies. Run `npm install` first.');
+    process.exitCode = 1;
+    return;
+  }
+  dotenv.config({ path: path.join(ROOT, '.env.local'), override: true });
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!url || !key) {
+    console.error('\n✗ --db needs NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY in .env.local.');
+    process.exitCode = 1;
+    return;
+  }
+  const supabase = createClient(url, key);
+  const file = fs.readFileSync(outFile, 'utf8');
+  const body = file.split(/^---$/m).slice(2).join('---').trim();
+
+  const { data: rows, error: findError } = await supabase
+    .from('texts')
+    .select('id, slug, published, body')
+    .eq('slug', config.slug);
+  if (findError) {
+    console.error(`\n✗ ${findError.message}`);
+    process.exitCode = 1;
+    return;
+  }
+  if (!rows?.length) {
+    console.error(`\n✗ No text with slug "${config.slug}". Import it first.`);
+    process.exitCode = 1;
+    return;
+  }
+  const text = rows[0];
+  // HARD CONSTRAINT 1. A published text is not something a re-transcription
+  // should rewrite underneath its readers; that is a decision for a person.
+  if (text.published) {
+    console.error(`\n✗ "${config.slug}" is published. Refusing to rewrite a live text — do it from the edit form.`);
+    process.exitCode = 1;
+    return;
+  }
+  const { error } = await supabase
+    .from('texts')
+    .update({ body, ocr_quality: config.ocrQualityAfterVision ?? config.ocrQuality ?? null })
+    .eq('id', text.id);
+  if (error) {
+    console.error(`\n✗ ${error.message}`);
+    process.exitCode = 1;
+    return;
+  }
+  console.log(
+    `\n✓ Updated draft ${text.id}: ${text.body?.split('\n').length ?? 0} lines -> ${body.split('\n').length}.`,
+  );
+}
+
+function assemble(config, { dry, db }) {
   const p = paths(config.slug);
   if (!fs.existsSync(p.manifest)) {
     console.error(`No manifest. Run \`prepare\` first.`);
@@ -233,6 +379,8 @@ function assemble(config, { dry }) {
   const manifest = JSON.parse(fs.readFileSync(p.manifest, 'utf8'));
 
   const lines = [];
+  const read = [];
+  const unpredicted = [];
   const mismatches = [];
   const adjudicated = [];
   const untranscribed = [];
@@ -262,7 +410,9 @@ function assemble(config, { dry }) {
     // against the page image — and by nothing else. An unexplained mismatch
     // still stops the run.
     const headings = got.filter((l) => l.startsWith('## ')).length;
-    if (got.length !== leaf.expectedLines) {
+    if (leaf.expectedLines == null) {
+      unpredicted.push({ index: leaf.index, got: got.length });
+    } else if (got.length !== leaf.expectedLines) {
       const accepted = (config.visionLineCountAccepted ?? {})[leaf.index];
       (accepted ? adjudicated : mismatches).push({
         index: leaf.index,
@@ -272,12 +422,37 @@ function assemble(config, { dry }) {
         reason: accepted,
       });
     }
+    read.push({ index: leaf.index, catchword: leaf.catchword, first: got[0] });
     lines.push(...got);
+  }
+
+  // The collation check. Runs over the leaves actually transcribed, in order,
+  // so a gap in the run simply skips a comparison rather than reporting a
+  // false break.
+  const brokenChain = [];
+  for (let i = 0; i + 1 < read.length; i++) {
+    const here = read[i];
+    const next = read[i + 1];
+    if (next.index !== here.index + 1 || !here.catchword) continue;
+    const opening = String(next.first ?? '')
+      .replace(/^##\s*/, '')
+      .replace(/^\*+/, '')
+      .trim()
+      .split(/\s+/)[0];
+    if (!sameWord(here.catchword, opening)) {
+      brokenChain.push({ from: here.index, to: next.index, catchword: here.catchword, opening });
+    }
   }
 
   if (untranscribed.length) {
     console.error(`✗ ${untranscribed.length} leaves have no transcript: ${untranscribed.join(', ')}`);
     if (!dry) process.exit(1);
+  }
+  if (unpredicted.length) {
+    console.log(
+      `  ${unpredicted.length} leaves had no prediction (the old OCR read nothing there): ` +
+        unpredicted.map((u) => `${u.index} (${u.got} lines)`).join(', '),
+    );
   }
   if (adjudicated.length) {
     console.log(`  ${adjudicated.length} leaves differ from the pitch test's count, each cleared by hand:`);
@@ -309,10 +484,37 @@ function assemble(config, { dry }) {
     if (!dry) process.exit(1);
   }
 
-  let text = lines.join('\n').replace(/\n{3,}/g, '\n\n').trim();
+  if (brokenChain.length) {
+    console.warn(`\n! ${brokenChain.length} leaves do not chain to the next by their catchword:`);
+    for (const b of brokenChain) {
+      console.warn(`    leaf ${b.from} ends "${b.catchword}" but leaf ${b.to} opens "${b.opening}"`);
+    }
+    console.warn('  Usually the scanner misread the catchword; check the pair if the text jumps.');
+  } else {
+    console.log('✓ Catchword chain intact across every consecutive pair of leaves.');
+  }
+
+  // A prose footnote arrives as one transcript line per PRINTED line, so the
+  // count guard above can still compare like with like. Here it becomes what
+  // it actually is: one paragraph, with the compositor's end-of-line
+  // hyphenation closed up ("under-" + "stands" -> "understands").
+  const folded = [];
+  for (const line of lines) {
+    const prev = folded[folded.length - 1];
+    if (line.startsWith('> ') && prev?.startsWith('> ')) {
+      const body = line.slice(2).trim();
+      folded[folded.length - 1] = prev.endsWith('-')
+        ? prev.slice(0, -1) + body
+        : `${prev} ${body}`;
+      continue;
+    }
+    folded.push(line);
+  }
+
+  let text = folded.join('\n').replace(/\n{3,}/g, '\n\n').trim();
   if (config.verse) text = markVerseBreaks(text.split('\n')).join('\n');
 
-  const verseLines = lines.filter((l) => !l.startsWith('## '));
+  const verseLines = folded.filter((l) => !l.startsWith('## ') && !l.startsWith('> '));
   const report = checkCouplets(verseLines);
 
   const frontmatter = `---
@@ -340,6 +542,18 @@ copyright_safe: true
       ? `${adjudicated.length} leaves were read against the scan by hand where the pitch test disagreed; every other leaf matched its predicted line count.`
       : `Every leaf matched the line count the XML's pitch analysis predicted for it.`,
     '',
+    brokenChain.length
+      ? `Catchword chain: ${brokenChain.length} pairs did not match (${brokenChain.map((b) => `${b.from}→${b.to}`).join(', ')}).`
+      : 'Catchword chain intact across every consecutive pair of leaves — no leaf is missing, duplicated or out of order.',
+    '',
+    ...(unpredicted.length
+      ? [
+          `Leaves the old OCR read nothing on, so no line count could be predicted and the guard stood down: ${unpredicted
+            .map((u) => `${u.index} (${u.got} lines read)`)
+            .join(', ')}. These were checked against the scan by hand.`,
+          '',
+        ]
+      : []),
     '## Couplet check',
     '',
     'The poem is in heroic couplets, so the form is a checksum on the reading.',
@@ -393,6 +607,8 @@ copyright_safe: true
   fs.writeFileSync(reviewFile, review);
   console.log(`✓ Written: ${path.relative(ROOT, outFile)}`);
   console.log(`✓ Written: ${path.relative(ROOT, reviewFile)}`);
+  if (db) return pushToDb(config, outFile);
+  return undefined;
 }
 
 // ---------------------------------------------------------------------------
@@ -413,4 +629,4 @@ if (!config.xmlFile || !config.archiveId) {
 }
 
 if (command === 'prepare') prepare(config, { force: flags.includes('--force') });
-else assemble(config, { dry: flags.includes('--dry') });
+else await assemble(config, { dry: flags.includes('--dry'), db: flags.includes('--db') });

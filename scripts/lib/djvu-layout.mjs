@@ -360,13 +360,20 @@ export function applyWordFixes(text, fixes = {}) {
  *
  * A line before a blank, or before a heading, is stanza-final: the paragraph
  * already ends there and a backslash would render a stray break.
+ *
+ * Blockquotes are skipped for a different reason: they are the shape a prose
+ * footnote takes in a verse text (the 1743 Psychomachia prints two, one of
+ * them with Greek), and prose wants to wrap to the measure, not break where
+ * the compositor happened to end a line.
  */
+const STRUCTURAL = /^(#|>)/;
+
 export function markVerseBreaks(lines) {
   return lines.map((line, i) => {
     const here = line.trim();
-    if (!here || here.startsWith('#')) return line;
+    if (!here || STRUCTURAL.test(here)) return line;
     const next = (lines[i + 1] ?? '').trim();
-    if (!next || next.startsWith('#')) return line;
+    if (!next || STRUCTURAL.test(next)) return line;
     return here.endsWith('\\') ? line : `${line}\\`;
   });
 }

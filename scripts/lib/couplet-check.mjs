@@ -1,11 +1,17 @@
 /**
  * couplet-check.mjs — use the verse form itself as a checksum on a transcription.
  *
- * WHY THIS EXISTS. A page of heroic couplets carries its own redundancy: line
- * 2n and line 2n+1 rhyme. When OCR mangles the end of a line, the rhyme breaks,
- * and that break is findable without knowing what the line was supposed to say.
- * The 1743 Psychomachia is 1,200-odd lines of couplets, which is far too many
- * to read closely and exactly the right size for a machine to narrow down.
+ * WHY THIS EXISTS. Heroic couplets carry their own redundancy: the lines rhyme
+ * in pairs. When OCR mangles the end of a line the rhyme breaks, and that break
+ * is findable without knowing what the line was supposed to say. The 1743
+ * Psychomachia is 1,200-odd lines, far too many to read closely and exactly the
+ * right size for a machine to narrow down.
+ *
+ * The scan below RESYNCHRONISES rather than pairing from a fixed index, because
+ * the form is couplets-with-occasional-triplets, as eighteenth-century couplet
+ * verse usually is (this printing braces each triplet in the margin). A triplet
+ * is an odd number of lines, so fixed pairing goes out of phase at the first one
+ * and reports every couplet after it as broken. See checkCouplets.
  *
  * WHAT IT DOES NOT DO, and this is the important part. It does not decide
  * whether a line is correct, and it never rewrites one. It ranks lines by how
@@ -82,15 +88,24 @@ export function finalWord(line) {
  * Does the line end in something that could be an English word?
  *
  * Deliberately crude and deliberately generous: the point is to catch OCR
- * wreckage, not to spell-check an eighteenth-century poet. A word passes if it
- * has a vowel, has no run of four consonants, and is not obviously a numeral or
- * a fragment. Real words this rejects would be a bug; garbage it accepts is
- * merely a miss, and the other two guards are there for those.
+ * wreckage, not to spell-check an eighteenth-century poet. Real words this
+ * rejects are a bug; garbage it accepts is merely a miss, and the other guards
+ * are there for those.
+ *
+ * The consonant-run threshold is 5 AFTER digraphs are collapsed, and it was 4
+ * before them. That earlier rule reported seven faults in the re-read
+ * Psychomachia and every one was a word: `constrain` (nstr), `o'erthrown` and
+ * `overthrows` (rthr), `o'erspreads` (rspr). English has four-consonant
+ * clusters, and `th` is one sound written with two letters. A checker that
+ * cries wolf on `constrain` costs more than the junk it catches, because the
+ * whole value of this list is that everything on it is worth opening.
  */
+const DIGRAPHS = /th|sh|ch|ph|wh|gh|ck|ng|qu/g;
+
 export function plausibleWord(word) {
   if (!word || word.length < 2) return false;
   if (!/[aeiouy]/.test(word)) return false;
-  if (/[bcdfghjklmnpqrstvwxz]{4}/.test(word)) return false;
+  if (/[bcdfghjklmnpqrstvwxz]{5}/.test(word.replace(DIGRAPHS, 'C'))) return false;
   return true;
 }
 
@@ -163,16 +178,16 @@ export function rhymes(a, b) {
 }
 
 /**
- * Walk a run of verse in pairs and report what wants a human eye.
+ * Walk a run of verse and report what wants a human eye.
  *
- * `lines` is the body only — headings and blank lines must be filtered out by
- * the caller, because a heading in the middle of the array shifts every couplet
- * after it by one and turns the whole report into noise. `offset` is the line
- * number of `lines[0]` in the finished text, so a flag can name where to look.
+ * `lines` is the body only — headings, blockquotes and blank lines must be
+ * filtered out by the caller. `offset` is the line number of `lines[0]` in the
+ * finished text, so a flag can name where to look.
  */
 export function checkCouplets(lines, { offset = 1, allowDigits = false } = {}) {
   const garbled = [];
   const noRhyme = [];
+  const triplets = [];
 
   lines.forEach((line, i) => {
     const w = finalWord(line);
@@ -192,32 +207,62 @@ export function checkCouplets(lines, { offset = 1, allowDigits = false } = {}) {
   });
 
   const isGarbled = new Set(garbled.map((g) => g.line));
+  const end = (i) => finalWord(lines[i] ?? '');
+  const usable = (i) => i < lines.length && !isGarbled.has(offset + i) && plausibleWord(end(i));
 
-  for (let i = 0; i + 1 < lines.length; i += 2) {
-    const a = finalWord(lines[i]);
-    const b = finalWord(lines[i + 1]);
-    // A couplet with a garbled half is already reported, and its rhyme cannot
-    // be judged. Reporting it twice would only pad the list.
-    if (isGarbled.has(offset + i) || isGarbled.has(offset + i + 1)) continue;
-    if (!plausibleWord(a) || !plausibleWord(b)) continue;
-    if (!rhymes(a, b)) {
-      noRhyme.push({
-        line: offset + i,
-        first: lines[i],
-        second: lines[i + 1],
-        endings: [a, b],
-      });
+  // A RESYNCHRONISING scan, and the resync is the whole point.
+  //
+  // Pairing rigidly from index 0 assumes the poem is couplets all the way
+  // down. It is not: eighteenth-century couplet verse drops into a TRIPLET
+  // every so often, and this printing marks each one with a brace in the
+  // margin. A triplet is an odd number of lines, so a fixed pairing goes out
+  // of phase at the first one and every couplet after it reads as a failure.
+  // That is not a quibble — on the re-read Psychomachia it was the difference
+  // between 57% and the real figure, and it would have been read as the
+  // transcription's fault rather than the checker's.
+  //
+  // So: walk forward, take a couplet where two lines rhyme, take a triplet
+  // where three do, and where neither holds, step ONE line and try again.
+  // Stepping one is what lets the scan recover its footing after an oddity
+  // instead of mis-reporting everything downstream.
+  let couplets = 0;
+  let i = 0;
+  while (i + 1 < lines.length) {
+    if (!usable(i) || !usable(i + 1)) {
+      i += 1;
+      continue;
     }
+    if (rhymes(end(i), end(i + 1))) {
+      if (usable(i + 2) && rhymes(end(i + 1), end(i + 2))) {
+        triplets.push({ line: offset + i, endings: [end(i), end(i + 1), end(i + 2)] });
+        i += 3;
+      } else {
+        couplets += 1;
+        i += 2;
+      }
+      continue;
+    }
+    // Out of step. If the next line pairs with the one after it, this line is
+    // the odd one out — record it and resync rather than dragging the error
+    // through the rest of the poem.
+    if (usable(i + 2) && rhymes(end(i + 1), end(i + 2))) {
+      noRhyme.push({ line: offset + i, text: lines[i], endings: [end(i), end(i + 1)], resynced: true });
+      i += 1;
+      continue;
+    }
+    noRhyme.push({ line: offset + i, text: lines[i], endings: [end(i), end(i + 1)], resynced: false });
+    i += 2;
   }
 
-  const pairs = Math.floor(lines.length / 2);
+  const groups = couplets + triplets.length + noRhyme.length;
   return {
     garbled,
     noRhyme,
-    pairs,
-    // The headline number. Rising across a re-transcription is the evidence
-    // that it worked; a single run's value means little on its own, because
-    // the floor is set by the poem's own eye-rhymes, not by the OCR.
-    rhymeRate: pairs ? (pairs - noRhyme.length) / pairs : 1,
+    triplets,
+    couplets,
+    pairs: groups,
+    // The headline number. Meaningful next to the SAME text read another way
+    // — the floor is set by the poem's own eye-rhymes, not by the OCR.
+    rhymeRate: groups ? (couplets + triplets.length) / groups : 1,
   };
 }

@@ -7,6 +7,62 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-09-21 — Read the 1743 Psychomachia off the page images, not the OCR
+
+The Psychomachia went in as `ocr_quality: low` and stayed unpublishable. The
+question was whether hand-correction was the only way out. It was not, and the
+reason is worth keeping: we were correcting a bad *reading* of a perfectly good
+page. `extract-djvu-xml.mjs` recovered the scan's arrangement and said in its
+own header that it did not improve the letters — true, and it left a British
+Library microfilm's 2010 OCR as the text.
+
+Measured, same checker both sides:
+
+| | djvu OCR | page images |
+|---|---|---|
+| Lines | 1,227 | **1,373** |
+| Couplet rhyme rate | 56.7% | **83.2%** |
+| Lines carrying wreckage | 65 | **0** |
+
+`In ABRAM's Life we see a Plan / Who prov'd, in Ares low Delius, / ... / His 45.
+you'll find, When well apply 4.` is now `...in *Age's low Decline*, / ... / His
+*Acts* you'll find, when well apply'd,`. Italics — which this translator uses to
+mark the doctrinal turns — survive for the first time.
+
+**The poem was also missing its ending.** Leaf 73 was recorded in the config as
+a rear endpaper. It is printed page 72: the last four lines and "The END.", on
+paper foxed badly enough that the OCR returned fifteen specks and no words. It
+read as blank, so `prepare` never cropped it — the script trusted the OCR to say
+where the text was, and so skipped the page the OCR had failed hardest on. Found
+because leaf 72's catchword is "Where" and nothing answered to it. Fixed: a leaf
+with no detected body block is now cropped anyway, with no line-count prediction.
+
+New: `scripts/ingestion/ocr-pages-vision.mjs` (`prepare` crops each leaf via
+IIIF from the XML's own body-block coordinates; `assemble` reads transcripts
+back, gates on line count, writes the staged markdown, and with `--db` pushes
+the body onto an already-imported draft) and `scripts/lib/couplet-check.mjs`
+(the verse form as a checksum). The transcription slot is deliberately not
+wired to an API: here it was filled by nine subagents on subscription tokens.
+
+Three things this got wrong before it got them right, all now in the code:
+
+- **The pitch test over-counts.** It called three gaps on leaf 26 exactly right
+  (4, 2, 1) and still read the page 2 long. A mismatch is an adjudication queue
+  — `visionLineCountAccepted`, one named reason per leaf — not a verdict.
+- **The couplet checker was wrong twice, and both times flattered the wrong
+  answer.** Rigid pairing de-phased at every triplet and put the re-read at 57%;
+  it resynchronises now. A four-consonant-run rule called `constrain`,
+  `o'erthrown` and `overthrows` wreckage; the "7 remaining faults" were all it.
+  Every headline number here was re-measured after the fixes.
+- **Never tell the transcriber the predicted line count.** It becomes a target
+  to pad toward and the check stops being independent.
+
+Known and not fixable from this source: leaf 69's scan is cropped at the foot,
+so one or two verse lines are absent from the image. Hence `medium`, not `high`.
+Still `published: false`.
+
+---
+
 ## 2026-09-21 — New pipeline source: Project Wittenberg
 
 Added `wittenberg` as a `source_type` for `fetch-texts.mjs` — Project Wittenberg
