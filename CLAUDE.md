@@ -483,10 +483,11 @@ pending → stage-1-done → stage-2-done → stage-3-done → staged → import
 }
 ```
 
-**source_type options:** `newadvent` | `gutenberg` | `wikisource` | `archive_online` | `archive_ocr`
+**source_type options:** `newadvent` | `gutenberg` | `wikisource` | `wittenberg` | `archive_online` | `archive_ocr`
 
 - `archive_online` — Archive.org hosted clean HTML/text (fetched directly)
 - `archive_ocr` — Archive.org djvu.txt scan that needs OCR cleanup
+- `wittenberg` — Project Wittenberg (projectwittenberg.org) static HTML — see the Notes on Sources entry below
 
 ---
 
@@ -576,6 +577,7 @@ Before each pipeline run, pull new candidates from the Notion Content Prospect L
    - `newadvent.org` → `newadvent` (the June 2026 `/fathers/` breakage was **resolved by 2026-08-29** — chapter pages serve normally again, verified via direct URL + `curl` returning no redirect)
    - `gutenberg.org` → `gutenberg`
    - `wikisource.org` → `wikisource`
+   - `projectwittenberg.org` → `wittenberg`
    - `archive.org/download/...djvu.txt` → `archive_ocr`
    - `archive.org` (other) → `archive_online`
    - Other clean HTML (e.g. anglicanhistory.org, ccel.org) → `archive_online`
@@ -989,6 +991,7 @@ still apply per-file, still parallelize the same way. What changes is Stage 2/5a
 - **CCEL** (`ccel`): the reading pages render dynamically (a plain HTTP fetch of the `.html` gets the SPA shell), **but CCEL also exposes a plain-text Unicode export that IS directly fetchable**: `https://ccel.org/ccel/{letter}/{author}/{work}/cache/{work}.txt` (`{letter}` = the author's first character; e.g. Anselm's Basic Works: `https://ccel.org/ccel/a/anselm/basic_works/cache/basic_works.txt`). One file holds the whole work, no OCR, no browser needed. `ccel.org` is on the Sourcer allowlist, and the fetch tool derives the cache `.txt` from **either** the natural reading URL `/ccel/{author}/{work}/{work}` (no letter — e.g. `ccel.org/ccel/anselm/basic_works/basic_works`, `ccel.org/ccel/benedict/rule/rule`) **or** the storage form `/ccel/{letter}/{author}/{work}/…`, so you can pin whichever CCEL URL you have to hand. (Older fallbacks, no longer preferred: the Archive.org djvu.txt scan of the NPNF volumes `archive_ocr`, or browser-based extraction `ccel_browser` from the reading URL `ccel.org/ccel/{author}/{work}/{work}.i_1.html`, confirmed 2026-07-12 with Traherne's *Centuries of Meditations*.)
 - **Project Gutenberg** (`gutenberg`): plain text — fetch-texts.mjs handles it. Use the plain text URL (not HTML).
 - **Wikisource** (`wikisource`): mediawiki HTML — fetch-texts.mjs handles it. Use the `/wiki/` URL.
+- **Project Wittenberg** (`wittenberg`, added 2026-09-21): static HTML at `projectwittenberg.org`, unchanged since ~2013 (stable `last-modified`, HTTP/2 200) — home to Luther and other Lutheran writers, e.g. the Small Catechism (`.../luther/little.book/web/book-1.html` … `book-6.html` + `book-appx.html`, one queue entry via the multi-URL `urls` array) and the 95 Theses (`.../luther/web/ninetyfive.html`). The site has no semantic containers at all (no `<nav>`/`<header>`/`<article>`), so `SOURCE_SELECTORS.wittenberg` matches chrome by text content the same way New Advent's ad paragraphs are matched, and `source-chrome.mjs` carries the matching markdown-level backstop. One tell — the "**Published in:**" edition-citation label — genuinely cannot be isolated at the DOM level: the source nests it as an unclosed `<p>` inside an unclosed `<p>`, so cheerio's `.text()` merges the label into the citation that follows before any selector can separate them; `wittenberg-published-in-label` in `source-chrome.mjs` is the *primary* defence for that one case, not the backstop, and is deliberately unconditional for that reason. **Copyright signal here is unusually strong**: translator pages carry an explicit dedication ("this text was translated … for Project Wittenberg by \<name\>, and is in the public domain") rather than relying on the death-year proxy — record that dedication text verbatim in `stage_1_notes` when it applies. The site also links index pages for other Lutheran figures beyond Luther (Andreae, Baier, Bente, Chemnitz, Gerhardt, Melanchthon, Walther, Wyneken) at `wittenberg-<name>.html` off the home page — a source of real breadth for the `lutheran` tradition, not just the catechism/theses.
 - **Archive.org** (`archive_online`): Use djvu.txt URL for OCR works; use direct HTML URLs for clean digitised editions. **Use the `/download/` path, not `/stream/`, for djvu.txt** — confirmed 2026-09-14: `archive.org/stream/{id}/{id}_djvu.txt` now returns a full HTML viewer page with the OCR text embedded in a single `<pre>...</pre>` block (breaks the plain-text assumption `clean-archive-ocr.mjs`/`archive-ocr-config.mjs` are built on, and would need an HTML-unwrap-plus-entity-decode step to use). `archive.org/download/{id}/{id}_djvu.txt` (a 302 redirect to the item's own `ia*.us.archive.org` file server, so keep `curl -L`) returns `Content-Type: text/plain` directly — same content, no wrapper. Verified against three different identifiers the same session. If `/download/` for some reason 404s while `/stream/`'s HTML viewer still loads, the identifier is fine and only the download route is having trouble — re-check rather than falling back to unwrapping `/stream/`'s HTML.
 
 - **Archive.org `_djvu.xml` — reach for this before `_djvu.txt` whenever layout carries meaning.** The

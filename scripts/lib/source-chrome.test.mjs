@@ -124,6 +124,85 @@ test('Gutenberg boilerplate truncates head and tail, keeping the book', () => {
   assert.equal(output, 'Chapter the first, in which the book actually begins.');
 });
 
+// Chrome fragments copied verbatim from projectwittenberg.org (the 95 Theses
+// and Small Catechism pages, fetched 2026-09-21); the body lines are trimmed
+// for brevity. wittenberg-published-in-label is deliberately unconditional
+// (not `requires: 'wittenberg'`) — see its comment in source-chrome.mjs — so
+// it must also work with no other wittenberg tell in the document.
+const WITTENBERG_BODY = [
+  '## PROJECT WITTENBERG  \n__________',
+  '#### Disputation of Doctor Martin Luther on the Power and Efficacy of Indulgences',
+  '[Martin Luther](http://www.iclnet.org/pub/resources/text/wittenberg/wittenberg-luther.html) - [Project Wittenberg](http://www.iclnet.org/pub/resources/text/wittenberg/wittenberg-home.html)',
+  '**Published in:**',
+  '_Works of Martin Luther: Adolph Spaeth, L.D. Reed, Henry Eyster Jacobs, et Al., Trans. & Eds. (Philadelphia: A. J. Holman Company, 1915), Vol.1, pp. 29-38_',
+  '1. Our Lord and Master Jesus Christ, when He said Poenitentiam agite, willed that the whole life of believers should be repentance.',
+  '![pwimage](w4.gif)',
+  'This text was converted to ASCII text for Project Wittenberg by Allen Mulvey, and is in the public domain. You may freely distribute, copy or print this text.',
+  'Rev. Robert E. Smith  \nWalther Library  \nConcordia Theological Seminary.',
+  'E-mail: smithre@mail.ctsfw.edu  \nSurface Mail: 6600 N. Clinton St., Ft. Wayne, IN 46825 USA  \nPhone: (260) 452-3149 - Fax: (260) 452-2126',
+  'To: [Martin Luther](http://www.iclnet.org/pub/resources/text/wittenberg/wittenberg-luther.html) - [Project Wittenberg](http://www.iclnet.org/pub/resources/text/wittenberg/wittenberg-home.html)',
+].join('\n\n');
+
+test('the whole Project Wittenberg chrome run is found and removed, prose untouched', () => {
+  const { output, removed } = stripChrome(WITTENBERG_BODY, { source: 'wittenberg' });
+  const ids = removed.map(r => r.rule);
+  assert.deepEqual(new Set(ids), new Set([
+    'wittenberg-masthead',
+    'wittenberg-nav-trail',
+    'wittenberg-published-in-label',
+    'wittenberg-icon',
+    'wittenberg-translator-credit',
+    'wittenberg-contact-block',
+    'wittenberg-contact-info',
+  ]));
+  // The heading, the citation paragraph, and the actual thesis survive —
+  // stripping removes furniture, not the front matter the citation carries.
+  assert.match(output, /Disputation of Doctor Martin Luther/);
+  assert.match(output, /Works of Martin Luther:/);
+  assert.match(output, /Poenitentiam agite/);
+  assert.doesNotMatch(output, /PROJECT WITTENBERG/);
+  assert.doesNotMatch(output, /Walther Library/);
+});
+
+test('wittenberg-published-in-label fires with no other wittenberg tell present', () => {
+  // The load-bearing case: this label is the one tell the DOM pass in
+  // fetch-texts.mjs cannot isolate (see its comment), so on a normal fetch it
+  // is the only wittenberg chrome left in the markdown — nothing else survives
+  // to confirm the source, and it must still be caught.
+  const body = ['**Published in:**', 'The actual citation text.', 'The body proper.'].join('\n\n');
+  const { output, removed } = stripChrome(body);
+  assert.deepEqual(removed.map(r => r.rule), ['wittenberg-published-in-label']);
+  assert.equal(output, 'The actual citation text.\n\nThe body proper.');
+});
+
+test('the nav trail rule requires a confirmed Wittenberg document, and needs the site name', () => {
+  // Without any unconditional wittenberg tell elsewhere, a short dash-joined
+  // line is left alone — this is the shape a real sentence with an em dash
+  // could take, so it must not fire on its own.
+  const untagged = 'Grace and peace - and nothing else - be with you always.';
+  assert.deepEqual(stripChrome(untagged).removed, []);
+
+  // Even inside a confirmed Wittenberg document, a dash-joined block that
+  // doesn't name the project is content, not a nav trail.
+  const confirmed = [
+    '![pwimage](w4.gif)',
+    'Grace and peace - and nothing else - be with you always.',
+  ].join('\n\n');
+  const { removed } = stripChrome(confirmed);
+  assert.deepEqual(removed.map(r => r.rule), ['wittenberg-icon']);
+});
+
+test('the in-page jump-anchor list is advisory only, in both escaping forms turndown produces', () => {
+  const bracketOutside = '\\[[10](#95-10)\\] \\[[20](#95-20)\\] \\[[30](#95-30)\\]';
+  const bracketInside = '[\\[1\\]](#a) [\\[2\\]](#b) [\\[3\\]](#c)';
+  for (const body of [bracketOutside, bracketInside]) {
+    const { output, removed, advisories } = stripChrome(body);
+    assert.deepEqual(removed, [], 'jump anchors must not be auto-stripped');
+    assert.equal(output, body);
+    assert.deepEqual(advisories.map(a => a.rule), ['wittenberg-jump-anchors']);
+  }
+});
+
 test('stripping is idempotent and a second pass is a no-op', () => {
   const once = stripChrome(NEW_ADVENT_BODY).output;
   const twice = stripChrome(once);
@@ -209,7 +288,7 @@ test('every rule names its source site, is structural, or is conditional', () =>
   // quietly delete real content, so it must stay true.
   for (const rule of CHROME_RULES) {
     const pattern = rule.match.source;
-    const namesSite = /New ?Advent|newadvent|PROJECT GUTENBERG|Project Gutenberg|Transcriber/i.test(pattern);
+    const namesSite = /New ?Advent|newadvent|PROJECT GUTENBERG|Project Gutenberg|Transcriber|Wittenberg|Walther Library|Concordia Theological Seminary|Surface Mail|pwimage/i.test(pattern);
     assert.ok(
       namesSite || rule.structural === true || typeof rule.requires === 'string',
       `rule ${rule.id} is none of site-named, structural or conditional: ${pattern}`,
@@ -255,6 +334,9 @@ test('no rule fires on real corpus prose', () => {
     'END OF THE FIRST BOOK.',
     'Books 2 and 3 are wanting.',
     'Contact with the heretics, he says, is the beginning of contagion; advertise your faith rather than your doubts.',
+    'He later taught at Concordia Theological Seminary, where the Walther Library still holds his papers.',
+    'Robert E. Smith’s translation work for Project Wittenberg began years before this letter was written.',
+    'The letter was published in a Leipzig journal the following spring.',
   ];
   for (const block of PROSE) {
     assert.deepEqual(

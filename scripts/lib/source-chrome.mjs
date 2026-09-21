@@ -217,6 +217,106 @@ export const CHROME_RULES = [
     match: /^#{1,6}\s*Transcriber'?s note/i,
     why: "Project Gutenberg transcriber's note",
   },
+
+  // --- Project Wittenberg -----------------------------------------------------
+  // The site (static HTML, unchanged since ~2013) carries no semantic wrapper —
+  // masthead, page nav and translator credit are plain <center>/<font>/<p> blocks
+  // interleaved with the text, so fetch-texts.mjs's DOM pass matches by text
+  // content rather than a container selector. These rules are the backstop for
+  // wherever that text-matching misses, and one — wittenberg-published-in-label
+  // — is the primary defence: the malformed, unclosed <p> nesting around the
+  // edition citation (`<p><center><b>Published in:</b><br>\n<p><I>…</I>`) means
+  // cheerio's own .text() merges the label into the citation that follows it,
+  // so the DOM pass cannot isolate the label alone — only turndown's later block
+  // split separates them, which is exactly the layer this module works on.
+  {
+    id: 'wittenberg-masthead',
+    source: 'wittenberg',
+    kind: 'block',
+    // "Project Wittenberg" (or "PROJECT WITTENBERG") as its own heading, with an
+    // optional underscore rule turndown carries over from a <br> before it.
+    match: /^#{1,6}\s*Project Wittenberg\s*(\n_+\s*)?$/i,
+    why: 'Project Wittenberg masthead',
+  },
+  {
+    id: 'wittenberg-nav-trail',
+    source: 'wittenberg',
+    kind: 'block',
+    // "To: <link> - <link> - Project Wittenberg" (top and bottom of every page,
+    // and between chapters of a multi-page work) — sometimes without the "To:"
+    // lead-in. Two things keep this from eating real prose: the lookahead
+    // requires the literal site name somewhere in the block (a "* * *" divider
+    // or an orphaned label never carries it), and the shape requires the whole
+    // block to be 2–5 short segments joined by " - " with no sentence
+    // punctuation — a real paragraph that happens to mention the project reads
+    // as prose, not as a link list.
+    match: /^(?=[\s\S]*Project Wittenberg)(?:To:\s*)?(?:\[[^\]]+\]\([^)]+\)|[A-Za-z][\w' ]{0,30})(?:\s-\s(?:\[[^\]]+\]\([^)]+\)|[A-Za-z][\w' ]{0,30})){1,4}$/i,
+    requires: 'wittenberg',
+    why: 'Project Wittenberg page nav trail',
+  },
+  {
+    id: 'wittenberg-translator-credit',
+    source: 'wittenberg',
+    kind: 'block',
+    // "This text was translated/converted … for Project Wittenberg by <name>,
+    // and is in the public domain." Real provenance, but — like New Advent's
+    // "About this page" citation — it belongs in translation_notes, not the body.
+    match: /for Project Wittenberg by[\s\S]*public domain/i,
+    why: 'Project Wittenberg translator/licence credit (belongs in translation_notes)',
+  },
+  {
+    id: 'wittenberg-contact-block',
+    source: 'wittenberg',
+    kind: 'block',
+    // The site's standing "direct comments to" signature block, present
+    // whichever translator did the specific text. The gap is bounded tightly
+    // (the real block is "Walther Library" immediately followed by "Concordia
+    // Theological Seminary." on the next line) so that real prose discussing
+    // the seminary's library — a real place, in a corpus about Lutheranism —
+    // is not caught unless the two names sit exactly this close together.
+    match: /Walther Library\s{0,6}\n?\s{0,6}Concordia Theological Seminary/i,
+    why: 'Project Wittenberg contact signature',
+  },
+  {
+    id: 'wittenberg-contact-info',
+    source: 'wittenberg',
+    kind: 'block',
+    match: /Surface Mail:[\s\S]*Phone:/i,
+    why: 'Project Wittenberg contact details (address/phone/fax)',
+  },
+  {
+    id: 'wittenberg-icon',
+    source: 'wittenberg',
+    kind: 'block',
+    // ![pwimage](w4.gif) — the small Project Wittenberg footer icon.
+    match: /^!\[pwimage\]\([^)]*\)$/i,
+    why: 'Project Wittenberg footer icon',
+  },
+  {
+    id: 'wittenberg-published-in-label',
+    source: 'wittenberg',
+    kind: 'block',
+    // The orphaned "**Published in:**" label that introduces an edition
+    // citation. The citation paragraph itself is left as content — it varies
+    // per work and reads as legitimate front matter — only the bare label goes.
+    //
+    // Unconditional rather than `requires: 'wittenberg'` — deliberately, not an
+    // oversight. Everywhere else on the page, the DOM pass in fetch-texts.mjs
+    // removes the chrome before turndown ever runs, so on a normal (non-broken)
+    // fetch no other wittenberg rule survives into the markdown to confirm this
+    // one. But this label specifically CANNOT be isolated at the DOM level: the
+    // source HTML nests it as `<p><center><b>Published in:</b><br>\n<p><I>…`,
+    // an unclosed <p> inside an unclosed <p>, so cheerio's .text() merges the
+    // label with the citation that follows it and no selector can separate
+    // them. Turndown's block split is the only place they come apart — which
+    // makes this the primary defence for this one tell, not the backstop, and
+    // it must fire without waiting for a confirmation that will never come. The
+    // structural shape (a whole block that is only this bolded label) is
+    // exactly as safe unconditionally as `newadvent-az-bar`'s 21-capitals shape.
+    structural: true,
+    match: /^\*\*Published in:\*\*\s*$/i,
+    why: 'Project Wittenberg citation label (citation text itself is kept)',
+  },
 ];
 
 /**
@@ -241,6 +341,21 @@ export const ADVISORY_RULES = [
     // resolves to nothing here. Needs a real asset or removal, not a strip.
     match: /!\[[^\]]*\]\((?!https?:)[^)]*\.(?:jpe?g|png|gif|webp)[^)]*\)/i,
     why: 'image with a source-relative path that will not resolve on this site',
+  },
+  {
+    id: 'wittenberg-jump-anchors',
+    kind: 'advisory',
+    // "[10] [20] [30] …" — the in-page jump-to-section links Project Wittenberg
+    // puts above a numbered work (theses, commandments). Harmless rather than
+    // misleading once imported, unlike the nav trail or contact block, so it is
+    // flagged for Stage 3 cleanup rather than auto-stripped.
+    //
+    // Turndown escapes the bracket pair two different ways depending on which
+    // one it treats as literal text vs. link syntax — `\[[10](#95-10)\]` on the
+    // Theses page, `[\[1\]](#a)` on the Catechism — so this matches loosely:
+    // any run of backslash/bracket characters around the digits and the URL.
+    match: /^(?:[\\[\]]*\d+[\\[\]]*\([^)]*\)[\\[\]]*\s*){2,}$/,
+    why: 'Project Wittenberg in-page jump-to-section anchor list',
   },
 ];
 

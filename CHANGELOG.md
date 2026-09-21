@@ -7,6 +7,41 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-09-21 — New pipeline source: Project Wittenberg
+
+Added `wittenberg` as a `source_type` for `fetch-texts.mjs` — Project Wittenberg
+(projectwittenberg.org) hosts Luther and other Lutheran writers as static HTML
+unchanged since ~2013, surfaced by a Discord tip from a visiting Lutheran pastor
+who also pointed at other Lutheran-text sources.
+
+The site has no semantic containers at all — no `<nav>`/`<header>`/`<article>` —
+so `SOURCE_SELECTORS.wittenberg` matches its masthead, page-nav trail and
+translator/contact credit by text content, the same way New Advent's ad
+paragraphs are matched, backed by the matching `source-chrome.mjs` rules. One
+tell genuinely cannot be isolated at the DOM level: the "**Published in:**"
+edition-citation label sits inside an unclosed `<p>` nested in another unclosed
+`<p>`, so cheerio's `.text()` merges the label into the citation before any
+selector can separate them. `wittenberg-published-in-label` is the *primary*
+defence for that one case (deliberately unconditional, not the backstop) —
+verified against the two real pages queued below, both before and after
+disabling the DOM pass, so the rule is confirmed to fire in the scenario it
+exists for and not just the one it doesn't need to.
+
+Queued two prospects: the Small Catechism (Robert E. Smith's 1994 translation,
+7 chapters, explicit "is in the public domain" dedication rather than a
+death-year proxy) and the Ninety-Five Theses (1915 Philadelphia Edition,
+public domain by publication date). The Small Catechism replaces a 2026-06-30
+Wikisource attempt that left `translation_copyright_clear: false` unresolved
+and partially failed to import — confirmed via Supabase that nothing exists
+under that slug, so this is a clean re-run rather than a duplicate.
+
+Scouted (not queued) `thesmallcatechism.org` — a CC-licensed contemporary
+translation offered in the same conversation — as Stromata's first
+Creative-Commons rather than public-domain candidate source; separate
+licensing considerations, reported without a pipeline change.
+
+---
+
 ## 2026-09-21 — Archive.org scans: read the `_djvu.xml`, not the `_djvu.txt`
 
 Keith wanted the *Psychomachia* — the founding allegory of the inner life, seven
