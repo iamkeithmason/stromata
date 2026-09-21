@@ -13,6 +13,10 @@ Each item links straight to the scanned leaf. Read the two quoted lines, find
 them on the image, and type in whatever sits between them. The couplet rhyme is
 the quickest test: a missing line usually leaves its partner unrhymed.
 
+The quoted lines are the scanner's own reading, before any correction — long s
+and all — because that is what matches the image you are looking at, not what
+the staged text says.
+
 - [ ] **leaf 2** ([open the scan](https://archive.org/details/bim_eighteenth-century_psychomachia-the-war-of_prudentius_1743/page/n2/mode/1up)) — ~1 line(s) missing
       after: `…The Earneft of the promis'd Seed,`
       before: `Think, in like Cafe, what muſt be done; |…`

@@ -25,7 +25,17 @@ on:
   # push there (d4ca788) produced no run from its `synchronize` event — none,
   # for any workflow, and still none ten minutes later, so a manual dispatch
   # was what produced a green. The NEXT push (a5a2e90) started runs normally.
-  # The gap skips a push; it does not persist across them.
+  #
+  # But the bounded reading does NOT always hold, and #120 the same evening is
+  # the counter-example. That PR was opened by an agent on a branch whose
+  # previous PR (#117) had already merged; neither its `opened` event nor the
+  # `synchronize` from the following push produced any run, and the last run on
+  # the branch stayed the one from 19:11, more than twenty minutes earlier.
+  # Both were confirmed the slow way — the PR's check runs by head SHA AND the
+  # workflow run list, minutes apart, not seconds. So: the gap usually skips one
+  # push, and sometimes does not clear at all. Treat "the next push will fix it"
+  # as a hope, not a rule, and dispatch manually once you have actually
+  # established the absence.
   #
   # The trap is in how you CHECK for it, and it is easy to get wrong in the
   # expensive direction. A run takes twenty seconds or so to appear in the API

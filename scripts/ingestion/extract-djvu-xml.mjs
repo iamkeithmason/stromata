@@ -198,6 +198,10 @@ const reviewBody = [
   'them on the image, and type in whatever sits between them. The couplet rhyme is',
   'the quickest test: a missing line usually leaves its partner unrhymed.',
   '',
+  'The quoted lines are the scanner\'s own reading, before any correction — long s',
+  'and all — because that is what matches the image you are looking at, not what',
+  'the staged text says.',
+  '',
   ...(report.gaps.length
     ? report.gaps.flatMap((g) => [
         `- [ ] **leaf ${g.page}**${pageLink(g.page)} — ~${g.missing} line(s) missing`,
