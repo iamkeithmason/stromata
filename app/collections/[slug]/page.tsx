@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { createPublicClient } from '@/lib/supabase/public'
+import { orThrow } from '@/lib/supabase/query'
 import { SiteHeader } from '@/app/components/SiteHeader'
 import { TrackPageEvent } from '@/app/components/TrackPageEvent'
 import { DownloadLinks } from '@/app/components/DownloadLinks'
@@ -55,16 +56,24 @@ export default async function CollectionPage({ params }: Props) {
   const { slug } = await params
   const supabase = createPublicClient()
 
-  const { data: collection } = await supabase
-    .from('collections')
-    // Explicit columns, not '*': anon cannot read description_draft /
-    // provenance_verified_at (026), and PostgREST rejects the whole request
-    // when select=* includes an unreadable column. Mirrors the shape the
-    // download routes already use.
-    .select('id, title, slug, description, published, author:authors(name, slug)')
-    .eq('slug', slug)
-    .eq('published', true)
-    .single()
+  // `.maybeSingle()` + orThrow, not `.single()`: `.single()` reports zero
+  // rows as an ERROR, so a guard around it would turn a genuinely missing
+  // collection into a 500. maybeSingle gives null for absence and an error only
+  // when the query really failed — so notFound() below means "no such
+  // collection", never "Supabase was down". See lib/supabase/query.ts.
+  const collection = orThrow(
+    await supabase
+      .from('collections')
+      // Explicit columns, not '*': anon cannot read description_draft /
+      // provenance_verified_at (026), and PostgREST rejects the whole request
+      // when select=* includes an unreadable column. Mirrors the shape the
+      // download routes already use.
+      .select('id, title, slug, description, published, author:authors(name, slug)')
+      .eq('slug', slug)
+      .eq('published', true)
+      .maybeSingle(),
+    'a collection page',
+  )
 
   if (!collection) notFound()
 
