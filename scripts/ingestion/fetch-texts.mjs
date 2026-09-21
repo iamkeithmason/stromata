@@ -223,6 +223,41 @@ const SOURCE_SELECTORS = {
         const text = $(el).text().replace(/\s+/g, " ").trim();
         if (/^project wittenberg(\s+_+)?$/i.test(text)) $(el).remove();
       });
+      // The work's own title/subtitle heading, repeated verbatim at the top
+      // of EVERY page of a multi-page work (confirmed on the Small Catechism:
+      // book-1.html through book-appx.html all restate it before their own
+      // chapter heading). Detected structurally — a heading immediately
+      // followed by a "Translated by" heading — rather than by this work's
+      // specific title text, so it generalises to any future Wittenberg work
+      // built from the same template. Must run before the translator-heading
+      // removal below, since it depends on that heading still being present
+      // to look ahead to. scripts/lib/source-chrome.mjs carries a matching
+      // markdown-level rule (wittenberg-work-title-header) for healing
+      // already-imported bodies, which is necessarily title-specific since it
+      // has no DOM to look ahead in.
+      $("h1, h2, h3, h4").each((_, el) => {
+        const next = $(el).next("h1, h2, h3, h4");
+        if (next.length && /^translated by\s/i.test(next.text().replace(/\s+/g, " ").trim())) {
+          $(el).remove();
+        }
+      });
+      // The header-form translator credit itself ("Translated by NAME /
+      // DATE"), and the site's internal edition/catalogue code that
+      // sometimes follows it ("(Version 1.1 …) / PW# 001-003-002Ea") — both
+      // real provenance, but already captured in translation_notes at Stage
+      // 2, so repeating them in the body is pure duplication.
+      $("h1, h2, h3, h4").each((_, el) => {
+        const text = $(el).text().replace(/\s+/g, " ").trim();
+        if (/^translated by\s/i.test(text)) $(el).remove();
+      });
+      $("center, p").each((_, el) => {
+        const text = $(el).text().replace(/\s+/g, " ").trim();
+        if (/PW#\s*[\w-]+/i.test(text)) $(el).remove();
+      });
+      // The site's `<hr noshade>` page dividers — always template furniture
+      // bracketing chrome that is itself already stripped above, never a
+      // meaningful divider within the actual translated text.
+      $("hr").remove();
       // "To: <link> - <link> - Project Wittenberg" nav trail — top and bottom
       // of every page, and between chapters of a multi-page work. Short,
       // dash-joined, no sentence punctuation, and always names the project —
@@ -320,6 +355,14 @@ function generateFrontmatter(title, index, cfg, noteDraft = "", suggestedThemes 
     ? `themes: [${themeSlugs.join(", ")}]`
     : `themes: []  # TODO — choose from: ${themeList}`;
 
+  // Omitted entirely (not written as an empty string) when unset, so
+  // parseFrontmatter() leaves data.license undefined and the importer treats
+  // the text as public domain by default — the same convention as every
+  // other optional field here.
+  const licenseLine = cfg.knownFields.license
+    ? `license: "${cfg.knownFields.license}"\n`
+    : "";
+
   return `---
 title: "${title}"
 slug: "${slug}"
@@ -334,7 +377,7 @@ translation_notes: "${cfg.knownFields.translationNotes || "# TODO — confirm tr
 ocr_quality: "high"
 published: false
 copyright_safe: ${cfg.knownFields.copyrightSafe ?? true}
-note_draft: "${escapedDraft}"
+${licenseLine}note_draft: "${escapedDraft}"
 ---
 
 <!-- EDITORIAL INTRO — write 2–4 sentences here explaining what this text is and why it matters. This appears above the text on the reader page. -->

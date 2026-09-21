@@ -65,6 +65,124 @@ transcriber's. It reads `jo[y],` in brackets so the hand is visible.
 Known and not fixable from this source: leaf 69's scan is cropped at the foot,
 so one or two verse lines are absent from the image. Hence `medium`, not `high`.
 Still `published: false`.
+## 2026-09-21 — Six new Project Wittenberg chrome rules, and healed the drafts they were left in
+
+Keith reviewing the Small Catechism drafts (from #123) found real noise still in the body: the
+whole-work title/translator masthead repeated on every chapter, orphaned `* * *` page dividers left
+over once the paragraphs they bracketed were already stripped, and a dead in-page jump-anchor list
+(`\[1\] \[2\] \[3\] …`) that can never resolve to anything, since every `<a>` href is stripped
+project-wide. `scripts/lib/source-chrome.mjs` gets six new/changed rules for these —
+`wittenberg-work-title-header`, `wittenberg-translator-credit-heading`, `wittenberg-edition-code`,
+`wittenberg-orphaned-divider`, `wittenberg-underscore-rule`, and `wittenberg-jump-anchors` promoted
+from advisory-only to stripped outright (it had escaped two rounds of Stage 3 review already, and
+its old pattern assumed a surviving `(url)` that never happens once links are stripped — the real
+shape has none). `fetch-texts.mjs`'s DOM pass gets the matching primary-defence fix for future
+fetches, detecting the repeated title structurally (a heading immediately followed by a "Translated
+by" heading) rather than by this one work's title text, plus removing every `<hr>` and the internal
+edition-code paragraph.
+
+One real near-miss while writing this, caught by a dry run against the live corpus before `--write`:
+a bare-underscore-divider rule was briefly written `structural: true` (unconditional), on the same
+reasoning as `newadvent-az-bar`'s A–Z bar — until the dry run showed it matching a genuine topic-break
+divider inside an unrelated New Advent import (`catechetical-lecture-18.md`, Cyril of Jerusalem's own
+formatting, nothing to do with Wittenberg). Reverted to `requires: 'wittenberg'`, with a regression
+test pinning the exact false-positive case. `wittenberg-jump-anchors` and the work-title-header rule,
+by contrast, were confirmed safe to be unconditional by checking the whole corpus for the pattern
+first (`wittenberg-work-title-header`'s title text; the jump-anchor shape occurs in exactly one text
+project-wide) rather than assuming.
+
+Ran `strip-source-chrome.mjs --drafts --files --write` against the result: 7 texts cleaned (6
+remaining catechism chapters + the 95 Theses — `small-catechism-ten-commandments` was already
+hand-cleaned and published by Keith mid-review, so left alone) and all 8 staged output files aligned.
+One known remaining blemish, left alone on purpose: on two texts (`small-catechism-ten-commandments`
+originally, and the 95 Theses' citation line) the anchor-list or underscore-divider is glued to a real
+heading/citation in the same markdown block with no blank line between them — this module only drops
+whole blocks, and dropping either would delete real content with it. `fetch-texts.mjs`'s DOM fix
+(removing the `<font size="-1">` anchor wrapper before turndown ever runs) is the actual fix for any
+future fetch of this shape.
+
+---
+
+## 2026-09-21 — Built the license infrastructure the CC-catechism prospect is blocked on
+
+Added `texts.license` (migration `030_text_license.sql`, nullable, `null` = public domain —
+the default for every text so far) and `lib/licenses.ts`, a slug → `{name, url}` lookup
+(currently just `cc-by-sa-4.0`). The reader page (`app/texts/[slug]/page.tsx`) now renders a
+linked license line in the provenance rail when a text has one, and `CitationButton` folds it
+into the copied citation. `pipeline-import.mjs` refuses to import any staged text carrying a
+non-null `license` unless `source_attribution` and `source_url` are both also present, since an
+unattributed licensed text is worse than an unattributed public-domain one; `fetch-texts.mjs`
+writes the field from `cfg.knownFields.license` when set.
+
+This is infrastructure only — it does not touch the `small-catechism-elce-cc` prospect's status
+or `translation_copyright_clear`, and does not wire up `wordpress_rest` fetching. Actually using
+it stays gated on Keith confirming the ELCE translation's terms with the minister who shared it.
+
+---
+
+## 2026-09-21 — Queued the CC-licensed Small Catechism, blocked on purpose
+
+`thesmallcatechism.org` — the ELCE's 2016 contemporary translation, offered in the same Discord
+conversation that surfaced Project Wittenberg — is queued as `small-catechism-elce-cc`, but
+deliberately left at `status: "pending"` with `translation_copyright_clear: false`. It's the first
+CC-licensed (not public-domain) source this pipeline has ever considered, and Stromata's schema and
+reader page have no mechanism for the attribution and share-alike obligations CC BY-SA 4.0 carries —
+that gap, not a copyright problem, is what's blocking it. The queue entry's `notes` field carries the
+full brief: the licensing/share-alike questions that need Keith's call, a real dedup-collision risk
+against the just-imported Wittenberg translation (same title, same author, would silently skip at
+Stage 5a), and the fetch mechanics, which are the one part already solved (a clean WordPress REST API,
+far less chrome than Wittenberg). `source_type: "wordpress_rest"` is a placeholder label only — no
+`SOURCE_SELECTORS` entry exists for it, on purpose, until the licensing question is answered.
+
+---
+
+## 2026-09-21 — Renumbered a migration collision; three older ones found, not touched
+
+Two branches both added a `028_*.sql` migration (`text_word_count`, from the egress fix a few
+entries below; `poem_genre`, from the Wittenberg/djvu.xml session), and both merged to `main`
+within the same session without either PR seeing the other. `supabase/migrations/028_poem_genre.sql`
+is renamed to `029_poem_genre.sql` — safe to do after the fact because Supabase's own migration
+history tracks each applied migration by a timestamp it assigns when applied (confirmed via
+`list_migrations`: `text_word_count` and `028_poem_genre` are both already applied, as
+`20260921185940` and `20260921204124` respectively), not by the local file's numeric prefix. The
+rename is pure repo hygiene; nothing needed re-running. Updated the four places that named the old
+filename or cited "migration 028" for the Poem genre specifically (`CLAUDE.md`,
+`scripts/ingestion/archive-ocr-config.mjs`, `scripts/ingestion/run-log/2026-09-21.md`, this file) —
+left every `028` reference to `text_word_count` alone, since that one keeps its number.
+
+**Not fixed, flagged for a decision:** three older collisions already exist in
+`supabase/migrations/` — `006` (`editorial_introduction` / `era_description`), `011` (`note_draft`
+/ `tradition_description`), `017` (`author_image_framing` / `text_source_url`) — all long since
+applied and merged. Renumbering those is a bigger, more invasive change: more history to rewrite,
+more places a stale reference could hide, and no fresh session actively confused by them the way
+tonight's collision was caught in the middle of being made. Left alone pending a decision on
+whether the hygiene is worth the churn.
+
+---
+
+## 2026-09-21 — Bounding the failure the query-error fix below still leaves open
+
+Landed alongside the entry directly below (same incident, same session that reported it, a
+different Claude session fixed the root cause first — see that entry for the full story and
+`orThrow`/`.maybeSingle()`, which supersede what this entry originally proposed here). Three things
+that fix doesn't cover, added on top of it:
+
+- `lib/supabase/public.ts`: `createPublicClient()`'s fetch now carries an 8s `AbortSignal.timeout`.
+  `orThrow` makes a failed read fail loudly, but nothing previously bounded how long a *stalled*
+  read (Supabase accepts the connection but never answers) takes to surface as a failure at all —
+  a click could still hang until the platform's own function timeout (up to 60s on Vercel).
+- `app/loading.tsx`, `app/error.tsx`: root-level UI Next.js had neither of before, so what `orThrow`
+  now throws on a live (non-ISR) request had nowhere to land but Next's default crash page. Loading
+  streams in immediately so a click has visible feedback while data is in flight; the error boundary
+  gives a branded "try again" instead.
+- `scripts/verify-site-health.mjs`: the QA automation asked for alongside the fix. Loads cached
+  pages and the live-read routes (sitemap/rss/llms.txt) against a time budget, and — the check that
+  actually maps to the original report — opens `/texts`, clicks the first real text link, and
+  asserts the browser lands on real content within budget. Run manually or on a schedule, the same
+  way `verify-analytics.mjs` is: `node scripts/verify-site-health.mjs --prod`.
+
+The entry below already fixed `scripture/[ref]` was left out of its own sweep — worth checking
+before calling this class of bug closed.
 
 ---
 
@@ -171,7 +289,7 @@ lines, left its second line stranded under the markdown heading that already
 said it in full; a heading mapped to `null` now removes a line instead of
 replacing it. 55 real gaps remain, each a checkbox with a deep link to its leaf.
 
-**A `Poem` genre** (migration `028`, mirrored in `lib/constants.ts`,
+**A `Poem` genre** (migration `029`, mirrored in `lib/constants.ts`,
 `lib/pipeline/vocab.ts`, `scripts/sourcer/vocab.ts`, `scripts/scout/config.ts`,
 `scripts/ingestion/fetch-texts.mjs` and CLAUDE.md). The vocabulary had exactly
 one verse genre, so every poem that is not a hymn had to be filed as one, and

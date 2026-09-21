@@ -47,6 +47,13 @@ import { createClient } from '@supabase/supabase-js'
 /** Matches the `revalidate` window the public pages declare. */
 const CACHE_SECONDS = 3600
 
+// A stalled read used to hang until the platform's own function timeout (up
+// to 60s on Vercel), which a click just reads as "nothing happened" — found
+// 2026-09-21 when a Supabase outage left every uncached page hanging rather
+// than failing. Bounding the fetch turns that into a quick, visible error
+// instead, caught by the nearest `error.tsx`.
+const QUERY_TIMEOUT_MS = 8000
+
 export function createPublicClient(options: { live?: boolean } = {}) {
   const cacheInit: RequestInit = options.live
     ? { cache: 'no-store' }
@@ -58,7 +65,8 @@ export function createPublicClient(options: { live?: boolean } = {}) {
     {
       global: {
         // These options are ignored in the browser, where this client also runs.
-        fetch: (input, init) => fetch(input, { ...init, ...cacheInit }),
+        fetch: (input, init) =>
+          fetch(input, { ...init, ...cacheInit, signal: AbortSignal.timeout(QUERY_TIMEOUT_MS) }),
       },
     }
   )

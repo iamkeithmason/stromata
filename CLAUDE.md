@@ -474,6 +474,7 @@ pending → stage-1-done → stage-2-done → stage-3-done → staged → import
       "translation_copyright_clear": true,
       "translator": "James Barmby",
       "translator_death_year": 1887,
+      "license": null,
       "stage_1_notes": "",
       "stage_2_output": "",
       "stage_3_themes": [],
@@ -482,6 +483,19 @@ pending → stage-1-done → stage-2-done → stage-3-done → staged → import
   ]
 }
 ```
+
+**`license`** — `null` (the default; omit the field entirely for a public-domain
+prospect) or a slug into `lib/licenses.ts` (currently only `"cc-by-sa-4.0"`) for a
+work offered under an open license rather than being in the public domain. This is
+a genuinely different case from public domain: a licensed work carries its own
+display+attribution obligation the site has to meet on the reader page, not just a
+copyright status to verify. `fetch-texts.mjs` writes it into frontmatter only when
+`cfg.knownFields.license` is set; `pipeline-import.mjs` **refuses to import** any
+staged text with a non-null `license` unless `source_attribution` and `source_url`
+are both also present, since an unattributed licensed text is worse than an
+unattributed public-domain one. Do not set this field to queue or import a
+CC-licensed text without Keith's explicit go-ahead on that specific source — the
+schema/pipeline/reader support existing is not itself authorization to use it.
 
 **source_type options:** `newadvent` | `gutenberg` | `wikisource` | `wittenberg` | `archive_online` | `archive_ocr`
 
@@ -794,7 +808,7 @@ Homily · Sermon · Letter · Treatise · Essay · Meditation · Rule · Prayer 
 
 `Hymn` is the liturgical and the sung; `Poem` is everything else in verse (narrative, allegorical,
 didactic, devotional). A text that could be either is a hymn. Added 2026-09-21 — migration
-`028_poem_genre.sql`; the Notion `Genre` select needs the option added by hand in the UI, because
+`029_poem_genre.sql`; the Notion `Genre` select needs the option added by hand in the UI, because
 the API specifies select options by name only and an ALTER that rewrites the set blanks the column
 on every row.
 
@@ -994,6 +1008,7 @@ still apply per-file, still parallelize the same way. What changes is Stage 2/5a
 - **Project Gutenberg** (`gutenberg`): plain text — fetch-texts.mjs handles it. Use the plain text URL (not HTML).
 - **Wikisource** (`wikisource`): mediawiki HTML — fetch-texts.mjs handles it. Use the `/wiki/` URL.
 - **Project Wittenberg** (`wittenberg`, added 2026-09-21): static HTML at `projectwittenberg.org`, unchanged since ~2013 (stable `last-modified`, HTTP/2 200) — home to Luther and other Lutheran writers, e.g. the Small Catechism (`.../luther/little.book/web/book-1.html` … `book-6.html` + `book-appx.html`, one queue entry via the multi-URL `urls` array) and the 95 Theses (`.../luther/web/ninetyfive.html`). The site has no semantic containers at all (no `<nav>`/`<header>`/`<article>`), so `SOURCE_SELECTORS.wittenberg` matches chrome by text content the same way New Advent's ad paragraphs are matched, and `source-chrome.mjs` carries the matching markdown-level backstop. One tell — the "**Published in:**" edition-citation label — genuinely cannot be isolated at the DOM level: the source nests it as an unclosed `<p>` inside an unclosed `<p>`, so cheerio's `.text()` merges the label into the citation that follows before any selector can separate them; `wittenberg-published-in-label` in `source-chrome.mjs` is the *primary* defence for that one case, not the backstop, and is deliberately unconditional for that reason. **Copyright signal here is unusually strong**: translator pages carry an explicit dedication ("this text was translated … for Project Wittenberg by \<name\>, and is in the public domain") rather than relying on the death-year proxy — record that dedication text verbatim in `stage_1_notes` when it applies. The site also links index pages for other Lutheran figures beyond Luther (Andreae, Baier, Bente, Chemnitz, Gerhardt, Melanchthon, Walther, Wyneken) at `wittenberg-<name>.html` off the home page — a source of real breadth for the `lutheran` tradition, not just the catechism/theses.
+- **`thesmallcatechism.org`** (ELCE's contemporary Small Catechism translation) — **blocked, not a working source.** The mechanics are the easy part and are already solved: it's WordPress, and its REST API (`GET /wp-json/wp/v2/pages/<id>`) returns `content.rendered` as near-chrome-free article HTML, cleaner than any source above. What's blocking it is the license: **CC BY-SA 4.0**, not public domain — Stromata's schema and reader page have no field or UI for the attribution and share-alike obligations that license carries, and there's an open question whether a Claude-written `note_draft` derived from this text counts as a derivative needing its own CC notice. See the full writeup in the queue entry `small-catechism-elce-cc`'s `notes` field (added 2026-09-21) before touching this — do **not** add a `wordpress_rest` (or any) `SOURCE_SELECTORS` entry for it until that entry's open questions are resolved.
 - **Archive.org** (`archive_online`): Use djvu.txt URL for OCR works; use direct HTML URLs for clean digitised editions. **Use the `/download/` path, not `/stream/`, for djvu.txt** — confirmed 2026-09-14: `archive.org/stream/{id}/{id}_djvu.txt` now returns a full HTML viewer page with the OCR text embedded in a single `<pre>...</pre>` block (breaks the plain-text assumption `clean-archive-ocr.mjs`/`archive-ocr-config.mjs` are built on, and would need an HTML-unwrap-plus-entity-decode step to use). `archive.org/download/{id}/{id}_djvu.txt` (a 302 redirect to the item's own `ia*.us.archive.org` file server, so keep `curl -L`) returns `Content-Type: text/plain` directly — same content, no wrapper. Verified against three different identifiers the same session. If `/download/` for some reason 404s while `/stream/`'s HTML viewer still loads, the identifier is fine and only the download route is having trouble — re-check rather than falling back to unwrapping `/stream/`'s HTML.
 
 - **Archive.org `_djvu.xml` — reach for this before `_djvu.txt` whenever layout carries meaning.** The
