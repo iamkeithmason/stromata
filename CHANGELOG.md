@@ -41,9 +41,17 @@ about to add exactly that kind of new query surface, that was the finding worth 
   revoked. Every table was in fact `anon=arwdDxtm`: SELECT *and* INSERT/UPDATE/DELETE. Deny-all
   RLS was the only thing standing in the way. `024` revokes the write grants so `anon` is
   SELECT-only at both layers.
-- **Two migrations existed only in the database** — `review_queue` and `trigger_search_path`,
-  applied directly on 2026-09-21 with no repo file. Recorded as `020` and `021` (idempotent) so
-  repo history matches the live schema.
+- **`authenticated` is now SELECT-only too** (`025`), and `author_locations` was narrowed from
+  `using (true)` to inherit the authors policy. `010` gave `authenticated` full CRUD on purpose,
+  staging a Phase 2 that hasn't happened — `auth.users` is empty and the admin area authenticates
+  with its own signed cookie and talks to the database as service_role, so nothing ever connects
+  as that role. Inert today only because RLS denies the writes, which makes it a trap: the first
+  per-user write policy would inherit table-wide CRUD rather than the narrow grant its author
+  intended. Phase 2 is now additive. The unused `lib/supabase/client.ts` (`createBrowserClient`)
+  is deleted — it duplicated the new public client and invited picking the wrong one.
+- **`020`/`021` came from the review-queue branch, not here.** This branch had backfilled the same
+  two directly-applied migrations independently; on merge they collided add/add and the
+  review-queue originals won — they carry the fuller rationale.
 
 Verification, since "the policy looks right" is not evidence. Row fingerprints (`md5` over the
 ordered id set) for all twelve public surfaces were captured before the change as service_role +
@@ -55,6 +63,175 @@ public path still depends on service_role. Across the 158 prerendered public fil
 slugs appear; the two *published* Tractates do, and the other 122 don't. `get_advisors` (security)
 now returns an empty list — no WARNs, and the INFOs are gone too, because the tables have policies
 rather than because anything was suppressed.
+## 2026-09-21 — The admin session slides, so a phone review isn't logged out
+
+The review queue that shipped this morning is meant to be worked in spare
+minutes on a phone over weeks. The session cookie was 30 days — but 30 days
+from **login**, not from last use, so a reviewer working steadily through the
+Tractates would be thrown back to the sign-in page mid-queue on day 31 no
+matter how often they'd used it. Now the clock runs from the last request.
+
+- **`lib/admin/session.ts` owns the session**: cookie name, 30-day lifetime,
+  cookie options, and the `signSession` used for both first login and renewal.
+  The middleware renews the cookie; the login route mints it; both read the
+  same constants, so a renewed session can't quietly end up with weaker
+  attributes than a fresh one.
+- **Renewal is throttled, not per-request.** The queue autosaves every ~900ms
+  while you type and every one of those passes through the middleware —
+  renewing unconditionally would mean a `Set-Cookie` on hundreds of responses
+  per session. `shouldRenew` fires only below 25 days remaining, and because a
+  renewal resets to 30, it can't fire again for another 5 days of use. One
+  cookie write per 5 active days, whatever the request volume.
+- **Proven on the wire, not reasoned about.** Against a built server: a fresh
+  30-day cookie gets no `Set-Cookie`; a 24-day-old one and a 60-minute-from-
+  expiry one both do; the renewed token verifies as `role=admin` with its
+  expiry moved 24d → 30d and `HttpOnly` / `SameSite=Lax` / `Path=/` intact. No
+  cookie and a garbage cookie still 307 to login, and the API still 401s.
+- **The arithmetic is unit tested** (9 assertions) because a renewal threshold
+  is invisible when wrong — a session that never renews looks exactly like one
+  that does, until someone is logged out a month later. The tests pin the
+  boundary, the self-limiting property, and that expired or `exp`-less tokens
+  are never renewed (renewing an expired token would resurrect a dead session).
+- **A missing `ADMIN_COOKIE_SECRET` now fails closed.** Both paths used a `!`
+  assertion; the middleware would have thrown into its own catch and redirected,
+  but the login route would have minted a token signed with `undefined`.
+
+## 2026-09-21 — The wire sweep is a command, and conversion has a number
+
+Two of the Monthly Log's numbers could not be trusted, and one did not exist.
+"Avg texts/session" (0.2 in July) came from `text-open`, which fires only on
+clicks — every reader landing on a text straight from Google counted as zero.
+First → second text conversion, now the success signal for *Reader Discovery &
+Accessibility*, had no measure at all. And eight events sat in the Events
+Register marked "wire-verification pending", which is the state the seasonal
+panel was in when it produced four weeks of unusable data.
+
+- **`text-session-depth`** fires at the 1st and 2nd **distinct** text of a
+  session, keyed on `sessionStorage['stromata-session-texts']`. A threshold
+  event like `text-read`: it says where the reader got to, not where they came
+  from, so it carries no `from`. Both depths fire because each fires at most
+  once per session — conversion is then `count(depth=2) ÷ count(depth=1)` from
+  one event, no session joins. Mounted on `/texts/[slug]`, so it counts every
+  route onto a text, organic landings included. Reloads, back/forward and depth
+  3+ stay silent; `lib/session-depth.ts` tests are the specification.
+
+- **`scripts/verify-analytics.mjs`** turns "observe the outgoing beacon" from a
+  console ritual into a command. Real browser, real deployment, every Umami
+  collection request recorded and then aborted — a verification run cannot land
+  a synthetic event in the dataset. **30 checks pass against production**, and
+  the only two that fail are `text-session-depth`'s own, which is correct: it
+  is not deployed yet. That clears every one of the eight pending events:
+  `citation-copy`, `reader-setting-change` (all three settings separately),
+  `text-download` and `collection-download` (both formats), `collection-nav`,
+  `theme-click`, all eight PR #93 `from` surfaces on `text-open`, all five on
+  `author-open`, and both new `collection-open` surfaces. The assertion half (`scripts/lib/wire-check.mjs`)
+  is unit-tested, so the sweep cannot go green by looking in the wrong place.
+
+- **`scripts/monthly-metrics.mjs --month 2026-09`** prints the Monthly Log row.
+  Avg texts/session now counts `/texts/<slug>` pageviews: **0.84 for September
+  so far, against the 0.2 the click-derived version reported in July.** Same
+  readers; the old basis was simply blind to three quarters of them.
+
+- **Admin devices opt out.** Signing in to `/admin` sets
+  `localStorage['umami.disabled']`; the admin header says so and can clear it.
+
+### Three things the sweep found that nobody was looking for
+
+- **`text-open` has a second, undocumented emitter.** `app/texts/[slug]/page.tsx`
+  fires it again on page mount, with no `from` and a different payload shape.
+  Over 30 days: 31 `text-open`, of which 23 carry a `from`. The missing 8 are
+  exactly the 8 `text-view` events from the same place. *This* is why "only 64
+  of 151 carried a `from`" during the PR #93 audit — not missing instrumentation
+  but a second emitter. `from` shares are shares of the click subset only.
+
+- **Mount-time events are lost about six times in seven.** `text-view` and the
+  mount-fired `text-open` recorded 8 each over 30 days while `text-read`, on the
+  same pages, recorded 52 — and `text-read` cannot outnumber the mounts it
+  happens on. The cause: `window.umami?.track(...)` in a React mount effect,
+  while the tracker loads `defer`/`afterInteractive`. The effect usually wins the
+  race, `window.umami` is undefined, and the optional chaining swallows the event
+  silently. `lib/analytics/track-when-ready.ts` fixes this for
+  `text-session-depth` — and writes the session ledger *inside* the ready
+  callback, so a visit the tracker never reported cannot consume a depth and
+  leave an orphan `depth=2` inflating the very rate it measures. **The existing
+  two emitters are deliberately left alone** — fixing them step-changes a live
+  series, which is Keith's call, not the builder's.
+
+- **`text-read` fires without any scrolling on a text shorter than the
+  viewport.** Progress is `scrollTop / (scrollHeight - clientHeight)`, which
+  returns 1 when the denominator is ≤ 0. Observed directly on Ignatius to the
+  Magnesians.
+
+### And two the harness found about itself
+
+- **A failing check is the harness until proved otherwise.** `collection-nav`
+  direction=next showed no beacon while the structurally identical `prev` link
+  on the same page passed. Not a site bug: leaving the page is a race the beacon
+  loses. With navigation neutralised both fire, and production has 6 `next`
+  events to confirm it. Four diagnostic rounds to reach that; the cheap move
+  would have been to file a bug against the site.
+- **A page that failed to *load* must not report as a surface that is merely
+  absent.** The first production run returned 18 tidy "no element matching…"
+  dashes that were all one TLS failure. Fixed: the sweep now says so out loud.
+
+`text-session-depth` itself is **not yet wire-verified** — it is not deployed.
+`node scripts/verify-analytics.mjs --url=<preview>` covers its four entry paths
+and is the one command owed before this counts as done.
+## 2026-09-21 — The review queue moves to a phone, and publishing gets one path
+
+311 drafts, 288 of them in 22 single-source collections, all with provenance filled and
+307 with a `note_draft` that is in practice a finished ~800-character introduction. The
+only things missing were approval and a summary — and the person who supplies both is
+mostly away from a computer. So the review surface moved to **`/admin/review`**, built
+for a 375px screen, one thumb, and being interrupted.
+
+- **One publish path, and it was already wrong.** `lib/publishing/publish-text.ts` now
+  owns publishing; both admin text routes call it instead of their own inline
+  `revalidatePath` lists. Those lists covered the homepage, `/texts`, the text, its author
+  and its themes — but **not** the collection, era, tradition, authors-index or location
+  pages, every one of which is `revalidate = 3600` and renders published texts. A text
+  published from the collection page's point of view simply didn't appear there for up to
+  an hour. `textPaths()` is pure and unit tested, so the next new surface is a test failure
+  rather than a silent staleness bug.
+- **`published_at` is still the database's job.** The trigger from 019 stamps it on the
+  false→true transition; nothing in the new code writes it. Re-verified in a rolled-back
+  transaction after 021 touched that function: draft insert leaves it null, publish stamps
+  it, a later save doesn't rewrite it.
+- **The gate is server-side.** Provenance verification and `review_state = 'approved'` are
+  re-checked inside `publishText`, not just enforced by a disabled button. A probe with a
+  valid admin cookie confirms the review routes refuse `{"published": true, "title": …}`
+  outright — the autosave endpoint cannot be turned into a general text update or a
+  publish backdoor.
+- **Drafts live in draft columns** (020): `summary_draft`, `review_state`, `review_note`,
+  `collections.provenance_verified_at`, `description_draft`. Nothing the queue autosaves is
+  a live field, which is what makes pre-generation safe to re-run and an abandoned review
+  harmless. `review_state` goes NULL at publish rather than gaining a fourth state that
+  would then have to be kept in sync with `published`.
+- **Approving the description IS the record.** There is no separate flag: Approve copies
+  `description_draft` into `description`, and `publishCollection` reads only the latter.
+  It deliberately does not fall back to the draft — that fallback would publish text nobody
+  had approved.
+- **A fourth copy of the summary prompt is gone.** `SUMMARY_PROMPT` + `trimToLength` +
+  `generateSummary` existed byte-identically in `generate-summaries.mjs`,
+  `repair-summaries.mjs` and (in TypeScript) the generate-summary route. All three now
+  import `scripts/lib/summary-prompt.mjs` — the same consolidation `note-prompt.mjs`
+  already documents the reason for.
+- **Pre-generation summarises the note, not the body.** `generate-review-drafts.mjs` writes
+  each summary from title + `note_draft` — ~800 characters of already-distilled prose about
+  that exact text, instead of a 30,000-word body. It reports its own token cost per model;
+  the selection logic (what gets regenerated, what gets skipped) is unit tested, because
+  over 316 texts a wrong predicate is either real money or silently discarded edits.
+- **Two security-linter warnings fixed** on the way past: `update_updated_at` and
+  `set_published_at_on_publish` now pin `search_path`. The remaining advisor findings are
+  the deliberate RLS-with-no-policies design (anon is granted nothing on `texts`/
+  `collections`; everything goes through the service role) and a Supabase platform function.
+
+Not done here: the pilot run. Pre-generation needs `ANTHROPIC_API_KEY` and `/admin/review`
+needs Keith's own login, neither of which exists in a Claude Code session — so
+`npm run generate:review-drafts -- --collection the-shepherd-of-hermas` and the first phone
+publish are his. The queue reads correctly against that collection's real rows: 3 pending
+texts, consistent provenance, and a correctly-raised warning that Hermas is still a draft
+author.
 
 ---
 

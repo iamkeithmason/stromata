@@ -6,6 +6,7 @@ import { SiteHeader } from '@/app/components/SiteHeader'
 import { RecordVisit } from '@/app/components/RecordVisit'
 import { ReadingProgressBar } from '@/app/components/ReadingProgressBar'
 import { TrackPageEvent } from '@/app/components/TrackPageEvent'
+import { TrackTextSessionDepth } from '@/app/components/TrackTextSessionDepth'
 import TableOfContents from '@/app/components/TableOfContents'
 import { readingTime } from '@/lib/reading-time'
 import { extractHeadings } from '@/lib/headings'
@@ -528,6 +529,7 @@ export default async function TextPage({ params }: Props) {
         traditionSlug={author?.tradition?.slug ?? null}
         readingMinutes={readingTime(text.body)}
       />
+      <TrackTextSessionDepth slug={slug} />
       <TrackPageEvent
         event="text-open"
         data={{

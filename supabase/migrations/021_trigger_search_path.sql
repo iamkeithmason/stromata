@@ -1,13 +1,15 @@
--- 021_trigger_search_path.sql
+-- Pin search_path on our two trigger functions.
 --
--- BACKFILL — this DDL was applied directly to the database on 2026-09-21
--- (supabase_migrations version 20260921054941, name "trigger_search_path")
--- without a corresponding repo migration file. Recorded here so repo history
--- matches the live schema; it is already applied and is idempotent.
+-- Supabase's security linter flags `function_search_path_mutable`: a
+-- SECURITY-agnostic function with a role-mutable search_path can be steered at
+-- anyone who can set search_path. Neither function resolves an unqualified
+-- name — they touch only NEW/OLD fields and now() — so pinning it to empty is
+-- behaviour-preserving (pg_catalog is always searched first regardless, which
+-- is where now() lives).
 --
--- Pins an empty search_path on the two trigger functions so a mutable
--- search_path can't be used to shadow the objects they resolve
--- (Supabase advisor: function_search_path_mutable).
+-- Raised here rather than left alone because set_published_at_on_publish() is
+-- the single thing that stamps published_at, and the review queue's publish
+-- path now depends on it firing correctly.
 
 CREATE OR REPLACE FUNCTION update_updated_at()
 RETURNS TRIGGER
