@@ -103,7 +103,15 @@ async function installInterceptor(context) {
   if (VIA_NODE) {
     await context.route('**/*', async (route) => {
       try {
-        await route.fulfill({ response: await route.fetch({ maxRedirects: 5 }) });
+        // The timeout is explicit and generous ON PURPOSE. route.fetch()
+        // otherwise inherits the context default — which is the per-CHECK
+        // timeout, a few seconds — and proxying a document through Node is far
+        // slower than the browser fetching it directly. /texts (222 entries,
+        // ~300KB) takes 7-13s this way, so it was intermittently exceeding the
+        // check timeout; the handler then aborted, and the page load surfaced
+        // as net::ERR_FAILED. That looks exactly like a site or instrumentation
+        // failure and is neither.
+        await route.fulfill({ response: await route.fetch({ maxRedirects: 5, timeout: 60000 }) });
       } catch {
         // The context is torn down at the end of the run while requests are
         // still in flight; nothing useful to do but drop them.
