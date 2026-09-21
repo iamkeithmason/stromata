@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { createPublicClient } from '@/lib/supabase/public'
+import { rowsOrThrow } from '@/lib/supabase/rows'
 import { THEME_CLUSTERS } from '@/lib/constants'
 import SearchBar from './SearchBar'
 import { BookCover } from './components/BookCover'
@@ -129,7 +130,7 @@ export default async function Home() {
   const season = resolveSeason().season
 
   // ── Author chips — top 5 authors by published text count ─────────────
-  const { data: chipTextsRaw } = await supabase
+  const { data: chipTextsRaw, error: chipTextsError } = await supabase
     .from('texts')
     .select('author_id, author:authors(name, slug)')
     .eq('published', true)
@@ -137,7 +138,7 @@ export default async function Home() {
 
   type ChipTextRow = { author_id: string; author: { name: string; slug: string } | null }
   const chipCountMap = new Map<string, { name: string; slug: string; count: number }>()
-  for (const t of (chipTextsRaw ?? []) as unknown as ChipTextRow[]) {
+  for (const t of rowsOrThrow(chipTextsRaw, chipTextsError) as unknown as ChipTextRow[]) {
     if (!t.author?.slug) continue
     const entry = chipCountMap.get(t.author.slug)
     if (entry) { entry.count++ } else { chipCountMap.set(t.author.slug, { name: t.author.name, slug: t.author.slug, count: 1 }) }
@@ -150,7 +151,7 @@ export default async function Home() {
   // Fetch a broad batch so collection grouping is accurate even for large
   // batch-ingested collections. Collections are represented by their most
   // recently added text (first occurrence in the desc-sorted list).
-  const { data: recentRaw } = await supabase
+  const { data: recentRaw, error: recentError } = await supabase
     .from('texts')
     .select(`
       id, title, slug, word_count, summary, editorial_introduction,
@@ -164,7 +165,7 @@ export default async function Home() {
     .order('created_at', { ascending: false })
     .limit(50)
 
-  const allTexts = (recentRaw ?? []) as unknown as TextRow[]
+  const allTexts = rowsOrThrow(recentRaw, recentError) as unknown as TextRow[]
 
   // Tally per-collection: text count + accession number range (from batch)
   const collectionStats: Record<string, { count: number; minAcc: number | null; maxAcc: number | null }> = {}

@@ -1,6 +1,6 @@
 import Link from 'next/link'
-import { notFound } from 'next/navigation'
 import { createPublicClient } from '@/lib/supabase/public'
+import { assertFound } from '@/lib/supabase/not-found'
 import { SiteHeader } from '@/app/components/SiteHeader'
 import { TrackPageEvent } from '@/app/components/TrackPageEvent'
 import { DownloadLinks } from '@/app/components/DownloadLinks'
@@ -55,7 +55,7 @@ export default async function CollectionPage({ params }: Props) {
   const { slug } = await params
   const supabase = createPublicClient()
 
-  const { data: collection } = await supabase
+  const { data: collectionRow, error: collectionError } = await supabase
     .from('collections')
     // Explicit columns, not '*': anon cannot read description_draft /
     // provenance_verified_at (026), and PostgREST rejects the whole request
@@ -66,7 +66,7 @@ export default async function CollectionPage({ params }: Props) {
     .eq('published', true)
     .single()
 
-  if (!collection) notFound()
+  const collection = assertFound(collectionRow, collectionError)
 
   // Fetch published texts in this collection, ordered by collection_order then title
   const { data: texts } = await supabase

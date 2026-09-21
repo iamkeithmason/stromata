@@ -1,6 +1,6 @@
 import Link from 'next/link'
-import { notFound } from 'next/navigation'
 import { createPublicClient } from '@/lib/supabase/public'
+import { assertFound } from '@/lib/supabase/not-found'
 import MarkdownBody from '@/app/components/MarkdownBody'
 import { SiteHeader } from '@/app/components/SiteHeader'
 import { RecordVisit } from '@/app/components/RecordVisit'
@@ -69,7 +69,7 @@ export default async function TextPage({ params }: Props) {
   const { slug } = await params
   const supabase = createPublicClient()
 
-  const { data: text } = await supabase
+  const { data: textRow, error: textError } = await supabase
     .from('texts')
     // The anon-granted columns spelled out, not `*`. Anon holds a column-level
     // grant on `texts`
@@ -98,7 +98,7 @@ export default async function TextPage({ params }: Props) {
     .eq('published', true)
     .single()
 
-  if (!text) notFound()
+  const text = assertFound(textRow, textError)
 
   // author and genre are many-to-one → plain objects at runtime. The casts go
   // through `unknown` because the select is now a literal column list, so

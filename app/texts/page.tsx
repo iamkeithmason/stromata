@@ -1,4 +1,5 @@
 import { createPublicClient } from '@/lib/supabase/public'
+import { rowsOrThrow } from '@/lib/supabase/rows'
 import { SiteHeader } from '@/app/components/SiteHeader'
 import { readingMinutes } from '@/lib/reading-time'
 import { uniqueFacets } from '@/lib/facets'
@@ -37,7 +38,7 @@ export const revalidate = 3600
 export default async function TextsPage() {
   const supabase = createPublicClient()
 
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from('texts')
     .select(
       'id, title, slug, word_count, author:authors(name, slug, tradition:traditions(name, slug), era:eras(label, slug, year_start)), genre:genres(name, slug), text_themes(theme:themes(name))',
@@ -45,7 +46,7 @@ export default async function TextsPage() {
     .eq('published', true)
     .order('title')
 
-  const rows = (data ?? []) as unknown as TextRow[]
+  const rows = rowsOrThrow(data, error) as unknown as TextRow[]
 
   const items: TextItem[] = rows.map(t => ({
     id: t.id,

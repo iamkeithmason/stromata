@@ -1,4 +1,5 @@
 import { createPublicClient } from '@/lib/supabase/public'
+import { rowsOrThrow } from '@/lib/supabase/rows'
 import { SiteHeader } from '@/app/components/SiteHeader'
 import { TrackPageEvent } from '@/app/components/TrackPageEvent'
 import { uniqueFacets } from '@/lib/facets'
@@ -36,7 +37,7 @@ export const metadata = {
 export default async function AuthorsPage() {
   const supabase = createPublicClient()
 
-  const [{ data: authors }, { data: textAuthorRows }] = await Promise.all([
+  const [{ data: authors, error: authorsError }, { data: textAuthorRows, error: textAuthorError }] = await Promise.all([
     supabase
       .from('authors')
       .select(
@@ -48,9 +49,9 @@ export default async function AuthorsPage() {
     supabase.from('texts').select('author_id').eq('published', true),
   ])
 
-  const rows = (authors ?? []) as unknown as AuthorRow[]
+  const rows = rowsOrThrow(authors, authorsError) as unknown as AuthorRow[]
 
-  const textCounts = (textAuthorRows ?? []).reduce(
+  const textCounts = rowsOrThrow(textAuthorRows, textAuthorError).reduce(
     (acc: Record<string, number>, t: { author_id: string | null }) => {
       if (t.author_id) acc[t.author_id] = (acc[t.author_id] ?? 0) + 1
       return acc

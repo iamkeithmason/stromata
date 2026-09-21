@@ -3,6 +3,7 @@ import { SiteHeader } from '@/app/components/SiteHeader'
 import { TrackPageEvent } from '@/app/components/TrackPageEvent'
 import { notFound } from 'next/navigation'
 import { createPublicClient } from '@/lib/supabase/public'
+import { assertFound } from '@/lib/supabase/not-found'
 import { readingMinutes } from '@/lib/reading-time'
 import MarkdownBody from '@/app/components/MarkdownBody'
 import { LancetArch } from '@/app/components/LancetArch'
@@ -148,13 +149,13 @@ export default async function AuthorPage({ params }: Props) {
   const { slug } = await params
   const supabase = createPublicClient()
 
-  const { data: author } = await supabase
+  const { data: authorRow, error: authorError } = await supabase
     .from('authors')
     .select('*, tradition:traditions(name, slug), era:eras(label, slug), loc:locations(name, slug)')
     .eq('slug', slug)
     .single()
 
-  if (!author) notFound()
+  const author = assertFound(authorRow, authorError)
 
   const { data: texts } = await supabase
     .from('texts')

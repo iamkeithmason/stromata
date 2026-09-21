@@ -7,6 +7,58 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-09-21 — A failed read that renders as "zero results" poisons the ISR cache
+
+Reported via Discord: "buttons to the texts don't respond" — tried in both Brave and Chrome,
+shields down. The actual bug was worse than an unresponsive click: `/texts` and `/authors` were
+live-verified showing **"0 TEXTS" / "0 IN THE LIBRARY", "No texts/authors match these filters"** —
+to every visitor, on production, right now. There was nothing on either page to click.
+
+Root cause: `export const revalidate = 3600` makes these pages ISR — Next builds them in the
+background and keeps serving the last good version if the build throws. But
+`app/texts/page.tsx`, `app/authors/page.tsx` and `app/page.tsx`'s two homepage queries all wrote
+`const { data } = await supabase...` then `(data ?? []) as ...`, discarding `error` entirely. A
+Supabase read that *fails* and one that *succeeds with zero rows* both come back as `data: null`,
+and this pattern cannot tell them apart — so a failed read doesn't throw, it renders a
+successful-looking page reporting an empty corpus, and ISR happily bakes that over the working
+cache for the next hour. The trigger was a live Supabase incident (free-tier egress overage,
+`2abc198` same day was already chasing the same root cause) — confirmed directly against the
+`texts` table over both PostgREST and a raw Postgres connection, timing out 3/3 tries — but the
+database recovering on its own was never going to fix the cache it had already poisoned; only a
+fresh deploy (or the next revalidation happening to land while the DB was briefly healthy) would.
+That's a landmine for the *next* transient Supabase blip too, not just this one.
+
+- `lib/supabase/rows.ts` (`rowsOrThrow`): throws on `error` instead of coercing to `[]`. Applied to
+  the three listing reads above. A thrown error during ISR background regeneration makes Next keep
+  the last good cache and retry next window, instead of overwriting a working page with an empty
+  one.
+- `lib/supabase/not-found.ts` (`assertFound`): the same blind spot, one level down. `.single()` on
+  `texts/[slug]`, `authors/[slug]`, `collections/[slug]` also returns `data: null` for both "no such
+  row" and "query failed," and all three called `notFound()` on any falsy `data`. A failed detail-page
+  read rendered as a false 404 — telling a reader (and search engines) a text doesn't exist rather
+  than "ask again in a moment." `assertFound` keeps the real 404 (`error.code === 'PGRST116'`) and
+  throws everything else.
+- `lib/supabase/public.ts`: `createPublicClient()`'s fetch now carries an 8s `AbortSignal.timeout`,
+  so a stalled query fails fast instead of hanging until the platform's own function timeout (up to
+  60s on Vercel) — a click reading as "nothing happened" for however long that takes.
+- `app/loading.tsx`, `app/error.tsx`: root-level UI Next.js had neither before. Loading streams in
+  immediately so a click has visible feedback while data is in flight; the error boundary — what
+  `rowsOrThrow`/`assertFound` now throw into — gives a branded "try again" instead of Next's default
+  crash page.
+- `scripts/verify-site-health.mjs`: the QA automation asked for alongside the fix. Loads cached
+  pages and asserts a budget, hits the live-read routes (sitemap/rss/llms.txt) the same way, and —
+  the check that actually maps to the report — opens `/texts`, clicks the first real text link, and
+  asserts the browser lands on real content within budget. Run manually or on a schedule, the same
+  way `verify-analytics.mjs` is: `node scripts/verify-site-health.mjs --prod`.
+
+Not fixed here, flagged as a follow-up: the same `data ?? []` / `notFound()`-on-falsy-`data` pattern
+is still present in every other ISR page in `app/` (eras/traditions/themes/locations index and
+`[slug]` pages, `scripture/[ref]`, the secondary queries on the pages fixed above) — lower-stakes
+individually since none of them are the two top-of-funnel pages that were actually caught empty
+tonight, but it's the identical landmine in every one of them.
+
+---
+
 ## 2026-09-21 — The egress bill: listing pages were downloading the whole corpus
 
 Supabase's free-plan egress allowance (5 GB) was exceeded at **11.07 GB** last
