@@ -3,17 +3,28 @@ import { createServerClient } from '@/lib/supabase/server'
 import { readQueue } from '@/lib/pipeline/queue'
 import { listStagedBundles } from '@/lib/sourcer/staging'
 import { resolveLiveStatuses } from '@/lib/pipeline/liveStatus'
+import {
+  resolveCollectionAuthors,
+  formatAuthorNames,
+  one,
+  type CollectionAuthorRef,
+  type MaybeEmbedded,
+} from '@/lib/collections/author'
 import AgentSchedule from './AgentSchedule'
+
+type TextAuthor = CollectionAuthorRef & { id: string; draft: boolean }
+type TextGenre = { name: string }
+type TextCollection = { id: string; title: string; slug: string; published: boolean }
 
 type TextRow = {
   id: string; title: string; slug: string; published: boolean; editorial_introduction: string | null
-  author: { id: string; name: string; slug: string | null; draft: boolean }[]
-  genre: { name: string }[]
-  collection: { id: string; title: string; slug: string; published: boolean } | null
+  author: MaybeEmbedded<TextAuthor>
+  genre: MaybeEmbedded<TextGenre>
+  collection: MaybeEmbedded<TextCollection>
 }
 type CollectionRow = {
   id: string; title: string; slug: string; published: boolean; description: string | null
-  author: { name: string } | null
+  author: MaybeEmbedded<CollectionAuthorRef>
 }
 
 function Dot({ filled, emptyLabel }: { filled: boolean; emptyLabel: string }) {
@@ -50,7 +61,7 @@ export default async function AdminDashboard({ searchParams }: Props) {
       .order('created_at', { ascending: false }),
     supabase
       .from('collections')
-      .select('id, title, slug, published, description, author:authors(name)')
+      .select('id, title, slug, published, description, author:authors(name, slug)')
       .order('title'),
     supabase.from('authors').select('id', { count: 'exact', head: true }),
     supabase.from('locations').select('id', { count: 'exact', head: true }),
@@ -91,8 +102,23 @@ export default async function AdminDashboard({ searchParams }: Props) {
   //  • draft author  → author has live works but no public bio / not in the index
   //  • draft (unpublished) collection → collection hidden; text shows on its own
   const allTexts = (texts ?? []) as unknown as TextRow[]
-  const liveTextDraftAuthor = allTexts.filter(t => t.published && t.author?.[0]?.draft)
-  const liveTextDraftCollection = allTexts.filter(t => t.published && t.collection && t.collection.published === false)
+  const liveTextDraftAuthor = allTexts.filter(t => t.published && one(t.author)?.draft)
+  const liveTextDraftCollection = allTexts.filter(t => t.published && one(t.collection)?.published === false)
+
+  // Collection bylines are derived from the collection's texts, matching the
+  // public page (lib/collections/author.ts). No extra query: allTexts already
+  // carries each text's author and collection. Order here follows the texts
+  // query (newest first) rather than collection_order, which only shows on a
+  // multi-author collection and doesn't matter for an admin index line.
+  const textAuthorsByCollection = new Map<string, TextAuthor[]>()
+  for (const t of allTexts) {
+    const collection = one(t.collection)
+    const author = one(t.author)
+    if (!collection?.id || !author) continue
+    const found = textAuthorsByCollection.get(collection.id) ?? []
+    found.push(author)
+    textAuthorsByCollection.set(collection.id, found)
+  }
   const integrityCount = liveTextDraftAuthor.length + liveTextDraftCollection.length
 
   return (
@@ -125,7 +151,8 @@ export default async function AdminDashboard({ searchParams }: Props) {
                 </p>
                 <ul className="space-y-1">
                   {liveTextDraftAuthor.map(t => {
-                    const a = t.author[0]
+                    const a = one(t.author)
+                    if (!a) return null
                     return (
                       <li key={t.id} className="text-xs text-stone-700 flex flex-wrap items-center gap-x-2">
                         <Link href={`/admin/texts/${t.id}/edit`} className="font-medium hover:text-stone-900">{t.title}</Link>
@@ -148,16 +175,20 @@ export default async function AdminDashboard({ searchParams }: Props) {
                   marked draft — the collection is hidden from the site; publish it, or the text stands on its own:
                 </p>
                 <ul className="space-y-1">
-                  {liveTextDraftCollection.map(t => (
-                    <li key={t.id} className="text-xs text-stone-700 flex flex-wrap items-center gap-x-2">
-                      <Link href={`/admin/texts/${t.id}/edit`} className="font-medium hover:text-stone-900">{t.title}</Link>
-                      <span className="text-stone-400">— collection</span>
-                      <span className="italic">{t.collection!.title}</span>
-                      <Link href={`/admin/collections/${t.collection!.id}/edit`} className="text-amber-700 hover:text-amber-900 underline">
-                        edit collection →
-                      </Link>
-                    </li>
-                  ))}
+                  {liveTextDraftCollection.map(t => {
+                    const collection = one(t.collection)
+                    if (!collection) return null
+                    return (
+                      <li key={t.id} className="text-xs text-stone-700 flex flex-wrap items-center gap-x-2">
+                        <Link href={`/admin/texts/${t.id}/edit`} className="font-medium hover:text-stone-900">{t.title}</Link>
+                        <span className="text-stone-400">— collection</span>
+                        <span className="italic">{collection.title}</span>
+                        <Link href={`/admin/collections/${collection.id}/edit`} className="text-amber-700 hover:text-amber-900 underline">
+                          edit collection →
+                        </Link>
+                      </li>
+                    )
+                  })}
                 </ul>
               </div>
             )}
@@ -208,7 +239,9 @@ export default async function AdminDashboard({ searchParams }: Props) {
                   <div>
                     <span className="text-stone-800 text-sm font-medium">{c.title}</span>
                     <span className="text-stone-400 text-xs ml-3">
-                      {(c.author as { name: string } | null)?.name}
+                      {formatAuthorNames(
+                        resolveCollectionAuthors(c.author, textAuthorsByCollection.get(c.id) ?? [])
+                      )}
                     </span>
                     <span className={`ml-3 text-xs ${c.published ? 'text-green-600' : 'text-stone-400'}`}>
                       {c.published ? '● Published' : '○ Draft'}
@@ -240,31 +273,36 @@ export default async function AdminDashboard({ searchParams }: Props) {
           </div>
           {texts && texts.length > 0 ? (
             <div className="border border-stone-200 rounded divide-y divide-stone-100">
-              {(texts as unknown as TextRow[]).map((t: TextRow) => (
-                <div key={t.id} className="flex items-center justify-between px-4 py-3">
-                  <div>
-                    <span className="text-stone-800 text-sm font-medium">{t.title}</span>
-                    <span className="text-stone-400 text-xs ml-3">
-                      {(t.author as unknown as { name: string }[])?.[0]?.name} · {(t.genre as unknown as { name: string }[])?.[0]?.name}
-                      {(t.collection as { title: string } | null)?.title && (
-                        <> · <span className="italic">{(t.collection as { title: string }).title}</span></>
-                      )}
-                    </span>
-                    <span className={`ml-3 text-xs ${t.published ? 'text-green-600' : 'text-stone-400'}`}>
-                      {t.published ? '● Published' : '○ Draft'}
-                    </span>
+              {(texts as unknown as TextRow[]).map((t: TextRow) => {
+                const author = one(t.author)
+                const genre = one(t.genre)
+                const collection = one(t.collection)
+                return (
+                  <div key={t.id} className="flex items-center justify-between px-4 py-3">
+                    <div>
+                      <span className="text-stone-800 text-sm font-medium">{t.title}</span>
+                      <span className="text-stone-400 text-xs ml-3">
+                        {author?.name} · {genre?.name}
+                        {collection?.title && (
+                          <> · <span className="italic">{collection.title}</span></>
+                        )}
+                      </span>
+                      <span className={`ml-3 text-xs ${t.published ? 'text-green-600' : 'text-stone-400'}`}>
+                        {t.published ? '● Published' : '○ Draft'}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <Dot filled={!!t.editorial_introduction} emptyLabel="No editorial introduction" />
+                      <Link href={`/admin/texts/new?from=${t.id}`} className="text-xs text-stone-400 hover:text-stone-700">
+                        Duplicate
+                      </Link>
+                      <Link href={`/admin/texts/${t.id}/edit`} className="text-xs text-stone-500 hover:text-stone-900">
+                        Edit
+                      </Link>
+                    </div>
                   </div>
-                  <div className="flex items-center gap-3">
-                    <Dot filled={!!t.editorial_introduction} emptyLabel="No editorial introduction" />
-                    <Link href={`/admin/texts/new?from=${t.id}`} className="text-xs text-stone-400 hover:text-stone-700">
-                      Duplicate
-                    </Link>
-                    <Link href={`/admin/texts/${t.id}/edit`} className="text-xs text-stone-500 hover:text-stone-900">
-                      Edit
-                    </Link>
-                  </div>
-                </div>
-              ))}
+                )
+              })}
             </div>
           ) : (
             <p className="text-sm text-stone-400">No texts yet.</p>

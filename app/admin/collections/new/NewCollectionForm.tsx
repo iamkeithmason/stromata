@@ -88,16 +88,18 @@ export default function NewCollectionForm() {
 
       <div>
         <label className={label}>
-          Primary author <span className="text-stone-400 font-normal">(optional)</span>
+          Author <span className="text-stone-400 font-normal">(inherited from texts)</span>
         </label>
         <select name="author_id" className={input}>
-          <option value="">— no single author —</option>
+          <option value="">— inherit from texts —</option>
           {authors.map(a => (
             <option key={a.id} value={a.id}>{a.name}</option>
           ))}
         </select>
         <p className="text-xs text-stone-400 mt-1">
-          Leave blank for collections that span multiple authors.
+          Leave this on &ldquo;inherit&rdquo; unless the collection&rsquo;s own attribution
+          differs from its texts&rsquo; — a compiler or editor, say. Inheriting names every
+          author of the collection&rsquo;s texts; an override replaces them all.
         </p>
       </div>
 

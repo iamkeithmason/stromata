@@ -1,5 +1,6 @@
 import { revalidatePath } from 'next/cache'
 import type { SupabaseClient } from '@supabase/supabase-js'
+import { fetchCollectionAuthors, type CollectionAuthorRef } from '@/lib/collections/author'
 
 /**
  * The one way a text becomes public.
@@ -230,7 +231,7 @@ export async function publishCollection(
 ): Promise<PublishResult> {
   const { data: row, error: readError } = await supabase
     .from('collections')
-    .select('id, title, slug, published, description, description_draft, provenance_verified_at, author:authors(slug)')
+    .select('id, title, slug, published, description, description_draft, provenance_verified_at, author:authors(name, slug)')
     .eq('id', id)
     .maybeSingle()
 
@@ -271,8 +272,13 @@ export async function publishCollection(
   if (writeError) return { ok: false, id, title, reason: 'write_failed', detail: writeError.message }
 
   const paths = ['/', '/texts', `/collections/${collection.slug}`]
-  const authorSlug = one(collection.author)?.slug
-  if (authorSlug) paths.push(`/authors/${authorSlug}`)
+  // The authors are derived from the collection's texts by the same rule the
+  // public page uses (lib/collections/author.ts), so every author page the
+  // collection appears on is refreshed — including where `author_id` on the
+  // collection row was never filled in, and every author of a multi-author one.
+  for (const author of await fetchCollectionAuthors(supabase, id, collection.author)) {
+    if (author.slug) paths.push(`/authors/${author.slug}`)
+  }
 
   if (!options.skipRevalidation) revalidatePaths(paths)
 
@@ -402,5 +408,5 @@ type CollectionRow = {
   description: string | null
   description_draft: string | null
   provenance_verified_at: string | null
-  author: SlugRef | SlugRef[] | null
+  author: CollectionAuthorRef | CollectionAuthorRef[] | null
 }

@@ -97,7 +97,10 @@ export async function generateMetadata({ params }: Props) {
   // Count published texts for this author
   const { count: textCount } = await supabase
     .from('texts')
-    .select('*', { count: 'exact', head: true })
+    // select('id') not select('*'): anon cannot read the review-queue columns
+    // (026), and PostgREST rejects the whole request when select=* includes an
+    // unreadable column. head:true returns no rows either way.
+    .select('id', { count: 'exact', head: true })
     .eq('author_id', author.id)
     .eq('published', true)
 

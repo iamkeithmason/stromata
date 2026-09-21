@@ -105,6 +105,139 @@ duplicates the title the reader already renders above it, and images whose paths
 the source site (*The Pilgrim's Progress* has 7). Both are editorial calls, not mechanical ones.
 `--drop-leading-h1` opts into the first.
 
+## 2026-09-21 — Admin normalises Supabase to-one relations before using them
+
+The admin dashboard could crash on every request after the collection-byline
+change because its Supabase query returned `author` as a to-one object while
+the page typed it as an array and spread it into the per-collection author
+accumulator. The same wrong assumption made author and genre labels, plus the
+draft-author integrity alert, silently read `[0]` from objects.
+
+- `author`, `genre` and `collection` embeds now use the shared
+  `MaybeEmbedded<T>` shape and pass through `one()` before access. The
+  collection accumulator remains an array, and null or missing relations are
+  skipped rather than taking down the page.
+- Regression coverage exercises the object, one-element-array, null and
+  undefined shapes. The full suite passes (312 tests), TypeScript checks cleanly,
+  the production build succeeds, and an authenticated request to the built
+  `/admin` returns 200 against the live Supabase data.
+
+## 2026-09-21 — A collection's byline is derived from its texts, not stored beside them
+
+`collections.author_id` was an independent column: set by hand in the admin form,
+set again by `pipeline-import.mjs` at import, and read only to render a byline.
+Two copies of one fact, and the copy nobody reads back is the one that goes
+stale. It had, twice. `hydriotaphia-browne` sat with a null `author_id` while all
+five of its texts were Sir Thomas Browne's, and `against-the-heathen-sicca` lost
+its Arnobius mid-session on the day this was written. Both are *published*
+collections, so both were live pages with no byline, no breadcrumb back to the
+author, and no author in the `<title>`, meta description, OG tags or
+`BreadcrumbList` JSON-LD. Nothing alerts on that — it just quietly reads as a
+collection by nobody.
+
+- **The column's meaning flipped rather than the column going away.** Null used
+  to mean "no author"; it now means "inherit from my texts". That needed no
+  migration and no backfill, because no collection ever wanted "deliberately
+  nobody" — every null was an omission. A *non*-null value now means someone
+  chose it: an override for the case derivation genuinely can't reach, like a
+  compiler or editor whose attribution differs from the parts.
+- **`lib/collections/author.ts` is the single rule**, with `lib/collections/author.test.ts`
+  as its specification (13 cases, including both live nulls). The collection page,
+  its `generateMetadata`, both download routes, the admin dashboard list and
+  `publishCollection`'s revalidation all read through it, so they can't disagree
+  about who a collection is by.
+- **No `published` filter of its own — the caller's privileges set its reach.**
+  The byline says who wrote the work, not what's visible today, so the query
+  doesn't narrow it. Since #106 moved public pages onto the anon key, RLS
+  supplies that filter on the public side, which is right for a public byline:
+  `pastoral-rule-gregory`, published with all four texts still in draft, shows
+  no byline — on a page that already reads "No published texts in this
+  collection yet." The admin dashboard and `publishCollection()` hold
+  service_role and see every text, which is what an index line and a
+  revalidation sweep need. Adding the filter to the query itself would have
+  narrowed those too.
+- **A multi-author collection names everyone** — "Jerome and Augustine of Hippo",
+  Oxford-comma-free, each name linked where it has an author page. The corpus is
+  single-author 40-for-40 today, but that's a property of the current acquisition
+  path (one work by one author, split into chapters), not of collections: the
+  first anthology or letters-between-two-figures collection breaks it. The
+  breadcrumb still only appears for a single author, since a breadcrumb has to
+  point somewhere.
+- **A derived author is named, but only linked if it can be.** Deriving from all
+  texts means a published collection can name an author who is still an
+  unreviewed pipeline stub, and a draft author's page 404s until it has a
+  published text (`app/authors/[slug]/page.tsx`). The attribution is right
+  either way; the link isn't, so `isLinkable()` renders those as plain text and
+  suppresses the breadcrumb. Nothing in the corpus hits this today — it's the
+  edge derivation opens, closed at the same time as opening it.
+- **Two quieter consequences.** `publishCollection` now revalidates every author
+  page a collection touches rather than the one on its row, so Browne's page
+  would have been refreshed. And `generate-review-drafts.mjs` derives the author
+  it feeds the description prompt — otherwise this change would have handed it
+  "Unknown" for every pipeline-created collection, which is exactly the sort of
+  silent downgrade that only shows up in the prose weeks later.
+- **`supabase/migrations/022_collection_author_derived.sql` is cleanup, not a
+  prerequisite.** It nulls the 38 rows whose `author_id` merely restates what
+  their texts already say — lossless by construction, since it only touches rows
+  where every text is by that same author. The code renders identically before
+  and after it, because an override that agrees with the texts is
+  indistinguishable from the derived value; applying it just means a non-null
+  value is a deliberate one.
+
+Also adds a `workflow_dispatch` trigger to `ci.yml`. This PR sat with zero
+workflow runs for ten minutes after being opened through the GitHub MCP server —
+no checks at all rather than failing ones, which reads as "not yet" and never
+resolves. The next push started a run (`pull_request: synchronize`) and it
+passed, so the gap is bounded rather than permanent: it's a PR opened and then
+not pushed to that can sit looking unchecked. The dispatch button only appears
+for workflows on the default branch, so it helps the next branch, not this one.
+
+Verified with `tsc --noEmit`, `npm run lint`, and the full suite (311 tests, 31
+files) — and by CI itself on the current head. Not verified in the rendered
+admin or collection page: `/admin` needs Keith's login, the Vercel preview is
+behind Deployment Protection, and the collection route has no
+`generateStaticParams`, so the build compiled the derivation without executing
+it.
+
+## 2026-09-21 — RLS guards rows; the draft columns needed a column grant
+
+Follow-up to the anon-key switch earlier today. Moving public reads onto the anon key put the
+`published` boundary in the database — but **RLS is row-level, not column-level**. Once a row is
+visible, every column on it is. The review queue's back-office fields live on `texts` and
+`collections`, so on a *published* row the public key could read them: `note_draft` on 273 rows,
+`summary_draft` on 36, `review_state` on 51. `review_note` — "why a text was held, in Keith's
+words" — was empty, which is the only reason this was cheap to find rather than expensive. It
+fills as the queue gets used, so the leak arrives with the feature.
+
+- **`026` withholds six columns** from `anon` and `authenticated`: `texts.note_draft`,
+  `summary_draft`, `review_state`, `review_note`, and `collections.description_draft`,
+  `provenance_verified_at`. service_role is untouched.
+- **The obvious migration does nothing, silently.** `revoke select (review_note) on texts from
+  anon` runs clean and changes nothing: a column-level REVOKE only removes column-level grants,
+  and `024`'s table-wide `grant select on all tables` confers every column regardless. Caught by
+  checking `has_column_privilege` afterwards, which still read `true`. The working form is to drop
+  the table grant and re-grant the allowed columns explicitly, which is what `026` does.
+- **These two tables now fail closed.** A column added to `texts` or `collections` later is not
+  readable by anon until granted — the next workflow column cannot leak the way these did — but a
+  new *public* column needs its grant alongside the `ALTER TABLE`. Corollary: never re-run
+  `grant select on all tables in schema public to anon`; it would restore table-level SELECT and
+  undo this.
+- **`select('*')` is now a 403 on those tables**, because PostgREST rejects the whole request when
+  a selected column is unreadable rather than omitting it. Two public call sites converted:
+  `app/authors/[slug]/page.tsx`'s head-only count (`select('*')` → `select('id')`) and
+  `app/collections/[slug]/page.tsx`'s collection fetch (→ an explicit column list, matching the
+  shape its own download routes already used). `select('*')` on `authors` is left alone — that
+  table withholds nothing.
+
+Verified at runtime, not just by privilege flags, because both converted routes are dynamic and a
+build never exercises them: served the production build against the real anon key and requested
+both collection pages and both author pages — **200 with full content** — while a draft text slug
+and a nonexistent collection both returned 404, and no withheld field name appears in the HTML. As
+`anon`, `select *`, `review_note` and `provenance_verified_at` each raise `insufficient_privilege`,
+while the columns the pages actually render all still read. Also corrected `020`'s comment, which
+said these columns "inherit admin-only access by construction" — true when written, and made false
+by the policies added hours later.
+
 ---
 
 ## 2026-09-21 — Public pages read with the anon key; RLS now enforces `published`
