@@ -57,6 +57,24 @@ Three things this got wrong before it got them right, all now in the code:
 - **Never tell the transcriber the predicted line count.** It becomes a target
   to pad toward and the check stops being independent.
 
+**Restored the compositor's verse paragraphs.** Keith read the result and said
+it ran as one undigestible block. It did: the reader page numbers top-level
+paragraphs, and the whole poem was NINE of them, the longest 333 lines, so the
+numbers were useless as landmarks. The 1743 has its own paragraphing and the
+compositor marked it by setting each opening line in from the margin — we had
+flattened that. `verseParagraphStarts` recovers it from the same XML, and
+`alignByTrigram` matches each one to the transcriber's reading of the same line
+(an opening-words key missed 22 of 78; trigram overlap misses none). 73
+paragraphs now, mostly 6-40 lines. Every line is byte-identical to before —
+only blank lines were added.
+
+Two things the first cut got wrong, both geometric: the scans are slightly
+ROTATED, so the left margin drifts down each leaf and a page-median baseline
+put half the lines either side of it — leaf 16 reported nine openings on one
+page. Measuring each line against its neighbours cancels the drift. And a
+two-line drop capital indents both its lines, so a run of indented lines is one
+paragraph, not two.
+
 `push` is its own command, and the reason is a bug worth recording. The first
 cut hung the database write off `assemble --db`, so it needed the manifest and
 all 72 transcripts — and `work/` was gitignored wholesale, so the only machine

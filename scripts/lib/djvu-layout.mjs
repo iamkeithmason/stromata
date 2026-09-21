@@ -165,7 +165,11 @@ export function classifyLines(page, options = {}) {
   const measure = Math.max(1, block.x1 - block.x0);
 
   return page.lines.map((line) => {
-    const at = (role, why) => ({ ...line, role, why });
+    // `indent` rides along on every classified line because it is the only
+    // record of where the compositor set it, and a later pass needs it: the
+    // first line of a verse paragraph is set in from the margin, and that
+    // indent is the poem's own paragraphing. See verseParagraphStarts.
+    const at = (role, why) => ({ ...line, role, why, indent: (line.x0 - block.x0) / measure });
     const letters = alphaLength(line.text);
     const short = line.x1 - line.x0 < measure * shortLine;
     const indent = (line.x0 - block.x0) / measure;
@@ -376,4 +380,109 @@ export function markVerseBreaks(lines) {
     if (!next || STRUCTURAL.test(next)) return line;
     return here.endsWith('\\') ? line : `${line}\\`;
   });
+}
+
+/**
+ * Which body lines on a page open a verse paragraph.
+ *
+ * WHY THIS MATTERS, and it is a reading problem rather than a fidelity one.
+ * Strip the indents and 1,373 lines of couplets arrive as a single unbroken
+ * block: the reader page numbers top-level paragraphs, so the whole 1743
+ * Psychomachia scored nine numbers, one per combat, the longest running 333
+ * lines. The poem has its own paragraphing and the compositor marked it by
+ * setting the opening line in from the margin. This recovers that rather than
+ * inventing a break every N lines, which is why it belongs here next to the
+ * geometry and not in a formatter.
+ *
+ * The window is deliberate at both ends. Below `min` is ordinary jitter — the
+ * left edge of a line of type wanders a percent or two with the first letter's
+ * shape, and on the 1743 an unindented line ranges about -2% to +3%. Above
+ * `max` is not a paragraph at all but something set hard right: a catchword, a
+ * turnover, a signature mark. A real indent on this book sits at 6-15% of the
+ * measure, comfortably inside.
+ *
+ * The first line of a page is never reported. It may well be indented, but a
+ * page break is not a paragraph break, and the line before it is on the
+ * previous leaf where this function cannot see it — the caller stitches pages
+ * together and can decide.
+ */
+export function verseParagraphStarts(classified, { min = 0.035, max = 0.3, window = 4 } = {}) {
+  const body = classified.filter((l) => l.role === 'body' && typeof l.indent === 'number');
+  const starts = [];
+  let previousWasIndented = false;
+
+  body.forEach((line, i) => {
+    // A LOCAL baseline, not the page's. These scans are slightly rotated, so
+    // the left margin drifts steadily down the leaf: on leaf 16 of the 1743 a
+    // run of lines sits at +5% and a later run at -3%, with the page median
+    // between them, and measuring against that median reported nine paragraph
+    // openings on one page. Neighbouring lines share the drift, so comparing a
+    // line with its neighbours cancels it and leaves only real indents.
+    const from = Math.max(0, i - window);
+    const near = body.slice(from, i + window + 1).filter((_, k) => from + k !== i);
+    const base = median(near.map((l) => l.x0));
+    const measure = Math.max(1, median(near.map((l) => l.x1)) - base);
+    const local = (line.x0 - base) / measure;
+
+    const indented = local > min && local < max;
+
+    // The first line of a page is never a start: a page break is not a
+    // paragraph break, and the line it would follow is on the previous leaf.
+    // A RUN of indented lines is one start, not several — a two-line drop
+    // capital pushes both its lines in, which is how leaf 10's opening
+    // couplet came through as two paragraphs.
+    if (indented && i > 0 && !previousWasIndented) {
+      starts.push({ index: i, text: line.text, indent: Number(local.toFixed(3)) });
+    }
+    previousWasIndented = indented;
+  });
+
+  return starts;
+}
+
+/**
+ * Find which of `candidates` is the same line of text as `probe`.
+ *
+ * The two come from different readings of one printed line — the scanner's and
+ * a transcriber's — so they agree on most characters and disagree on a
+ * scattering. Trigram overlap handles that where an opening-words key does not:
+ * `Ot Faith, accommodate to Man;` and `Of *Faith*, accommodate to Man;` share
+ * almost every trigram and not their first word, and a first-word key missed 22
+ * of 78 real lines on the Psychomachia where this misses none.
+ *
+ * Returns null unless the best candidate clears `min` AND beats the runner-up
+ * by `margin`. Both conditions matter: the first rejects a probe that belongs
+ * to no candidate at all, the second rejects a probe that two candidates fit
+ * equally, which in a poem of repeated formulae is a real risk. A null here is
+ * a line for a person to place, never a reason to guess.
+ */
+export function alignByTrigram(probe, candidates, { min = 0.35, margin = 0.12 } = {}) {
+  const norm = (s) => String(s).toLowerCase().replace(/ſ/g, 's').replace(/[^a-z]/g, '');
+  const grams = (s) => {
+    const out = new Set();
+    const n = norm(s);
+    for (let i = 0; i < n.length - 2; i++) out.add(n.slice(i, i + 3));
+    return out;
+  };
+  const a = grams(probe);
+  if (!a.size) return null;
+
+  let best = -1;
+  let bestIndex = -1;
+  let second = -1;
+  candidates.forEach((c, i) => {
+    const b = grams(c);
+    if (!b.size) return;
+    let shared = 0;
+    for (const g of a) if (b.has(g)) shared++;
+    const score = shared / Math.max(a.size, b.size);
+    if (score > best) {
+      second = best;
+      best = score;
+      bestIndex = i;
+    } else if (score > second) second = score;
+  });
+
+  if (best < min || best - second < margin) return null;
+  return { index: bestIndex, score: Number(best.toFixed(3)) };
 }

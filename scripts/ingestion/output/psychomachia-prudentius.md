@@ -19,15 +19,18 @@ Of *Faith*, accommodate to Man;\
 Who prov'd, in *Age's low Decline*,\
 The Parent of the *blessed* Line;\
 And took an *ampler Name* of *Grace*\
-To typify his *num'rous Race*.\
+To typify his *num'rous Race*.
+
 His *Acts* you'll find, when well apply'd,\
-In *Faith*'s Concerns your surest Guide.\
+In *Faith*'s Concerns your surest Guide.
+
 When to the Mount you see him lead,\
 The *Earnest* of the *promis'd* Seed,\
 Of sinking Age the darling Son,\
 Think, in like Case, what must be done;\
 To God you only must impart,\
-What's choicest, best, and next your Heart.\
+What's choicest, best, and next your Heart.
+
 Ev'n us, the faithful PATRIARCH strove,\
 By nervous Eloquence to move,\
 With many-headed *Vice* to wage\
@@ -47,7 +50,8 @@ Was brighten'd by his Uncle's Fame;\
 In SODOM's District did reside,\
 That early Source of *Lust* and *Pride*,\
 Confed'rate Kings the State invade,\
-And LOT and Natives captive made.\
+And LOT and Natives captive made.
+
 The direful Tale strikes ABRAM's Ears,\
 And fills his Soul with anxious Fears,\
 That barb'rous Conquerors constrain\
@@ -67,7 +71,8 @@ And plunder'd SODOM's Spoil regains;\
 *Soft Virgins*, whom in Bonds they bore;\
 And *rural Wealth*, a countless Store;\
 Much *Gold*, and costly *Suits* of *Dress*,\
-And *houshold Treasures* numberless.\
+And *houshold Treasures* numberless.
+
 Then LOT himself, who groaning bow'd\
 Beneath the galling Fetter's Load,\
 Unloos'd, recover'd once again\
@@ -85,7 +90,8 @@ And with cœlestial Viands greets;\
 A *royal Priest*, but of what Line\
 No human Searches can divine;\
 From what Progenitors he rose,\
-No Being, but JEHOVAH knows.\
+No Being, but JEHOVAH knows.
+
 Angels, itinerant below,\
 To see the far-fam'd *Patriarch* go,\
 Vouchsafe his humble Board to grace,\
@@ -93,7 +99,8 @@ And take the Banquet of the Place;\
 Whilst wond'ring *Sarah* feels her Womb\
 To beat with *promis'd* Life to come,\
 And, joyful in this *late* Relief,\
-Regrets the *Laugh of Unbelief*.\
+Regrets the *Laugh of Unbelief*.
+
 This *Map* of Life so fair, so true,\
 For us to imitate he drew;\
 Like him, we *militant* must live,\
@@ -122,23 +129,28 @@ Fresh Vigour working in the Mind,\
 The Seeds of Goodness richly sow'n\
 In Souls, by *Age unfruitful grown*,\
 And, cultur'd by indulgent Skies,\
-Behold large Crops of Virtue rise.\
+Behold large Crops of Virtue rise.
+
 Then shall your *Hearts*, like *Sarah*, bear\
 A *late*, but not unworthy *Heir*.
 ## The War of the Soul
 O THOU, whose mercies never cease to flow\
-On helpless mortals, when distrest below;\
+On helpless mortals, when distrest below;
+
 Thou, who art mighty in thy *father's* might,\
 And in *thine own* indubitable right;\
 Stil'd his *descendant*, and yet *un-create*,\
 In *godhead one*, in *person separate*,\
 To me, O CHRIST, thy guardian succour bring,\
-And grace the subject I presume to sing.\
+And grace the subject I presume to sing.
+
 Say, with what *arms* the human *soul* expels\
 Each *vice*, that harbours in her inmost cells;\
-What *troops* she sends the *rebels* to defeat,\
+What *troops* she sends the *rebels* to defeat,
+
 And keep the peace of our *internal state*,\
-When *flesh* with *spirit*, *thought* with *thought does jar*,\
+When *flesh* with *spirit*, *thought* with *thought does jar*,
+
 And *christian minds* are made the *seat* of *war*.\
 For, *heav'nly leader*, thou wouldst ne'er expose\
 Thy *flock unarm'd* to such outragious foes;\
@@ -159,6 +171,7 @@ And ranks both *armies* in opposing lines;\
 Presents each dreadful *combatant* to sight,\
 Paints all the turns, and fortune of the fight.
 ## The Combat of Faith and Idolatry
+
 FIRST, heav'n-born FAITH descended from on high,\
 The dubious fortune of the *war* to try;\
 *Rude* was her *dress*, and *un-adorn'd* her *hair*,\
@@ -168,7 +181,8 @@ She left all *instruments* of *war* behind;\
 And wholly trusting to a dauntless heart,\
 No shield she carried, nor envenom'd dart,\
 But, steel'd with *native prowess*, on she goes\
-To brave the fiercest fury of her foes.\
+To brave the fiercest fury of her foes.
+
 When, lo! IDOLATRY, asham'd to yield,\
 Accepts the challenge to contest the field;\
 Drunk with the *blood* of many *victims* slain,\
@@ -180,12 +194,14 @@ Stunn'd with the shock, comes tumbling to the ground,\
 Then, treading on her neck, arrests her breath,\
 And leaves her ling'ring in the pangs of death;\
 For the pent Air her sobbing lungs contain\
-Feeds life awhile, and animates her pain.\
+Feeds life awhile, and animates her pain.
+
 Loud shout the *martyrs* who advent'rous came,\
 By *Faith* embold'ned, to the field of fame;\
 Whence, crown'd with garlands, they ascend the sky,\
 Array'd in vestments of the *tyrian* dye.
 ## The Combat of Chastity and Lust
+
 NEXT to the field, rous'd by the war's alarms,\
 Fair CHASTITY advanc'd in splendid arms;\
 From th' adverse lines a fury shoots in haste,\
@@ -201,13 +217,15 @@ Lifts a huge stone, and hurls it at her foe;\
 The rocky fragment, with a tempest thrown,\
 Lights on the arm, and snaps the tingling bone;\
 The deaden'd nerves no griping pow'r retain,\
-But drop the dying firebrand on the plain.\
+But drop the dying firebrand on the plain.
+
 The *harlot* thus disarm'd, the conqu'ring maid\
 Forth from her side unsheaths the shining blade;\
 Thro' the tough neck the sword a passage found,\
 And thick corruption issued from the wound,\
 Which in its course a nauseous stench exhales,\
-Spreads thro' the air, and taints the ambient gales.\
+Spreads thro' the air, and taints the ambient gales.
+
 This be thy fate, the Queen proclaims with jo[y],\
 Thus inoffensive on the earth to lie;\
 No longer shalt thou wave thy *flaming brand*,\
@@ -278,12 +296,14 @@ And *bloodless altar* of the christian God;\
 Fast by whose side the *naked* steel she lay'd,\
 Lest rust might tarnish, in its *sheath*, the blade.
 ## The Combat of Patience and Wrath
-WHILE death thus rag'd in various forms around,\
+WHILE death thus rag'd in various forms around,
+
 Undaunted PATIENCE still maintain'd her ground,\
 Still in the same *inactive* posture staid,\
 And *unconcern'd* the work of fate survey'd;\
 Heard, round her head, the darts, unnumber'd, fly,\
-Without a *groan*, a *trouble*, or a *sigh*.\
+Without a *groan*, a *trouble*, or a *sigh*.
+
 Not far remote infernal ANGER stood,\
 Her *mouth* with *foam*, her *eyes* suffus'd with *blood*;\
 So swell'd with *rage*, that each distended vein\
@@ -297,7 +317,8 @@ And o'er her head the bristling horse-hair shook.\
 Here, fair *spectator*, let this mortal dart\
 Obtain admittance to thy dauntless heart;\
 But not a groan must thence emission find,\
-For *groans* ill suit a *spirit* so *resign'd*.\
+For *groans* ill suit a *spirit* so *resign'd*.
+
 Thus when she spake, a javelin launch'd with force,\
 Whizzes the air, and keeps its destin'd course,\
 Where the strong cuirass o'er the breast was bound,\
@@ -336,7 +357,8 @@ Then strikes th' inverted shaft of polish'd wood\
 Deep in the earth; the point erected stood,\
 Enters her breast, and drinks her vital blood.\
 Streight tow'rds the *haughty vanquish'd* PATIENCE came,\
-And mildly thus her triumph did proclaim;\
+And mildly thus her triumph did proclaim;
+
 At length victorious; *thus* our wars we wage,\
 Without th' *inhuman* marks of *bloody* rage;\
 From discipline, like this, we never part,\
@@ -358,7 +380,8 @@ His glorious spoils, his *adversary*'s shame,\
 The *goddess* orders all his toils to cease,\
 And kindly lays him in the arms of peace;\
 With *wealth accumulated* swells his store,\
-And vows his substance shall decrease no more.\
+And vows his substance shall decrease no more.
+
 Safe, and unhurt she then pursues her way,\
 Thro' hostile lines, where arrows thickest play;\
 With *ev'ry virtue* does by turns appear,\
@@ -368,7 +391,8 @@ For without *her* no *virtue* keeps the field;\
 Without *her* presence ev'ry *virtue*'s faint,\
 And where *she*'s not, you'll never find a SAINT.
 ## The Combat of Pride and Humility
-THRO' routed troops, dispers'd on ev'ry side,\
+THRO' routed troops, dispers'd on ev'ry side,
+
 A *headlong coarser* flew, at will, with PRIDE;\
 Rais'd on a *Lion*'s spoil *sublime* she rode,\
 The shaggy trappings were the Horse's load;\
@@ -379,7 +403,8 @@ A *tow'ry structure* nodded in the air;\
 Down from her shoulders, knotted o'er her breast,\
 A swelling *canvass* bellied for a *vest*;\
 Round neck and breast a thin embroid'ry flows,\
-And opening gathers ev'ry wind that blows.\
+And opening gathers ev'ry wind that blows.
+
 Just like the *rider* was the bouncing *steed*,\
 Scorning restraint, impatient to be free'd;\
 Champing his foamy bit, he sought the plain,\
@@ -393,7 +418,8 @@ HUMILITY had marshall'd on the plain,\
 In rank a *Queen*, but wanting foreign aid\
 To join the levies she herself had made;\
 HOPE was her firm ally, whose kingdom lies,\
-Far from *our Region*, in *superior skies*.\
+Far from *our Region*, in *superior skies*.
+
 Here PRIDE, observing not an arm to wield,\
 A brandish'd sword, nor clasp a splendid shield,\
 Did thus with foolish scofs, and taunts deride\
@@ -423,7 +449,8 @@ And *Man* and *Mistress* had an equal date:\
 In nature's infancy, when ADAM fell,\
 Expell'd from EDEN on this earth to dwell,\
 He yet had *naked* liv'd; but friendly *Pride*\
-Taught him with leaves that *nakedness* to hide.\
+Taught him with leaves that *nakedness* to hide.
+
 From what long exile, from what land unknown\
 Come these *Pretenders* to dispute my throne;\
 Why did they not exert an *earlier* claim,\
@@ -459,11 +486,13 @@ With the *ignoble* blood of such a crew\
 A foe so despicable cannot claim\
 Distinction, due to military fame:\
 With such my courser fights; 'tis he shall beat\
-Their heads to earth, and crush them with his feet.\
+Their heads to earth, and crush them with his feet.
+
 Thus loud she cry'd: then urg'd her eager steed,\
 Loos'd ev'ry rein, and drove with headlong speed,\
 Assur'd the *Virtue* to the shock would yield,\
-And she remain sole mistress of the field.\
+And she remain sole mistress of the field.
+
 But while he flew upon his utmost stretch,\
 Plumb down he drops into a latent ditch,\
 Which FRAUD, a sister of th' infernal train,\
@@ -473,7 +502,8 @@ The rushing ranks it might at once devour;\
 And, least some eye the cavern shou'd explore,\
 With rods, and branches she had bridg'd it o'er,\
 Then cover'd all with tufts of verdant grass,\
-That none shou'd hesitate the gulph to pass:\
+That none shou'd hesitate the gulph to pass:
+
 Safe from the lists the *queen* of *meekness* stay'd,\
 Nor once approach'd the ambush that was laid,\
 From no surmisings in a fearful mind,\
@@ -483,7 +513,8 @@ Drives forward blindly, with impetuous force,\
 Brooks no delay, nor at the danger stops,\
 And down the pit a pond'rous ruin drops:\
 Pitch'd on her head, with sudden loss of breath,\
-The steed incumbent presses her to death.\
+The steed incumbent presses her to death.
+
 Soon as the *gentle-minded queen* beheld\
 The *monstrous vanity* entirely quell'd,\
 Forward she came, with slow and solemn pace,\
@@ -517,7 +548,8 @@ Between both armies whilst this *son* of *Pride*\
 Stood like a tow'r, and *Israel*'s God defy'd,\
 Brandish'd his beamy spear, and pois'd his shield,\
 And strode at large the terror of the field,\
-To ev'ry eye he, by his fall, did shew\
+To ev'ry eye he, by his fall, did shew
+
 What the mock-armour of a *boy* can do.\
 When yet a child, the pious youth engag'd\
 In VIRTUE's cause, and all her battles wag'd;\
@@ -553,7 +585,8 @@ Alarm'd she heard the martial trumpet blow;\
 Leaving the brimming bowl, with all her pow'rs,\
 O'er floods of wine, and trodden heaps of *flow'rs*,\
 Now slips, now staggers; head and feet betray,\
-That wine perverts, and these a slipp'ry way.\
+That wine perverts, and these a slipp'ry way.
+
 But when she came within the verge of fight,\
 She mounts a chariot eminent to sight,\
 In heavy, pompous state slow moving on;\
@@ -587,7 +620,8 @@ Bore in the van, aloft in air display'd,\
 Deep in the earth she struck, then staid the lines,\
 And thus bespoke them for their base designs;\
 With soft *entreaties* sharp *rebukes* allays,\
-With *shame* deters them, and transports with *praise*.\
+With *shame* deters them, and transports with *praise*.
+
 Whence, whence this rage, which wraps the mind in night?\
 Whence this decrease of intellectual light?\
 What do you want? whose nod would ye obey?\
@@ -655,7 +689,8 @@ But by *repentance* sav'd his forfeit head:\
 *Repentance*, always prevalent when true,\
 The stubborn father from his purpose drew;\
 Firm in the way of rigid justice stood,\
-Nor let the royal axes drink his blood.\
+Nor let the royal axes drink his blood.
+
 Lo! I SOBRIETY, of you secure,\
 To ev'ry *virtue* will a palm ensure;\
 Will soon the miscreant, and her slaves restrain,\
@@ -687,13 +722,15 @@ And made an hideous spectacle of death;\
 Cramm'd with a mass, it never felt before,\
 Of pounded teeth, and fetid clots of gore,\
 Th' o'erburden'd stomach heav'd against the load,\
-And cast it, direfully convuls'd, abroad.\
+And cast it, direfully convuls'd, abroad.
+
 Then thus SOBRIETY in scoffing mood,\
 Let thy last draught, *O Drunkard*, be thy blood;\
 Of thy voluptuous life the *closing scene*\
 Be form'd of *bitterness*, *disgust*, and *pain*;\
 Tortur'd with *nauseous reachings* may you die,\
-And *real pains*, conclude *fantastic Joy*.\
+And *real pains*, conclude *fantastic Joy*.
+
 The *host* of *trifles*, when their hope was dead,\
 Dispers'd, and broke, in vast confusion fled;\
 Then *Mirth*, and *Petulancy* cast away\
@@ -725,6 +762,7 @@ Would with the glitt'ring spoil profane their hands;\
 With look austere the *meanest* pass'd it by,\
 Nor once look'd backward with a wishful eye.
 ## The Combat of Avarice and Liberality
+
 Then AV'RICE came, if ancient fame says true,\
 To glean the spoil of the luxurious crew;\
 Tuck'd up a corner of her robe she bore,\
@@ -754,7 +792,8 @@ To spoil the *parent*, by another slain:\
 The lust of lucre shoots the flaming brand\
 Of civil discord thro' a peaceful land,\
 To dire extremes th' insatiate rage has run;\
-The rav'ning *parent* robs his *only son*.\
+The rav'ning *parent* robs his *only son*.
+
 Such scenes of cruelty the *Monster* wrought,\
 And mighty numbers to destruction brought;\
 Ten thousand ways ten thousand ills contrives,\
@@ -762,13 +801,15 @@ To rob deluded mortals of their lives;\
 *One* she deprives of intellectual light,\
 And leaves him wand'ring in the shades of night;\
 No ray of reason to the wretch supplies,\
-Nor patting staff, that substitute of eyes.\
+Nor patting staff, that substitute of eyes.
+
 For *stronger minds* a *guileful* bait she lays,\
 And with *imaginary* good betrays;\
 With fair *appearances* the sense is won,\
 And, while they stoop to take, they are undone,\
 Nor see their danger, till the wounded heart\
-Sobs sudden at the ent'rance of the dart.\
+Sobs sudden at the ent'rance of the dart.
+
 Let flames enwrap the dome; yet man's desire\
 Will dive for riches in that flood of fire;\
 From pointed flames too covetous to turn;\
@@ -794,7 +835,8 @@ Far from the reach of any hostile hand.\
 Some *few* indeed, who off their guard had been,\
 Her darts did hit, and gently raz'd the skin.\
 Unhurt the rest escap'd the shocks of fight,\
-Of heart unbroken, and in thought upright.\
+Of heart unbroken, and in thought upright.
+
 The rueful *pest* in wild amazement stood,\
 To see her shafts reverting without blood,\
 And thus, o'recharg'd with spiteful wrath, exprest\
@@ -859,7 +901,8 @@ For JUDAH's sons I'll bait the *fraudful* snare;\
 For God's *High-priests* will frame the dark design,\
 (So call they *A'ron*, and the *sacred* line)\
 It matters little how we shape our course\
-To glorious conquest; be it fraud, or force.\
+To glorious conquest; be it fraud, or force.
+
 So spake the fiend, and instant on the place\
 Puts off the *fury*'s arms, the *fury*'s face;\
 And, in their room, amazing change! is seen\
@@ -869,7 +912,8 @@ The very dress, the very visage wears\
 Of plain FRUGALITY; her sole delight\
 To live on *little*, and preserve her *right*:\
 No longer rav'nous on *another* preys,\
-But steals, by *industry*, a *virtue*'s praise.\
+But steals, by *industry*, a *virtue*'s praise.
+
 Thus chang'd, she enters on the field of fame,\
 Not in a *Vice*'s, but a *Virtue*'s name;\
 For *snakes* assumes old age's *snowy hairs*,\
@@ -879,7 +923,8 @@ Seems of a numerous progeny possest.\
 Hence what by *rapine*, and by *theft* she gains\
 Comes from good *conduct*, and *domestick pains*;\
 Hence all her *hoardings* with *penurious* care,\
-Are *pious savings* for a worthy heir.\
+Are *pious savings* for a worthy heir.
+
 Whilst thus th' *Impostor* play'd her wily arts,\
 And won the multitude's believing hearts,\
 In crowds they follow the destructive fiend,\
@@ -891,7 +936,8 @@ Stood in amaze, and at a loss to know\
 What part to take, the error how decide,\
 Repel the *foe*, or in the *friend* confide;\
 Wond'rous the mixture, intricate and nice,\
-Where ends the *virtue*, and begins the *vice*!\
+Where ends the *virtue*, and begins the *vice*!
+
 With grief distracted, from the distant rear,\
 Came CHARITY, an honest *volunteer*;\
 Who, tho' she hindmost rank'd, remote from sight,\
@@ -905,7 +951,8 @@ Her urn exhausted, and the channel dry;\
 Wisely she parted with her copious store,\
 To cloath the *naked*, and relieve the *poor*;\
 *Bankrupt* on *earth*, she all in alms had giv'n,\
-But rich in FAITH's expectancies from *heav'n*.\
+But rich in FAITH's expectancies from *heav'n*.
+
 When AV'RICE saw this thund'ring foe appear,\
 Her heart beat quick with fate-foreboding fear;\
 A sudden Stupor o'er her senses flies,\
@@ -915,7 +962,8 @@ She saw, would fail her in the fatal hour;\
 Too well she knew the genius of her foe,\
 How great her scorn for all that's priz'd below;\
 How, once unloos'd from lucre's galling chain,\
-She vow'd, she never would be caught again.\
+She vow'd, she never would be caught again.
+
 Here *She*, whose presence powerfully inclines\
 The human heart to *generous designs*,\
 Her folding arms around the *Miser* threw,\
@@ -947,7 +995,8 @@ The tedious work of many a painful year,\
 The *great* of *heart*, whom no self interest guides,\
 Among her poor confederates divides,\
 And, as they clos'd her round, with look serene,\
-And diction mild, bespoke th' attentive train.\
+And diction mild, bespoke th' attentive train.
+
 Retire, ye *Just*, from off th' embattled field,\
 Fearless of danger, when the foe is kill'd:\
 Henceforth let war, and madding discord cease,\
@@ -983,7 +1032,8 @@ Of raiment *destitute*, of *food bereft*:\
 But learn, tho' late, the ways of truth to scan,\
 That God, who breath'd the breath of life on man,\
 In point of justice, is concern'd to save\
-The breath imparted, and the life he gave.\
+The breath imparted, and the life he gave.
+
 *Terrestrial* dainties, that corrupt and cloy,\
 Are but poor sources of convivial joy;\
 To rich repasts does God his *Saints* invite,\
@@ -991,7 +1041,8 @@ To rich repasts of intellectual light;\
 Divine, ambrosial nurture, that conveys\
 To souls elect a boundless length of days:\
 To *this* aspire; on *this* devoutly feed;\
-And trust to God for what your *bodies* need.\
+And trust to God for what your *bodies* need.
+
 Her balmy words each anxious heart appeas'd;\
 Calm'd ev'ry thought, and every grievance eas'd;\
 The flush of triumph reassum'd its place,\
@@ -1051,7 +1102,8 @@ The rowling main, and petrify'd the wave.\
 Thus *Virtue's* conqu'ring bands essay'd to sing,\
 Loud notes of triumph to the vocal string;\
 And nobly painted, in the *mystick* lay,\
-The great *deliv'rance* of a *future day*.\
+The great *deliv'rance* of a *future day*.
+
 Scarce to the camp the marching squadrons came,\
 Where double valves a narrow entrance frame,\
 When, sent by FRAUD, a sudden storm arose,\
@@ -1108,12 +1160,14 @@ And deep conviction of the blood she spilt;\
 Her hand, when seiz'd, with languid tremors shook,\
 And *paleness* pleaded guilty in her look.\
 Quick in a globe the *virtuous host* appears\
-Drawn round the *assassin* with pointed spears,\
+Drawn round the *assassin* with pointed spears,
+
 Whilst all interrogate her name, her place,\
 Her country, office, enterprize, and race,\
 What God she worships, and at whose command,\
 She boldly mingled with their holy band:\
-The *fiend*, tho' sensible of danger nigh,\
+The *fiend*, tho' sensible of danger nigh,
+
 Makes no evasion, but this blunt reply:\
 DISCORD, and HERESY's the name I bear,\
 My *God* is *mutable*; now *form*, now *air*;\
@@ -1134,13 +1188,15 @@ While some to fishes, or to sinks convey;\
 The brutal tribes the mangled carcass rend;\
 And such was HERESY's deserved end:\
 A *death*, like *life*, the miscreant did betide,\
-She liv'd *dismemb'ring*, and *dismember'd* dy'd.\
+She liv'd *dismemb'ring*, and *dismember'd* dy'd.
+
 When now the common weal was ascertain'd,\
 And *private* rest, with *publick* peace, regain'd,\
 Ev'n the *low vulgar* were allow'd to please,\
 Themselves in all the liberties of ease;\
 Safe in the camp each moment to employ\
-To heal past sorrows with succeeding joy.\
+To heal past sorrows with succeeding joy.
+
 Next, on a central eminence they place\
 A *double* pile, but on one *common* base;\
 The lower part, a fair tribunal, shews\
@@ -1170,7 +1226,8 @@ Drew deep attention, and serenely spoke.\
 *Thrice happy Virtues*! now compleatly blest!\
 Henceforth consign'd to everlasting rest!\
 Still true to God, and to the christian name!\
-Full is th' allotted measure of your fame:\
+Full is th' allotted measure of your fame:
+
 Extinct the foe, that would your peace confound,\
 And beat your *sacred city* to the ground;\
 With hostile flames the *holy place* would burn,\
@@ -1235,20 +1292,23 @@ In woolly softness oft the *Wolf* will hide\
 His savage aspect, and his tawny pride,\
 And safely, cover'd with the fair disguise,\
 Pass unsuspected by the *Shepherd's* eyes,\
-Fell rage, and slaughter thro' the flock will spread,\
+Fell rage, and slaughter thro' the flock will spread,
+
 And heap the fold with numbers of the dead:\
 From them the *Hereticks* derive their arts,\
 Thus *Arius*, and *Photinus* play'd their Parts;\
 And thus my suffrances, tho' trivial, shew\
 What hostile fraud will, undetected, do.\
 No more she utter'd: When her plaintive tongue\
-Drew groans of sympathy from all the throng.\
+Drew groans of sympathy from all the throng.
+
 Next FAITH, to heal their bleeding hearts, arose;\
 No longer grieve, triumphant o'er your woes:\
 Tho' death was slily aim'd at CONCORD's breast,\
 I timely succour'd, and its force represt:\
 *She* too to me will *mutual aid* afford;\
-And, join'd with *her*, I fear no hostile sword.\
+And, join'd with *her*, I fear no hostile sword.
+
 But still one labour there remains to grace\
 Our past atchievements; and a work of peace;\
 Resembling that, which was in JUDAH done\
@@ -1257,7 +1317,8 @@ The prudent father from the work abstain'd,\
 For royal *blood* his slaught'ring hand distain'd:\
 And only hands, of *blood unconscious*, dare\
 Erect, and consecrate an *House* of *Pray'r*:\
-ZION with joy beheld the fabrick rise,\
+ZION with joy beheld the fabrick rise,
+
 And God, descendant from superior skies,\
 Thither his *glory visible* translate,\
 And make JERUSALEM his royal seat:\
@@ -1265,7 +1326,8 @@ Then did the *Ark*, itinerant before,\
 Obtain a residence, and roam no more.\
 Here too let us with JUDAH's monarch vie,\
 And rear a stately structure to the sky;\
-Where God may deign conspicuous to abide,\
+Where God may deign conspicuous to abide,
+
 And o'er the *Temples* of our *Hearts* preside;\
 Say, what avails it, tho' our arms o'erthrew\
 The rebel race, and quell'd the earth-born crew,\
@@ -1278,7 +1340,8 @@ Proceed to cultivate the works of *Peace*;\
 No longer in the tented field appear,\
 Poising the shield, and brandishing the spear;\
 Of some rich * *Fane* project the grand design,\
-Of *Peace* a monument, for God a shrine.\
+Of *Peace* a monument, for God a shrine.
+
 Here FAITH her pious exhortation ends,\
 And, with her *Sister*, from the tow'r descends,\
 Studious by *Line* to measure ev'ry part,\
@@ -1311,7 +1374,8 @@ Mellows the fruits of life with autumn-heat;\
 Or when, in *Age*, it shoots a feeble ray,\
 Cold as the *North*, and scarce affords us day:\
 At ev'ry front a *trinal Pow'r* we find,\
-Guarding the posts their sov'reign Lord assign'd.\
+Guarding the posts their sov'reign Lord assign'd.
+
 *Three* beauteous species of transparent stone\
 Each front compos'd, and, in their orders, shone;\
 From lucid surfaces dart copious rays\
@@ -1319,7 +1383,8 @@ Of vivid colours, in a mingled blaze:\
 In *one* the *Chrysolite*, with clouded veins\
 Of sparkling gold, the middle station gains;\
 And, in fit union with its languid beams,\
-Conjoins the *Beryl*'s, and the *Saphire*'s flames.\
+Conjoins the *Beryl*'s, and the *Saphire*'s flames.
+
 In *this Chalcedons*, with their native gloom,\
 Full light from neighbouring *Hyacinths* assume;\
 Or, hid with art in splendor not their own,\
@@ -1336,7 +1401,8 @@ There too, O *Chrysoprass*, you hold a place,\
 And fast by thee, the *Topazes* unite\
 A golden lustre, and refreshing light.\
 The cordage cracks, the lab'ring wheels scarce rear,\
-The pond'rous masses of the gems they bear.\
+The pond'rous masses of the gems they bear.
+
 The inmost shrine, for *Wisdom*'s throne design'd,\
 Stands on sev'n columns of the crystal kind;\
 O'er which is laid, of *one* pellucid stone,\
@@ -1358,7 +1424,8 @@ Its verdure fades not, nor the blossom dies:\
 The snow-white lilly, and the russet rose\
 A twining foliage round the trunk dispose;\
 All fresh and gay, as in their earthy beds\
-They never droop, they never hang their heads.\
+They never droop, they never hang their heads.
+
 Such once, of old, in A'RON's hand was seen\
 For ever blooming in a vernal green;\
 Still round the arid, unprolifick wood\

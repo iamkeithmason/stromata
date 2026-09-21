@@ -88,6 +88,8 @@ import {
   classifyLines,
   assemblePage,
   markVerseBreaks,
+  verseParagraphStarts,
+  alignByTrigram,
 } from '../lib/djvu-layout.mjs';
 import { checkCouplets } from '../lib/couplet-check.mjs';
 
@@ -176,6 +178,11 @@ function pageFacts(page, index, isHeading) {
   return {
     index,
     catchword: catchwordOf(classified),
+    // Where the compositor opened a verse paragraph. Recorded as TEXT rather
+    // than as a line index, because the transcription may hold more lines than
+    // the OCR did and an index would then point at the wrong line; the text
+    // survives that and is matched back in `assemble`.
+    paragraphStarts: verseParagraphStarts(classified).map((s) => s.text),
     width: page.width,
     height: page.height,
     scannedLines: kept.length,
@@ -393,6 +400,7 @@ function assemble(config, { dry, db }) {
 
   const lines = [];
   const read = [];
+  const unplacedStarts = [];
   const unpredicted = [];
   const mismatches = [];
   const adjudicated = [];
@@ -435,8 +443,32 @@ function assemble(config, { dry, db }) {
         reason: accepted,
       });
     }
+    // Restore the compositor's verse paragraphs. Each recorded start is the
+    // scanner's reading of a line; find the transcriber's reading of the same
+    // line and mark it. A blank line before it is what makes the reader page
+    // treat it as a paragraph — without these the whole poem is nine
+    // paragraphs, the longest 333 lines, and the reader's paragraph numbers
+    // are useless as landmarks.
+    //
+    // An unmatched start is reported, never forced onto the nearest line. Two
+    // of them here are the prose footnotes and one is a section heading —
+    // correct rejections, not misses, and all three are handled elsewhere.
+    const verseOnly = got.filter((l) => !l.startsWith('## ') && !l.startsWith('> '));
+    const marked = new Set();
+    for (const start of leaf.paragraphStarts ?? []) {
+      const hit = alignByTrigram(start, verseOnly);
+      if (!hit) {
+        unplacedStarts.push({ index: leaf.index, text: start });
+        continue;
+      }
+      marked.add(verseOnly[hit.index]);
+    }
+    for (const l of got) {
+      if (marked.has(l) && lines.length) lines.push('');
+      lines.push(l);
+    }
+
     read.push({ index: leaf.index, catchword: leaf.catchword, first: got[0] });
-    lines.push(...got);
   }
 
   // The collation check. Runs over the leaves actually transcribed, in order,
@@ -460,6 +492,13 @@ function assemble(config, { dry, db }) {
   if (untranscribed.length) {
     console.error(`✗ ${untranscribed.length} leaves have no transcript: ${untranscribed.join(', ')}`);
     if (!dry) process.exit(1);
+  }
+  if (unplacedStarts.length) {
+    console.log(
+      `  ${unplacedStarts.length} indented lines could not be placed in the transcription ` +
+        `(expected: the prose footnotes and any heading): ` +
+        unplacedStarts.map((u) => `leaf ${u.index}`).join(', '),
+    );
   }
   if (unpredicted.length) {
     console.log(
@@ -546,7 +585,12 @@ function assemble(config, { dry, db }) {
   let text = folded.join('\n').replace(/\n{3,}/g, '\n\n').trim();
   if (config.verse) text = markVerseBreaks(text.split('\n')).join('\n');
 
-  const verseLines = folded.filter((l) => !l.startsWith('## ') && !l.startsWith('> '));
+  // Blank lines are the verse-paragraph boundaries inserted above; they are
+  // structure, not verse, and counting them would both inflate the line count
+  // and report each one as a line ending in nothing.
+  const verseLines = folded.filter(
+    (l) => l.trim() && !l.startsWith('## ') && !l.startsWith('> '),
+  );
   const report = checkCouplets(verseLines);
 
   const frontmatter = `---
