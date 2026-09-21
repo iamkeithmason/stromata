@@ -7,6 +7,23 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-09-21 — Admin normalises Supabase to-one relations before using them
+
+The admin dashboard could crash on every request after the collection-byline
+change because its Supabase query returned `author` as a to-one object while
+the page typed it as an array and spread it into the per-collection author
+accumulator. The same wrong assumption made author and genre labels, plus the
+draft-author integrity alert, silently read `[0]` from objects.
+
+- `author`, `genre` and `collection` embeds now use the shared
+  `MaybeEmbedded<T>` shape and pass through `one()` before access. The
+  collection accumulator remains an array, and null or missing relations are
+  skipped rather than taking down the page.
+- Regression coverage exercises the object, one-element-array, null and
+  undefined shapes. The full suite passes (312 tests), TypeScript checks cleanly,
+  the production build succeeds, and an authenticated request to the built
+  `/admin` returns 200 against the live Supabase data.
+
 ## 2026-09-21 — A collection's byline is derived from its texts, not stored beside them
 
 `collections.author_id` was an independent column: set by hand in the admin form,

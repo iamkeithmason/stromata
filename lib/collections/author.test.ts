@@ -78,6 +78,16 @@ test('one() normalises both embed shapes and empties', () => {
   assert.equal(one(undefined), null)
 })
 
+test('dashboard-style accumulation keeps an array for every Supabase embed shape', () => {
+  const found: typeof augustine[] = []
+  for (const embedded of [augustine, [augustine], null, undefined]) {
+    const author = one(embedded)
+    if (author) found.push(author)
+  }
+
+  assert.deepEqual(found, [augustine, augustine])
+})
+
 // ── Linkability ──────────────────────────────────────────────────────────────
 
 test('a draft author is named but never linked', () => {
