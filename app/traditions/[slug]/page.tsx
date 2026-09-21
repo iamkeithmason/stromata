@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import { createServerClient } from '@/lib/supabase/server'
+import { createPublicClient } from '@/lib/supabase/public'
 import { SiteHeader } from '@/app/components/SiteHeader'
 import { TrackPageEvent } from '@/app/components/TrackPageEvent'
 import { TRADITIONS } from '@/lib/constants'
@@ -45,7 +45,7 @@ export async function generateMetadata({ params }: Props) {
 
 export default async function TraditionPage({ params }: Props) {
   const { slug } = await params
-  const supabase = createServerClient()
+  const supabase = createPublicClient()
 
   const { data: tradition } = await supabase
     .from('traditions')

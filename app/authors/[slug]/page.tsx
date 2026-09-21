@@ -2,7 +2,7 @@ import Link from 'next/link'
 import { SiteHeader } from '@/app/components/SiteHeader'
 import { TrackPageEvent } from '@/app/components/TrackPageEvent'
 import { notFound } from 'next/navigation'
-import { createServerClient } from '@/lib/supabase/server'
+import { createPublicClient } from '@/lib/supabase/public'
 import { readingTime } from '@/lib/reading-time'
 import MarkdownBody from '@/app/components/MarkdownBody'
 import { LancetArch } from '@/app/components/LancetArch'
@@ -84,7 +84,7 @@ function buildMetaDescription(
 
 export async function generateMetadata({ params }: Props) {
   const { slug } = await params
-  const supabase = createServerClient()
+  const supabase = createPublicClient()
 
   const { data: author } = await supabase
     .from('authors')
@@ -143,7 +143,7 @@ export async function generateMetadata({ params }: Props) {
 
 export default async function AuthorPage({ params }: Props) {
   const { slug } = await params
-  const supabase = createServerClient()
+  const supabase = createPublicClient()
 
   const { data: author } = await supabase
     .from('authors')

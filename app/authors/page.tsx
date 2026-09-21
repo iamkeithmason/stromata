@@ -1,4 +1,4 @@
-import { createServerClient } from '@/lib/supabase/server'
+import { createPublicClient } from '@/lib/supabase/public'
 import { SiteHeader } from '@/app/components/SiteHeader'
 import { TrackPageEvent } from '@/app/components/TrackPageEvent'
 import { uniqueFacets, pickFacet } from '@/lib/facets'
@@ -36,7 +36,7 @@ const SORT_KEYS = ['name', 'texts', 'chronological'] as const
 
 export default async function AuthorsPage({ searchParams }: Props) {
   const sp = await searchParams
-  const supabase = createServerClient()
+  const supabase = createPublicClient()
 
   const [{ data: authors }, { data: textAuthorRows }] = await Promise.all([
     supabase

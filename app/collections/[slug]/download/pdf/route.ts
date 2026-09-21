@@ -1,4 +1,4 @@
-import { createServerClient } from '@/lib/supabase/server'
+import { createPublicClient } from '@/lib/supabase/public'
 import { markdownFilename, type DownloadableText, type DownloadableCollection } from '@/lib/downloads'
 import { CollectionDocument } from '@/lib/pdf/TextDocument'
 
@@ -11,7 +11,7 @@ export const revalidate = 0
 // published text in reading order on its own page-break-delimited section.
 export async function GET(_req: Request, { params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
-  const supabase = createServerClient()
+  const supabase = createPublicClient()
 
   const { data: collection } = await supabase
     .from('collections')

@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { createServerClient } from '@/lib/supabase/server'
+import { createPublicClient } from '@/lib/supabase/public'
 import { SiteHeader } from '@/app/components/SiteHeader'
 import { TrackPageEvent } from '@/app/components/TrackPageEvent'
 import { readingTime } from '@/lib/reading-time'
@@ -67,7 +67,7 @@ export default async function ScriptureLookupPage({ params }: Props) {
     )
   }
 
-  const supabase = createServerClient()
+  const supabase = createPublicClient()
   const label = referenceLabel(query.bookName, query.chapter, query.verse)
 
   // Reverse lookup. Exact-verse match: a text cites this verse if it has a

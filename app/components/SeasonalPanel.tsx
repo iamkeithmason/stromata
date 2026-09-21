@@ -27,7 +27,7 @@
  */
 
 import Link from 'next/link'
-import { createServerClient } from '@/lib/supabase/server'
+import { createPublicClient } from '@/lib/supabase/public'
 import { resolveSeason, type Season } from '@/lib/liturgical/year'
 import { LancetArch } from './LancetArch'
 
@@ -171,7 +171,7 @@ export async function SeasonalPanel({ season = resolveSeason().season }: Props =
   let pickIsLive = false
 
   if (configuredPick && pickSlug) {
-    const supabase = createServerClient()
+    const supabase = createPublicClient()
     const { data } = await supabase
       .from('texts')
       .select('id, author:authors(image_url, image_focus_x, image_focus_y, image_zoom)')
