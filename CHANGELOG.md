@@ -38,6 +38,131 @@ publishing.
 
 ---
 
+## 2026-09-21 — Read the 1743 Psychomachia off the page images, not the OCR
+
+The Psychomachia went in as `ocr_quality: low` and stayed unpublishable. The
+question was whether hand-correction was the only way out. It was not, and the
+reason is worth keeping: we were correcting a bad *reading* of a perfectly good
+page. `extract-djvu-xml.mjs` recovered the scan's arrangement and said in its
+own header that it did not improve the letters — true, and it left a British
+Library microfilm's 2010 OCR as the text.
+
+Measured, same checker both sides:
+
+| | djvu OCR | page images |
+|---|---|---|
+| Lines | 1,227 | **1,373** |
+| Couplet rhyme rate | 58.6% | **86.3%** |
+| Lines carrying wreckage | 65 | **0** |
+
+`In ABRAM's Life we see a Plan / Who prov'd, in Ares low Delius, / ... / His 45.
+you'll find, When well apply 4.` is now `...in *Age's low Decline*, / ... / His
+*Acts* you'll find, when well apply'd,`. Italics — which this translator uses to
+mark the doctrinal turns — survive for the first time.
+
+**The poem was also missing its ending.** Leaf 73 was recorded in the config as
+a rear endpaper. It is printed page 72: the last four lines and "The END.", on
+paper foxed badly enough that the OCR returned fifteen specks and no words. It
+read as blank, so `prepare` never cropped it — the script trusted the OCR to say
+where the text was, and so skipped the page the OCR had failed hardest on. Found
+because leaf 72's catchword is "Where" and nothing answered to it. Fixed: a leaf
+with no detected body block is now cropped anyway, with no line-count prediction.
+
+New: `scripts/ingestion/ocr-pages-vision.mjs` (`prepare` crops each leaf via
+IIIF from the XML's own body-block coordinates; `assemble` reads transcripts
+back, gates on line count, writes the staged markdown, and with `--db` pushes
+the body onto an already-imported draft) and `scripts/lib/couplet-check.mjs`
+(the verse form as a checksum). The transcription slot is deliberately not
+wired to an API: here it was filled by nine subagents on subscription tokens.
+
+Three things this got wrong before it got them right, all now in the code:
+
+- **The pitch test over-counts.** It called three gaps on leaf 26 exactly right
+  (4, 2, 1) and still read the page 2 long. A mismatch is an adjudication queue
+  — `visionLineCountAccepted`, one named reason per leaf — not a verdict.
+- **The couplet checker was wrong twice, and both times flattered the wrong
+  answer.** Rigid pairing de-phased at every triplet and put the re-read at 57%;
+  it resynchronises now. A four-consonant-run rule called `constrain`,
+  `o'erthrown` and `overthrows` wreckage; the "7 remaining faults" were all it.
+  Every headline number here was re-measured after the fixes.
+- **Never tell the transcriber the predicted line count.** It becomes a target
+  to pad toward and the check stops being independent.
+
+**Restored the compositor's verse paragraphs.** Keith read the result and said
+it ran as one undigestible block. It did: the reader page numbers top-level
+paragraphs, and the whole poem was NINE of them, the longest 333 lines, so the
+numbers were useless as landmarks. The 1743 has its own paragraphing and the
+compositor marked it by setting each opening line in from the margin — we had
+flattened that. `verseParagraphStarts` recovers it from the same XML, and
+`alignByTrigram` matches each one to the transcriber's reading of the same line
+(an opening-words key missed 22 of 78; trigram overlap misses none). 73
+paragraphs now, mostly 6-40 lines. Every line is byte-identical to before —
+only blank lines were added.
+
+Two things the first cut got wrong, both geometric: the scans are slightly
+ROTATED, so the left margin drifts down each leaf and a page-median baseline
+put half the lines either side of it — leaf 16 reported nine openings on one
+page. Measuring each line against its neighbours cancels the drift. And a
+two-line drop capital indents both its lines, so a run of indented lines is one
+paragraph, not two.
+
+`push` is its own command, and the reason is a bug worth recording. The first
+cut hung the database write off `assemble --db`, so it needed the manifest and
+all 72 transcripts — and `work/` was gitignored wholesale, so the only machine
+with the credentials was the only machine that could not run it. Keith hit
+`No manifest. Run prepare first.` on the first try. `push` now reads only the
+committed `output/<slug>.md`. The gitignore was also wrong in the same way: it
+buried the transcripts, which are the irreplaceable half of the job, alongside
+22MB of re-downloadable crops. Only `work/*/pages/` is ignored now, and the
+transcripts and manifest are committed. **The step that writes somewhere
+shared must depend on the artefact that is shared.**
+
+One editorial supply, in `visionSupplies` with its justification: leaf 12 ends
+a line "with jo" and a speck, no further type on the page. The transcriber left
+it unfinished, which was right — completing it is a person's call, not a
+transcriber's. It reads `jo[y],` in brackets so the hand is visible.
+
+Known and not fixable from this source: leaf 69's scan is cropped at the foot,
+so one or two verse lines are absent from the image. Hence `medium`, not `high`.
+Still `published: false`.
+## 2026-09-21 — Six new Project Wittenberg chrome rules, and healed the drafts they were left in
+
+Keith reviewing the Small Catechism drafts (from #123) found real noise still in the body: the
+whole-work title/translator masthead repeated on every chapter, orphaned `* * *` page dividers left
+over once the paragraphs they bracketed were already stripped, and a dead in-page jump-anchor list
+(`\[1\] \[2\] \[3\] …`) that can never resolve to anything, since every `<a>` href is stripped
+project-wide. `scripts/lib/source-chrome.mjs` gets six new/changed rules for these —
+`wittenberg-work-title-header`, `wittenberg-translator-credit-heading`, `wittenberg-edition-code`,
+`wittenberg-orphaned-divider`, `wittenberg-underscore-rule`, and `wittenberg-jump-anchors` promoted
+from advisory-only to stripped outright (it had escaped two rounds of Stage 3 review already, and
+its old pattern assumed a surviving `(url)` that never happens once links are stripped — the real
+shape has none). `fetch-texts.mjs`'s DOM pass gets the matching primary-defence fix for future
+fetches, detecting the repeated title structurally (a heading immediately followed by a "Translated
+by" heading) rather than by this one work's title text, plus removing every `<hr>` and the internal
+edition-code paragraph.
+
+One real near-miss while writing this, caught by a dry run against the live corpus before `--write`:
+a bare-underscore-divider rule was briefly written `structural: true` (unconditional), on the same
+reasoning as `newadvent-az-bar`'s A–Z bar — until the dry run showed it matching a genuine topic-break
+divider inside an unrelated New Advent import (`catechetical-lecture-18.md`, Cyril of Jerusalem's own
+formatting, nothing to do with Wittenberg). Reverted to `requires: 'wittenberg'`, with a regression
+test pinning the exact false-positive case. `wittenberg-jump-anchors` and the work-title-header rule,
+by contrast, were confirmed safe to be unconditional by checking the whole corpus for the pattern
+first (`wittenberg-work-title-header`'s title text; the jump-anchor shape occurs in exactly one text
+project-wide) rather than assuming.
+
+Ran `strip-source-chrome.mjs --drafts --files --write` against the result: 7 texts cleaned (6
+remaining catechism chapters + the 95 Theses — `small-catechism-ten-commandments` was already
+hand-cleaned and published by Keith mid-review, so left alone) and all 8 staged output files aligned.
+One known remaining blemish, left alone on purpose: on two texts (`small-catechism-ten-commandments`
+originally, and the 95 Theses' citation line) the anchor-list or underscore-divider is glued to a real
+heading/citation in the same markdown block with no blank line between them — this module only drops
+whole blocks, and dropping either would delete real content with it. `fetch-texts.mjs`'s DOM fix
+(removing the `<font size="-1">` anchor wrapper before turndown ever runs) is the actual fix for any
+future fetch of this shape.
+
+---
+
 ## 2026-09-21 — Built the license infrastructure the CC-catechism prospect is blocked on
 
 Added `texts.license` (migration `030_text_license.sql`, nullable, `null` = public domain —

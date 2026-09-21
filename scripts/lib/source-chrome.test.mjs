@@ -311,6 +311,101 @@ test('the whole Project Wittenberg chrome run is found and removed, prose untouc
   assert.doesNotMatch(output, /Walther Library/);
 });
 
+// Copied verbatim from the small-catechism-luther bodies as imported into
+// Supabase (2026-09-21) — the repeated per-chapter masthead and the orphaned
+// page dividers left behind once the paragraphs they bracketed were already
+// stripped. Confirms the healing rules match real pipeline output, not an
+// assumed shape. Chapter II (The Creed) has no jump-anchor list at all — only
+// chapter I (Ten Commandments) generates one, covered separately below.
+const CATECHISM_CHAPTER_HEAD = [
+  "### Luther's Little Instruction Book  \n(The Small Catechism of Martin Luther)",
+  '### _Translated by Robert E. Smith  \nMay 22, 1994_',
+  '_(Version 1.1 -- December 22, 1994)  \nPW# 001-003-002Ea_',
+  '* * *',
+  '* * *',
+  '**II.  \nTHE CREED**',
+  'We must fear, love, and trust God more than anything else.',
+  '* * *',
+  '* * *',
+  '* * *',
+].join('\n\n');
+
+test('the repeated masthead and the orphaned page dividers are all stripped', () => {
+  const { output, removed } = stripChrome(CATECHISM_CHAPTER_HEAD, { source: 'wittenberg' });
+  const ids = removed.map(r => r.rule);
+  assert.deepEqual(new Set(ids), new Set([
+    'wittenberg-work-title-header',
+    'wittenberg-translator-credit-heading',
+    'wittenberg-edition-code',
+    'wittenberg-orphaned-divider',
+  ]));
+  assert.equal(removed.filter(r => r.rule === 'wittenberg-orphaned-divider').length, 5);
+  assert.equal(output, '**II.  \nTHE CREED**\n\nWe must fear, love, and trust God more than anything else.');
+});
+
+// The 95 Theses page uses a different jump-anchor step (by tens) and a
+// different divider count, confirming the rules aren't overfit to one
+// work's exact numbers — and the anchor list there sits in its OWN block,
+// blank-line separated from the heading above it.
+const THESES_DIVIDERS_AND_ANCHORS = [
+  '![pwimage](w4.gif)',
+  '\\[10\\] \\[20\\] \\[30\\] \\[40\\] \\[50\\] \\[60\\] \\[70\\] \\[80\\] \\[90\\]',
+  'Out of love for the truth and the desire to bring it to light, the following propositions will be discussed at Wittenberg.',
+  '* * *',
+].join('\n\n');
+
+test('the jump-anchor and divider rules generalise beyond the catechism\'s own numbers', () => {
+  const { output, removed } = stripChrome(THESES_DIVIDERS_AND_ANCHORS, { source: 'wittenberg' });
+  assert.deepEqual(new Set(removed.map(r => r.rule)), new Set([
+    'wittenberg-icon',
+    'wittenberg-jump-anchors',
+    'wittenberg-orphaned-divider',
+  ]));
+  assert.equal(output, 'Out of love for the truth and the desire to bring it to light, the following propositions will be discussed at Wittenberg.');
+});
+
+test('a jump-anchor list glued onto the same block as a real heading is left alone', () => {
+  // The one case the markdown-level rule cannot safely handle: on the Ten
+  // Commandments chapter specifically, the source's <font size="-1"> anchor
+  // wrapper sits right after the title with no blank line, so turndown emits
+  // title and anchors as ONE block. This module only drops whole blocks, and
+  // dropping this one would lose the real chapter title with it — so it is
+  // correctly left alone here. fetch-texts.mjs's DOM pass removes the
+  // <font size="-1"> wrapper before turndown ever runs, which is the actual
+  // fix for any future fetch; the one already-imported occurrence needed a
+  // one-off hand correction instead (see the run-log).
+  const glued = '**I.  \nTHE TEN COMMANDMENTS**  \n\\[1\\] \\[2\\] \\[3\\] \\[4\\] \\[5\\] \\[6\\] \\[7\\] \\[8\\] \\[9\\] \\[10\\]';
+  const doc = ['![pwimage](w4.gif)', glued].join('\n\n');
+  const { removed } = stripChrome(doc);
+  assert.deepEqual(removed.map(r => r.rule), ['wittenberg-icon']);
+});
+
+test('a decorative underscore-rule divider is stripped once Wittenberg is confirmed, but real emphasis is not', () => {
+  const decorative = ['![pwimage](w4.gif)', 'A heading above it.', '\\_\\_\\_\\_\\_\\_\\_\\_\\_\\_', 'Body below it.'].join('\n\n');
+  const { removed } = stripChrome(decorative, { source: 'wittenberg' });
+  assert.deepEqual(new Set(removed.map(r => r.rule)), new Set(['wittenberg-icon', 'wittenberg-underscore-rule']));
+
+  // A single italicised word or short phrase is never six-plus underscores.
+  const prose = ['![pwimage](w4.gif)', 'Real emphasis.', '_grace_ alone, _faith_ alone.'].join('\n\n');
+  assert.deepEqual(stripChrome(prose, { source: 'wittenberg' }).removed.map(r => r.rule), ['wittenberg-icon']);
+});
+
+test('an underscore divider is left alone in a document with no confirmed Wittenberg tell', () => {
+  // The regression this guards: a bare underscore-run is not unique to
+  // Wittenberg's chrome. mystagogical-catecheses/catechetical-lecture-18.md
+  // (a New Advent import) uses the exact same shape as a genuine topic-break
+  // divider inside Cyril's own lecture text — caught by this exact scenario
+  // during a dry run before wittenberg-underscore-rule shipped, when it was
+  // briefly `structural: true` instead of `requires: 'wittenberg'`.
+  const cyril = [
+    'And now, brethren beloved, the word of instruction exhorts you all.',
+    '\\_\\_\\_\\_\\_\\_\\_\\_\\_\\_\\_\\_\\_\\_\\_\\_\\_\\_',
+    'The Faith which we rehearse contains in order the following.',
+  ].join('\n\n');
+  assert.deepEqual(stripChrome(cyril).removed, []);
+  assert.equal(stripChrome(cyril).output, cyril);
+});
+
 test('wittenberg-published-in-label fires with no other wittenberg tell present', () => {
   // The load-bearing case: this label is the one tell the DOM pass in
   // fetch-texts.mjs cannot isolate (see its comment), so on a normal fetch it
@@ -339,14 +434,19 @@ test('the nav trail rule requires a confirmed Wittenberg document, and needs the
   assert.deepEqual(removed.map(r => r.rule), ['wittenberg-icon']);
 });
 
-test('the in-page jump-anchor list is advisory only, in both escaping forms turndown produces', () => {
-  const bracketOutside = '\\[[10](#95-10)\\] \\[[20](#95-20)\\] \\[[30](#95-30)\\]';
-  const bracketInside = '[\\[1\\]](#a) [\\[2\\]](#b) [\\[3\\]](#c)';
-  for (const body of [bracketOutside, bracketInside]) {
-    const { output, removed, advisories } = stripChrome(body);
-    assert.deepEqual(removed, [], 'jump anchors must not be auto-stripped');
-    assert.equal(output, body);
-    assert.deepEqual(advisories.map(a => a.rule), ['wittenberg-jump-anchors']);
+test('the in-page jump-anchor list is stripped, matching the real (parens-free) shape turndown emits', () => {
+  // stripAllLinks (fetch-texts.mjs) removes every <a> project-wide, so no
+  // href ever survives into these — an assumption a previous version of this
+  // rule got wrong (it expected `[1](url)` and never matched real output,
+  // which is how the list survived into two imported texts unnoticed). Both
+  // real shapes: single digits (the catechism) and by-tens (the 95 Theses).
+  const singleDigits = '\\[1\\] \\[2\\] \\[3\\] \\[4\\] \\[5\\]';
+  const byTens = '\\[10\\] \\[20\\] \\[30\\]';
+  for (const body of [singleDigits, byTens]) {
+    const doc = ['![pwimage](w4.gif)', body].join('\n\n');
+    const { output, removed } = stripChrome(doc);
+    assert.ok(removed.some(r => r.rule === 'wittenberg-jump-anchors'), `not matched: ${body}`);
+    assert.equal(output, '');
   }
 });
 

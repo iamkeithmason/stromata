@@ -419,6 +419,129 @@ export const CHROME_RULES = [
     why: 'Project Wittenberg footer icon',
   },
   {
+    id: 'wittenberg-work-title-header',
+    source: 'wittenberg',
+    kind: 'block',
+    // "Luther's Little Instruction Book\n(The Small Catechism of Martin
+    // Luther)" — the whole work's own title/subtitle, repeated verbatim as an
+    // H3 at the top of EVERY page of this multi-page work (confirmed live:
+    // book-1.html through book-appx.html on projectwittenberg.org all open
+    // with this same block, immediately before the per-chapter heading).
+    // Real front matter, but it belongs once — in the collection's own title,
+    // already set from config — not seven times, once per chapter body.
+    // Named narrowly to this one work's title, matching this file's existing
+    // convention (cf. newadvent-support): a different Wittenberg work whose
+    // template repeats its own title the same way needs its own rule when it
+    // is fetched, same as any other new source-site tell.
+    //
+    // Structural rather than `requires: 'wittenberg'`: by the time a page
+    // reaches this module, fetch-texts.mjs's DOM pass has usually already
+    // removed every OTHER unconditional Wittenberg tell (masthead, icon, nav
+    // trail), so on a normal fetch this heading is the only thing left that
+    // could confirm the source at all — the same load-bearing role
+    // wittenberg-published-in-label plays for the citation label. The
+    // literal title text is specific enough that no other source's real
+    // prose could produce it, so it is as safe unconditionally as that rule.
+    structural: true,
+    match: /^#{1,6}\s*Luther'?s Little Instruction Book\b/i,
+    why: 'Project Wittenberg work title/subtitle, repeated on every chapter page',
+  },
+  {
+    id: 'wittenberg-translator-credit-heading',
+    source: 'wittenberg',
+    kind: 'block',
+    requires: 'wittenberg',
+    // The header-form translator credit — "### _Translated by NAME_\n_DATE_"
+    // — distinct from wittenberg-translator-credit above, which matches the
+    // FOOTER-form sentence ("...for Project Wittenberg by NAME, and is in
+    // the public domain..."). Both carry the same information, already
+    // captured in translation_notes at Stage 2; this heading-form copy is
+    // pure repetition, once per chapter. Generic by translator name on
+    // purpose, so it covers any future Wittenberg work regardless of who
+    // translated it.
+    match: /^#{1,6}\s*_?Translated by\s+[\s\S]*$/i,
+    why: 'Project Wittenberg header-form translator credit (belongs in translation_notes)',
+  },
+  {
+    id: 'wittenberg-edition-code',
+    source: 'wittenberg',
+    kind: 'block',
+    // "(Version 1.1 -- December 22, 1994)\nPW# 001-003-002Ea" — the site's
+    // own internal edition/catalogue code. "PW#" is Project Wittenberg's own
+    // tag prefix and does not occur in real prose, so this is safe
+    // unconditionally, the same way newadvent-az-bar's shape is.
+    structural: true,
+    match: /PW#\s*[\w-]+/i,
+    why: 'Project Wittenberg internal edition code',
+  },
+  {
+    id: 'wittenberg-orphaned-divider',
+    source: 'wittenberg',
+    kind: 'block',
+    requires: 'wittenberg',
+    // A bare "* * *" block — turndown's rendering of the site's `<hr noshade>`
+    // page dividers. The paragraphs they used to bracket (translator credit,
+    // contact block, nav trail) are already stripped by the rules above, so
+    // what survives is a divider with nothing left on either side of it:
+    // template furniture, never content — a reader loses nothing a lone
+    // horizontal rule alone conveyed.
+    match: /^\*\s*\*\s*\*$/,
+    why: 'Project Wittenberg orphaned page-divider (its bracketed content is already stripped)',
+  },
+  {
+    id: 'wittenberg-underscore-rule',
+    source: 'wittenberg',
+    kind: 'block',
+    requires: 'wittenberg',
+    // A block of nothing but (turndown-escaped) underscores — the site's
+    // other horizontal-rule idiom, a literal run of "_" characters used as a
+    // typographic divider under a masthead or title.
+    //
+    // NOT structural, on purpose, despite looking as safe as
+    // newadvent-az-bar: a bare underscore-run is not unique to Wittenberg's
+    // site chrome. mystagogical-catecheses/catechetical-lecture-18.md (a
+    // New Advent import, nothing to do with Wittenberg) uses the exact same
+    // shape as a genuine topic-break divider inside Cyril's own lecture —
+    // confirmed by a dry run against the real corpus before this rule
+    // shipped, which is why it exists as a check here at all. Made
+    // unconditional once, briefly, while writing this: fixed before it ever
+    // reached --write.
+    match: /^(?:\\_|_){6,}$/,
+    why: 'Project Wittenberg underscore-rule divider',
+  },
+  {
+    id: 'wittenberg-jump-anchors',
+    source: 'wittenberg',
+    kind: 'block',
+    // "\[1\] \[2\] \[3\] …" — the in-page jump-to-section anchor list Project
+    // Wittenberg puts above a numbered work (theses, commandments). Every
+    // <a> tag is stripped project-wide (the stripAllLinks turndown rule in
+    // fetch-texts.mjs), so these can never resolve to anything once
+    // imported. This was originally left advisory rather than stripped, on
+    // the theory that removal was an editorial call — but it escaped Stage 3
+    // review twice in a row (both catechism chapters and the 95 Theses
+    // shipped with it still in the body, confirmed against Supabase
+    // 2026-09-21), which is the actual argument for stripping it outright: a
+    // human check that has already missed the same dead artefact twice is
+    // not a control. The pattern also needed fixing regardless — it assumed
+    // turndown renders these as links with a surviving `(url)`, which never
+    // happens once stripAllLinks has run; the real shape is bare escaped
+    // brackets around each number, no parens at all.
+    //
+    // Structural rather than `requires: 'wittenberg'`: the 95 Theses body
+    // carries no OTHER unconditional Wittenberg tell at all (its title isn't
+    // the catechism's, it has no "Translated by" heading, and its citation
+    // is deliberately kept rather than stripped) — so a gated version of this
+    // rule would never fire there. A whole block that is nothing but 2+
+    // groups of "\[digit\]" is unmistakable on its own (checked against the
+    // full corpus 2026-09-21: this exact shape occurs in exactly one text,
+    // the 95 Theses), and the cost of a false positive is minimal even in
+    // principle — the block carries no prose to lose.
+    structural: true,
+    match: /^(?:\\?\[\d+\\?\]\s*){2,}$/,
+    why: 'Project Wittenberg in-page jump-to-section anchor list (dead — every href is stripped project-wide)',
+  },
+  {
     id: 'wittenberg-published-in-label',
     source: 'wittenberg',
     kind: 'block',
@@ -469,21 +592,6 @@ export const ADVISORY_RULES = [
     why: 'image with a source-relative path that will not resolve on this site',
   },
   {
-    id: 'wittenberg-jump-anchors',
-    kind: 'advisory',
-    // "[10] [20] [30] …" — the in-page jump-to-section links Project Wittenberg
-    // puts above a numbered work (theses, commandments). Harmless rather than
-    // misleading once imported, unlike the nav trail or contact block, so it is
-    // flagged for Stage 3 cleanup rather than auto-stripped.
-    //
-    // Turndown escapes the bracket pair two different ways depending on which
-    // one it treats as literal text vs. link syntax — `\[[10](#95-10)\]` on the
-    // Theses page, `[\[1\]](#a)` on the Catechism — so this matches loosely:
-    // any run of backslash/bracket characters around the digits and the URL.
-    match: /^(?:[\\[\]]*\d+[\\[\]]*\([^)]*\)[\\[\]]*\s*){2,}$/,
-    why: 'Project Wittenberg in-page jump-to-section anchor list',
-  },
-  {
     id: 'inline-bracket-number',
     kind: 'advisory',
     // "\[6\]stumbled" / "den,\[1\]" — a bracketed integer fused hard against
@@ -497,8 +605,9 @@ export const ADVISORY_RULES = [
     // mechanical one.
     // The adjacent character must be real text, not another bracket/paren/
     // backslash — otherwise this also fires on Project Wittenberg's jump
-    // anchors (`\[[10](#95-10)\]`), which are their own, deliberately
-    // advisory-only rule above and are link syntax, not fused prose.
+    // anchors (`\[[10](#95-10)\]` / `[\[1\]](#a)`), which are their own
+    // dedicated CHROME_RULES entry (wittenberg-jump-anchors, above) and are
+    // link syntax, not fused prose.
     match: /[^\s\\[\]()]\\?\[\d{1,4}\\?\]|\\?\[\d{1,4}\\?\][^\s\\[\]()]/,
     why: 'bracketed number fused to surrounding text — verify against a nearby FOOTNOTES list before treating as a stray page number',
   },

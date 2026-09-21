@@ -17,16 +17,6 @@ note_draft: "Luther's answer to 'How can water do such great things?' is that it
 
 <!-- EDITORIAL INTRO — write 2–4 sentences here explaining what this text is and why it matters. This appears above the text on the reader page. -->
 
-### Luther's Little Instruction Book  
-(The Small Catechism of Martin Luther)
-
-### _Translated by Robert E. Smith  
-May 22, 1994_
-
-* * *
-
-* * *
-
 **
 
 IV.  
@@ -82,9 +72,3 @@ HOLY BAPTISM
 > > **A.** St. Paul says to the Romans in chapter six:
 > > 
 > > _We are buried with Christ through Baptism into death, so that, in the same way Christ is risen from the dead by the glory of the Father, thus also must we walk in a new life._
-
-* * *
-
-* * *
-
-* * *

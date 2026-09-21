@@ -242,8 +242,16 @@ const JOHN_OF_DAMASCUS_EXPOSITION = {
 const PRUDENTIUS_PSYCHOMACHIA = {
   xmlFile: 'scripts/ingestion/sources/psychomachia-prudentius-raw.xml',
   // Scan-image indices, inclusive. 0–1 are the board and title page; 2 opens
-  // the translator's verse preface on Abraham; 73 is the rear endpaper.
-  pages: [2, 72],
+  // the translator's verse preface on Abraham.
+  //
+  // 73 was recorded here as the rear endpaper until 2026-09-21, and it is not:
+  // it is printed page 72, carrying the poem's last four lines and "The END."
+  // The leaf is foxed badly enough that the Archive.org OCR returned fifteen
+  // specks (`r ee`, `HS dE`, `1 12`) and no words, so it read as blank and the
+  // text was staged without its ending. Found by the catchword at the foot of
+  // leaf 72 — the printer set "Where" there, and nothing on leaf 73 answered
+  // to it. Never trust an OCR pass to tell you which leaves are blank.
+  pages: [2, 73],
   slug: 'psychomachia-prudentius',
   title: 'Psychomachia: The War of the Soul',
   author: 'Prudentius',
@@ -262,6 +270,13 @@ const PRUDENTIUS_PSYCHOMACHIA = {
   // from a British Library microfilm scan, and the review file lists 59 places
   // where the scan appears to have dropped a line outright.
   ocrQuality: 'low',
+  // After the re-read from the page images: 0 lines carrying wreckage (was
+  // 65) and a couplet rhyme rate of 86.3% (was 58.6%). Not 'high', and the
+  // reason is one specific known hole rather than general doubt — leaf 69's
+  // scan is cropped at the foot and one or two verse lines are absent from
+  // the IMAGE, so no re-reading recovers them, and there is no second copy of
+  // this edition to collate against. Reader-visible, so Keith's to confirm.
+  ocrQualityAfterVision: 'medium',
   noteDraft:
     "Luxury arrives at the battlefield in a chariot, scattering violets and rose-petals at the Christian ranks, and very nearly wins — until Sobriety lifts the cross before the horses' eyes and the whole gaudy equipage goes over. Prudentius composed the Psychomachia around 400, and with it the personified Virtues and Vices that medieval Europe carved into a thousand porches and cathedral fronts. The allegory is stranger, and a great deal bloodier, than its reputation. This is the anonymous 1743 English version, which turns the Latin hexameters into heroic couplets and fights all seven combats at full length.",
   sourceAttribution:
@@ -291,6 +306,68 @@ const PRUDENTIUS_PSYCHOMACHIA = {
     ['Conpar 7 AVARICE', 'The Combat of Avarice and Liberality'],
     ['Combat of CONCORD', 'The Combat of Concord and Discord'],
   ],
+
+  // Leaves where the re-read from the page images disagrees with the line
+  // count the XML's pitch analysis predicted. Each one was settled against the
+  // scan before it was written here; an unexplained mismatch stops the run.
+  //
+  // HOW MUCH EYEBALLING IS BEHIND EACH: leaves 14, 24, 26, 72 and 73 were read
+  // line-by-line against the page image in the orchestrating session, and are
+  // the basis for the categories below. The rest were settled on their own
+  // evidence — the per-leaf reason given, the transcriber's report, and the
+  // global couplet phase, which rose from 56.8% to 82.7% and could not have
+  // done so if pages were short or long by a line (one wrong count throws
+  // every couplet after it out of step). That is weaker than reading all
+  // thirty, and is recorded as such rather than dressed up.
+  //
+  // The dominant category is not a defect in this pass. The pitch test already
+  // said these pages were missing lines; it simply under-counted how many, and
+  // the images show the full measure of 20.
+  // Letters the page does not carry, supplied by an editor and shown in
+  // square brackets so a reader can see the hand. One entry so far.
+  visionSupplies: {
+    // Leaf 12. The line ends "with jo" and a faint speck; no further type is
+    // on the page, so the transcriber correctly left it unfinished rather
+    // than completing it. Verified against the scan at high zoom. The word is
+    // `joy`: the metre needs the syllable, the sense requires it, and it
+    // rhymes with `lie` two lines on — an ordinary eighteenth-century pairing
+    // of /oi/ with /ai/, the same class as this text's join/divine.
+    'proclaims with jo[?]': 'proclaims with jo[y],',
+  },
+
+  visionLineCountAccepted: {
+    2: 'Preface: the printed display heading "PREFACE." is a real ninth heading, written as one markdown line the OCR never read as text (+1).',
+    4: 'Old OCR under-read a full-measure page; the image has the standard 20 lines.',
+    6: 'Carries the six-line Clemens Alexandrinus footnote, of which the OCR read four; the verse is 18 lines and the note 6.',
+    8: 'Section opening: the printer sets "PSYCHOMACHIA / The WAR of the SOUL" over two lines, which we render as one heading (-1).',
+    17: 'Old OCR under-read a full-measure page; the image has the standard 20 lines.',
+    20: 'Section-end page; the OCR read 12 of its 16 lines and the pitch test recovered only 2 of the 4.',
+    21: 'Section opening with a heading; the OCR read 14 of the 18 verse lines.',
+    23: 'Old OCR under-read a full-measure page; the image has the standard 20 lines.',
+    24: 'VERIFIED against the scan: 20 lines, read line-by-line. The OCR managed 9 and the pitch test recovered 1.',
+    26: 'VERIFIED against the scan: 20 lines. The pitch test called three gaps exactly right (4, 2, 1) and still over-counted the page by 2, reading a wide space between couplets as dropped type.',
+    32: 'Old OCR under-read a full-measure page; the image has the standard 20 lines.',
+    34: 'Foot of the leaf is cropped tight in the scan; the OCR read 11 of 18 and the pitch test recovered 3.',
+    38: 'Old OCR under-read a full-measure page; the image has the standard 20 lines.',
+    41: 'Old OCR under-read a full-measure page (11 of 20); the image has the standard 20 lines.',
+    43: 'Section-end page of 19 lines; the OCR read 14 and the pitch test recovered 2.',
+    45: 'Old OCR under-read a full-measure page; the image has the standard 20 lines.',
+    46: 'Old OCR under-read a full-measure page; the image has the standard 20 lines.',
+    52: 'Old OCR under-read a full-measure page; the image has the standard 20 lines.',
+    53: 'Old OCR under-read a full-measure page; the image has the standard 20 lines.',
+    56: 'Section opening; the printed heading occupies two lines of type and one markdown heading (-1).',
+    57: 'Old OCR under-read a full-measure page; the image has the standard 20 lines.',
+    59: 'Old OCR read 9 of 20 lines on this leaf; the image has the standard full measure.',
+    61: 'The OCR split one over-long verse line into two at its turn-over, counting 21 where the page sets 20 (-1).',
+    62: 'Old OCR under-read a full-measure page; the image has the standard 20 lines.',
+    63: 'Old OCR under-read a full-measure page; the image has the standard 20 lines.',
+    66: 'Old OCR under-read a full-measure page; the image has the standard 20 lines.',
+    67: 'Carries the two-line footnote on the Temple plan; 16 verse lines plus the note (-1 against the prediction).',
+    69: 'THE SCAN ITSELF IS CROPPED at the foot — the leaf ends mid-couplet on "There too, O *Chrysoprass*, you hold a place," with no rhyming partner and no catchword. One or two verse lines are absent from the page image, not from the transcription. Not recoverable from this scan.',
+    70: 'Old OCR read 8 of 20 lines on this leaf; the image has the standard full measure.',
+    72: 'VERIFIED against the scan: 20 lines, read line-by-line. The leaf is heavily foxed and the OCR managed 4.',
+  },
+
   manualCorrections: {
     // The decorated drop-capital that opens each section is set as an outsize
     // initial the OCR reads as a stray mark or not at all. Restoring it is
