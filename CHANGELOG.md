@@ -7,6 +7,30 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-09-21 — Renumbered a migration collision; three older ones found, not touched
+
+Two branches both added a `028_*.sql` migration (`text_word_count`, from the egress fix a few
+entries below; `poem_genre`, from the Wittenberg/djvu.xml session), and both merged to `main`
+within the same session without either PR seeing the other. `supabase/migrations/028_poem_genre.sql`
+is renamed to `029_poem_genre.sql` — safe to do after the fact because Supabase's own migration
+history tracks each applied migration by a timestamp it assigns when applied (confirmed via
+`list_migrations`: `text_word_count` and `028_poem_genre` are both already applied, as
+`20260921185940` and `20260921204124` respectively), not by the local file's numeric prefix. The
+rename is pure repo hygiene; nothing needed re-running. Updated the four places that named the old
+filename or cited "migration 028" for the Poem genre specifically (`CLAUDE.md`,
+`scripts/ingestion/archive-ocr-config.mjs`, `scripts/ingestion/run-log/2026-09-21.md`, this file) —
+left every `028` reference to `text_word_count` alone, since that one keeps its number.
+
+**Not fixed, flagged for a decision:** three older collisions already exist in
+`supabase/migrations/` — `006` (`editorial_introduction` / `era_description`), `011` (`note_draft`
+/ `tradition_description`), `017` (`author_image_framing` / `text_source_url`) — all long since
+applied and merged. Renumbering those is a bigger, more invasive change: more history to rewrite,
+more places a stale reference could hide, and no fresh session actively confused by them the way
+tonight's collision was caught in the middle of being made. Left alone pending a decision on
+whether the hygiene is worth the churn.
+
+---
+
 ## 2026-09-21 — Bounding the failure the query-error fix below still leaves open
 
 Landed alongside the entry directly below (same incident, same session that reported it, a
@@ -136,7 +160,7 @@ lines, left its second line stranded under the markdown heading that already
 said it in full; a heading mapped to `null` now removes a line instead of
 replacing it. 55 real gaps remain, each a checkbox with a deep link to its leaf.
 
-**A `Poem` genre** (migration `028`, mirrored in `lib/constants.ts`,
+**A `Poem` genre** (migration `029`, mirrored in `lib/constants.ts`,
 `lib/pipeline/vocab.ts`, `scripts/sourcer/vocab.ts`, `scripts/scout/config.ts`,
 `scripts/ingestion/fetch-texts.mjs` and CLAUDE.md). The vocabulary had exactly
 one verse genre, so every poem that is not a hymn had to be filed as one, and

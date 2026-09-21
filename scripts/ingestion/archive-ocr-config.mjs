@@ -250,10 +250,10 @@ const PRUDENTIUS_PSYCHOMACHIA = {
   genre: 'Poem',
   verse: true,
   // Poem, not Hymn. Hymn was the vocabulary's only verse genre until
-  // migration 028 added this one, and an allegorical epic in heroic couplets
+  // migration 029 added this one, and an allegorical epic in heroic couplets
   // filed as a hymn would have sat beside the Cathemerinon in every genre
   // listing and told the reader something false about what they were opening.
-  // NOTE: run supabase/migrations/028_poem_genre.sql before importing, or
+  // NOTE: run supabase/migrations/029_poem_genre.sql before importing, or
   // pipeline-import.mjs skips the text with "genre \"Poem\" not found".
   archiveId: 'bim_eighteenth-century_psychomachia-the-war-of_prudentius_1743',
   themes: ['spiritual-warfare', 'virtue', 'vice', 'humility', 'conscience'],
