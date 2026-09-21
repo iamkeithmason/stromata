@@ -88,6 +88,61 @@ panel was in when it produced four weeks of unusable data.
 `text-session-depth` itself is **not yet wire-verified** — it is not deployed.
 `node scripts/verify-analytics.mjs --url=<preview>` covers its four entry paths
 and is the one command owed before this counts as done.
+## 2026-09-21 — The review queue moves to a phone, and publishing gets one path
+
+311 drafts, 288 of them in 22 single-source collections, all with provenance filled and
+307 with a `note_draft` that is in practice a finished ~800-character introduction. The
+only things missing were approval and a summary — and the person who supplies both is
+mostly away from a computer. So the review surface moved to **`/admin/review`**, built
+for a 375px screen, one thumb, and being interrupted.
+
+- **One publish path, and it was already wrong.** `lib/publishing/publish-text.ts` now
+  owns publishing; both admin text routes call it instead of their own inline
+  `revalidatePath` lists. Those lists covered the homepage, `/texts`, the text, its author
+  and its themes — but **not** the collection, era, tradition, authors-index or location
+  pages, every one of which is `revalidate = 3600` and renders published texts. A text
+  published from the collection page's point of view simply didn't appear there for up to
+  an hour. `textPaths()` is pure and unit tested, so the next new surface is a test failure
+  rather than a silent staleness bug.
+- **`published_at` is still the database's job.** The trigger from 019 stamps it on the
+  false→true transition; nothing in the new code writes it. Re-verified in a rolled-back
+  transaction after 021 touched that function: draft insert leaves it null, publish stamps
+  it, a later save doesn't rewrite it.
+- **The gate is server-side.** Provenance verification and `review_state = 'approved'` are
+  re-checked inside `publishText`, not just enforced by a disabled button. A probe with a
+  valid admin cookie confirms the review routes refuse `{"published": true, "title": …}`
+  outright — the autosave endpoint cannot be turned into a general text update or a
+  publish backdoor.
+- **Drafts live in draft columns** (020): `summary_draft`, `review_state`, `review_note`,
+  `collections.provenance_verified_at`, `description_draft`. Nothing the queue autosaves is
+  a live field, which is what makes pre-generation safe to re-run and an abandoned review
+  harmless. `review_state` goes NULL at publish rather than gaining a fourth state that
+  would then have to be kept in sync with `published`.
+- **Approving the description IS the record.** There is no separate flag: Approve copies
+  `description_draft` into `description`, and `publishCollection` reads only the latter.
+  It deliberately does not fall back to the draft — that fallback would publish text nobody
+  had approved.
+- **A fourth copy of the summary prompt is gone.** `SUMMARY_PROMPT` + `trimToLength` +
+  `generateSummary` existed byte-identically in `generate-summaries.mjs`,
+  `repair-summaries.mjs` and (in TypeScript) the generate-summary route. All three now
+  import `scripts/lib/summary-prompt.mjs` — the same consolidation `note-prompt.mjs`
+  already documents the reason for.
+- **Pre-generation summarises the note, not the body.** `generate-review-drafts.mjs` writes
+  each summary from title + `note_draft` — ~800 characters of already-distilled prose about
+  that exact text, instead of a 30,000-word body. It reports its own token cost per model;
+  the selection logic (what gets regenerated, what gets skipped) is unit tested, because
+  over 316 texts a wrong predicate is either real money or silently discarded edits.
+- **Two security-linter warnings fixed** on the way past: `update_updated_at` and
+  `set_published_at_on_publish` now pin `search_path`. The remaining advisor findings are
+  the deliberate RLS-with-no-policies design (anon is granted nothing on `texts`/
+  `collections`; everything goes through the service role) and a Supabase platform function.
+
+Not done here: the pilot run. Pre-generation needs `ANTHROPIC_API_KEY` and `/admin/review`
+needs Keith's own login, neither of which exists in a Claude Code session — so
+`npm run generate:review-drafts -- --collection the-shepherd-of-hermas` and the first phone
+publish are his. The queue reads correctly against that collection's real rows: 3 pending
+texts, consistent provenance, and a correctly-raised warning that Hermas is still a draft
+author.
 
 ---
 

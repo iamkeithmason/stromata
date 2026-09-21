@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { revalidatePath } from 'next/cache'
+import { revalidateText } from '@/lib/publishing/publish-text'
 import { createServerClient } from '@/lib/supabase/server'
 
 type Params = { params: Promise<{ id: string }> }
@@ -60,6 +60,11 @@ export async function PATCH(request: NextRequest, { params }: Params) {
     return NextResponse.json({ error: 'Invalid genre.' }, { status: 400 })
   }
 
+  // Read before writing: if this save renames the text, /texts/{old-slug} keeps
+  // serving its cached copy unless we revalidate that path too.
+  const { data: prior } = await supabase.from('texts').select('slug').eq('id', id).maybeSingle()
+  const priorSlug = (prior as { slug: string } | null)?.slug ?? null
+
   const { error: updateError } = await supabase
     .from('texts')
     .update({
@@ -102,17 +107,9 @@ export async function PATCH(request: NextRequest, { params }: Params) {
     }
   }
 
-  const { data: author } = await supabase
-    .from('authors')
-    .select('slug')
-    .eq('id', author_id)
-    .single()
-
-  revalidatePath('/')
-  revalidatePath('/texts')
-  revalidatePath(`/texts/${slug}`)
-  if (author?.slug) revalidatePath(`/authors/${author.slug}`)
-  for (const themeSlug of theme_slugs ?? []) revalidatePath(`/themes/${themeSlug}`)
+  // One shared surface list (lib/publishing/publish-text.ts), not an inline one
+  // per route. `priorSlug` clears the old path when the slug was just renamed.
+  await revalidateText(supabase, id, [priorSlug])
 
   return NextResponse.json({ ok: true })
 }

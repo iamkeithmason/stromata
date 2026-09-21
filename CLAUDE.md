@@ -44,6 +44,16 @@ Don't conclude the DB is unreachable from that banner — **just make a call** (
 
 ---
 
+## Review queue — `/admin/review` (Stage 5b, phone-first)
+
+Draft → publish in batches from a phone. Run `npm run generate:review-drafts` first (fills
+`summary_draft`, any missing `note_draft`, and `collections.description_draft`; `--collection <slug>`,
+`--dry-run`, `--force`; prints its token cost). Then per collection: verify provenance (nothing can be
+approved until you do), approve the description, edit + Approve/Hold each card (edits autosave; the
+queue reopens at the first pending card), then "Publish N approved". Every publish goes through
+`lib/publishing/publish-text.ts` — the one publish path, which the admin edit form now shares; never
+add a second one.
+
 ## Pipeline GUI — `/admin/pipeline` (local operator UI, for Keith not Claude)
 
 There is a browser GUI for the whole pipeline, living inside the existing admin app at
