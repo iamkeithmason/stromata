@@ -1,17 +1,17 @@
 export default {
   collection: {
-    name: "Sermon 21 (On the Feast of the Nativity)",
-    slug: "sermon-21-nativity-leo",
-    author: "Leo the Great",
+    name: "Second Epistle of Clement",
+    slug: "second-epistle-of-clement-attributed",
+    author: "Clement of Rome (attributed)",
     description: "",
   },
-  urls: ["https://www.newadvent.org/fathers/360321.htm"],
+  urls: ["https://www.newadvent.org/fathers/1011.htm"],
   source: "newadvent",
   knownFields: {
-    genre: "Sermon",
-    sourceAttribution: "Translated by Charles Lett Feltoe (NPNF Series II, Vol. XII).",
+    genre: "Homily",
+    sourceAttribution: "Translated by Alexander Roberts and James Donaldson (Ante-Nicene Fathers, Vol. VII).",
     provenanceNotes: "Text sourced from New Advent. Accessed September 2026.",
-    translationNotes: "Charles Lett Feltoe (d. 1928). NPNF Series II, Vol. XII, published 1895 — public domain by publication date.",
+    translationNotes: "Alexander Roberts & James Donaldson. Ante-Nicene Fathers Vol. VII, published 1867-1886 — public domain by publication date.",
     copyrightSafe: true,
   },
 };
