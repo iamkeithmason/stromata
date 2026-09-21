@@ -143,6 +143,17 @@ Two corollaries:
 - **Scoping from a failing system's own output.** Import scripts that skip rows
   the old parser couldn't read; monitoring that only watches endpoints the old
   config knew about; a lint ratchet seeded from files the old rule could parse.
+- **An agent's working directory is not a shared artefact.** This one landed on
+  the session that wrote the rule. The database write was hung off `assemble`,
+  so it needed the manifest and all 72 transcripts — and `work/` was gitignored
+  wholesale, so the only machine holding the credentials was the only machine
+  that could not run the command. Keith hit it on the first try. The same
+  gitignore buried 61,000 characters of transcription, the half of the job that
+  cannot be re-downloaded, next to 22MB of crops that can. Both are the
+  circularity above wearing different clothes: what was convenient where the
+  work happened got mistaken for what is true everywhere. **The step that writes
+  somewhere shared must depend only on the artefact that is shared**, and what
+  an agent cannot regenerate belongs in the repository, whatever sits next to it.
 
 ## Rules of thumb
 
@@ -164,3 +175,7 @@ Two corollaries:
 8. **State how much looking is behind each claim.** "Verified" and "consistent
    with the pattern" are different, and the aggregate should never round the
    second up to the first.
+9. **Hand-off step, shared input.** Before ending, run the command you are
+   about to hand someone from a checkout that has only what they will have.
+   An ignore rule is a claim that a file is regenerable — check it is true of
+   every file it covers, not just the big ones.
