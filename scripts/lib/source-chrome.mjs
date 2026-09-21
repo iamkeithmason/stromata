@@ -40,9 +40,11 @@ const WS = '[\\s\\u00A0]';
 /**
  * Each rule is `{ id, source, kind, match, why }`.
  *
- *   kind: 'block' — drop every block that matches
- *   kind: 'tail'  — drop the first matching block and everything after it
- *   kind: 'head'  — drop the first matching block and everything before it
+ *   kind: 'block'          — drop every block that matches
+ *   kind: 'tail'           — drop the first matching block and everything after it
+ *   kind: 'head'           — drop the first matching block and everything before it
+ *   kind: 'span-to-heading' — drop the first matching block and every block after
+ *                             it up to (not including) the next markdown heading
  *
  * The invariant that makes it safe to run every rule against every body,
  * regardless of where the text came from, is that no rule can match ordinary
@@ -176,6 +178,94 @@ export const CHROME_RULES = [
     why: 'New Advent source URL',
   },
 
+  // --- New Advent — Summa Theologiae pages -----------------------------------
+  // The /summa/ section repeats its own masthead — title, edition, translator
+  // credit, online-edition copyright, and both Dominican approbations — above
+  // EVERY question, and repeats the page's own title as plain text above the
+  // breadcrumb. A hand-imported "curated selection" of 26 questions (assembled
+  // outside fetch-texts.mjs, which strips this at the DOM level on a normal
+  // fetch) carried the whole run 26 times, undecoded HTML entities and all —
+  // reached the corpus 2026-09-21.
+  {
+    id: 'newadvent-summa-masthead-title',
+    source: 'newadvent',
+    kind: 'block',
+    requires: 'newadvent',
+    // Turndown left &aelig;/&AElig; undecoded here, since this page was
+    // hand-copied outside the normal fetch pipeline.
+    match: /^The Summa Theologi(?:&aelig;|æ) of St\.?\s*Thomas Aquinas$/i,
+    why: 'New Advent Summa masthead title',
+  },
+  {
+    id: 'newadvent-summa-edition-line',
+    source: 'newadvent',
+    kind: 'block',
+    requires: 'newadvent',
+    match: /^(?:First|Second|Third)(?: and Revised)? Edition,\s*\d{4}$/,
+    why: 'New Advent Summa masthead edition line',
+  },
+  {
+    id: 'newadvent-summa-translator-line',
+    source: 'newadvent',
+    kind: 'block',
+    requires: 'newadvent',
+    match: /^Literally translated by Fathers of the English Dominican Province$/,
+    why: 'New Advent Summa masthead translator credit (belongs in translation_notes)',
+  },
+  {
+    id: 'newadvent-summa-online-copyright',
+    source: 'newadvent',
+    kind: 'block',
+    requires: 'newadvent',
+    match: /^Online Edition Copyright.*Kevin Knight/,
+    why: 'New Advent Summa masthead online-edition copyright line',
+  },
+  {
+    id: 'newadvent-nihil-obstat',
+    source: 'newadvent',
+    kind: 'block',
+    requires: 'newadvent',
+    match: /^Nihil Obstat\./,
+    why: 'ecclesiastical censor approval notice (Nihil Obstat)',
+  },
+  {
+    id: 'newadvent-imprimatur',
+    source: 'newadvent',
+    kind: 'block',
+    requires: 'newadvent',
+    match: /^Imprimatur\./,
+    why: 'ecclesiastical publication approval notice (Imprimatur)',
+  },
+  {
+    id: 'newadvent-summa-approbatio-ordinis',
+    source: 'newadvent',
+    kind: 'block',
+    requires: 'newadvent',
+    match: /^APPROBATIO ORDINIS$/,
+    why: 'New Advent Summa masthead sub-heading',
+  },
+  {
+    id: 'newadvent-summa-dedication',
+    source: 'newadvent',
+    kind: 'block',
+    requires: 'newadvent',
+    match: /^MARI(?:&AElig;|Æ) IMMACULAT(?:&AElig;|Æ)\s*-\s*SEDI SAPIENTI(?:&AElig;|Æ)$/i,
+    why: 'New Advent Summa masthead dedication line',
+  },
+  {
+    id: 'newadvent-summa-page-title',
+    source: 'newadvent',
+    kind: 'block',
+    // "SUMMA THEOLOGIAE: <description> (<Part>, Q. <N>)" — the page's own
+    // title repeated as plain text above the breadcrumb. Structural rather
+    // than requiring confirmation: the all-caps prefix plus a parenthetical
+    // ending "Q. <digits>" is not a shape real prose takes, the same way the
+    // breadcrumb's "Home > … >" is safe unconditionally.
+    structural: true,
+    match: /^SUMMA THEOLOGIAE:.*\(.*Q\.\s*\d+\)\s*$/,
+    why: 'New Advent Summa page title, duplicating the rendered title/H1',
+  },
+
   // --- Project Gutenberg ----------------------------------------------------
   {
     id: 'gutenberg-header',
@@ -216,6 +306,42 @@ export const CHROME_RULES = [
     // Always sits at the foot of a PG text, immediately before the end marker.
     match: /^#{1,6}\s*Transcriber'?s note/i,
     why: "Project Gutenberg transcriber's note",
+  },
+
+  // --- Project Gutenberg — illustrated editions -------------------------------
+  // An illustrated PG edition's front matter includes a table of plates —
+  // captions and print page numbers for images that live in the paper book,
+  // not this text (the actual plates, when present, are separate ![...]
+  // images pulled in by fetch-gutenberg-plates.mjs and are untouched by this
+  // rule). Found on the Hurlbut "Every Child Can Read" Pilgrim's Progress,
+  // 2026-09-21.
+  {
+    id: 'gutenberg-list-of-illustrations',
+    source: 'gutenberg',
+    kind: 'span-to-heading',
+    // Unconditional/structural rather than `requires: 'gutenberg'`: by the
+    // time a maintenance run reaches an already-imported body, the PG
+    // header/footer it also carried have usually already been stripped at
+    // fetch time (that is exactly what makes this body worth healing), so
+    // there is no other Gutenberg tell left to require against — the same
+    // reasoning as wittenberg-published-in-label above. The heading text
+    // alone is not a shape real reading content takes.
+    structural: true,
+    match: /^#{1,6}\s*LIST OF ILLUSTRATIONS\.?\s*$/i,
+    why: 'front-matter list of illustrations (captions/page numbers for plates, not the plates themselves)',
+  },
+  {
+    id: 'gutenberg-page-number',
+    source: 'gutenberg',
+    kind: 'block',
+    // "\[9\]" alone on its own line — a scanned/typeset page number that
+    // landed as its own paragraph. Never a footnote reference: a footnote
+    // marker is always fused to the word or punctuation it annotates (see the
+    // inline-bracket-number advisory rule below), never isolated as a whole
+    // block by itself. Unconditional for the same reason as the rule above.
+    structural: true,
+    match: /^\\?\[\d{1,4}\\?\]$/,
+    why: 'isolated page number from the printed edition',
   },
 
   // --- Project Wittenberg -----------------------------------------------------
@@ -465,6 +591,26 @@ export const ADVISORY_RULES = [
     match: /!\[[^\]]*\]\((?!https?:)[^)]*\.(?:jpe?g|png|gif|webp)[^)]*\)/i,
     why: 'image with a source-relative path that will not resolve on this site',
   },
+  {
+    id: 'inline-bracket-number',
+    kind: 'advisory',
+    // "\[6\]stumbled" / "den,\[1\]" — a bracketed integer fused hard against
+    // surrounding text, with nothing separating them. Once an isolated
+    // page-number block is already gone (gutenberg-page-number, above), what
+    // remains is genuinely ambiguous: it reads exactly like a real footnote
+    // marker and exactly like a stray OCR page number that landed
+    // mid-sentence, and Bunyan's "Every Child Can Read" edition carries real
+    // instances of both. Check whether a nearby "### FOOTNOTES:" list defines
+    // that number before deciding either way — that is a reading task, not a
+    // mechanical one.
+    // The adjacent character must be real text, not another bracket/paren/
+    // backslash — otherwise this also fires on Project Wittenberg's jump
+    // anchors (`\[[10](#95-10)\]` / `[\[1\]](#a)`), which are their own
+    // dedicated CHROME_RULES entry (wittenberg-jump-anchors, above) and are
+    // link syntax, not fused prose.
+    match: /[^\s\\[\]()]\\?\[\d{1,4}\\?\]|\\?\[\d{1,4}\\?\][^\s\\[\]()]/,
+    why: 'bracketed number fused to surrounding text — verify against a nearby FOOTNOTES list before treating as a stray page number',
+  },
 ];
 
 /**
@@ -609,6 +755,65 @@ function excerpt(text) {
   return oneLine.length > 110 ? `${oneLine.slice(0, 107)}…` : oneLine;
 }
 
+const FOOTNOTES_HEADING = /^#{1,6}\s*FOOTNOTES:?\s*$/i;
+
+/**
+ * The highest footnote number a document's own "### FOOTNOTES:" apparatus
+ * actually defines, and the index of that heading — or null if there is no
+ * such apparatus. A document with no footnote list gives no basis for telling
+ * a footnote marker from a page number, so callers must stay conservative.
+ */
+function maxDefinedFootnoteNumber(blocks) {
+  const headingAt = blocks.findIndex(b => FOOTNOTES_HEADING.test(b.text.trim()));
+  if (headingAt === -1) return null;
+  let max = 0;
+  for (let i = headingAt + 1; i < blocks.length; i++) {
+    const m = blocks[i].text.trim().match(/^\\?\[(\d{1,4})\\?\]\s/);
+    if (m) max = Math.max(max, Number(m[1]));
+  }
+  return max > 0 ? { max, headingAt } : null;
+}
+
+/**
+ * Remove a fused bracket-number wherever its value exceeds every footnote a
+ * document's own FOOTNOTES list defines. Nothing defines that number, so
+ * whatever it looks like, it cannot be a footnote reference — it is a stray
+ * page number that happened to land mid-sentence, the fused sibling of the
+ * isolated gutenberg-page-number case above.
+ *
+ * Deliberately narrower than it could be: a number WITHIN the defined range
+ * is left alone (and stays advisory) rather than trusted, because a genuine
+ * footnote marker and a page number that happens to reuse a low digit are
+ * indistinguishable without reading the sentence — Bunyan's page 6 carries
+ * "\[6\]stumbled", which has nothing to do with footnote 6, "Perspective
+ * glass is an old name for a telescope." Only the unambiguous, out-of-range
+ * case is mechanical enough to act on.
+ */
+function stripOutOfRangeFusedNumbers(blocks) {
+  const found = maxDefinedFootnoteNumber(blocks);
+  if (!found) return { blocks, removed: [] };
+  const { max, headingAt } = found;
+  const removed = [];
+
+  const next = blocks.map((block, index) => {
+    if (index >= headingAt) return block; // never touch the apparatus itself
+    const text = block.text;
+    const cleaned = text.replace(/\\?\[(\d{1,4})\\?\]/g, (whole, digits) => {
+      if (Number(digits) <= max) return whole;
+      removed.push({
+        rule: 'gutenberg-out-of-range-fused-number',
+        why: `[${digits}] exceeds every footnote this document defines (highest is [${max}]) — a stray page number, not a reference`,
+        blocks: 1,
+        excerpt: excerpt(text.trim()),
+      });
+      return '';
+    });
+    return cleaned === text ? block : { ...block, text: cleaned };
+  });
+
+  return { blocks: next, removed };
+}
+
 /**
  * Remove source-site chrome from `markdown`.
  *
@@ -644,6 +849,19 @@ export function stripChrome(markdown, options = {}) {
     blocks = blocks.slice(0, at);
   }
 
+  // span-to-heading rules bound a floating mid-document run (a front-matter
+  // list, say) rather than the whole document's start or end — drop the
+  // matching block and everything after it up to, but not including, the
+  // next markdown heading (or the document's end, if none follows).
+  for (const rule of rules.filter(r => r.kind === 'span-to-heading')) {
+    const at = blocks.findIndex(b => rule.match.test(b.text.trim()));
+    if (at === -1) continue;
+    let end = at + 1;
+    while (end < blocks.length && !/^#{1,6}\s/.test(blocks[end].text.trim())) end++;
+    removed.push({ rule: rule.id, why: rule.why, blocks: end - at, excerpt: excerpt(blocks[at].text) });
+    blocks = [...blocks.slice(0, at), ...blocks.slice(end)];
+  }
+
   const blockRules = rules.filter(r => r.kind === 'block');
   blocks = blocks.filter(block => {
     const text = block.text.trim();
@@ -653,6 +871,16 @@ export function stripChrome(markdown, options = {}) {
     removed.push({ rule: hit.id, why: hit.why, blocks: 1, excerpt: excerpt(text) });
     return false;
   });
+
+  // A fused bracket-number outside every range a document's own FOOTNOTES
+  // list defines is unambiguously a stray page number — see the function
+  // comment. Gated the same way as the Gutenberg block rules above: skip it
+  // when the caller explicitly scoped this call to a different source.
+  if (!options.source || options.source === 'gutenberg') {
+    const stripped = stripOutOfRangeFusedNumbers(blocks);
+    blocks = stripped.blocks;
+    removed.push(...stripped.removed);
+  }
 
   // Optional, opt-in: drop a leading H1 that the reader page already renders as
   // the text's title. Never on by default — see ADVISORY_RULES.
