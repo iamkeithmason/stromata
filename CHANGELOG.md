@@ -7,6 +7,60 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-09-21 — The convention became a lint rule, and it found a fourth bug
+
+The mount-effect analytics fix above was a documented convention that three of
+four components quietly ignored for months. `.eslintrc.cjs` now encodes it, on
+the same reasoning as the raw-colour rule: a documented convention is a
+probability an LLM follows most of the time; a lint rule in CI is a contract.
+
+- **The rule** flags `.track()` on a `*.umami` object inside a `useEffect` or
+  `useLayoutEffect`. Event handlers are deliberately untouched — by the time a
+  reader clicks, the tracker has long since loaded, and those call sites are
+  correct as written. The rule is about mount timing, not call shape.
+- **The ratchet needed fixing to add it.** `legacyRawColour` switched
+  `no-restricted-syntax` *off* for its files, and both rules share that one rule
+  id — so adding the analytics selector would have silently exempted the legacy
+  list from it, including `AuthorsBrowser`, `TextsBrowser` and `ReaderSettings`,
+  all of which already call `umami.track`. The override now re-declares the rule
+  with the analytics selectors instead of disabling it, so the exemption is as
+  narrow as its comment always claimed.
+- **It found `ReadingProgressBar` on its first run**, which the hand audit had
+  cleared as "fires on scroll, therefore safe". It is not: `onScroll()` runs once
+  synchronously at mount, and `computeProgress()` returns `1` outright when the
+  document is shorter than the viewport. So on any short text the 75% threshold
+  is already met on that first call, before the tracker exists — and `maxRef` is
+  seeded from reading history, so a returning reader hits it too. Both fired into
+  `window.umami?.` and vanished. Now routed through `whenTrackerReady`, with the
+  wait cancelled on unmount.
+
+## 2026-09-21 — published_at can be reconstructed for half the corpus, and only half
+
+`texts.published_at` was added partway through and is null for 207 of 547
+published texts, so every publishing-over-time chart sees a corpus that published
+nothing before 14 September. `scripts/backfill-published-at.mjs` reconstructs
+what can be reconstructed and refuses to invent the rest: dry-run by default,
+`--write` to apply, `--slug`/`--id` to scope, and a per-month histogram so the
+shape can be checked before anything is written.
+
+**It backfills only texts created before September**, where there was no
+draft-then-publish path to take and created_at is therefore the publish within
+minutes. Anything created in the review-queue era stays null — the 246 drafts
+cleared on 21 September were created on the 12th, and writing created_at there
+would put a demonstrably wrong date in the one column charts are meant to trust.
+A row it cannot date stays undated and is drawn as an explicit gap.
+
+**The first heuristic was wrong and the dry run caught it.** It also required
+`updated_at` to sit close to `created_at`, on the theory that a row created
+published and never re-saved would not have moved. The dry run rejected all 207
+candidates: every row carries the same `updated_at`, because the `texts_updated_at`
+trigger bumps on every write and the maintenance scripts rewrite bodies
+corpus-wide. `updated_at` records the last time anything touched a row, which by
+now is never the publish. It is no longer consulted, and a test pins that so it
+is not reintroduced as a signal.
+
+---
+
 ## 2026-09-21 — Three mount-time events were never reaching Umami
 
 `lib/analytics/track-when-ready.ts` was written because `window.umami?.track()` in a mount

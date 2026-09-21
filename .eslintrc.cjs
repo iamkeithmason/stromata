@@ -20,6 +20,35 @@
  * --shadow-panel, --season-*), not hand-authored inline.
  */
 
+/**
+ * The analytics race rule — the second thing that has to be machine-checked.
+ *
+ * `window.umami?.track(...)` fired from a mount effect is a silent coin toss.
+ * The tracker loads `defer` + `afterInteractive`, React's effects routinely run
+ * first, `window.umami` is undefined, and the optional chaining swallows the
+ * event leaving no trace anywhere. `lib/analytics/track-when-ready.ts` exists to
+ * fix exactly this, and was written up with the production evidence — and then
+ * three of the four mount-effect components were never moved onto it. Over the
+ * site's whole history `reader-return` (the Growth Model's North Star, measured
+ * as an event) and `weekly-reader` never fired once, and `era-page-view` and
+ * `scripture-lookup-view` never reached Umami at all. A doc comment did not stop
+ * that; a lint rule would have.
+ *
+ * Scope: only `.track()` on a `*.umami` object, and only INSIDE a useEffect or
+ * useLayoutEffect callback. Event handlers — a click, a submit, a scroll
+ * threshold — are deliberately untouched: by the time a reader interacts, the
+ * tracker has long since loaded, and those call sites are correct as written.
+ * The rule is about mount timing, not about the call shape.
+ */
+const noMountEffectTrackSelectors = [
+  {
+    selector:
+      ":matches(CallExpression[callee.name='useEffect'], CallExpression[callee.name='useLayoutEffect']) CallExpression[callee.property.name='track'][callee.object.property.name='umami']",
+    message:
+      "Umami track() fired directly from a mount effect — the tracker is deferred, so this usually runs before `window.umami` exists and the event is silently dropped. Use whenTrackerReady() from lib/analytics/track-when-ready.ts, and put any ledger write (a 'fired' flag, a session marker) INSIDE its callback so a dropped event isn't recorded as reported.",
+  },
+]
+
 const noRawColourSelectors = [
   {
     selector:
@@ -66,12 +95,18 @@ const legacyRawColour = [
 module.exports = {
   extends: ['next/core-web-vitals', 'next/typescript'],
   rules: {
-    'no-restricted-syntax': ['error', ...noRawColourSelectors],
+    'no-restricted-syntax': ['error', ...noRawColourSelectors, ...noMountEffectTrackSelectors],
   },
   overrides: [
     {
+      // The ratchet exempts COLOUR only. Both rules share one rule id, so
+      // switching `no-restricted-syntax` off here would have quietly exempted
+      // these files from the analytics rule too — and three of them
+      // (AuthorsBrowser, TextsBrowser, ReaderSettings) already call
+      // umami.track. Re-declare with the analytics selectors instead of
+      // disabling, so the exemption stays as narrow as it reads.
       files: legacyRawColour,
-      rules: { 'no-restricted-syntax': 'off' },
+      rules: { 'no-restricted-syntax': ['error', ...noMountEffectTrackSelectors] },
     },
   ],
 }
