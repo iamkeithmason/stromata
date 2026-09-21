@@ -18,12 +18,6 @@ copyright_safe: true
 
    
 
- A  B  C  D  E  F  G  H  I  J  K  L  M  N  O  P  Q  R  S  T  U  V  W  X  Y  Z 
-
-![New Advent](../images/logo.gif)
-
-Home > Fathers of the Church > Catechetical Lectures (Cyril of Jerusalem) > Lecture 5
-
 # Catechetical Lecture 5
 
 **Of Faith.**
@@ -63,5 +57,3 @@ And of this faith it is said, _If you have faith as a grain of mustard seed_. Ma
 12\. But in learning the Faith and in professing it, acquire and keep that only, which is now delivered to you by the Church, and which has been built up strongly out of all the Scriptures. For since all cannot read the Scriptures, some being hindered as to the knowledge of them by want of learning, and others by a want of leisure, in order that the soul may not perish from ignorance, we comprise the whole doctrine of the Faith in a few lines. This summary I wish you both to commit to memory when I recite it , and to rehearse it with all diligence among yourselves, not writing it out on paper , but engraving it by the memory upon your heart , taking care while you rehearse it that no Catechumen chance to overhear the things which have been delivered to you. I wish you also to keep this as a provision through the whole course of your life, and beside this to receive no other, neither if we ourselves should change and contradict our present teaching, nor if an adverse angel, _transformed into an angel of light_ 2 Corinthians 11:14 should wish to lead you astray. _For though we or an angel from heaven preach to you any other gospel than that you have received, let him be to you anathema_. Galatians 1:8-9 So for the present listen while I simply say the Creed , and commit it to memory; but at the proper season expect the confirmation out of Holy Scripture of each part of the contents. For the articles of the Faith were not composed as seemed good to men; but the most important points collected out of all the Scripture make up one complete teaching of the Faith. And just as the mustard seed in one small grain contains many branches, so also this Faith has embraced in few words all the knowledge of godliness in the Old and New Testaments. Take heed then, brethren, and _hold fast the traditions_ which you now receive, and _write them on the table of your heart_.
 
 13\. Guard them with reverence, lest per chance the enemy despoil any who have grown slack; or lest some heretic pervert any of the truths delivered to you. For faith is like putting money into the bank , even as we have now done; but from you God requires the accounts of the deposit. _I charge you_, as the Apostle says, _before God, who quickens all things, and Christ Jesus, who before Pontius Pilate witnessed the good confession, that you keep_ this faith which is committed to you, _without spot, until the appearing of our Lord Jesus Christ_. A treasure of life has now been committed to you, and the Master demands the deposit at His appearing, _which in His own times He shall show, Who is the blessed and only Potentate, the King of kings, and Lord of lords; Who only has immortality, dwelling in light which no man can approach unto; Whom no man has seen nor can see. To Whom be glory, honour, and power_ 1 Timothy 6:15-16 for ever and ever. Amen.
-
-CONTACT US | ADVERTISE WITH NEW ADVENT

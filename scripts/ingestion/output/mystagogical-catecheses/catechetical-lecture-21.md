@@ -18,12 +18,6 @@ copyright_safe: true
 
    
 
- A  B  C  D  E  F  G  H  I  J  K  L  M  N  O  P  Q  R  S  T  U  V  W  X  Y  Z 
-
-![New Advent](../images/logo.gif)
-
-Home > Fathers of the Church > Catechetical Lectures (Cyril of Jerusalem) > Lecture 21
-
 # Catechetical Lecture 21
 
 **(On the Mysteries. III.)**
@@ -47,5 +41,3 @@ But you have an unction from the Holy One, etc.....that, when He shall appear, w
 6\. Moreover, you should know that in the old Scripture there lies the symbol of this Chrism. For what time Moses imparted to his brother the command of God, and made him High-priest, after bathing in water, he anointed him; and Aaron was called Christ or Anointed, evidently from the typical Chrism. So also the High-priest, in advancing Solomon to the kingdom, anointed him after he had bathed in Gihon. 1 Kings 1:39 To them however these things happened in a figure, but to you not in a figure, but in truth; because you were truly anointed by the Holy Ghost. Christ is the beginning of your salvation; for He is truly the First-fruit, and you the mass Romans 11:16; but if the First-fruit be holy, it is manifest that Its holiness will pass to the mass also.
 
 7\. Keep This unspotted: for it shall teach you all things, if it abide in you, as you have just heard declared by the blessed John, discoursing much concerning this Unction. For this holy thing is a spiritual safeguard of the body, and salvation of the soul. Of this the blessed Esaias prophesying of old time said, _And on this mountain_, — (now he calls the Church a mountain elsewhere also, as when he says, _In the last days the mountain of the Lord's house shall be manifest_ Isaiah 2:2;)— _on this mountain shall the Lord make unto all nations a feast; they shall drink wine, they shall drink gladness, they shall anoint themselves with ointment_. And that he may make you sure, hear what he says of this ointment as being mystical; _Deliver all these things to the nations, for the counsel of the Lord is unto all nations_. Having been anointed, therefore, with this holy ointment, keep it unspotted and unblemished in you, pressing forward by good works, and being made well-pleasing to the Captain of your salvation, Christ Jesus, to whom be glory for ever and ever. Amen.
-
-CONTACT US | ADVERTISE WITH NEW ADVENT

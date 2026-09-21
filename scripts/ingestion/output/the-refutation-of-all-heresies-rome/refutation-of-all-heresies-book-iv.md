@@ -19,12 +19,6 @@ note_draft: "Before Hippolytus gets to the Peratics and their talk of Aeons in r
 
    
 
- A  B  C  D  E  F  G  H  I  J  K  L  M  N  O  P  Q  R  S  T  U  V  W  X  Y  Z 
-
-![New Advent](../images/logo.gif)
-
-Home > Fathers of the Church > Refutation of All Heresies (Hippolytus) > Book IV
-
 # Refutation of All Heresies (Book IV)
 
 ## Chapter 1. System of the Astrologers; Sidereal Influence; Configuration of the Stars.
@@ -328,5 +322,3 @@ Of this hebdomad Simon and Valentinus, having altered the names, detailed marvel
 Some indeed, then, attempt likewise to form the hebdomads from the medical (art), being astonished at the dissection of the brain, asserting that the substance of the universe and the power of procreation and the Godhead could be ascertained from the arrangement of the brain. For the brain, being the dominant portion of the entire body, reposes calm and unmoved, containing within itself the spirit. Such an account, then, is not incredible, but widely differs from the conclusions which these (heretics) attempt to deduce from it. For the brain, on being dissected, has within it what may be called a vaulted chamber. And on either side of this are thin membranes, which they term little wings. Now these are gently moved by the spirit, and in turn propel towards the cerebellum the spirit, which, careering through a certain blood-vessel like a reed, advances towards the pineal gland. And near this is situated the entrance of the cerebellum, which admits the current of spirit, and distributes it into what is styled the spinal marrow. But from them the whole frame participates in the spiritual energy, inasmuch as all the arteries, like a branch, are fastened on from this blood-vessel, the extremity of which terminates in the genital blood-vessels, whence all the (animal) seeds proceeding from the brain through the loin are secreted (in the seminal glands). The form, however, of the brain is like the head of a serpent, respecting which a lengthened discussion is maintained by the professors of knowledge, falsely so named, as we shall prove. Six other coupling ligaments grow out of the brain, which, traversing round the head, and having their termination in (the head) itself, hold bodies together; but the seventh (ligament) proceeds from the cerebellum to the lower parts of the rest of the frame, as we have declared.
 
 And respecting this there is an enlarged discussion, whence both Simon and Valentinus will be found both to have derived from this source starting-points for their opinions, and, though they may not acknowledge it, to be in the first instance liars, then heretics. Since, then, it appears that we have sufficiently explained these tenets likewise, and that all the reputed opinions of this earthly philosophy have been comprised in four books; it seems expedient to proceed to a consideration of the disciples of these men, nay rather, those who have furtively appropriated their doctrines.
-
-CONTACT US | ADVERTISE WITH NEW ADVENT

@@ -18,12 +18,6 @@ copyright_safe: true
 
    
 
- A  B  C  D  E  F  G  H  I  J  K  L  M  N  O  P  Q  R  S  T  U  V  W  X  Y  Z 
-
-![New Advent](../images/logo.gif)
-
-Home > Fathers of the Church > The Confessions > Book IX
-
 # The Confessions (Book IX)
 
 He speaks of his design of forsaking the profession of rhetoric; of the death of his friends, Nebridius and Verecundus; of having received baptism in the thirty-third year of his age; and of the virtues and death of his mother, Monica.
@@ -137,5 +131,3 @@ He speaks of his design of forsaking the profession of rhetoric; of the death of
 36\. And I believe You have already done that which I ask You; but accept the free-will offerings of my mouth, O Lord. For she, when the day of her dissolution was near at hand, took no thought to have her body sumptuously covered, or embalmed with spices; nor did she covet a choice monument, or desire her paternal burial-place. These things she entrusted not to us, but only desired to have her name remembered at Your altar, which she had served without the omission of a single day; whence she knew that the holy sacrifice was dispensed, by which the handwriting that was against us is blotted out; Colossians 2:14 by which the enemy was triumphed over, who, summing up our offenses, and searching for something to bring against us, found nothing in Him John 14:30 in whom we conquer. Who will restore to Him the innocent blood? Who will repay Him the price with which He bought us, so as to take us from Him? Unto the sacrament of which our ransom did Your handmaid bind her soul by the bond of faith. Let none separate her from Your protection. Let not the lion and the dragon introduce himself by force or fraud. For she will not reply that she owes nothing, lest she be convicted and got the better of by the wily deceiver; but she will answer that her sins are forgiven Matthew 9:2 by Him to whom no one is able to repay that price which He, owing nothing, laid down for us.
 
 37\. May she therefore rest in peace with her husband, before or after whom she married none; whom she obeyed, with patience bringing forth fruit Luke 8:15 unto You, that she might gain him also for You. And inspire, O my Lord my God, inspire Your servants my brethren, Your sons my masters, who with voice and heart and writings I serve, that so many of them as shall read these confessions may at Your altar remember Monica, Your handmaid, together with Patricius, her sometime husband, by whose flesh You introduced me into this life, in what manner I know not. May they with pious affection be mindful of my parents in this transitory light, of my brethren that are under You our Father in our Catholic mother, and of my fellow citizens in the eternal Jerusalem, which the wandering of Your people sighs for from their departure until their return. That so my mother's last entreaty to me may, through my confessions more than through my prayers, be more abundantly fulfilled to her through the prayers of many.
-
-CONTACT US | ADVERTISE WITH NEW ADVENT

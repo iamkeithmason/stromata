@@ -19,12 +19,6 @@ note_draft: "Lactantius spends this third book prosecuting a single charge again
 
    
 
- A  B  C  D  E  F  G  H  I  J  K  L  M  N  O  P  Q  R  S  T  U  V  W  X  Y  Z 
-
-![New Advent](../images/logo.gif)
-
-Home > Fathers of the Church > Divine Institutes (Lactantius) > Book III
-
 # Divine Institutes, Book III (Of the False Wisdom of Philosophers)
 
 ## Chapter 1. A Comparison of the Truth with Eloquence: Why the Philosophers Did Not Attain to It. Of the Simple Style of the Scriptures.
@@ -289,5 +283,3 @@ It was folly, therefore, and error, and blindness, and, as Cicero says, ignoranc
 I have taught, as far as my humble talents permitted, that the philosophers held a course widely deviating from the truth. I perceive, however, how many things I have omitted, because it was not my province to enter into a disputation against philosophers. But it was necessary for me to make a digression to this subject, that I might show that so many and great intellects have expended themselves in vain on false subjects, lest any one by chance being shut out by corrupt superstitions, should wish to betake himself to them as though about to find some certainty. Therefore the only hope, the only safety for man, is placed in this doctrine, which we defend. All the wisdom of man consists in this alone, the knowledge and worship of God: this is our tenet, this our opinion. Therefore with all the power of my voice I testify, I proclaim, I declare: Here, here is that which all philosophers have sought throughout their whole life; and yet, they have not been able to investigate, to grasp, and to attain to it, because they either retained a religion which was corrupt, or took it away altogether. Let them therefore all depart, who do not instruct human life, but throw it into confusion. For what do they teach? Or whom do they instruct, who have not yet instructed themselves? Whom are the sick able to heal, whom can the blind guide? Let us all, therefore, who have any regard for wisdom, betake ourselves to this subject. Or shall we wait until Socrates knows something? Or Anaxagoras finds light in the darkness? Or until Democritus draws forth truth from the well? Or Empedocles extends the paths of his soul? Or until Arcesilas and Carneades see, and feel, and perceive?
 
 Lo, a voice from heaven teaching the truth, and displaying to us a light brighter than the sun itself. Why are we unjust to ourselves, and delay to take up wisdom, which learned men, though they wasted their lives in its pursuit, were never able to discover. Let him who wishes to be wise and happy hear the voice of God, learn righteousness, understand the mystery of his birth, despise human affairs, embrace divine things, that he may gain that chief good to which he was born. Having overthrown all false religions, and having refuted all the arguments, as many as it was customary or possible to bring forward in their defense; then, having proved the systems of philosophy to be false, we must now come to true religion and wisdom, since, as I shall teach, they are both connected together; that we may maintain it either by arguments, or by examples, or by competent witnesses, and may show that the folly with which those worshippers of gods do not cease to upbraid us, has no existence with us, but lies altogether with them. And although, in the former books, when I was contending against false religions, and in this, when I was overthrowing false wisdom, I showed where the truth is, yet the next book will more plainly indicate what is true religion and what true wisdom.
-
-CONTACT US | ADVERTISE WITH NEW ADVENT

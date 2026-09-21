@@ -18,12 +18,6 @@ copyright_safe: true
 
    
 
- A  B  C  D  E  F  G  H  I  J  K  L  M  N  O  P  Q  R  S  T  U  V  W  X  Y  Z 
-
-![New Advent](../images/logo.gif)
-
-Home > Fathers of the Church > Catechetical Lectures (Cyril of Jerusalem) > Lecture 12
-
 # Catechetical Lecture 12
 
 **On the words Incarnate, and Made Man.**
@@ -103,5 +97,3 @@ But that you may learn more plainly that even a virgin is called in Holy Scriptu
 33\. Since God then bears witness, and the Holy Ghost joins in the witness, and Christ says, _Why do you seek to kill me, a man who has told you the truth_ ? Let the heretics be silenced who speak against His humanity, for they speak against Him, who says, _Handle me, and see; for a spirit has not flesh and bones, as you see me have_. Luke 24:39 Adored be the Lord the Virgin-born, and let Virgins acknowledge the crown of their own state: let the order also of Solitaries acknowledge the glory of chastity for we men are not deprived of the dignity of chastity. In the Virgin's womb the Saviour's period of nine months was passed: but the Lord was for thirty and three years a man: so that if a virgin glories because of the nine months, much more we because of the many years.
 
 34\. But let us all by God's grace run the race of chastity, _young men and maidens, old men and children_ ; not going after wantonness, but praising the name of Christ. Let us not be ignorant of the glory of chastity: for its crown is angelic, and its excellence above man. Let us be chary of our bodies which are to shine as the sun: let us not for short pleasure defile so great, so noble a body: for short and momentary is the sin, but the shame for many years and forever. Angels walking upon earth are they who practise chastity: the Virgins have their portion with Mary the Virgin. Let all vain ornament be banished, and every hurtful glance, and all wanton gait, and every flowing robe, and perfume enticing to pleasure. But in all for perfume let there be the prayer of sweet odour, and the practice of good works, and the sanctification of our bodies: that the Virgin-born Lord may say even of us, both men who live in chastity and women who wear the crown, _I will dwell in them; and walk in them, and I will be their God, and they shall be My people_. 2 Corinthians 6:16 To whom be the glory for ever and ever. Amen.
-
-CONTACT US | ADVERTISE WITH NEW ADVENT

@@ -18,12 +18,6 @@ copyright_safe: true
 
    
 
- A  B  C  D  E  F  G  H  I  J  K  L  M  N  O  P  Q  R  S  T  U  V  W  X  Y  Z 
-
-![New Advent](../images/logo.gif)
-
-Home > Fathers of the Church > The Stromata (Clement of Alexandria)
-
 # The Stromata (Book I)
 
 ## Chapter 1. Preface — The Author's Object — The Utility of Written Compositions.
@@ -596,5 +590,3 @@ Similarly, also, demonstrations from the resources of erudition, strengthen, con
 > But Right (by far the best) to men he gave.
 
 Whether, then, it be the law which is connate and natural, or that given afterwards, which is meant, it is certainly of God; and both the law of nature and that of instruction are one. Thus also Plato, in _The Statesman_, says that the lawgiver is one; and in _The Laws_, that he who shall understand music is one; teaching by these words that the Word is one, and God is one. And Moses manifestly calls the Lord a covenant: Behold I am my Covenant with you, having previously told him not to seek the covenant in writing. For it is a covenant which God, the Author of all, makes. For God is called Θεός, from θέσις (placing), and order or arrangement. And in the _Preaching_ of Peter you will find the Lord called Law and Word. But at this point, let our first Miscellany of gnostic notes, according to the true philosophy, come to a close.
-
-CONTACT US | ADVERTISE WITH NEW ADVENT

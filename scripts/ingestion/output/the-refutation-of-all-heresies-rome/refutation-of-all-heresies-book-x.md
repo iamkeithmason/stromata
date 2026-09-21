@@ -19,12 +19,6 @@ note_draft: "Book X is where Hippolytus stops chasing heretics through their lab
 
    
 
- A  B  C  D  E  F  G  H  I  J  K  L  M  N  O  P  Q  R  S  T  U  V  W  X  Y  Z 
-
-![New Advent](../images/logo.gif)
-
-Home > Fathers of the Church > Refutation of All Heresies (Hippolytus) > Book X
-
 # Refutation of All Heresies (Book X)
 
 ## Contents.
@@ -199,5 +193,3 @@ This Logos the Father in the latter _days_ sent forth, no longer to speak by a p
 Such is the true doctrine in regard of the divine nature, O you men, Greeks and Barbarians, Chaldeans and Assyrians, Egyptians and Libyans, Indians and Ethiopians, Celts, and you Latins, who lead armies, and all you that inhabit Europe, and Asia, and Libya. And to you I have become an adviser, inasmuch as I am a disciple of _the_ benevolent Logos, and _hence_ humane, in order that you may hasten and by us may be taught who the true God is, and _what_ is His well-ordered creation. Do not devote your attention to the fallacies of artificial discourses, nor the vain promises of plagiarizing heretics, but to the venerable simplicity of unassuming truth. And by means of this knowledge you shall escape the approaching threat of _the_ fire of judgment, and the rayless scenery of gloomy Tartarus, where never shines a beam from the irradiating voice of the Word!
 
 _You shall escape_ the boiling flood of hell's eternal lake of fire and the eye ever fixed in menacing glare of _fallen_ angels chained in Tartarus as punishment for their sins; _and you shall escape_ the worm that ceaselessly coils for food around the body whose scum has bred _it_. Now such (torments) as these shall you avoid by being instructed in a knowledge of the true God. And you shall possess an immortal body, even one placed beyond the possibility of corruption, just like the soul. And you shall receive the kingdom of heaven, you who, while you sojourned in _this_ life, knew the Celestial King. And you shall be a companion of the Deity, and a co-heir with Christ, no longer enslaved by lusts or passions, and _never again_ wasted by disease. For you have become God: for whatever sufferings you underwent while being a man, these He gave to you, because you were of mortal mould, but whatever it is consistent with God _to impart_, these God has promised to bestow upon you, because you have been deified, and begotten unto immortality. This constitutes _the import of the proverb_, Know yourself; i.e., discover God _within yourself, for_ He has formed you _after His own image_. For with the knowledge of self is conjoined the being an object of God's knowledge, for you are called by _the Deity_ Himself. Be not therefore inflamed, O you men, with enmity one towards another, nor hesitate to retrace with all speed your steps. For Christ is the God above all, and He has arranged to wash away sin from human beings, rendering regenerate the old man. And God called man His likeness from the beginning, and has evinced in a figure His love towards you. And provided you obey His solemn injunctions, and becomest a faithful follower of Him who is good, you shall resemble Him, inasmuch as you shall have honour conferred upon you by Him. For the Deity, (by condescension,) does not diminish anything of the divinity of His divine perfection; having made you even God unto His glory!
-
-CONTACT US | ADVERTISE WITH NEW ADVENT

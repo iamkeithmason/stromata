@@ -19,12 +19,6 @@ note_draft: "Book V opens with Lactantius addressing Constantine directly, deman
 
    
 
- A  B  C  D  E  F  G  H  I  J  K  L  M  N  O  P  Q  R  S  T  U  V  W  X  Y  Z 
-
-![New Advent](../images/logo.gif)
-
-Home > Fathers of the Church > Divine Institutes (Lactantius) > Book V
-
 # Divine Institutes, Book V (Of Justice)
 
 ## Chapter 1. Of the Non-Condemnation of Accused Persons Without a Hearing of Their Cause; From What Cause Philosophers Despised the Sacred Writings; Of the First Advocates of the Christian Religion.
@@ -316,5 +310,3 @@ There is also another cause why He permits persecutions to be carried on against
 ## Chapter 24. Of the Divine Vengeance Inflicted on the Torturers of the Christians.
 
 Whatever, therefore, wicked princes plan against us, God Himself permits to be done. And yet most unjust persecutors, to whom the name of God was a subject of reproach and mockery, must not think that they will escape with impunity, because they have been, as it were, the ministers of His indignation against us. For they will be punished with the judgment of God, who, having received power, have abused it to an inhuman degree, and have even insulted God in their arrogance, and placed His eternal name beneath their feet, to be impiously and wickedly trampled upon. On this account He promises that He will quickly take vengeance upon them, and exterminate the evil monsters from the earth. But He also, although He is accustomed to avenge the persecutions of His people even in the present world, commands us, however, to await patiently that day of heavenly judgment, in which He Himself will honour or punish every man according to his deserts. Therefore let not the souls of the sacrilegious expect that those whom they thus trample upon will be despised and unavenged. Those ravenous and voracious wolves who have tormented just and innocent souls, without the commission of any crimes, will surely meet with their reward. Only let us labour, that nothing else in us may be punished by men but righteousness alone: let us strive with all our power that we may at once deserve at the hands of God the avenging of our suffering and a reward.
-
-CONTACT US | ADVERTISE WITH NEW ADVENT

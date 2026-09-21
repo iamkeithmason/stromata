@@ -18,12 +18,6 @@ copyright_safe: true
 
    
 
- A  B  C  D  E  F  G  H  I  J  K  L  M  N  O  P  Q  R  S  T  U  V  W  X  Y  Z 
-
-![New Advent](../images/logo.gif)
-
-Home > Fathers of the Church > Catechetical Lectures (Cyril of Jerusalem) > Lecture 6
-
 # Catechetical Lecture 6
 
 **Concerning the Unity of God. On the Article, I Believe in One God. Also Concerning Heresies.**
@@ -105,5 +99,3 @@ Sanctify yourselves unto Me, O islands. Israel is saved by the Lord with an ever
 35\. But may the Lord deliver us from such delusion: and may there be given to you a hatred against the serpent, that as they lie in wait for the heel, so you may trample on their head. Remember what I say. What agreement can there be between our state and theirs? _What communion has light with darkness_ 2 Corinthians 6:14? What has the majesty of the Church to do with the abomination of the Manichees? Here is order, here is discipline , here is majesty, here is purity: here even _to look upon a woman to lust after her_ Matthew 5:28 is condemnation. Here is marriage with sanctity , here steadfast continence, here virginity in honour like the Angels: here partaking of food with thanksgiving, here gratitude to the Creator of the world. Here the Father of Christ is worshipped: here are taught fear and trembling before Him who sends the rain: here we ascribe glory to Him who makes the thunder and the lightning.
 
 36\. Make thou your fold with the sheep: flee from the wolves: depart not from the Church. Hate those also who have ever been suspected in such matters: and unless in time thou perceive their repentance, do not rashly trust yourself among them. The truth of the Unity of God has been delivered to you: learn to distinguish the pastures of doctrine. Be an approved banker , _holding fast that which is good, abstaining from every form of evil_. 1 Thessalonians 5:21-22 Or if you have ever been such as they, recognise and hate your delusion. For there is a way of salvation, if you reject the vomit, if you from your heart detest it, if you depart from them, not with your lips only, but with your soul also: if you worship the Father of Christ, the God of the Law and the Prophets, if you acknowledge the Good and the Just to be one and the same God. And may He preserve you all, guarding you from falling or stumbling, established in the Faith, in Christ Jesus our Lord, to Whom be glory for ever and ever. Amen.
-
-CONTACT US | ADVERTISE WITH NEW ADVENT

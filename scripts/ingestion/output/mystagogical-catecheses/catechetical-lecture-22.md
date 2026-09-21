@@ -18,12 +18,6 @@ copyright_safe: true
 
    
 
- A  B  C  D  E  F  G  H  I  J  K  L  M  N  O  P  Q  R  S  T  U  V  W  X  Y  Z 
-
-![New Advent](../images/logo.gif)
-
-Home > Fathers of the Church > Catechetical Lectures (Cyril of Jerusalem) > Lecture 22
-
 # Catechetical Lecture 22
 
 **(On the Mysteries. IV.)**
@@ -51,5 +45,3 @@ I received of the Lord that which also I delivered unto you, how that the Lord J
 8\. Therefore Solomon also, hinting at this grace, says in Ecclesiastes, _Come hither, eat your bread with joy_ (that is, the spiritual bread; _Come hither_, he calls with the call to salvation and blessing), _and drink your wine with a merry heart_ (that is, the spiritual wine); _and let oil be poured out upon your head_ you see he alludes even to the mystic Chrism); _and let your garments be always white, for the Lord is well pleased with your works_ Ecclesiastes 9:7-8; for before you came to Baptism, your works were _vanity of vanities_. But now, having put off your old garments, and put on those which are spiritually white, you must be continually robed in white: of course we mean not this, that you are always to wear white raiment; but you must be clad in the garments that are truly white and shining and spiritual, that you may say with the blessed Esaias, _My soul shall be joyful in my God; for He has clothed me with a garment of salvation, and put a robe of gladness around me_ Isaiah 61:10 .
 
 9\. Having learned these things, and been fully assured that the seeming bread is not bread, though sensible to taste, but the Body of Christ; and that the seeming wine is not wine, though the taste will have it so, but the Blood of Christ ; and that of this David sung of old, saying, _And bread strengthens man's heart, to make his face to shine with oil_ , strengthen your heart, by partaking thereof as spiritual, and make the face of your soul to shine. And so having it unveiled with a pure conscience, may you _reflect as a mirror the glory of the Lord_ 2 Corinthians 3:18, and proceed from _glory to glory_, in Christ Jesus our Lord:— To whom be honour, and might, and glory, for ever and ever. Amen.
-
-CONTACT US | ADVERTISE WITH NEW ADVENT

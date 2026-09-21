@@ -27,6 +27,7 @@ import { normaliseMarkdown, rejoinSpuriousBreaks, overrideForFile } from './norm
 import { detectScannos, loadCorpus, loadAllowlist } from './detect-scannos.mjs';
 import { normaliseTitle, normaliseName } from './lib/dedup-match.mjs';
 import { parseFrontmatter } from './lib/frontmatter.mjs';
+import { stripChrome, assertNoChrome } from './lib/source-chrome.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 dotenv.config({ path: path.join(__dirname, '..', '.env.local') });
@@ -267,10 +268,41 @@ async function importTextFile(filePath, prospect, authorId, collectionId) {
     console.log(`  ↩ rejoined ${breaksJoined} mid-sentence page-break split(s) in ${data.slug}`);
   }
 
+  // Source-site chrome. The fetcher strips this at the DOM level and again at
+  // the markdown level, but a staged file can predate a fixer, be hand-edited,
+  // or come from a source whose markup moved — which is exactly how a New Advent
+  // nav bar, logo and breadcrumb reached fourteen rows in September 2026 while
+  // the fetcher that would have caught them was already correct. Import is the
+  // last gate before the database, so it checks rather than trusts the file.
+  //
+  // Unambiguous chrome is stripped and counted, like the page-break rejoin
+  // above; judgement calls (a duplicated title heading, an image path relative
+  // to the source site) are flagged for review and left alone. The assert after
+  // it is a self-check on this module rather than an independent detector — if
+  // a strip ever leaves behind something its own detector still flags, the text
+  // is refused rather than inserted half-cleaned.
+  const { output: cleanBody, removed: chromeRemoved, advisories: chromeAdvisories } =
+    stripChrome(repairedBody);
+  if (chromeRemoved.length > 0) {
+    const detail = chromeRemoved.map(r => r.rule).join(', ');
+    corrections.push(`${data.slug}: stripped ${chromeRemoved.length} source-chrome block(s) (${detail})`);
+    console.log(`  ✂ stripped ${chromeRemoved.length} source-chrome block(s) in ${data.slug}: ${detail}`);
+  }
+  for (const advisory of chromeAdvisories) {
+    warnings.push(`${data.slug}: ${advisory.why} — ${advisory.excerpt}`);
+    console.warn(`  ⚠ ${advisory.rule} in ${data.slug}: ${advisory.why}`);
+  }
+  try {
+    assertNoChrome(cleanBody, { label: data.slug });
+  } catch (err) {
+    console.warn(`  ! ${err.message}`);
+    return { skipped: true, reason: 'chrome_survived', detail: err.message };
+  }
+
   // Verse check (flag-only — never rewrites the body). A stanza silently split
   // into paragraphs is the one failure mode that ships wrong output, so surface
   // it at import time rather than let it be discovered after publication.
-  const { report: normReport } = normaliseMarkdown(repairedBody, { override });
+  const { report: normReport } = normaliseMarkdown(cleanBody, { override });
   if (normReport.verseFlags.length > 0) {
     const ranges = normReport.verseFlags.map(f => `${f.startLine}-${f.endLine}`).join(', ');
     const warning = `${data.slug}: ${normReport.verseFlags.length} verse run(s) flagged, review before publish (body lines ${ranges})`;
@@ -282,7 +314,7 @@ async function importTextFile(filePath, prospect, authorId, collectionId) {
   // near-certain OCR errors are reviewed before publish. Skipped if the corpus
   // index isn't built yet.
   if (scannoCorpus) {
-    const tier1 = detectScannos(repairedBody, { corpus: scannoCorpus, allowlist: scannoAllowlist, slug: data.slug })
+    const tier1 = detectScannos(cleanBody, { corpus: scannoCorpus, allowlist: scannoAllowlist, slug: data.slug })
       .filter(f => f.tier === 1).length;
     if (tier1 > 0) {
       warnings.push(`${data.slug}: ${tier1} Tier-1 scanno(s) flagged, review before publish`);
@@ -297,7 +329,7 @@ async function importTextFile(filePath, prospect, authorId, collectionId) {
       slug: data.slug,
       author_id: authorId,
       genre_id: genreId,
-      body: repairedBody,
+      body: cleanBody,
       collection_id: collectionId,
       collection_order: data.collection_order ?? null,
       source_url: data.source_url || prospect.source_url || null,

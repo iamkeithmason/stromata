@@ -18,12 +18,6 @@ copyright_safe: true
 
    
 
- A  B  C  D  E  F  G  H  I  J  K  L  M  N  O  P  Q  R  S  T  U  V  W  X  Y  Z 
-
-![New Advent](../images/logo.gif)
-
-Home > Fathers of the Church > The Confessions > Book VIII
-
 # The Confessions (Book VIII)
 
 He finally describes the thirty-second year of his age, the most memorable of his whole life, in which, being instructed by Simplicianus concerning the conversion of others, and the manner of acting, he is, after a severe struggle, renewed in his whole mind, and is converted unto God.
@@ -117,5 +111,3 @@ whom Rome once conquered, now worshipped, all which old Victorinus had with thun
 29\. I was saying these things and weeping in the most bitter contrition of my heart, when, lo, I heard the voice as of a boy or girl, I know not which, coming from a neighbouring house, chanting, and oft repeating, Take up and read; take up and read. Immediately my countenance was changed, and I began most earnestly to consider whether it was usual for children in any kind of game to sing such words; nor could I remember ever to have heard the like. So, restraining the torrent of my tears, I rose up, interpreting it no other way than as a command to me from Heaven to open the book, and to read the first chapter I should light upon. For I had heard of Antony, that, accidentally coming in while the gospel was being read, he received the admonition as if what was read were addressed to him, Go and sell that you have, and give to the poor, and you shall have treasure in heaven; and come and follow me. Matthew 19:2l And by such oracle was he immediately converted unto You. So quickly I returned to the place where Alypius was sitting; for there had I put down the volume of the apostles, when I rose thence. I grasped, opened, and in silence read that paragraph on which my eyes first fell —Not in rioting and drunkenness, not in chambering and wantonness, not in strife and envying; but put on the Lord Jesus Christ, and make not provision for the flesh, to fulfil the lusts thereof. Romans 13:13-14 No further would I read, nor did I need; for instantly, as the sentence ended — by a light, as it were, of security infused into my heart — all the gloom of doubt vanished away.
 
 30\. Closing the book, then, and putting either my finger between, or some other mark, I now with a tranquil countenance made it known to Alypius. And he thus disclosed to me what was wrought in him, which I knew not. He asked to look at what I had read. I showed him; and he looked even further than I had read, and I knew not what followed. This it was, verily, Him that is weak in the faith, receive; Romans 14:1 which he applied to himself, and discovered to me. By this admonition was he strengthened; and by a good resolution and purpose, very much in accord with his character (wherein, for the better, he was always far different from me), without any restless delay he joined me. Thence we go in to my mother. We make it known to her — she rejoices. We relate how it came to pass — she leaps for joy, and triumphs, and blesses You, who art able to do exceeding abundantly above all that we ask or think; Ephesians 3:20 for she perceived You to have given her more for me than she used to ask by her pitiful and most doleful groanings. For Thou so converted me unto Yourself, that I sought neither a wife, nor any other of this world's hopes, — standing in that rule of faith in which Thou, so many years before, had showed me unto her in a vision. And you turned her grief into a gladness, much more plentiful than she had desired, and much dearer and chaster than she used to crave, by having grandchildren of my body.
-
-CONTACT US | ADVERTISE WITH NEW ADVENT

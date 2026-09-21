@@ -19,12 +19,6 @@ note_draft: "The edifice is nearly complete, Lactantius announces at the outset,
 
    
 
- A  B  C  D  E  F  G  H  I  J  K  L  M  N  O  P  Q  R  S  T  U  V  W  X  Y  Z 
-
-![New Advent](../images/logo.gif)
-
-Home > Fathers of the Church > Divine Institutes (Lactantius) > Book VII
-
 # Divine Institutes, Book VII (Of a Happy Life)
 
 ## Chapter 1. Of the World, and Those Who are About to Believe, and Those Who are Not; And in This the Censure of the Faithless.
@@ -396,5 +390,3 @@ And not only pointed it out, but also went before us in it, that no one might dr
 And the more nearly each one, as his years incline to old age, sees to be the approach of that day in which he must depart from this life, let him reflect how he may leave it in purity, how he may come to the Judge in innocency; not as they do, to whose dark minds the light is denied, who, when the strength of their body now fails, are admonished in this of the last pressing necessity, that they should with greater eagerness and ardour apply themselves to the satisfying of their lusts. From which abyss let everyone free himself while it is permitted him, while the opportunity is present, and let him turn himself to God with his whole mind, that he may without anxiety await that day, in which God, the Ruler and Lord of the world, shall judge the deeds and thoughts of each. Whatever things are here desired, let him not only neglect, but also avoid them, and let him judge that his soul is of greater value than those deceitful goods, the possession of which is uncertain and transitory; for they take their departure every day, and they go forth much more quickly than they had entered, and if it is permitted us to enjoy them even to the last, they must still, without doubt, be left to others. We can take nothing with us, except a well and innocently spent life. That man will appear before God with abundant resources, that man will appear in opulence, to whom there shall belong self-restraint, mercy, patience, love, and faith. This is our inheritance, which can neither be taken away from any one, nor transferred to another. And who is there who would wish to provide and acquire for himself these goods?
 
 Let those who are hungry come, that being fed with heavenly food, they may lay aside their lasting hunger; let those who are thirsty come, that they may with full mouth draw forth the water of salvation from an ever-flowing fountain. By this divine food and drink the blind shall both see, and the deaf hear, and the dumb speak, and the lame walk, and the foolish shall be wise, and the sick shall be strong, and the dead shall come to life again. For whoever by his virtue has trampled upon the corruptions of the earth, the supreme and truthful arbiter will raise him to life and to perpetual light. Let no one trust in riches, no one in badges of authority, no one even in royal power: these things do not make a man immortal. For whosoever shall cast away the conduct becoming a man, and, following present things, shall prostrate himself upon the ground, will be punished as a deserter from his Lord, his commander, and his Father. Let us therefore apply ourselves to righteousness, which will alone, as an inseparable companion, lead us to God; and while a spirit rules these limbs, let us serve God with unwearied service, let us keep our posts and watches, let us boldly engage with the enemy whom we know, that victorious and triumphant over our conquered adversary, we may obtain from the Lord that reward of valour which He Himself has promised.
-
-CONTACT US | ADVERTISE WITH NEW ADVENT

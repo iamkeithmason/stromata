@@ -18,12 +18,6 @@ copyright_safe: true
 
    
 
- A  B  C  D  E  F  G  H  I  J  K  L  M  N  O  P  Q  R  S  T  U  V  W  X  Y  Z 
-
-![New Advent](../images/logo.gif)
-
-Home > Fathers of the Church > Catechetical Lectures (Cyril of Jerusalem) > Lecture 2
-
 # Catechetical Lecture 2
 
 **On Repentance and Remission of Sins, and Concerning the Adversary.**
@@ -73,5 +67,3 @@ But perhaps you say, I am a believer, and lust does not gain the ascendant over 
 19\. What then ? When Nebuchadnezzar, after having done such deeds, had made confession, did God give him pardon and the kingdom, and when you repent shall He not give you the remission of sins, and the kingdom of heaven, if you live a worthy life? The Lord is loving unto man, and swift to pardon, but slow to punish. Let no man therefore despair of his own salvation. Peter, the chiefest and foremost of the Apostles, denied the Lord thrice before a little maid: but he repented himself, and wept bitterly. Now weeping shows the repentance of the heart: and therefore he not only received forgiveness for his denial, but also held his Apostolic dignity unforfeited.
 
 20\. Having therefore, brethren, many examples of those who have sinned and repented and been saved, do ye also heartily make confession unto the Lord, that you may both receive the forgiveness of your former sins, and be counted worthy of the heavenly gift, and inherit the heavenly kingdom with all the saints in Christ Jesus; to Whom is the glory for ever and ever. Amen.
-
-CONTACT US | ADVERTISE WITH NEW ADVENT

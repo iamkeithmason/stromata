@@ -19,12 +19,6 @@ note_draft: "Why do men, Lactantius asks, run to God in shipwreck and forget him
 
    
 
- A  B  C  D  E  F  G  H  I  J  K  L  M  N  O  P  Q  R  S  T  U  V  W  X  Y  Z 
-
-![New Advent](../images/logo.gif)
-
-Home > Fathers of the Church > Divine Institutes (Lactantius) > Book II
-
 # Divine Institutes, Book II (Of the Origin of Error)
 
 ## Chapter 1. That forgetfulness of reason makes men ignorant of the true God, whom they worship in adversity and despise in prosperity.
@@ -261,5 +255,3 @@ Whoever, therefore, is anxious to observe the obligations to which man is liable
 ## Chapter 20. Of Philosophy and the Truth.
 
 A great and difficult portion of the work which I have undertaken, unless I am deceived, has been completed; and the majesty of heaven supplying the power of speaking, we have driven away inveterate errors. But now a greater and more difficult contest with philosophers is proposed to us, the height of whose learning and eloquence, as some massive structure, is opposed to me. For as in the former case we were oppressed by a multitude, and almost by the universal agreement of all nations, so in this subject we are oppressed by the authority of men excelling in every kind of praise. But who can be ignorant that there is more weight in a smaller number of learned men than in a greater number of ignorant persons? But we must not despair that, under the guidance of God and the truth, these also may be turned aside from their opinion; nor do I think that they will be so obstinate as to deny that they behold with sound and open eyes the sun as he shines in his brilliancy. Only let that be true which they themselves are accustomed to profess, that they are possessed with the desire of investigation, and I shall assuredly succeed in causing them to believe that the truth which they have long sought for has been at length found, and to confess that it could not have been found by the abilities of man.
-
-CONTACT US | ADVERTISE WITH NEW ADVENT

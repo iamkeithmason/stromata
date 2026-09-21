@@ -642,7 +642,3 @@ The object of St. Ambrose in basing his treatise on the lines of that of Cicero 
 267. They, then, are His men, His trusty ones, who have no deceit in their hearts, hide no treachery within them, but guard His words and ponder them in their heart, as Mary pondered them; Luke 2:19 who know not their parents so as to put them before their duty; who hate the violators of chastity, and avenge the injury done to purity; and know the times for the fulfilling of their duty, as also which duty is the greater, which the lesser, and to what occasion each is suited. In all this they follow that alone which is virtuous. And who, where there are two virtuous duties, think that which is the more virtuous must come first. These are in truth rightly blessed.
 
 268. If any one makes known the just works of the Lord, and offers Him incense, then: Bless, O Lord, his strength; accept the work of his hands, Deuteronomy 33:11 that he may find the grace of the prophetic blessing with Him Who lives and reigns for ever and ever. Amen.
-
-Translated by H. de Romestin, E. de Romestin and H.T.F. Duckworth. From Nicene and Post-Nicene Fathers, Second Series, Vol. 10. Edited by Philip Schaff and Henry Wace. (Buffalo, NY: Christian Literature Publishing Co., 1896.) Revised and edited for New Advent by Kevin Knight.
-
-http://www.newadvent.org/fathers/34011.htm

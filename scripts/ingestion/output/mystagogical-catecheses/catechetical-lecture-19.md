@@ -18,12 +18,6 @@ copyright_safe: true
 
    
 
- A  B  C  D  E  F  G  H  I  J  K  L  M  N  O  P  Q  R  S  T  U  V  W  X  Y  Z 
-
-![New Advent](../images/logo.gif)
-
-Home > Fathers of the Church > Catechetical Lectures (Cyril of Jerusalem) > Lecture 19
-
 # Catechetical Lecture 19
 
 **First Lecture on the Mysteries.**
@@ -51,5 +45,3 @@ With a Lesson from the First General Epistle of Peter, beginning at _Be sober, b
 10\. Guarded therefore by these discourses, _be sober_. _For_ our _adversary the devil_, as was just now read, _as a roaring lion, walks about, seeking whom he may devour_. 1 Peter 5:9 But though in former times death was mighty and devoured, at the holy Laver of regeneration God has _wiped away every tear from off all faces_. For you shall no more mourn, now that you have put off the old man; but you shall keep holy-day , _clothed in the garment of salvation_ Isaiah 61:10, even Jesus Christ.
 
 11\. And these things were done in the outer chamber. But if God will, when in the succeeding lectures on the Mysteries we have entered into the Holy of Holies , we shall there know the symbolic meaning of the things which are there performed. Now to God the Father, with the Son and the Holy Ghost, be glory, and power, and majesty, forever and ever. Amen.
-
-CONTACT US | ADVERTISE WITH NEW ADVENT

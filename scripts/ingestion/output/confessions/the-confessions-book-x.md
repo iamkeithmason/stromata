@@ -18,12 +18,6 @@ copyright_safe: true
 
    
 
- A  B  C  D  E  F  G  H  I  J  K  L  M  N  O  P  Q  R  S  T  U  V  W  X  Y  Z 
-
-![New Advent](../images/logo.gif)
-
-Home > Fathers of the Church > The Confessions > Book X
-
 # The Confessions (Book X)
 
 Having manifested what he was and what he is, he shows the great fruit of his confession; and being about to examine by what method God and the happy life may be found, he enlarges on the nature and power of memory. Then he examines his own acts, thoughts and affections, viewed under the threefold division of temptation; and commemorates the Lord, the one mediator of God and men.
@@ -253,5 +247,3 @@ Having manifested what he was and what he is, he shows the great fruit of his co
 69\. How have You loved us, O good Father, who spared not Your only Son, but delivered Him up for us wicked ones! How have You loved us, for whom He, who thought it no robbery to be equal with You, became obedient unto death, even the death of the cross; Philippians 2:6, 8 He alone free among the dead, that had power to lay down His life, and power to take it again; John 10:18 for us was He unto You both Victor and Victim, and the Victor as being the Victim; for us was He unto You both Priest and Sacrifice, and Priest as being the Sacrifice; of slaves making us Your sons, by being born of You, and serving us. Rightly, then, is my hope strongly fixed on Him, that You will heal all my diseases by Him who sits at Your right hand and makes intercession for us; Romans 8:34 else should I utterly despair. For numerous and great are my infirmities, yea, numerous and great are they; but Your medicine is greater. We might think that Your Word was removed from union with man, and despair of ourselves had He not been made flesh and dwelt among us. John 1:14
 
 70\. Terrified by my sins and the load of my misery, I had resolved in my heart, and meditated flight into the wilderness; but You forbade me, and strengthened me, saying, therefore, Christ died for all, that they which live should not henceforth live unto themselves, but unto Him which died for them. 2 Corinthians 5:15 Behold, O Lord, I cast my care upon You, that I may live, and behold wondrous things out of Your law. You know my unskilfulness and my infirmities; teach me, and heal me. Your only Son — He in whom are hid all the treasures of wisdom and knowledge — has redeemed me with His blood. Let not the proud speak evil of me, because I consider my ransom, and eat and drink, and distribute; and poor, desire to be satisfied from Him, together with those who eat and are satisfied, and they praise the Lord that seek him.
-
-CONTACT US | ADVERTISE WITH NEW ADVENT

@@ -19,12 +19,6 @@ note_draft: "Basilides, Hippolytus insists, did not receive his cosmology by rev
 
    
 
- A  B  C  D  E  F  G  H  I  J  K  L  M  N  O  P  Q  R  S  T  U  V  W  X  Y  Z 
-
-![New Advent](../images/logo.gif)
-
-Home > Fathers of the Church > Refutation of All Heresies (Hippolytus) > Book VII
-
 # Refutation of All Heresies (Book VII)
 
 ## Contents.
@@ -259,5 +253,3 @@ But one Cerdon himself also, taking occasion in like manner from these (heretics
 But Apelles, sprung from these, thus expresses himself, (saying) that there is a certain good Deity, as also Marcion supposed, and that he who created all things is just. Now he, (according to Apelles,) was the Demiurge of generated entities. And (this heretic also main-rains) that there is a third (Deity), the one who was in the habit of speaking to Moses, and that this (god) was of a fiery nature, and that there was another fourth god, a cause of evils. But these he denominates angels. He utters, however, slanders against law and prophets, by alleging that the things that have been written are (of) human (origin), and are false. And (Apelles) selects from the Gospels or (from the writings of) the Apostle (Paul) whatever pleases himself, But he devotes himself to the discourses of a certain Philumene as to the revelations of a prophetess. He affirms, however, that Christ descended from the power above; that is, from the good (Deity), and that he is the son of that good (Deity). And (he asserts that Jesus) was not born of a virgin, and that when he did appear he was not devoid of flesh. (He maintains,) however, that (Christ) formed his booty by taking portions of it from the substance of the universe: that is, hot and cold, and moist and dry. And (he says that Christ), on receiving in this body cosmical powers, lived for the time he did in (this) world. But (he held that Jesus) was subsequently crucified by the Jews, and expired, and that, being raised Up after three days, he appeared to his disciples. And (the Saviour) showed them, (so Apelles taught,) the prints of the nails and (the wound) in his side, desirous of persuading them that he was in truth no phantom, but was present in the flesh. After, says (Apelles), he had shown them his flesh, (the Saviour) restored it to earth, from which substance it was (derived. And this he did because) he coveted nothing that belonged to another. (Though indeed Jesus) might use for the time being (what belonged to another), he yet in due course rendered to each (of the elements) what peculiarly belonged to them. And so it was, that after he had once more loosed the chains of his body, he gave back heat to what is hot, cold to what is cold, moisture to what is moist, (and) dryness to what is dry. And in this condition (our Lord) departed to the good Father, leaving the seed of life in the world for those who through his disciples should believe in him.
 
 It appears to us that these (tenets) have been sufficiently explained. Since, however, we have determined to leave unrefuted not one of those opinions that have been advanced by any (of the heretics), let us see what (system) also has been invented by the Docetae.
-
-CONTACT US | ADVERTISE WITH NEW ADVENT

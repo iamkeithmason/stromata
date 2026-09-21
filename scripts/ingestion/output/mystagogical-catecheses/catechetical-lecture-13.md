@@ -18,12 +18,6 @@ copyright_safe: true
 
    
 
- A  B  C  D  E  F  G  H  I  J  K  L  M  N  O  P  Q  R  S  T  U  V  W  X  Y  Z 
-
-![New Advent](../images/logo.gif)
-
-Home > Fathers of the Church > Catechetical Lectures (Cyril of Jerusalem) > Lecture 13
-
 # Catechetical Lecture 13
 
 **On the words, Crucified and Buried.**
@@ -113,5 +107,3 @@ Who has believed our report? And to whom is the arm of the Lord revealed?...He i
 40\. You have Twelve Apostles, witnesses of the Cross; and the whole earth, and the world of men who believe in Him who hung thereon. Let your very presence here now persuade you of the power of the Crucified. For who now brought you to this assembly? What soldiers? With what bonds were you constrained? What sentence held you fast here now? Nay, it was the Trophy of salvation, the Cross of Jesus that brought you all together. It was this that enslaved the Persians, and tamed the Scythians; this that gave to the Egyptians, for cats and dogs and their manifold errors, the knowledge of God; this, that to this day heals diseases; that to this day drives away devils, and overthrows the juggleries of drugs and charms.
 
 41\. This shall appear again with Jesus from heaven ; for the trophy shall precede the king: that seeing _Him whom they pierced_ Zechariah 12:10, and knowing by the Cross Him who was dishonoured, the Jews may repent and mourn; (but _they shall mourn tribe by tribe_ , for they shall repent, when there shall be no more time for repentance;) and that we may glory, exulting in the Cross, worshipping the Lord who was sent, and crucified for us, and worshipping also God His Father who sent Him, with the Holy Ghost: To whom be glory for ever and ever. Amen.
-
-CONTACT US | ADVERTISE WITH NEW ADVENT

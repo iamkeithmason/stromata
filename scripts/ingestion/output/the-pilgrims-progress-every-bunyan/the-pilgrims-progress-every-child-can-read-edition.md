@@ -4662,12 +4662,3 @@ To find the road to Heaven.
 \[10\] An old English coin, bearing the figure of an angel.
 
 \[11\] The word "let" here means "hindrance."
-
-### Transcriber's note:
-
-Minor typographical errors, punctuation and inconsistencies have been silently normalized. Archaic spelling has been retained.
-
-Page 365 'Tell-truth' has been changed to 'Tell-true'.
-
-End of the Project Gutenberg EBook of The Pilgrim's Progress by John Bunyan, by 
-John Bunyan

@@ -18,12 +18,6 @@ copyright_safe: true
 
    
 
- A  B  C  D  E  F  G  H  I  J  K  L  M  N  O  P  Q  R  S  T  U  V  W  X  Y  Z 
-
-![New Advent](../images/logo.gif)
-
-Home > Fathers of the Church > Catechetical Lectures (Cyril of Jerusalem) > Prologue
-
 # Procatechesis (Prologue)
 
 1\. Already there is an odour of blessedness upon you, O you who are soon to be enlightened : already you are gathering the spiritual flowers, to weave heavenly crowns: already the fragrance of the Holy Spirit has breathed upon you: already you have gathered round the vestibule of the King's palace ; may you be led in also by the King! For blossoms now have appeared upon the trees ; may the fruit also be found perfect! Thus far there has been an inscription of your names , and a call to service, and torches of the bridal train, and a longing for heavenly citizenship, and a good purpose, and hope attendant thereon. For he lies not who said, _that to them that love God all things work together for good_. God is lavish in beneficence, yet He waits for each man's genuine will: therefore the Apostle added and said, _to them that are called according to a purpose_. The honesty of purpose makes you called: for if your body be here but not your mind, it profits you nothing.
@@ -67,5 +61,3 @@ Afterwards busy not yourself about unprofitable matters: neither, what the city 
 (_To the Reader_. )
 
 These Catechetical Lectures for those who are to be enlightened you may lend to candidates for Baptism, and to believers who are already baptized, to read, but give not at all , neither to Catechumens, nor to any others who are not Christians, as you shall answer to the Lord. And if you make a copy, write this in the beginning, as in the sight of the Lord.
-
-CONTACT US | ADVERTISE WITH NEW ADVENT

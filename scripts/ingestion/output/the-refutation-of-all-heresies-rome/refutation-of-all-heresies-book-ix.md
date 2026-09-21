@@ -19,12 +19,6 @@ note_draft: "Here the polemic turns personal. Hippolytus knew Callistus — knew
 
    
 
- A  B  C  D  E  F  G  H  I  J  K  L  M  N  O  P  Q  R  S  T  U  V  W  X  Y  Z 
-
-![New Advent](../images/logo.gif)
-
-Home > Fathers of the Church > Refutation of All Heresies (Hippolytus) > Book IX
-
 # Refutation of All Heresies (Book IX)
 
 ## Contents.
@@ -164,5 +158,3 @@ Still all _parties_ alike expect Messiah, inasmuch as the Law certainly, and the
 ## Chapter 26. Conclusion to the Work Explained.
 
 It now seems to us that the tenets of both all the Greeks and barbarians have been sufficiently explained by us, and that nothing has remained unrefuted either of the points about which philosophy has been busied, or of the allegations advanced by the heretics. And from these very explanations the condemnation of the heretics is obvious, for having either purloined their doctrines, or derived contributions to them from some of those tenets elaborately worked out by the Greeks, and for having advanced (these opinions) as if they originated from God. Since, therefore, we have hurriedly passed through all _the systems_ of these, and with much labour have, in the nine books, proclaimed all their opinions, and have left behind us for all men a small viaticum in life, and to those who are our contemporaries have afforded a desire of learning (with) great joy and delight, we have considered it reasonable, as a crowning stroke to the entire _work_, to introduce the discourse (already mentioned) concerning the truth, and to furnish our delineation of this in one book, namely the tenth. _Our object is_, that the reader, not only when made acquainted with the overthrow of those who have presumed to establish heresies, may regard with scorn their idle _fancies_, but also, when brought to know the power of the truth, may be placed in the way of salvation, by reposing that faith in God which He so worthily deserves.
-
-CONTACT US | ADVERTISE WITH NEW ADVENT

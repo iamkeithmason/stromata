@@ -18,12 +18,6 @@ copyright_safe: true
 
    
 
- A  B  C  D  E  F  G  H  I  J  K  L  M  N  O  P  Q  R  S  T  U  V  W  X  Y  Z 
-
-![New Advent](../images/logo.gif)
-
-Home > Fathers of the Church > Catechetical Lectures (Cyril of Jerusalem) > Lecture 11
-
 # Catechetical Lecture 11
 
 **On the Words, the Only-Begotten Son of God, Begotten of the Father Very God Before All Ages, by Whom All Things Were Made.**
@@ -81,5 +75,3 @@ To others also the Scripture says, _You are the sons of the Lord your God_ Deute
 23\. But let us now recur to our profession of the Faith, and so for the present finish our discourse. Christ made all things, whether thou speak of Angels, or Archangels, of Dominions, or Thrones. Not that the Father wanted strength to create the works Himself, but because He willed that the Son should reign over His own workmanship, God Himself giving Him the design of the things to be made. For honouring His own Father the Only-begotten says, _The Son can do nothing of Himself, but what He sees the Father do; for whatever things He does, these also does the Son likewise_. John 5:19 And again, _My Father works hitherto, and I work_ , there being no opposition in those who work. _For all Mine are Yours, and Yours are Mine_, says the Lord in the Gospels. And this we may certainly know from the Old and New Testaments. For He who said, _Let us make man in our image and after our likeness_ Genesis 1:26, was certainly speaking to some one present. But clearest of all are the Psalmist's words, _He spoke and they were made; He commanded, and they were created_ , as if the Father commanded and spoke, and the Son made all things at the Father's bidding. And this Job said mystically, _Which alone spread out the heaven, and walks upon the sea as on firm ground_ Job 9:8; signifying to those who understand that He who when present here walked upon the sea is also He who aforetime made the heavens. And again the Lord says, _Or did Thou take earth, and fashion clay into a living being_ ? Then afterwards, _Are the gates of death opened to You through fear, and did the door-keepers of hell shudder at sight of You_ ? Thus signifying that He who through loving-kindness descended into hell, also in the beginning made man out of clay.
 
 24\. Christ then is the Only-begotten Son of God, and Maker of the world. For _He was in the world, and the world was made by Him;_ and _He came unto His own_, as the Gospel teaches us. John 1:10-11 And not only of the things which are seen, but also of the things which are not seen, is Christ the Maker at the Father's bidding. For _in Him_, according to the Apostle, _were all things created that are in the heavens, and that are upon the earth, things visible and invisible, whether thrones, or dominions, or principalities, or powers; all things have been created by Him and for Him; and He is before all, and_ _in Him all things consist_. Colossians 1:16-17 Even if you speak of the worlds, of these also Jesus Christ is the Maker by the Father's bidding. For _in these last days God spoke unto us by His Son, whom He appointed heir of all things, by whom also He made the worlds Hebrews 1:2_ . To whom be the glory, honour, might, now and ever, and world without end. Amen.
-
-CONTACT US | ADVERTISE WITH NEW ADVENT

@@ -19,12 +19,6 @@ note_draft: "The serpent gives the sect its name: *naas* in Hebrew, whence the N
 
    
 
- A  B  C  D  E  F  G  H  I  J  K  L  M  N  O  P  Q  R  S  T  U  V  W  X  Y  Z 
-
-![New Advent](../images/logo.gif)
-
-Home > Fathers of the Church > Refutation of All Heresies (Hippolytus) > Book V
-
 # Refutation of All Heresies (Book V)
 
 ## Contents.
@@ -311,5 +305,3 @@ Hence also, in the first book inscribed Baruch, has been written the oath which 
 ## Chapter 23. Subsequent Heresies Deducible from the System of Justinus.
 
 Since, then, we have explained the attempts (at a system) of the pseudo-gnostic Justinus, it appears likewise expedient in the following books to elucidate the opinions put forward in heresies following (in the way of consequence upon the doctrines of Justinus), and to leave not a single one of these (speculators) unrefuted. Our refutation will be accomplished by adducing the assertions made by them; such (at least of their statements) as are sufficient for making a public example (of these heretics). (And we shall attain our purpose), even though there should only be condemned the secret and ineffable (mysteries) practised among them, into which, silly mortals that they are, scarcely (even) with considerable labour are they initiated. Let us then see what also Simon affirms.
-
-CONTACT US | ADVERTISE WITH NEW ADVENT

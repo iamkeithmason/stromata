@@ -18,12 +18,6 @@ copyright_safe: true
 
    
 
- A  B  C  D  E  F  G  H  I  J  K  L  M  N  O  P  Q  R  S  T  U  V  W  X  Y  Z 
-
-![New Advent](../images/logo.gif)
-
-Home > Fathers of the Church > The Confessions > Book XII
-
 # The Confessions (Book XII)
 
 He continues his explanation of the first Chapter of Genesis according to the Septuagint, and by its assistance he argues, especially, concerning the double heaven, and the formless matter out of which the whole world may have been created; afterwards of the interpretations of others not disallowed, and sets forth at great length the sense of the Holy Scripture.
@@ -177,5 +171,3 @@ He continues his explanation of the first Chapter of Genesis according to the Se
 ## Chapter 32. First, the Sense of the Writer is to Be Discovered, Then that is to Be Brought Out Which Divine Truth Intended.
 
 43\. Finally, O Lord, who art God, and not flesh and blood, if man does see anything less, can anything lie hidden from Your good Spirit, who shall lead me into the land of uprightness, which You Yourself, by those words, were about to reveal to future readers, although he through whom they were spoken, amid the many interpretations that might have been found, fixed on but one? Which, if it be so, let that which he thought on be more exalted than the rest. But to us, O Lord, either point out the same, or any other true one which may be pleasing unto You; so that whether You make known to us that which You did to that man of Yours, or some other by occasion of the same words, yet You may feed us, not error deceive us. Behold, O Lord my God, how many things we have written concerning a few words — how many, I beseech You! What strength of ours, what ages would suffice for all Your books after this manner? Permit me, therefore, in these more briefly to confess unto You, and to select some one true, certain, and good sense, that You shall inspire, although many senses offer themselves, where many, indeed, I may; this being the faith of my confession, that if I should say that which Your minister felt, rightly and profitably, this I should strive for; the which if I shall not attain, yet I may say that which Your Truth willed through Its words to say unto me, which said also unto him what It willed.
-
-CONTACT US | ADVERTISE WITH NEW ADVENT

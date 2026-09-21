@@ -19,12 +19,6 @@ note_draft: "Book IV opens with an address to Constantine and a lament that men,
 
    
 
- A  B  C  D  E  F  G  H  I  J  K  L  M  N  O  P  Q  R  S  T  U  V  W  X  Y  Z 
-
-![New Advent](../images/logo.gif)
-
-Home > Fathers of the Church > Divine Institutes (Lactantius) > Book IV
-
 # Divine Institutes, Book IV (Of True Wisdom and Religion)
 
 ## Chapter 1. Of the Former Religion of Men, and How Error Was Spread Over Every Age, and of the Seven Wise Men of Greece.
@@ -322,5 +316,3 @@ But since many heresies have existed, and the people of God have been rent into 
 But some, not sufficiently instructed in heavenly learning, when they were unable to reply to the accusers of the truth, who objected that it was either impossible or inconsistent that God should be shut up in the womb of a woman, and that the Majesty of heaven could not be reduced to such weakness as to become an object of contempt and derision, a reproach and mockery to men; lastly, that He should even endure tortures, and be affixed to the accursed cross; and when they could defend and refute all these things neither by talent nor learning, for they did not thoroughly perceive their force and meaning, they were perverted from the right path, and corrupted the sacred writings, so that they composed for themselves a new doctrine without any root and stability. But some, enticed by the prediction of false prophets, concerning whom both the true prophets and he himself had foretold, fell away from the knowledge of God, and left the true tradition. But all of these, ensnared by frauds of demons, which they ought to have foreseen and guarded against, by their carelessness lost the name and worship of God. For when they are called Phrygians, or Novatians, or Valentinians, or Marcionites, or Anthropians, or Arians, or by any other name, they have ceased to be Christians, who have lost the name of Christ, and assumed human and external names. Therefore it is the Catholic Church alone which retains true worship.
 
 This is the fountain of truth, this is the abode of the faith, this is the temple of God; into which if any one shall not enter, or from which if any shall go out, he is estranged from the hope of life and eternal salvation. No one ought to flatter himself with persevering strife. For the contest is respecting life and salvation, which, unless it is carefully and diligently kept in view, will be lost and extinguished. But, however, because all the separate assemblies of heretics call themselves Christians in preference to others, and think that theirs is the Catholic Church, it must be known that the true Catholic Church is that in which there is confession and repentance, which treats in a wholesome manner the sins and wounds to which the weakness of the flesh is liable. I have related these things in the meanwhile for the sake of admonition, that no one who desires to avoid error may be entangled in a greater error, while he is ignorant of the secret of the truth. Afterwards, in a particular and separate work, we will more fully and copiously contend against all divisions of falsehoods. It follows that, since we have spoken sufficiently on the subject of true religion and wisdom, we discuss the subject of justice in the next book.
-
-CONTACT US | ADVERTISE WITH NEW ADVENT

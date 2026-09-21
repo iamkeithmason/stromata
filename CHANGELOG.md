@@ -7,6 +7,62 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-09-21 — New Advent site chrome in text bodies: stripped, healed, and made loud
+
+Fourteen texts carried New Advent's furniture in their reading body — the `A B C … Z` encyclopedia
+bar, `![New Advent](../images/logo.gif)`, a `Home > Fathers of the Church >` breadcrumb, and
+`CONTACT US | ADVERTISE WITH NEW ADVENT` at the foot. Origen's *Commentary on John* was the one
+spotted; the Hippolytus *Refutation* books had it too, and three **published** texts (*Commonitory*,
+*On the Duties of the Clergy*, *Prescription Against Heretics*) ended on New Advent's "About this
+page" citation block.
+
+**The fetcher was not the bug.** Its cheerio selectors strip all of this correctly and were verified
+against the live page this session. The fourteen bodies were fetched at 09:01 on 2026-09-12; the
+selectors landed at 10:18 the same morning. The staged `.md` files were already poisoned, and
+`pipeline-import.mjs` imported them without a murmur — **nothing between the fetcher and the
+database was looking.** That gap is the actual finding: a DOM selector that stops matching removes
+nothing, reports nothing, and the chrome flows all the way to a reader.
+
+- **`scripts/lib/source-chrome.mjs`** — a second line of defence over the *markdown*, after
+  turndown, where chrome has a handful of stable textual shapes. `stripChrome` removes them,
+  `detectChrome` reports them, `assertNoChrome` throws. Rules act on whole paragraph blocks, never
+  on substrings, so prose that merely mentions its source survives. Idempotent: a clean body comes
+  back byte-for-byte identical.
+- **The safety invariant, and the test that holds it.** A rule may only exist if it cannot match
+  ordinary prose — either it names its site, or it is `structural` (21 consecutive capitals B–Z is
+  not a sentence), or it is `requires`-conditional, held back until an unconditional rule has
+  proved the document is a scrape of that site. That last one is what lets a lone `Fathers` block
+  or a heading reading `About this page` be stripped from a New Advent scrape and never from a
+  patristic text. 17 unit tests, including a corpus of real prose that no rule may fire on, and a
+  fixture built from genuine U+00A0 — New Advent's A–Z bar is `&nbsp;`-separated, so a rule written
+  with a literal space silently never fires.
+- **Wired into both ends.** `fetch-texts.mjs` strips and then asserts: a known tell that survives
+  aborts the page instead of writing it. `pipeline-import.mjs` strips before insert and logs the
+  count as a correction, the way it already does for page-break rejoins — import is the last gate
+  before the database, so it now checks the file rather than trusting it.
+- **Proved by bypassing the primary defence**, not by reasoning about it. Fetching the live Origen
+  page under the `generic` profile — selectors that know nothing about New Advent, i.e. exactly what
+  selector drift looks like — produced a clean body through the markdown pass alone. The first run
+  of that experiment left a search box and the masthead tabs behind, which is how those rules got
+  written.
+- **64 staged output files healed** on disk. Only 14 had reached Supabase; the rest — *Confessions*,
+  the *Mystagogical Catecheses*, the *Divine Institutes*, *The Stromata* — are staged and not yet
+  imported, so this is ~50 dirty rows that now never happen.
+- **All 14 rows healed in Supabase**, verified by the same detector queries that found them: zero
+  hits for every tell across 550 texts. Before stripping the published trio's citation block, its
+  content was checked against `source_attribution` (already complete) and the New Advent URL was
+  written into the empty `source_url` column, so nothing was lost. One more draft, *The Pilgrim's
+  Progress*, had Project Gutenberg's transcriber's note and licence tail; healed the same way.
+- **`scripts/strip-source-chrome.mjs`** (`npm run strip:source-chrome`) — the maintenance healer,
+  dry-run by default, for the next time something slips through.
+
+Two things are deliberately reported and **not** stripped: a body opening with an `H1` that
+duplicates the title the reader already renders above it, and images whose paths are relative to
+the source site (*The Pilgrim's Progress* has 7). Both are editorial calls, not mechanical ones.
+`--drop-leading-h1` opts into the first.
+
+---
+
 ## 2026-09-21 — Public pages read with the anon key; RLS now enforces `published`
 
 Supabase's security advisor flagged two WARNs (`public.rls_auto_enable()` executable by `anon`

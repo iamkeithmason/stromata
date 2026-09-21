@@ -18,12 +18,6 @@ copyright_safe: true
 
    
 
- A  B  C  D  E  F  G  H  I  J  K  L  M  N  O  P  Q  R  S  T  U  V  W  X  Y  Z 
-
-![New Advent](../images/logo.gif)
-
-Home > Fathers of the Church > Catechetical Lectures (Cyril of Jerusalem) > Lecture 15
-
 # Catechetical Lecture 15
 
 **On the Clause, And Shall Come in Glory to Judge the Quick and the Dead; Of Whose Kingdom There Shall Be No End.**
@@ -97,5 +91,3 @@ _I beheld till thrones were placed, and one that was ancient of days did sit_, a
 32\. Take again another similar text. _For until this day...when Moses is read, a veil lies upon their heart 2 Corinthians 3:14-15_ . Does _until this day_ mean only until Paul? Is it not _until this day_ present, and even to the end? And if Paul say to the Corinthians, _For we came even as far as unto you in preaching the Gospel of Christ, having hope when your faith increases to preach the Gospel in the regions beyond you_ , you see manifestly that _as far as_ implies not the end, but has something following it. In what _sense then should you remember that Scripture, till_ He has put all enemies under His feet 1 Corinthians 15:25? According as Paul says in another place, _And exhort each other daily, while it is called today_ Hebrews 3:13; meaning, continually. For as we may not speak of the beginning of the days of Christ, so neither suffer thou that any should ever speak of the end of His kingdom. For it is written, _His kingdom is an everlasting kingdom_.
 
 33\. And though I have many more testimonies out of the divine Scriptures, concerning the kingdom of Christ which has no end for ever, I will be content at present with those above mentioned, because the day is far spent. But you, O hearer, worship only Him as your King, and flee all heretical error. And if the grace of God permit us, the remaining Articles also of the Faith shall be in good time declared to you. And may the God of the whole world keep you all in safety, bearing in mind the signs of the end, and remaining unsubdued by Antichrist. You have received the tokens of the Deceiver who is to come; you have received the proofs of the true Christ, who shall openly come down from heaven. Flee therefore the one, the False one; and look for the other, the True. You have learned the way, how in the judgment you may be found among those on the right hand; guard _that which is committed to you_ 1 Timothy 6:20 concerning Christ, and be conspicuous in good works, that you may stand with a good confidence before the Judge, and inherit the kingdom of heaven:— Through whom, and with whom, be glory to God with the Holy Ghost, for ever and ever. Amen.
-
-CONTACT US | ADVERTISE WITH NEW ADVENT

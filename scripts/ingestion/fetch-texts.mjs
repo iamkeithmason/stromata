@@ -31,6 +31,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import Anthropic from "@anthropic-ai/sdk";
 import { generateNoteWithCritic } from "../lib/note-prompt.mjs";
+import { stripChrome, assertNoChrome } from "../lib/source-chrome.mjs";
 
 // Load config — CONFIG_PATH env var (relative to cwd, or absolute) overrides the
 // default ./config.js next to this script, so concurrent runs can each use their own.
@@ -364,14 +365,47 @@ async function fetchAndProcess(url, index, cfg) {
     contentHtml = $("body").html() || "";
   }
 
-  const markdown = td.turndown(contentHtml || "");
+  const rawMarkdown = td.turndown(contentHtml || "");
   // Prefer the prospect's clean title for single-text fetches; fall back to the
   // scraped page title for multi-chapter works, where each page has its own.
+  // Read the title BEFORE cleaning: extractTitle() reads the page's <h1>, which
+  // the chrome pass may drop as a duplicate of the rendered title.
   const title =
     cfg.urls.length === 1 && cfg.collection.name
       ? cfg.collection.name
-      : extractTitle(markdown, url);
+      : extractTitle(rawMarkdown, url);
   const slug = slugify(title);
+
+  // Second line of defence against site chrome. The cheerio selectors above are
+  // the primary one, but they fail silently when a source renames a wrapper —
+  // and a selector that quietly stops matching is how a nav bar, a logo and a
+  // breadcrumb ended up in fourteen bodies in September 2026. Strip whatever
+  // survived to markdown, then assert: a tell this module does not yet know
+  // about aborts the page rather than being written to disk.
+  // Deliberately NOT filtered by `source`: every rule names its own site (or is
+  // structurally unmistakable), so running all of them costs nothing and still
+  // catches a New Advent page fetched under the `generic` profile.
+  const { output: markdown, removed, advisories } = stripChrome(rawMarkdown, {
+    // New Advent pages open with an <h1> of the page title, which the reader
+    // renders above the body anyway. Safe to drop here because extractTitle()
+    // has already read it, two lines up.
+    dropLeadingHeading: source === "newadvent",
+  });
+  for (const r of removed) {
+    console.log(`  ✂ stripped ${r.rule} (${r.why})`);
+  }
+  for (const a of advisories) {
+    console.warn(`  ⚠ ${a.rule}: ${a.why} — ${a.excerpt}`);
+  }
+  try {
+    assertNoChrome(markdown, { label: url });
+  } catch (err) {
+    console.error(`  ✗ ${err.message}`);
+    console.error("    The source's markup has probably changed. Fix the selectors in");
+    console.error("    SOURCE_SELECTORS (or add a rule to scripts/lib/source-chrome.mjs)");
+    console.error("    before re-running — this page was NOT written.");
+    return null;
+  }
 
   const noteDraft = await generateNoteDraft(title, cfg.collection.author, markdown);
 
