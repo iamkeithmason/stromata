@@ -17,16 +17,6 @@ note_draft: "Confession, Luther says, is only two things: admitting the sin, and
 
 <!-- EDITORIAL INTRO — write 2–4 sentences here explaining what this text is and why it matters. This appears above the text on the reader page. -->
 
-### Luther's Little Instruction Book  
-(The Small Catechism of Martin Luther)
-
-### _Translated by Robert E. Smith  
-May 22, 1994_
-
-* * *
-
-* * *
-
 **
 
 V.  
@@ -57,9 +47,3 @@ CONFESSION
 > > **Q.** Which are these?
 > > 
 > > **A.** Consider here your place in life according to the Ten Commandments. Are you a father? A mother? A son? A daughter? A husband? A wife? A servant? Are you disobedient, unfaithful or lazy? Have you hurt anyone with your words or actions? Have you stolen, neglected your duty, let things go or injured someone?
-
-* * *
-
-* * *
-
-* * *

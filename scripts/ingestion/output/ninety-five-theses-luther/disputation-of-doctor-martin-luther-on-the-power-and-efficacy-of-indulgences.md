@@ -22,10 +22,6 @@ on the Power and Efficacy of Indulgences
 
 by Dr. Martin Luther, 1517
 
-* * *
-
-* * *
-
 **Disputation of Doctor Martin Luther  
 on the Power and Efficacy of Indulgences  
 by Dr. Martin Luther (1517)**
@@ -34,8 +30,6 @@ _Works of Martin Luther:
 Adolph Spaeth, L.D. Reed, Henry Eyster Jacobs, et Al., Trans. & Eds.  
 (Philadelphia: A. J. Holman Company, 1915), Vol.1, pp. 29-38_  
 \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
-
-\[10\] \[20\] \[30\] \[40\] \[50\] \[60\] \[70\] \[80\] \[90\]
 
 > Out of love for the truth and the desire to bring it to light, the following propositions will be discussed at Wittenberg, under the presidency of the Reverend Father Martin Luther, Master of Arts and of Sacred Theology, and Lecturer in Ordinary on the same at that place. Wherefore he requests that those who are unable to be present and debate orally with us, may do so by letter.
 > 
@@ -230,9 +224,3 @@ Adolph Spaeth, L.D. Reed, Henry Eyster Jacobs, et Al., Trans. & Eds.
 > 94. Christians are to be exhorted that they be diligent in following Christ, their Head, through penalties, deaths, and hell;
 > 
 > 95. And thus be confident of entering into heaven rather through many tribulations, than through the assurance of peace.
-
-* * *
-
-* * *
-
-* * *

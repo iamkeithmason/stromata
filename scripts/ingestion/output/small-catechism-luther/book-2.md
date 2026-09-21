@@ -17,16 +17,6 @@ note_draft: "The Creed here is walked through article by article — Creation, R
 
 <!-- EDITORIAL INTRO — write 2–4 sentences here explaining what this text is and why it matters. This appears above the text on the reader page. -->
 
-### Luther's Little Instruction Book  
-(The Small Catechism of Martin Luther)
-
-### _Translated by Robert E. Smith  
-May 22, 1994_
-
-* * *
-
-* * *
-
 **II.  
 THE CREED  
 \_\_\_\_\_\_\_\_\_\_**
@@ -56,9 +46,3 @@ THE CREED
 > > **Q.** What does this mean?
 > > 
 > > **A.** I believe that I cannot come to my Lord Jesus Christ by my own intellegence or power. But the Holy Spirit call me by the Gospel, enlightened me with His gifts, made me holy and kept me in the true faith, just as He calls, gathers together, enlightens and makes holy the whole Church on earth and keeps it with Jesus in the one, true faith. In this Church, He generously forgives each day every sin committed by me and by every believer. On the last day, He will raise me and all the dead from the grave. He will give eternal life to me and to all who believe in Christ. Yes, this is true!
-
-* * *
-
-* * *
-
-* * *

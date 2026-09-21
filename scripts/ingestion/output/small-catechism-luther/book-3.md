@@ -17,16 +17,6 @@ note_draft: "Luther takes the Lord's Prayer clause by clause, and the recurring 
 
 <!-- EDITORIAL INTRO — write 2–4 sentences here explaining what this text is and why it matters. This appears above the text on the reader page. -->
 
-### Luther's Little Instruction Book  
-(The Small Catechism of Martin Luther)
-
-### _Translated by Robert E. Smith  
-May 22, 1994_
-
-* * *
-
-* * *
-
 **
 
 III.  
@@ -123,9 +113,3 @@ THE LORD'S PRAYER
 > > **Q.** What does this mean?
 > > 
 > > **A.** That I should be certain that such prayers are acceptable to the Father in Heaven and will be granted, that He Himself has commanded us to pray in this way and that He promises to answer us. Amen. Amen. This means: Yes, yes it will happen this way.
-
-* * *
-
-* * *
-
-* * *
