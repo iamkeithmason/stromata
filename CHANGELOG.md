@@ -7,6 +7,39 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-09-21 — "CI is not firing" was a false positive, and nearly became a note
+
+A comment in `.github/workflows/ci.yml` records a real gap: a PR opened by an
+agent can get no workflow run from its `opened` event, and the file says the
+gap is *bounded* — the next push starts one.
+
+Working #116 I decided that reading was too optimistic. One push (`d4ca788`)
+produced no run at all, which is a genuine instance: it still had none ten
+minutes later, and a manual `workflow_dispatch` was what produced a green. But
+I then reported that the following push (`a5a2e90`) had also produced nothing,
+concluded the gap persists across pushes, and offered to correct the comment.
+
+That second half was wrong. `a5a2e90` started runs normally — `pull_request`
+run 35642647467, created 19:05:50. I had queried the run list within about
+fifteen seconds of pushing, before GitHub surfaced it. A run takes roughly
+twenty seconds to appear, and in that window **the run list is indistinguishable
+from the gap**: no run for your SHA either way. The redundant dispatch left the
+PR with two `lint-and-types` runs for one commit.
+
+The comment now records both: that the bounded reading held, and how the check
+itself misleads. Check the PR's **check runs** by head SHA, not the workflow
+list — they show the push's run and any dispatch together, so "never started"
+and "not yet indexed" stop looking the same.
+
+Worth stating plainly, because it happened while writing up exactly this: the
+correction I proposed would have put an unverified claim into a file nobody
+re-tests, which is the failure `docs/research/2026-09-21-notes-that-foreclose.md`
+is about. The rule that caught it is the same one that file ends on — run it
+against the real thing before writing it down. It was caught only because
+verifying the claim was the first step of acting on it.
+
+---
+
 ## 2026-09-21 — A URL in a field is a claim, not a fact
 
 **`node scripts/check-prospect-urls.mjs`** fetches every `Cleared edition URL`,
