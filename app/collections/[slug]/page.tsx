@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import { createServerClient } from '@/lib/supabase/server'
+import { createPublicClient } from '@/lib/supabase/public'
 import { SiteHeader } from '@/app/components/SiteHeader'
 import { TrackPageEvent } from '@/app/components/TrackPageEvent'
 import { DownloadLinks } from '@/app/components/DownloadLinks'
@@ -17,7 +17,7 @@ type Props = { params: Promise<{ slug: string }> }
 
 export async function generateMetadata({ params }: Props) {
   const { slug } = await params
-  const supabase = createServerClient()
+  const supabase = createPublicClient()
   const { data } = await supabase
     .from('collections')
     .select('title, author:authors(name)')
@@ -50,7 +50,7 @@ export async function generateMetadata({ params }: Props) {
 
 export default async function CollectionPage({ params }: Props) {
   const { slug } = await params
-  const supabase = createServerClient()
+  const supabase = createPublicClient()
 
   const { data: collection } = await supabase
     .from('collections')

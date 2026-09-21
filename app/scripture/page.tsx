@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { SiteHeader } from '@/app/components/SiteHeader'
-import { createServerClient } from '@/lib/supabase/server'
+import { createPublicClient } from '@/lib/supabase/public'
 import { displayBookName } from '@/lib/scripture'
 import ScriptureSearch from './ScriptureSearch'
 
@@ -34,7 +34,7 @@ function referenceLabel(row: CountRow): string {
 }
 
 export default async function ScriptureIndexPage() {
-  const supabase = createServerClient()
+  const supabase = createPublicClient()
   const { data } = await supabase
     .from('scripture_reference_counts')
     .select('osis, book, chapter, verse_start, verse_end, text_count')

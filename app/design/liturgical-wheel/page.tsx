@@ -28,7 +28,7 @@
 
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { createServerClient } from '@/lib/supabase/server'
+import { createPublicClient } from '@/lib/supabase/public'
 
 export const metadata: Metadata = {
   title: 'Liturgical Wheel (exploration) — The Stromata',
@@ -98,7 +98,7 @@ export default async function LiturgicalWheelPreview() {
   let lead: SeasonPick | null = null
   let shelf: SeasonPick[] = []
   try {
-    const supabase = createServerClient()
+    const supabase = createPublicClient()
     const { data } = await supabase
       .from('texts')
       .select('title, slug, accession_number, author:authors(name)')

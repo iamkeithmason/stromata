@@ -13,7 +13,7 @@
  */
 
 import Link from 'next/link'
-import { createServerClient } from '@/lib/supabase/server'
+import { createPublicClient } from '@/lib/supabase/public'
 import { LancetArch } from './LancetArch'
 
 // ── Curated author slugs — edit here to change which authors appear ──────────
@@ -54,7 +54,7 @@ function formatEra(label: string): string {
 }
 
 export async function FeaturedAuthors() {
-  const supabase = createServerClient()
+  const supabase = createPublicClient()
 
   const { data: raw } = await supabase
     .from('authors')

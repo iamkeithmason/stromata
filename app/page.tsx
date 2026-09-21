@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { createServerClient } from '@/lib/supabase/server'
+import { createPublicClient } from '@/lib/supabase/public'
 import { THEME_CLUSTERS } from '@/lib/constants'
 import SearchBar from './SearchBar'
 import { BookCover } from './components/BookCover'
@@ -125,7 +125,7 @@ function SectionHeader({
 }
 
 export default async function Home() {
-  const supabase = createServerClient()
+  const supabase = createPublicClient()
 
   // The church year, resolved once and handed to both surfaces that show it,
   // so the panel and the church-year row can never disagree. Note the page is

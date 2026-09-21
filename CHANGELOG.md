@@ -7,6 +7,57 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-09-21 — Public pages read with the anon key; RLS now enforces `published`
+
+Supabase's security advisor flagged two WARNs (`public.rls_auto_enable()` executable by `anon`
+and `authenticated`) and eleven INFOs (RLS enabled, no policies). The WARNs were the small half.
+The INFOs meant every table was deny-all, which forced **every** page — public ones included — to
+read with the service_role key, which bypasses RLS outright. The only thing keeping 316
+unpublished drafts off the public site was application code remembering `.eq('published', true)`.
+One missed filter in a new page or query would have leaked drafts. With the mobile review queue
+about to add exactly that kind of new query surface, that was the finding worth acting on.
+
+- **`rls_auto_enable()` EXECUTE revoked** from `public`, `anon` and `authenticated`
+  (`022`). Event triggers run as the function owner and never consult the caller's EXECUTE
+  privilege, so `ensure_rls` keeps auto-enabling RLS on new tables: verified by creating a scratch
+  table afterwards and reading back `pg_class.relrowsecurity = true`, then confirming an `anon`
+  call is refused with `insufficient_privilege`.
+- **SELECT policies for `anon` / `authenticated`** on all eleven tables (`023`), written to
+  reproduce what the site shows today rather than to a tidier rule. `texts` and `collections`
+  gate on `published`; the `text_themes` / `text_scripture_references` junctions inherit their
+  parent text's visibility (exposing them for a draft would leak that the draft exists); reference
+  tables are `using (true)`. **`authors` is the one that needed reading the code first**:
+  `app/authors/page.tsx` lists non-draft authors regardless of text count, while
+  `app/authors/[slug]/page.tsx` 404s a draft author *only* when it has no published texts. The
+  policy is `draft = false OR has a published text` — the obvious "has a published text" would
+  have silently dropped non-draft authors whose texts aren't published yet.
+- **Public routes switched to a new `createPublicClient()`** (`lib/supabase/public.ts`, anon key,
+  subject to RLS) across 24 files. `createServerClient()` stays service_role for `/admin`,
+  `/api/admin`, writes, scripts and the Scout/Sourcer agents, and now carries `import 'server-only'`
+  so it is a build error to pull into a Client Component.
+- **A grant drift that had been live since the start.** `010_grants.sql` documented that `anon`
+  would get "NO ACCESS" to `texts`, `text_themes` and `collections`. It never did — Supabase's
+  default privileges grant ALL on new tables to `anon`, and `010` only ever added grants, never
+  revoked. Every table was in fact `anon=arwdDxtm`: SELECT *and* INSERT/UPDATE/DELETE. Deny-all
+  RLS was the only thing standing in the way. `024` revokes the write grants so `anon` is
+  SELECT-only at both layers.
+- **Two migrations existed only in the database** — `review_queue` and `trigger_search_path`,
+  applied directly on 2026-09-21 with no repo file. Recorded as `020` and `021` (idempotent) so
+  repo history matches the live schema.
+
+Verification, since "the policy looks right" is not evidence. Row fingerprints (`md5` over the
+ordered id set) for all twelve public surfaces were captured before the change as service_role +
+the app's own filters, then re-read as `anon` under RLS: **identical on all twelve** — 222 texts,
+20 collections, 74 authors, 913 theme links, 6,145 scripture refs, 4,385 view rows, and the five
+reference tables. A production build then ran with the **real anon key and a placeholder
+service-role key**: every public route prerendered from live data, which is itself proof that no
+public path still depends on service_role. Across the 158 prerendered public files, zero draft
+slugs appear; the two *published* Tractates do, and the other 122 don't. `get_advisors` (security)
+now returns an empty list — no WARNs, and the INFOs are gone too, because the tables have policies
+rather than because anything was suppressed.
+
+---
+
 ## 2026-09-15 — One glob replaces nine chained test scripts
 
 Adding `lib/authors/` earlier today meant adding a `test:authors` script, purely

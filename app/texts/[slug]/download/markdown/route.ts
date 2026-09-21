@@ -1,4 +1,4 @@
-import { createServerClient } from '@/lib/supabase/server'
+import { createPublicClient } from '@/lib/supabase/public'
 import { buildTextMarkdown, markdownFilename, type DownloadableText } from '@/lib/downloads'
 
 export const dynamic = 'force-dynamic'
@@ -9,7 +9,7 @@ export const revalidate = 0
 // body). Ungated, mirroring the reading page's own publication check.
 export async function GET(_req: Request, { params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
-  const supabase = createServerClient()
+  const supabase = createPublicClient()
 
   const { data } = await supabase
     .from('texts')

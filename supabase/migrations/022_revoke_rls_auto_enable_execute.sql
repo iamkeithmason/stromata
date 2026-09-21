@@ -1,0 +1,22 @@
+-- 022_revoke_rls_auto_enable_execute.sql
+--
+-- Security advisor: `anon_security_definer_function_executable` (WARN) and
+-- `authenticated_security_definer_function_executable` (WARN).
+--
+-- `public.rls_auto_enable()` is the SECURITY DEFINER function behind the
+-- `ensure_rls` event trigger: it enables RLS automatically on every new table
+-- created in the `public` schema. Because Supabase's default privileges grant
+-- EXECUTE on new functions to `anon` and `authenticated`, it was reachable at
+-- `/rest/v1/rpc/rls_auto_enable` with the published anon key.
+--
+-- The practical risk was low — the function RETURNS event_trigger, so a direct
+-- RPC call errors out rather than running its body — but a SECURITY DEFINER
+-- function should not be in the public API surface at all.
+--
+-- Revoking EXECUTE does NOT disable the event trigger. Event triggers are
+-- invoked by the server as the function's owner (postgres); they do not consult
+-- EXECUTE privileges of the session role. Auto-enabling RLS on new tables keeps
+-- working — verified by creating a scratch table after this migration and
+-- confirming pg_class.relrowsecurity was true (see PR description).
+
+revoke execute on function public.rls_auto_enable() from public, anon, authenticated;

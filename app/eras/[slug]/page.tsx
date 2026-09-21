@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import { createServerClient } from '@/lib/supabase/server'
+import { createPublicClient } from '@/lib/supabase/public'
 import { SiteHeader } from '@/app/components/SiteHeader'
 import { TrackPageEvent } from '@/app/components/TrackPageEvent'
 import { ERAS } from '@/lib/constants'
@@ -34,7 +34,7 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: Props) {
   const { slug } = await params
-  const supabase = createServerClient()
+  const supabase = createPublicClient()
   const { data } = await supabase.from('eras').select('label').eq('slug', slug).single()
   if (!data) return { title: 'Era — The Stromata' }
   return {
@@ -46,7 +46,7 @@ export async function generateMetadata({ params }: Props) {
 
 export default async function EraPage({ params }: Props) {
   const { slug } = await params
-  const supabase = createServerClient()
+  const supabase = createPublicClient()
 
   const { data: era } = await supabase
     .from('eras')
