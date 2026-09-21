@@ -7,6 +7,44 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-09-21 — Scanned Project Wittenberg for further prospects, queued 5
+
+Surveyed the site beyond the Small Catechism and 95 Theses already imported — its home page, the
+Book of Concord page, Luther's own works page, and Melanchthon's page — for further safe, high-value
+candidates. Found two the queue already had pending under other sources (the Augsburg Confession via
+Wikisource, the Large Catechism via ctsfw.edu) and left those alone rather than duplicating them; found
+three already fully imported under a different source (An Open Letter to the Christian Nobility, The
+Babylonian Captivity of the Church, and — a near miss — almost re-adding those before checking Supabase
+and the local queue first).
+
+Queued 5 new prospects, all `status: "pending"`, `translation_copyright_clear: true`, verified against
+Supabase and the local queue for duplicates and against pre-1929 publication dates (not translator
+death years, per the established exception) before adding:
+
+- **Concerning Christian Liberty** (Luther, 1520, trans. R. S. Grignon) — the missing third of Luther's
+  "Three Great Reformation Treatises of 1520"; the other two are already in the corpus.
+- **The Smalcald Articles** (Luther, 1537) and **Treatise on the Power and Primacy of the Pope**
+  (Melanchthon, 1537) — both from the 1921 Triglot Concordia (Bente & Dau), the same edition and
+  publication-date safe harbor as the already-pending Large Catechism entry. Queued as two separate
+  prospects, not one collection, since they're separately authored despite the same 1537 gathering.
+- **The German Mass and Order of Divine Service** (Luther, 1526, from B. J. Kidd's 1911 *Documents
+  Illustrative of the Continental Reformation*) — a new genre for the corpus, `Rule`, for a liturgical
+  order rather than Luther's usual treatise/catechesis/letter.
+- **A History of the Life and Acts of Dr. Martin Luther** (Melanchthon, 1548, trans. unnamed on the
+  page, 1845 J. Unwin/London reprint) — Melanchthon's own funeral-oration-derived biography. Two other
+  versions of the same text live on the same page (a Latin original, and a 1995 translation with no
+  stated translator death year or PD dedication) and were deliberately left unqueued — the 1995 one is
+  not a safe fallback if this 1845 edition is ever rejected at Stage 1.
+
+Not queued yet, held back on translator/date uncertainty rather than guessed: "Let Your Sins Be Strong"
+(Luther's letter to Melanchthon, trans. Erika Bullmann Flores, no stated translation date or PD
+dedication) and the Disputation on the Divinity and Humanity of Christ (trans. Christopher B. Brown,
+same gap). Also unexplored: the site's other named Lutheran figures (Andreae, Baier, Bente, Chemnitz,
+Gerhardt, Walther, Wyneken) and its hymn collection (30+ hymns, several with more than one translated
+version) — a natural next batch.
+
+---
+
 ## 2026-09-21 — Un-nested the Small Catechism's fake blockquotes and stray underscore-dividers
 
 More noise Keith spotted after the chrome cleanup above: every line of the catechism's Q&A content
