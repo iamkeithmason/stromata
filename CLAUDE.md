@@ -121,7 +121,19 @@ event name present but no `from` property; nobody checked the wire, and the test
 weeks of unusable data. Adding an attribute and reasoning that it "should" fire is exactly the
 failure mode.
 
-To verify, intercept the beacon rather than trusting the dashboard:
+**The sweep is a command now: `node scripts/verify-analytics.mjs --url=<preview>`.** It drives a
+real browser over a real deployment, intercepts every request to Umami's collection endpoint,
+records the payload and then **aborts** it — so a verification run never lands a synthetic event in
+the dataset. It prints a pass/fail table and exits non-zero on any failure. `--only=a,b` narrows it;
+`--prod` is required (and sufficient) to point it at production. Behind a TLS-inspecting proxy, where
+Chromium rejects the re-signed certificate, `--via-node` routes each request through Playwright's
+Node-side stack instead — certificates are still verified, just by Node. The assertion half lives in
+`scripts/lib/wire-check.mjs` and is unit-tested, so the sweep cannot go green by looking in the
+wrong place. Two things it deliberately does not do: block the tracker script (that would leave
+`window.umami` undefined and every check would "pass" by firing nothing) and treat a page that
+failed to *load* as a surface that is merely absent.
+
+To verify by hand instead, intercept the beacon rather than trusting the dashboard:
 
 ```js
 // paste in the browser console, then click the thing
@@ -160,6 +172,7 @@ Two traps worth knowing:
 | `collection` | which collection was opened | **slug** |
 | `author` | which author | display name (matches `authors.name`) |
 | `country` | which location | display name |
+| `depth` | how many distinct texts this session has reached | integer, `1` or `2` only (`text-session-depth`) |
 | `state`, `direction` | qualifiers | short enum-ish string |
 
 Rules:
@@ -174,6 +187,33 @@ Rules:
 4. **Make `from` unconditional.** Attach qualifiers like `state` conditionally if you must, but
    never gate `from` behind a condition — `ReadingHistorySection` did exactly that and only
    in-progress reads were attributable.
+
+### Threshold events — no `from`, at most once per session
+
+`text-read` (75% scroll depth) and `text-session-depth` (1st and 2nd **distinct** text of a session)
+describe where a reader got to, not where they came from, so rule 1 does not apply to them and they
+carry no `from`. `text-session-depth` exists because first→second conversion has to be answerable
+from **one** event with no session joins: each depth fires at most once per session, so conversion is
+`count(depth=2) ÷ count(depth=1)`. It is mounted on `/texts/[slug]` only and keyed on
+`sessionStorage['stromata-session-texts']`, so it counts every route onto a text page — organic
+landing included — not just the ones that fire a click event. Depth 3+ is deliberately not
+instrumented. The ledger is `lib/session-depth.ts`; its tests are the specification.
+
+### The Monthly Log row — `node scripts/monthly-metrics.mjs --month 2026-09`
+
+Prints returning readers, avg texts/session, first→second conversion, organic-search share, top
+referrer and the corpus counts. Two things it does differently from the old by-hand row:
+
+- **Avg texts/session counts `/texts/<slug>` pageviews, not `text-open` clicks.** `text-open` fires
+  on clicks, so every reader arriving on a text straight from a search engine counted as zero. That
+  is why the July row read 0.2; on the same corpus the pageview basis reads ~0.8.
+- **It refuses to report a silent zero.** `/stats?event=<name>` would give unique visitors per
+  event, but a **share token ignores the filter and answers 0** — indistinguishable from "nobody
+  did that". The script probes the filter against an event known to have fired and falls back to
+  the raw event count, saying in the output which basis it used.
+
+Admin devices opt out of Umami entirely (`localStorage['umami.disabled']`, set on admin login,
+cleared from the admin header), so the founder's own browsing never inflates these numbers.
 
 ### Known legacy exceptions (deliberate, for data continuity)
 
