@@ -7,6 +7,36 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-09-21 — Three bad prospects traced to source; none needed removing
+
+All three of the drafts flagged earlier turned out to have a working source. The
+faults were in what the queue pointed at, not in whether a source existed, so
+every row was corrected rather than dropped. The three bad drafts are deleted
+(corpus 552 → 549).
+
+| Prospect | What was wrong | Now |
+|---|---|---|
+| *All of Grace* | Reference URL was PG 27570 — *Buchanan's Journal of Man* | CCEL transcription, 190 KB, verified title + author |
+| Large Catechism Pt 5 | URL was the work's **table of contents**, so Stage 2 imported 1,317 characters of nav links | `large12a.asc`, verified to open `[Part Fifth.] OF THE SACRAMENT OF THE ALTAR.` |
+| Hymns of the Eastern Church | URL was correct; it was typed `archive_online` and imported with **no start landmark**, so the body began at the library stamp | still the same URL, retyped `archive_ocr` with `PREFACE TO FIRST EDITION` as the landmark |
+
+**The worst of these was a field-mapping problem, not a research failure.** The
+*All of Grace* row already carried a **`Cleared edition URL`** pointing at a real
+scan of the right book. The sync reads `Reference URL` (per this file's own
+mapping table), which held the wrong id — so a row that had been cleared against
+a correct edition was fetched from an uncleared, wrong one. Worth deciding
+whether the sync should prefer `Cleared edition URL` when it is populated; that
+one change would have prevented this entirely.
+
+Two further findings while tracing them:
+
+- **`sacred-texts.com` is not fetchable.** It answers HTTP 403 behind a
+  Cloudflare challenge, so however clean its transcriptions are, the pipeline
+  cannot read them. It is the Reference URL on at least one live prospect.
+- **Two prospect rows describe the same Hymns of the Eastern Church.** Flagged
+  in Notion as duplicates and one set to `Needs investigation`; not deleted,
+  since deduplicating the list is Keith's call rather than a cleanup.
+
 ## 2026-09-21 — The file sweep stops depending on the database; Cyprian's two numberings
 
 **`--files` was DB-driven, which was the wrong shape.** It aligned a staged file
