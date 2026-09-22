@@ -188,7 +188,7 @@ export default function DesignPage() {
               {[
                 { label: 'Hero title', value: 'clamp(2.5rem, 6vw, 4rem)', style: { fontFamily: 'var(--serif-display)', fontSize: 'clamp(2.5rem, 6vw, 4rem)', color: 'var(--ink)' } },
                 { label: 'Hero subtitle', value: 'clamp(1.1rem, 2.5vw, 1.4rem)', style: { fontFamily: 'var(--serif)', fontStyle: 'italic', fontSize: 'clamp(1.1rem, 2.5vw, 1.4rem)', color: 'var(--ink-soft)' } },
-                { label: 'SeasonalPanel season name', value: 'clamp(2.25rem, 5vw, 3.25rem)', style: { fontFamily: 'var(--serif-cormorant)', fontStyle: 'italic', fontSize: 'clamp(2.25rem, 5vw, 3.25rem)', color: 'var(--ink)' } },
+                { label: 'SeasonalPanel season name', value: 'clamp(2.25rem, 5vw, 3.25rem)', style: { fontFamily: 'var(--serif)', fontStyle: 'italic', fontSize: 'clamp(2.25rem, 5vw, 3.25rem)', color: 'var(--ink)' } },
               ].map(({ label, value, style }) => (
                 <div key={label} className="py-2" style={{ borderBottom: '1px solid var(--rule-soft)' }}>
                   <div className="flex gap-4 mb-1 items-center">
@@ -207,7 +207,7 @@ export default function DesignPage() {
           {[
             { token: '--serif', family: 'EB Garamond', role: 'Body text, labels, kickers', sample: 'The works of John Chrysostom, c. 407' },
             { token: '--serif-display', family: 'IM Fell English', role: 'Page titles, decorative headings (roman only — no italic woff2 loaded)', sample: 'On the Priesthood' },
-            { token: '--serif-cormorant', family: 'Cormorant Garamond', role: 'Search bar, season name, lead titles', sample: 'Trinitytide — the long green season' },
+            { token: '--serif-smallcaps', family: 'IM Fell English SC', role: 'Section labels and captions — REAL small caps. A companion family, not an OpenType feature: its lowercase slots hold small-cap glyphs, so call sites set the family on sentence-case text with NO text-transform. Neither --serif nor --serif-display carries an smcp table, so font-variant-caps would synthesise instead.', sample: 'Texts through the year' },
           ].map(({ token, family, role, sample }) => (
             <div key={token} className="py-5" style={{ borderBottom: '1px solid var(--rule-soft)' }}>
               <div className="flex gap-8 items-baseline mb-2 flex-wrap">
