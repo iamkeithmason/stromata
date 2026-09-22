@@ -8,7 +8,7 @@ declare global {
   }
 }
 
-export default function SearchBar() {
+export default function SearchBar({ tone = 'paper' }: { tone?: 'paper' | 'celestial' }) {
   const [query, setQuery] = useState('')
   const [focused, setFocused] = useState(false)
   const router = useRouter()
@@ -36,12 +36,19 @@ export default function SearchBar() {
   }
 
   return (
-    <form onSubmit={handleSubmit} role="search" aria-label="Site search" className="relative max-w-2xl mx-auto">
-      {/* Open underline field — focus thickens the gold hairline */}
+    <form
+      onSubmit={handleSubmit}
+      role="search"
+      aria-label="Site search"
+      className={`relative max-w-2xl mx-auto${tone === 'celestial' ? ' search-bar-celestial' : ''}`}
+    >
+      {/* Open underline field; the celestial variant glows on focus. */}
       <div
-        className="flex items-center gap-3 px-0 py-3"
-        style={{
-          borderBottom: focused ? '2px solid var(--gold)' : '1px solid var(--gold-rule)',
+        className="search-bar-line flex items-center gap-3 px-0 py-3"
+        style={tone === 'celestial' ? undefined : {
+          borderBottom: focused
+            ? '2px solid var(--gold)'
+            : '1px solid var(--gold-rule)',
           transition: 'border-color 150ms ease, border-width 150ms ease',
         }}
       >
@@ -51,7 +58,7 @@ export default function SearchBar() {
           focusable="false"
           className="shrink-0"
           style={{
-            color: 'var(--gold)',
+            color: tone === 'celestial' ? 'var(--on-dark-gold)' : 'var(--gold)',
             opacity: focused ? 1 : 0.75,
             transition: 'opacity 150ms ease',
             flexShrink: 0,
@@ -83,7 +90,7 @@ export default function SearchBar() {
             fontFamily: 'var(--serif)',
             fontStyle: 'italic',
             fontSize: 'var(--text-prose)',
-            color: 'var(--ink-soft)',
+            color: tone === 'celestial' ? 'var(--on-dark)' : 'var(--ink-soft)',
           }}
         />
 
@@ -91,7 +98,7 @@ export default function SearchBar() {
         <kbd
           className="hidden sm:inline-flex items-center shrink-0 font-mono"
           style={{
-            color: 'var(--ink-faint)',
+            color: tone === 'celestial' ? 'var(--on-dark-mute)' : 'var(--ink-faint)',
             fontSize: 'var(--text-sm)',
             background: 'transparent',
             border: 'none',

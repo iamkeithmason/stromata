@@ -41,7 +41,7 @@ export function MobileNav() {
           id="mobile-nav-menu"
           className="fixed left-0 right-0 flex flex-col text-sm font-serif"
           style={{
-            top: '61px',
+            top: '4rem',
             background: 'var(--paper)',
             borderBottom: '1px solid var(--rule)',
             color: 'var(--ink-soft)',

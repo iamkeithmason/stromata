@@ -5,6 +5,7 @@ import { THEME_CLUSTERS } from '@/lib/constants'
 import SearchBar from './SearchBar'
 import { BookCover } from './components/BookCover'
 import { SiteHeader } from './components/SiteHeader'
+import { CelestialField } from './components/CelestialField'
 import { ReadingHistorySection } from './components/ReadingHistorySection'
 import { FeaturedAuthors } from './components/FeaturedAuthors'
 import { SeasonalPanel } from './components/SeasonalPanel'
@@ -232,91 +233,46 @@ export default async function Home() {
 
       <main id="main-content">
       {/* ── Hero ─────────────────────────────────────────────────────────── */}
-      <section className="text-center px-6 pt-16 pb-14">
-        <h1
-          className="mb-4"
-          style={{
-            fontFamily: 'var(--serif-display)',
-            fontSize: 'clamp(2.5rem, 6vw, 4rem)',
-            fontWeight: 400,
-            letterSpacing: '-0.01em',
-            lineHeight: 1.05,
-            color: 'var(--ink)',
-          }}
-        >
-          The Stromata
-        </h1>
-        <p
-          className="font-serif italic mb-10"
-          style={{ fontSize: 'clamp(1.1rem, 2.5vw, 1.4rem)', color: 'var(--ink-soft)' }}
-        >
-          A reading room for the works of the ages.
-        </p>
+      <section className="celestial-hero">
+        <CelestialField />
 
-        {/* Subtitle — body text, not a label. Nine words is too many for small
-            caps: the forms carry no ascenders or descenders, so the eye gets no
-            word-shapes to read by and a sentence in them goes slowly. That was
-            equally true when this line was letterspaced capitals.
+        <div className="celestial-hero-content">
+          <h1>The Stromata</h1>
+          <p className="celestial-byline">A reading room for the works of the ages.</p>
+          <p className="celestial-description">
+            Public-domain Christian texts, edited for legibility
+          </p>
 
-            Roman, not italic, and deliberately: the tagline directly above is
-            already italic, so two stacked italic lines at different sizes read
-            as one muddy block. Roman here separates the poetic line from the
-            factual one. */}
-        <p
-          className="font-serif"
-          style={{ fontSize: 'var(--text-base)', color: 'var(--ink-mute)', marginBottom: '1.25rem' }}
-        >
-          A library of public-domain Christian texts, edited for legibility
-        </p>
+          <SearchBar tone="celestial" />
 
-        <SearchBar />
-
-        {/* Author chips — top authors by text count */}
-        {authorChips.length > 0 && (
-          <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-2 mt-6">
-            <span aria-hidden className="kicker" style={{ marginRight: '0.35rem' }}>
-              Start with
-            </span>
-            <span aria-hidden style={{ color: 'var(--gold)', fontSize: 'var(--text-sm)', userSelect: 'none' }}>—</span>
-
-            {authorChips.map((author, i) => (
-              <span key={author.slug} className="flex items-center">
-                {i > 0 && (
-                  <span
-                    aria-hidden
-                    style={{
-                      color: 'var(--gold-rule)',
-                      margin: '0 0.4rem',
-                      fontSize: 'var(--text-sm)',
-                      userSelect: 'none',
-                    }}
-                  >
-                    ·
+          {authorChips.length > 0 && (
+            <nav className="celestial-authors" aria-label="Recommended authors">
+              <span className="celestial-authors-label">Start with</span>
+              <span className="celestial-authors-rule" aria-hidden="true" />
+              <span className="celestial-authors-links">
+                {authorChips.map((author, index) => (
+                  <span key={author.slug}>
+                    {index > 0 && <span className="celestial-author-dot" aria-hidden="true">·</span>}
+                    <Link
+                      href={`/authors/${author.slug}`}
+                      data-umami-event="author-open"
+                      data-umami-event-from="search-chip"
+                      data-umami-event-author={author.name}
+                    >
+                      {author.name}
+                    </Link>
                   </span>
-                )}
-                <Link
-                  href={`/authors/${author.slug}`}
-                  className="transition-opacity hover:opacity-70"
-                  style={{
-                    fontFamily: 'var(--serif)',
-                    fontSize: 'var(--text-base)',
-                    color: 'var(--ink-soft)',
-                    textDecoration: 'none',
-                  }}
-                  data-umami-event="author-open"
-                  data-umami-event-from="search-chip"
-                  data-umami-event-author={author.name}
-                >
-                  {author.name}
-                </Link>
+                ))}
               </span>
-            ))}
-          </div>
-        )}
+            </nav>
+          )}
+        </div>
       </section>
 
       {/* ── Seasonal panel ───────────────────────────────────────────────── */}
-      <SeasonalPanel season={season} />
+      <div className="pt-10 sm:pt-14">
+        <SeasonalPanel season={season} />
+      </div>
 
       {/* ── Church-year row ──────────────────────────────────────────────── */}
       <div className="pt-8">

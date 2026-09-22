@@ -10,7 +10,7 @@ export function SiteHeader({ breadcrumb }: { breadcrumb?: React.ReactNode }) {
         background: 'var(--paper)',
         borderBottom: '1px solid var(--rule)',
       }}
-      className="px-8 py-5 flex justify-between items-center gap-4"
+      className="h-16 px-8 flex justify-between items-center gap-4"
     >
       <div className="flex gap-4 text-sm items-baseline font-serif min-w-0" style={{ color: 'var(--ink-mute)' }}>
         <Wordmark size={16} />
