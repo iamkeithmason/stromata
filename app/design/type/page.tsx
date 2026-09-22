@@ -254,7 +254,7 @@ export default function TypeComparisonPage() {
         {/* ── Small-caps size ───────────────────────────────────────── */}
         <Section
           title="How big should a small-cap label be?"
-          blurb="Small caps are drawn at roughly x-height, not cap height — measured on this subset, they top out at 0.686 of a capital. A label converted from capitals to small caps therefore loses 31% of its apparent height unless the font-size goes up. This ladder is the knob: whichever row reads right, put its value in --text-smallcaps."
+          blurb="Small caps are drawn at roughly x-height, not cap height — measured on this subset, they top out at 0.686 of a capital. A label converted from capitals to small caps therefore loses 31% of its apparent height unless the font-size goes up. This ladder is the knob. Rows are scale steps, not arbitrary values — a scale with a bespoke step in it is not a scale, and an earlier cut of this used 0.95rem and quietly broke that."
         >
           <div style={{ maxWidth: 'var(--reading-measure)' }}>
             <div className="flex items-baseline gap-4 py-3" style={{ borderBottom: '1px solid var(--rule)' }}>
@@ -274,7 +274,13 @@ export default function TypeComparisonPage() {
               <span className="font-mono" style={{ fontSize: 'var(--text-sm)', color: 'var(--ink-faint)' }}>0.8rem caps</span>
             </div>
 
-            {['0.8rem', '0.875rem', '0.95rem', '1rem', '1.05rem', '1.167rem'].map((size) => (
+            {[
+              ['0.8rem', '--text-sm'],
+              ['0.875rem', '--text-label'],
+              ['1rem', '--text-base — current'],
+              ['1.25rem', '--text-prose'],
+              ['1.167rem', 'off-scale; matches old cap height exactly'],
+            ].map(([size, note]) => (
               <div key={size} className="flex items-baseline gap-4 py-3" style={{ borderBottom: '1px solid var(--rule-soft)' }}>
                 <span className="font-mono" style={{ width: '7rem', fontSize: 'var(--text-sm)', color: 'var(--ink-mute)' }}>
                   {size}
@@ -291,8 +297,8 @@ export default function TypeComparisonPage() {
                 >
                   Start with
                 </span>
-                <span className="font-mono" style={{ fontSize: 'var(--text-sm)', color: 'var(--ink-faint)' }}>
-                  {size === '0.95rem' ? 'current' : size === '1.167rem' ? 'matches old height exactly' : ''}
+                <span className="font-mono" style={{ fontSize: 'var(--text-sm)', color: 'var(--ink-faint)', width: '18rem', textAlign: 'right' }}>
+                  {note}
                 </span>
               </div>
             ))}

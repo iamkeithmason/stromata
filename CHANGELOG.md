@@ -7,6 +7,44 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-09-22 (evening) — The compensation put back on the scale; homepage subtitle stops being a label
+
+Keith on the previous entry: *"I think we were using a type scale right? I'd
+move it up the scale."* Correct, and the fault was mine — `0.95rem` compensated
+well and was not a scale step. A scale with one bespoke value in it is not a
+scale, and it was introduced into the very token system that exists to stop
+exactly that. `--text-smallcaps` is now `var(--text-base)`, referencing the step
+rather than restating its value, so the on-scale-ness is structural.
+
+`--text-label` (0.875rem) was the other candidate and is too small to be worth
+the change: at a small-cap ratio of 0.457 it stands 0.400rem against the old
+capitals' 0.533rem, still a quarter short of what was reported as too small.
+`--text-base` gives 0.457rem.
+
+**Why a label at body size is not too loud**, since it sounds as though it must
+be: small caps at 1rem stand 0.457rem tall, and prose at `--text-prose` has an
+x-height of 0.519rem. The label's letters are *shorter* than the body lowercase
+around them. Full compensation would be 1.167rem, which genuinely would shout,
+and is marked off-scale on the ladder for that reason.
+
+**The homepage subtitle is no longer a label.** "A library of public-domain
+Christian texts, edited for legibility" is now italic body text at
+`--text-base`. Nine words is too many for small caps — the forms carry no
+ascenders or descenders, so the eye gets no word-shapes and a sentence in them
+goes slowly. No size setting fixes that, and it was equally true when the line
+was letterspaced capitals.
+
+One thing to look at: the italic tagline "A reading room for the works of the
+ages." sits directly above it, so the hero now stacks two italic lines at
+different sizes. Setting the lower line roman would give the poetic line and the
+factual line proper contrast. Left as approved rather than changed, since it is
+a one-word edit either way.
+
+The `/design/type` ladder now names each row by its scale token instead of
+listing loose rem values.
+
+---
+
 ## 2026-09-22 (later still) — Small caps were 31% too short; one token now governs every label
 
 Keith, looking at the deployed preview: the homepage subtitle and the "Start

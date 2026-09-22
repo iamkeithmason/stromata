@@ -105,19 +105,27 @@
 
   /* Type scale — use these instead of raw rem values in components */
   --text-sm:      0.8rem;    /* chip/tag text, smallest labels, captions, card metadata, TOC */
-  /* Small caps need MORE font-size than capitals to read at the same weight on
-     the page. Measured against the shipped Junicode subset: its small-cap
-     glyphs top out at 0.686 of cap height, so a label converted from capitals
-     to small caps loses 31% of its apparent height at an unchanged font-size —
-     which is exactly what a reader reported the day the conversion shipped
-     ("looks a little small now"). Full compensation would be 1.46x, putting a
-     label above --text-base and making it compete with body text; the point of
-     small caps is a quieter label, not a louder one. 0.95rem recovers about
-     four fifths of the lost presence. One knob: the ladder at /design/type
-     renders the alternatives. */
-  --text-smallcaps: 0.95rem;
   --text-label:   0.875rem;  /* footer links, CTA links, search results */
   --text-base:    1rem;      /* author names, dates, body text, most UI text */
+
+  /* Small caps need MORE font-size than capitals to sit at the same weight on
+     the page. Measured on the shipped Junicode subset, its small-cap glyphs top
+     out at 0.686 of cap height, so a label converted from capitals to small
+     caps loses 31% of its apparent height at an unchanged size — which is
+     exactly what was reported the day the conversion shipped ("looks a little
+     small now").
+
+     It is --text-base and not a bespoke value, because a scale with an
+     arbitrary step in it is not a scale. An earlier cut of this used 0.95rem,
+     which compensated well and quietly broke the system the tokens exist to
+     enforce.
+
+     A label at body size sounds wrong and is not: small caps at 1rem stand
+     0.457rem tall, while prose at --text-prose has an x-height of 0.519rem. The
+     label's letters are SHORTER than the body lowercase around them, so it
+     still reads as the quieter thing. Full compensation would be 1.167rem,
+     which genuinely would shout. Ladder at /design/type. */
+  --text-smallcaps: var(--text-base);
   --text-prose:   1.25rem;   /* long-form reading body */
   --text-xl:      1.5rem;    /* seasonal panel body, prominent links */
   --text-display: 3rem;      /* text reader title heading */

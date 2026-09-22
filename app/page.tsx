@@ -253,8 +253,14 @@ export default async function Home() {
           A reading room for the works of the ages.
         </p>
 
-        {/* Subtitle — kicker style, above the search field */}
-        <p className="kicker" style={{ marginBottom: '1.25rem' }}>
+        {/* Subtitle — body text, not a label. Nine words is too many for small
+            caps: the forms carry no ascenders or descenders, so the eye gets no
+            word-shapes to read by and a sentence in them goes slowly. That was
+            equally true when this line was letterspaced capitals. */}
+        <p
+          className="font-serif italic"
+          style={{ fontSize: 'var(--text-base)', color: 'var(--ink-mute)', marginBottom: '1.25rem' }}
+        >
           A library of public-domain Christian texts, edited for legibility
         </p>
 
