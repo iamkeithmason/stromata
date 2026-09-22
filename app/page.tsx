@@ -256,9 +256,14 @@ export default async function Home() {
         {/* Subtitle — body text, not a label. Nine words is too many for small
             caps: the forms carry no ascenders or descenders, so the eye gets no
             word-shapes to read by and a sentence in them goes slowly. That was
-            equally true when this line was letterspaced capitals. */}
+            equally true when this line was letterspaced capitals.
+
+            Roman, not italic, and deliberately: the tagline directly above is
+            already italic, so two stacked italic lines at different sizes read
+            as one muddy block. Roman here separates the poetic line from the
+            factual one. */}
         <p
-          className="font-serif italic"
+          className="font-serif"
           style={{ fontSize: 'var(--text-base)', color: 'var(--ink-mute)', marginBottom: '1.25rem' }}
         >
           A library of public-domain Christian texts, edited for legibility

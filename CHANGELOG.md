@@ -34,11 +34,10 @@ ascenders or descenders, so the eye gets no word-shapes and a sentence in them
 goes slowly. No size setting fixes that, and it was equally true when the line
 was letterspaced capitals.
 
-One thing to look at: the italic tagline "A reading room for the works of the
-ages." sits directly above it, so the hero now stacks two italic lines at
-different sizes. Setting the lower line roman would give the poetic line and the
-factual line proper contrast. Left as approved rather than changed, since it is
-a one-word edit either way.
+It is set roman rather than italic. The tagline "A reading room for the works of
+the ages." sits directly above it, and two stacked italic lines at different
+sizes read as one muddy block; roman separates the poetic line from the factual
+one. Raised after the italic version was approved and changed on Keith's call.
 
 The `/design/type` ladder now names each row by its scale token instead of
 listing loose rem values.
