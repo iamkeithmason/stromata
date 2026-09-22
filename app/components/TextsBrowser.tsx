@@ -112,7 +112,7 @@ export function TextsBrowser({
           <h1 className="font-serif italic text-xl" style={{ color: '#1b1b1b' }}>
             Library
           </h1>
-          <span className="text-xs smallcaps" style={{ color: '#6f6a60' }}>
+          <span className="smallcaps" style={{ color: '#6f6a60' }}>
             {hasFilter
               ? `${filtered.length} of ${items.length}`
               : `${items.length} text${items.length === 1 ? '' : 's'}`}
@@ -141,7 +141,7 @@ export function TextsBrowser({
           onToggle={slug => set('genre', slug)}
         />
         <div className="flex items-center gap-3 flex-wrap pt-1">
-          <span className="text-xs smallcaps" style={{ color: '#9c9589' }}>
+          <span className="smallcaps" style={{ color: '#9c9589' }}>
             Sort
           </span>
           {SORTS.map(s => (
@@ -225,7 +225,7 @@ function FilterRow({
   return (
     <div className="flex items-baseline gap-3 flex-wrap">
       <span
-        className="text-xs smallcaps shrink-0"
+        className="smallcaps shrink-0"
         style={{ color: '#9c9589', width: '5rem' }}
       >
         {label}

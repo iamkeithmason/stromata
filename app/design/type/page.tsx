@@ -251,6 +251,63 @@ export default function TypeComparisonPage() {
           </div>
         </Section>
 
+        {/* ── Small-caps size ───────────────────────────────────────── */}
+        <Section
+          title="How big should a small-cap label be?"
+          blurb="Small caps are drawn at roughly x-height, not cap height — measured on this subset, they top out at 0.686 of a capital. A label converted from capitals to small caps therefore loses 31% of its apparent height unless the font-size goes up. This ladder is the knob: whichever row reads right, put its value in --text-smallcaps."
+        >
+          <div style={{ maxWidth: 'var(--reading-measure)' }}>
+            <div className="flex items-baseline gap-4 py-3" style={{ borderBottom: '1px solid var(--rule)' }}>
+              <span className="font-mono" style={{ width: '7rem', fontSize: 'var(--text-sm)', color: 'var(--ink-mute)' }}>was</span>
+              <span
+                style={{
+                  fontFamily: 'var(--serif)',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.18em',
+                  fontSize: 'var(--text-sm)',
+                  color: 'var(--ink-faint)',
+                  flex: 1,
+                }}
+              >
+                Start with
+              </span>
+              <span className="font-mono" style={{ fontSize: 'var(--text-sm)', color: 'var(--ink-faint)' }}>0.8rem caps</span>
+            </div>
+
+            {['0.8rem', '0.875rem', '0.95rem', '1rem', '1.05rem', '1.167rem'].map((size) => (
+              <div key={size} className="flex items-baseline gap-4 py-3" style={{ borderBottom: '1px solid var(--rule-soft)' }}>
+                <span className="font-mono" style={{ width: '7rem', fontSize: 'var(--text-sm)', color: 'var(--ink-mute)' }}>
+                  {size}
+                </span>
+                <span
+                  style={{
+                    fontFamily: 'var(--serif-smallcaps)',
+                    fontFeatureSettings: '"smcp" 1',
+                    letterSpacing: '0.08em',
+                    fontSize: size,
+                    color: 'var(--ink-faint)',
+                    flex: 1,
+                  }}
+                >
+                  Start with
+                </span>
+                <span className="font-mono" style={{ fontSize: 'var(--text-sm)', color: 'var(--ink-faint)' }}>
+                  {size === '0.95rem' ? 'current' : size === '1.167rem' ? 'matches old height exactly' : ''}
+                </span>
+              </div>
+            ))}
+          </div>
+
+          <p className="font-serif" style={{ color: 'var(--ink-mute)', fontSize: 'var(--text-base)', maxWidth: '62ch', lineHeight: 1.6, marginTop: '2rem' }}>
+            A caution the ladder cannot show. Small caps are a form for SHORT labels — two to five
+            words. The homepage subtitle, “A library of public-domain Christian texts, edited for
+            legibility”, is a nine-word sentence set as a label, and no size setting fixes that: a
+            sentence in small caps is slower to read than the same sentence in italic, because the
+            forms carry no ascenders or descenders to give the eye word-shapes. It was equally true
+            when the line was letterspaced capitals. Worth deciding separately from the size.
+          </p>
+        </Section>
+
         {/* ── Figures ───────────────────────────────────────────────── */}
         <Section
           title="Figures — lining against oldstyle"

@@ -158,7 +158,7 @@ export default async function ScriptureLookupPage({ params }: Props) {
   return shell(
     <>
       <div className="mb-8">
-        <div className="text-xs smallcaps mb-2" style={{ color: '#6f6a60' }}>
+        <div className="smallcaps mb-2" style={{ color: '#6f6a60' }}>
           Texts citing
         </div>
         <h1 className="font-serif text-3xl mb-4" style={{ color: '#1b1b1b' }}>{label}</h1>
@@ -170,7 +170,7 @@ export default async function ScriptureLookupPage({ params }: Props) {
           <div className="mb-6">
             <div className="flex items-baseline justify-between mb-3">
               <h2 className="font-serif italic text-base" style={{ color: '#1b1b1b' }}>Referenced in</h2>
-              <span className="text-xs smallcaps" style={{ color: '#6f6a60' }}>{texts.length}</span>
+              <span className="smallcaps" style={{ color: '#6f6a60' }}>{texts.length}</span>
             </div>
             <hr style={{ borderColor: '#1b1b1b', borderTopWidth: '1px' }} />
           </div>

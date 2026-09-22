@@ -475,7 +475,7 @@ export default async function TextPage({ params }: Props) {
                     data-umami-event-direction="prev"
                     data-umami-event-collection={collection?.title}
                   >
-                    <span className="text-xs smallcaps mb-1 group-hover:opacity-70 transition-opacity" style={{ color: 'var(--ink-mute)' }}>
+                    <span className="smallcaps mb-1 group-hover:opacity-70 transition-opacity" style={{ color: 'var(--ink-mute)' }}>
                       ← Previous
                     </span>
                     <span className="font-serif text-sm group-hover:opacity-70 transition-opacity" style={{ color: 'var(--ink)' }}>
@@ -496,7 +496,7 @@ export default async function TextPage({ params }: Props) {
                     data-umami-event-direction="next"
                     data-umami-event-collection={collection?.title}
                   >
-                    <span className="text-xs smallcaps mb-1 group-hover:opacity-70 transition-opacity" style={{ color: 'var(--ink-mute)' }}>
+                    <span className="smallcaps mb-1 group-hover:opacity-70 transition-opacity" style={{ color: 'var(--ink-mute)' }}>
                       Next →
                     </span>
                     <span className="font-serif text-sm group-hover:opacity-70 transition-opacity" style={{ color: 'var(--ink)' }}>
@@ -516,7 +516,7 @@ export default async function TextPage({ params }: Props) {
                     data-umami-event-direction="end"
                     data-umami-event-collection={collection.title}
                   >
-                    <span className="text-xs smallcaps mb-1 group-hover:opacity-70 transition-opacity" style={{ color: 'var(--ink-mute)' }}>
+                    <span className="smallcaps mb-1 group-hover:opacity-70 transition-opacity" style={{ color: 'var(--ink-mute)' }}>
                       End of collection
                     </span>
                     <span className="font-serif text-sm group-hover:opacity-70 transition-opacity" style={{ color: 'var(--ink)' }}>

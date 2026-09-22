@@ -105,6 +105,17 @@
 
   /* Type scale — use these instead of raw rem values in components */
   --text-sm:      0.8rem;    /* chip/tag text, smallest labels, captions, card metadata, TOC */
+  /* Small caps need MORE font-size than capitals to read at the same weight on
+     the page. Measured against the shipped Junicode subset: its small-cap
+     glyphs top out at 0.686 of cap height, so a label converted from capitals
+     to small caps loses 31% of its apparent height at an unchanged font-size —
+     which is exactly what a reader reported the day the conversion shipped
+     ("looks a little small now"). Full compensation would be 1.46x, putting a
+     label above --text-base and making it compete with body text; the point of
+     small caps is a quieter label, not a louder one. 0.95rem recovers about
+     four fifths of the lost presence. One knob: the ladder at /design/type
+     renders the alternatives. */
+  --text-smallcaps: 0.95rem;
   --text-label:   0.875rem;  /* footer links, CTA links, search results */
   --text-base:    1rem;      /* author names, dates, body text, most UI text */
   --text-prose:   1.25rem;   /* long-form reading body */
@@ -435,13 +446,14 @@ html {
   .smallcaps {
     font-family: var(--serif-smallcaps);
     font-feature-settings: "smcp" 1;
+    font-size: var(--text-smallcaps);
     letter-spacing: 0.08em;
   }
 
   .kicker {
     font-family: var(--serif-smallcaps);
     font-feature-settings: "smcp" 1;
-    font-size: var(--text-sm);
+    font-size: var(--text-smallcaps);
     letter-spacing: 0.08em;
     color: var(--ink-faint);
   }
@@ -450,7 +462,7 @@ html {
   .kicker-gold {
     font-family: var(--serif-smallcaps);
     font-feature-settings: "smcp" 1;
-    font-size: var(--text-sm);
+    font-size: var(--text-smallcaps);
     letter-spacing: 0.08em;
     color: var(--gold-ink);
   }

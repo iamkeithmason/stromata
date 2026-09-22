@@ -7,6 +7,51 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-09-22 (later still) — Small caps were 31% too short; one token now governs every label
+
+Keith, looking at the deployed preview: the homepage subtitle and the "Start
+with" chip label "look a little small now". Both are `.kicker`, and he was
+right — but it was not a size setting, it was a consequence of the conversion
+that had not been thought through.
+
+**Measured, because the intuition pointed the wrong way.** Junicode has a
+*larger* x-height than EB Garamond (0.415 vs 0.400), so "looks smaller" seemed
+backwards. The cause is that capitals and small caps are drawn to different
+heights: measured on the shipped subset across A, N, S, T and H, the small-cap
+glyphs top out at **0.686 of cap height**, consistently. Converting a label from
+capitals to small caps at an unchanged font-size therefore loses **31% of its
+apparent height**. The letters did not get smaller; they stopped being capitals.
+
+Full compensation would be 1.46×, which at `--text-sm` puts a label above
+`--text-base` and has it competing with body text — the opposite of the point,
+since small caps exist to make a label quieter. New `--text-smallcaps: 0.95rem`
+recovers about four fifths of the lost presence, and the ladder now at
+`/design/type` renders 0.8 / 0.875 / 0.95 / 1 / 1.05 / 1.167rem against the old
+capitals so the value can be chosen by eye rather than taken on trust.
+
+**A gap the fix exposed.** `.smallcaps` sits in `@layer components`, and the 21
+sites migrated in the previous change each carried `text-xs` — a Tailwind
+utility, in a later layer, which silently overrode the new size. Half the site's
+labels would have been compensated and half not. The competing utility is
+removed from all 20 affected sites, so a single token now governs every
+small-caps label on the site. This is the same class of bug as the dangling
+`--serif-cormorant` reference: a change that looks complete because the thing
+you edited is correct, while the consumers quietly disagree.
+
+Surfaces worth a glance, since they are dense and went from 0.75rem to 0.95rem:
+the author and text browser index letters, the scripture and locations indexes,
+and the reader's table of contents.
+
+**One thing no size setting fixes, raised rather than changed.** The homepage
+subtitle — "A library of public-domain Christian texts, edited for legibility" —
+is a nine-word sentence set as a label. Small caps are a form for two to five
+words; a sentence in them reads slowly because the forms carry no ascenders or
+descenders to give the eye word-shapes. This was equally true when the line was
+letterspaced capitals, so it is not a regression, but it is a real editorial
+question now visible. Noted on `/design/type` beneath the ladder.
+
+---
+
 ## 2026-09-22 (later) — Junicode adopted as the body face; 29 fake-small-caps sites migrated; the positive control made mechanical
 
 Keith reviewed `/design/type` and chose Junicode. Three consequences, plus a
