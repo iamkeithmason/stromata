@@ -61,7 +61,7 @@ export function AuthorAside({ name, slug, birthYear, deathYear, locationName, er
 
       {tradition && (
         <p
-          className="font-serif uppercase"
+          className="smallcaps"
           style={{
             fontSize: 'var(--text-sm)',
             letterSpacing: '0.14em',

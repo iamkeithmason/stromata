@@ -13,10 +13,9 @@ export const metadata: Metadata = {
  * description and quite far apart on the page, and the only honest test is the
  * same real passage, at the real reading size, on the real measure.
  *
- * Junicode is loaded ONLY by this route, via the <style> block below rather
- * than app/globals.css, so no production page pays for a font that is still a
- * candidate. The .woff2 files sit in public/fonts and are ~33 KB each; see the
- * size table at the foot of the page for how that was arrived at.
+ * Junicode WON this comparison on 22 Sep 2026 and is now the site's body face,
+ * loaded from app/globals.css like any other. This page is kept as the record
+ * of how the decision was made, and as the surface for the next one.
  *
  * Specimen passage: Thomas Traherne, Centuries of Meditations (First Century),
  * which is already in the corpus — a live text, not lorem ipsum, because the
@@ -28,7 +27,7 @@ const SPECIMEN = [
   'Do not wonder that I promise to fill it with those Truths you love but know not; for though it be a maxim in the schools that there is no Love of a thing unknown, yet I have found that things unknown have a secret influence on the soul, and like the centre of the earth unseen violently attract it. We love we know not what, and therefore everything allures us.',
 ]
 
-const JUNICODE = '"Junicode", "EB Garamond", Georgia, serif'
+const JUNICODE = 'var(--serif)'   // Junicode is the global body face as of 22 Sep 2026
 
 type Candidate = {
   id: string
@@ -44,7 +43,7 @@ const CANDIDATES: Candidate[] = [
     id: 'ebgaramond',
     name: 'EB Garamond',
     stack: 'var(--serif)',
-    status: 'Shipping — the current body face',
+    status: 'Retired 22 Sep 2026 — was the body face',
     note:
       'Claude Garamond by way of Octavio Pardo’s revival. Warm, unobtrusive, a small x-height that wants generous leading. No smcp or onum table in the subset we ship, which is why the labels below had to fake their small caps until now.',
   },
@@ -52,7 +51,7 @@ const CANDIDATES: Candidate[] = [
     id: 'junicode',
     name: 'Junicode 2',
     stack: JUNICODE,
-    status: 'Candidate',
+    status: 'Shipping — the body face',
     note:
       'Peter Baker’s face for medievalists — the one patristic and medieval scholarship is actually set in. Larger x-height and a firmer, squarer foot than EB Garamond, so it holds a smaller size better. Carries real smcp, c2sc and onum, which no other face here does.',
   },
@@ -100,19 +99,6 @@ function Label({ children }: { children: React.ReactNode }) {
 export default function TypeComparisonPage() {
   return (
     <div style={{ background: 'var(--paper)' }} className="min-h-screen">
-      {/* Junicode is scoped to this route only — see the file header. */}
-      <style>{`
-        @font-face {
-          font-family: "Junicode";
-          src: url("/fonts/Junicode-Regular.woff2") format("woff2");
-          font-weight: 400; font-style: normal; font-display: swap;
-        }
-        @font-face {
-          font-family: "Junicode";
-          src: url("/fonts/Junicode-Italic.woff2") format("woff2");
-          font-weight: 400; font-style: italic; font-display: swap;
-        }
-      `}</style>
 
       <main id="main-content" className="mx-auto px-6 py-20" style={{ maxWidth: 'var(--content-max)' }}>
         <p className="kicker mb-4">Internal reference</p>
@@ -237,14 +223,14 @@ export default function TypeComparisonPage() {
             </div>
 
             <div>
-              <Label>Now: IM Fell English SC, sentence case, 0.08em — real drawn small caps</Label>
+              <Label>Retired: IM Fell English SC — a separate 56 KB companion family, no longer needed</Label>
               <p style={{ fontFamily: 'var(--serif-smallcaps)', letterSpacing: '0.08em', fontSize: 'var(--text-sm)', color: 'var(--ink-faint)' }}>
                 Texts through the year
               </p>
             </div>
 
             <div>
-              <Label>If Junicode wins the body test: its own smcp, no extra font file</Label>
+              <Label>Now: Junicode’s own smcp — same family as the body text, no extra font file</Label>
               <p
                 style={{
                   fontFamily: JUNICODE,
@@ -257,9 +243,9 @@ export default function TypeComparisonPage() {
                 Texts through the year
               </p>
               <p className="font-serif" style={{ color: 'var(--ink-faint)', fontSize: 'var(--text-sm)', maxWidth: '62ch', marginTop: '0.5rem', lineHeight: 1.6 }}>
-                This one matters for the decision: choosing Junicode as the body face makes the
-                separate 56 KB IM Fell English SC file redundant, because the small caps come from
-                the family already being loaded.
+                This is what the decision turned on. Junicode as the body face made the separate
+                56 KB IM Fell English SC file redundant, because the small caps come from a
+                family the page is already loading.
               </p>
             </div>
           </div>

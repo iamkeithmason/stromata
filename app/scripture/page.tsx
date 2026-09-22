@@ -66,7 +66,7 @@ export default async function ScriptureIndexPage() {
             <div className="mb-6">
               <div className="flex items-baseline justify-between mb-3">
                 <h2 className="font-serif italic text-base" style={{ color: '#1b1b1b' }}>Most cited</h2>
-                <span className="text-xs tracking-[0.18em] uppercase" style={{ color: '#6f6a60' }}>
+                <span className="text-xs smallcaps" style={{ color: '#6f6a60' }}>
                   across the library
                 </span>
               </div>

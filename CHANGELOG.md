@@ -7,6 +7,88 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-09-22 (later) — Junicode adopted as the body face; 29 fake-small-caps sites migrated; the positive control made mechanical
+
+Keith reviewed `/design/type` and chose Junicode. Three consequences, plus a
+check that turns this session's most expensive mistake into a contract.
+
+**Junicode is the body face.** `--serif` now resolves to it, and **EB Garamond
+is gone entirely** — keeping a second near-identical Garamond would have
+recreated the three-serifs problem the previous entry fixed. Two faces remain:
+Junicode for everything read, IM Fell English for titles, the wordmark and cover
+imprints.
+
+Two things were measured rather than assumed, and one of them caught a bug
+before it shipped:
+
+- **Weights.** The site has 98 `font-medium` / `font-semibold` uses. The
+  candidate subset was pinned to weight 400, so a naive swap would have
+  synthesised every one of them — fake bolds sitewide. Rebuilt retaining the
+  `wght` axis (300–700) as a variable subset: **80 KB roman, 88 KB italic**, one
+  file each, real weights. Against EB Garamond's four files at 89 KB total and
+  the now-retired 56 KB Fell SC, the net is about +23 KB.
+- **The type scale was left alone.** The earlier entry predicted Junicode's
+  larger x-height would need the scale retuning. Measured: 0.415 vs 0.400, a
+  3.75% difference. That is below the threshold where a speculative change is
+  justified, and it is not a change anyone here can verify without looking, so
+  the scale stands. Worth an eye on the preview.
+
+**Small caps now come from Junicode's own `smcp` table**, so the separate IM
+Fell English SC file is retired. One footgun this introduces, documented at the
+token: `--serif-smallcaps` is now the *same family* as `--serif`, so setting the
+family alone renders ordinary lowercase and fails silently. The new
+`.smallcaps` class sets family and `font-feature-settings` together, and
+`.kicker` / `.kicker-gold` do the same.
+
+**29 label sites migrated off fake small caps** — 8 inline style objects and 21
+Tailwind `uppercase` classes across the public pages. Two deliberate exclusions:
+the BookCover band and reading-time imprints stay letterspaced full capitals
+(the real form for a mark stamped on a cover, and IM Fell has no `smcp` to
+substitute from), and `/design/type` renders the fake version on purpose as the
+before/after. Admin UI labels were left alone — a separate visual language, and
+not reader-facing.
+
+**A lint rule so it cannot drift back.** `.eslintrc.cjs` now bans
+`textTransform: 'uppercase'` in `style` props, with a `deliberateUppercase`
+allowlist that — unlike the colour ratchet — is not expected to shrink to zero,
+but where every entry states a reason. Mutation-tested three ways before
+trusting it: fires in an ordinary file, fires inside a colour-ratchet file (the
+gap the colour rule's own comment warns about), and stays silent on the
+allowlist. 29 sites drifted into the imitation one at a time, each individually
+reasonable; prose would not have held them, and the failure is invisible in
+review because it looks like a styling choice.
+
+**`scripts/lib/url-check.mjs` now carries a positive control.** The file has
+said in prose since it was written that it cannot tell whether a URL resolves to
+the *right work* — All of Grace's wrong-book URL answered 200 and would pass.
+`positiveControl({ body, expect })` makes that mechanical, and covers both
+directions the mistake runs:
+
+- **Wrong work** — the body names neither the expected title nor author
+  (`unconfirmed`). The Spurgeon/Buchanan body is a test fixture.
+- **Wrong document entirely** — the body is an access gate (`interstitial`).
+  This is here because earlier the same day a Vercel SSO login page was read as
+  proof a retired font had been removed: a negative grep against an unverified
+  document is unfalsifiable, because the wrong document also lacks the string.
+
+Verdicts are deliberately conservative — not finding the expected words is
+`unconfirmed` ("a human must look"), never a mismatch, since a real page can
+spell an author differently or lead with a frontispiece. 14 new tests, both real
+failures as fixtures.
+
+One bug the tests caught rather than review: `Æ`, `Œ`, `þ`, `ð` and `ß` are
+ligatures and letters, not accented Latin, so NFKD leaves them alone and the
+punctuation sweep deleted them — `Æthelred` normalised to `thelred`. In a corpus
+holding the *Canons of Ælfric* that is not hypothetical. Now expanded
+explicitly, long s included.
+
+The colophon, `/design` and `/design/type` were all updated to describe the two
+faces that now ship rather than the three that did. `/design/type` keeps its
+scoped font block removed — it pointed at a filename the swap had renamed, which
+would have 404'd.
+
+---
+
 ## 2026-09-22 — Typography: retired Cormorant, real small caps, a colophon, and a type-comparison route
 
 Prompted by reader feedback on Discord that the site's font "screams Claude/ChatGPT/Whatever." The

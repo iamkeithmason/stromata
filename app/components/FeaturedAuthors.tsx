@@ -152,10 +152,10 @@ export async function FeaturedAuthors() {
                   <p
                     style={{
                       fontSize: 'var(--text-sm)',
-                      letterSpacing: '0.15em',
-                      textTransform: 'uppercase',
+                      letterSpacing: '0.08em',
                       color: 'var(--gold-ink)',
-                      fontFamily: 'var(--serif)',
+                      fontFamily: 'var(--serif-smallcaps)',
+      fontFeatureSettings: '"smcp" 1',
                     }}
                   >
                     {tradition}

@@ -365,10 +365,10 @@ export default async function Home() {
                       color: 'var(--ink-mute)',
                       border: '1px solid var(--rule)',
                       background: 'transparent',
-                      fontFamily: 'var(--serif)',
+                      fontFamily: 'var(--serif-smallcaps)',
+      fontFeatureSettings: '"smcp" 1',
                       fontSize: 'var(--text-sm)',
-                      letterSpacing: '0.1rem',
-                      textTransform: 'uppercase',
+                      letterSpacing: '0.08em',
                       padding: '3px 10px',
                       textDecoration: 'none',
                     }}
@@ -417,7 +417,7 @@ export default async function Home() {
             style={{ fontFamily: 'var(--serif)', fontSize: 'var(--text-label)', lineHeight: 1.85 }}
           >
             <div>
-              <div style={{ fontSize: 'var(--text-sm)', letterSpacing: '0.22em', textTransform: 'uppercase', color: 'var(--gold)', opacity: 0.8, marginBottom: 8, fontFamily: 'var(--serif)' }}>
+              <div style={{ fontSize: 'var(--text-sm)', letterSpacing: '0.08em', color: 'var(--gold)', opacity: 0.8, marginBottom: 8, fontFamily: 'var(--serif-smallcaps)', fontFeatureSettings: '"smcp" 1' }}>
                 Stromata
               </div>
               {[{ label: 'About', href: '/about' }, { label: 'Colophon', href: '/colophon' }, { label: 'Authors', href: '/authors' }, { label: 'RSS feed', href: '/rss' }].map(({ label, href }) => (
@@ -427,7 +427,7 @@ export default async function Home() {
               ))}
             </div>
             <div>
-              <div style={{ fontSize: 'var(--text-sm)', letterSpacing: '0.22em', textTransform: 'uppercase', color: 'var(--gold)', opacity: 0.8, marginBottom: 8, fontFamily: 'var(--serif)' }}>
+              <div style={{ fontSize: 'var(--text-sm)', letterSpacing: '0.08em', color: 'var(--gold)', opacity: 0.8, marginBottom: 8, fontFamily: 'var(--serif-smallcaps)', fontFeatureSettings: '"smcp" 1' }}>
                 Read
               </div>
               {[{ label: 'Library', href: '/texts' }, { label: 'Search', href: '/search' }].map(({ label, href }) => (

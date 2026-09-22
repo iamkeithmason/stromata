@@ -205,9 +205,9 @@ export default function DesignPage() {
         {/* ── 3. Font families ──────────────────────────────────────────── */}
         <Section title="Font families">
           {[
-            { token: '--serif', family: 'EB Garamond', role: 'Body text, labels, kickers', sample: 'The works of John Chrysostom, c. 407' },
-            { token: '--serif-display', family: 'IM Fell English', role: 'Page titles, decorative headings (roman only — no italic woff2 loaded)', sample: 'On the Priesthood' },
-            { token: '--serif-smallcaps', family: 'IM Fell English SC', role: 'Section labels and captions — REAL small caps. A companion family, not an OpenType feature: its lowercase slots hold small-cap glyphs, so call sites set the family on sentence-case text with NO text-transform. Neither --serif nor --serif-display carries an smcp table, so font-variant-caps would synthesise instead.', sample: 'Texts through the year' },
+            { token: '--serif', family: 'Junicode', role: 'Body text and everything read at length', sample: 'The works of John Chrysostom, c. 407' },
+            { token: '--serif-display', family: 'IM Fell English', role: 'Page titles, wordmark, cover imprints (roman only — no italic woff2 loaded)', sample: 'On the Priesthood' },
+            { token: '--serif-smallcaps', family: 'Junicode (smcp)', role: 'Section labels — REAL small caps from Junicode\u2019s own OpenType smcp table. Same family as --serif, so the token alone is NOT enough: without font-feature-settings it renders ordinary lowercase and fails silently. Use .kicker / .kicker-gold / .smallcaps, which set both. Labels are authored in sentence case \u2014 smcp does not substitute capitals.', sample: 'Texts through the year' },
           ].map(({ token, family, role, sample }) => (
             <div key={token} className="py-5" style={{ borderBottom: '1px solid var(--rule-soft)' }}>
               <div className="flex gap-8 items-baseline mb-2 flex-wrap">
@@ -377,10 +377,10 @@ export default function DesignPage() {
                   style={{
                     color: 'var(--ink-mute)',
                     border: '1px solid var(--rule)',
-                    fontFamily: 'var(--serif)',
+                    fontFamily: 'var(--serif-smallcaps)',
+      fontFeatureSettings: '"smcp" 1',
                     fontSize: 'var(--text-sm)',
-                    letterSpacing: '0.1em',
-                    textTransform: 'uppercase',
+                    letterSpacing: '0.08em',
                     padding: '3px 10px',
                   }}
                 >
@@ -397,10 +397,10 @@ export default function DesignPage() {
                   key={t}
                   style={{
                     fontSize: 'var(--text-sm)',
-                    letterSpacing: '0.15em',
-                    textTransform: 'uppercase',
+                    letterSpacing: '0.08em',
                     color: 'var(--gold)',
-                    fontFamily: 'var(--serif)',
+                    fontFamily: 'var(--serif-smallcaps)',
+      fontFeatureSettings: '"smcp" 1',
                   }}
                 >
                   {t}

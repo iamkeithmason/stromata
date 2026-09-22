@@ -133,10 +133,10 @@ const R = {
 
 // Small-caps label style — reused for "THE CHRISTIAN YEAR" and "READ FOR THE SEASON"
 const LABEL_STYLE: React.CSSProperties = {
-  fontFamily: 'var(--serif)',
+  fontFamily: 'var(--serif-smallcaps)',
+      fontFeatureSettings: '"smcp" 1',
   fontSize: 'var(--text-sm)',
-  letterSpacing: '0.24em',
-  textTransform: 'uppercase',
+  letterSpacing: '0.08em',
   color: R.gold,
 }
 

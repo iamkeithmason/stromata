@@ -185,3 +185,123 @@ test('the cleared edition field outranks the reference field', () => {
   assert.equal(reference.severity, 'low');
   assert.ok(URL_FIELDS.indexOf(cleared) < URL_FIELDS.indexOf(reference));
 });
+
+/* ---------------------------------------------------------------------------
+   The positive control.
+
+   The fixtures are the two real failures this exists to catch, not invented
+   input: the Gutenberg body that was pinned as Spurgeon and is Buchanan, and
+   the Vercel SSO page that was read as proof a font had been removed. A test
+   written against plausible-looking input would pass while the check looked in
+   the wrong place, which is the failure mode the whole module guards against.
+   --------------------------------------------------------------------------- */
+
+import {
+  positiveControl,
+  normaliseForMatch,
+  significantWords,
+  controlPassed,
+  CONTROL_ORDER,
+} from './url-check.mjs';
+
+const pad = (s) => s + ' '.repeat(0) + ' filler text. '.repeat(40);
+
+test('normalisation folds case, accents and punctuation', () => {
+  assert.equal(normaliseForMatch("Æthelred's Preces Privatæ!"), 'aethelred s preces privatae');
+  assert.equal(normaliseForMatch(null), '');
+});
+
+test('significant words drop articles and prepositions', () => {
+  assert.deepEqual(significantWords('The Cloud of Unknowing'), ['cloud', 'unknowing']);
+});
+
+test('the real Gutenberg body confirms the work it actually is', () => {
+  const body = pad(`The Project Gutenberg eBook of The Christian Year
+
+Title: The Christian Year
+
+Author: John Keble
+
+Editor: Henry Morley`);
+  const r = positiveControl({ body, expect: { title: 'The Christian Year', author: 'John Keble' } });
+  assert.equal(r.verdict, 'confirmed');
+});
+
+test('THE SPURGEON CASE: a 200 body for the wrong book is not confirmed', () => {
+  // gutenberg.org/ebooks/27570, pinned as Spurgeon's All of Grace.
+  const body = pad(`The Project Gutenberg eBook of Buchanan's Journal of Man, July 1887
+
+Title: Buchanan's Journal of Man, July 1887
+
+Author: Joseph Rodes Buchanan`);
+  const r = positiveControl({ body, expect: { title: 'All of Grace', author: 'Charles Spurgeon' } });
+  assert.equal(r.verdict, 'unconfirmed');
+  assert.match(r.why, /Spurgeon/);
+  assert.equal(controlPassed(r.verdict), false);
+});
+
+test('THE SSO CASE: an access gate is called out, not merely unconfirmed', () => {
+  const body = pad('Authentication Required. Redirecting to vercel.com/sso-api to sign in to continue.');
+  const r = positiveControl({ body, expect: { title: 'Colophon', author: 'The Stromata' } });
+  assert.equal(r.verdict, 'interstitial');
+  assert.match(r.why, /gate/);
+});
+
+test('a negative check on an interstitial never reads as success', () => {
+  // The precise mistake: grepping an SSO page for a retired font name, finding
+  // nothing, and calling the font removed.
+  const body = pad('Sign in to continue. This deployment is protected.');
+  const r = positiveControl({ body, expect: { title: 'Junicode specimen', author: 'Peter Baker' } });
+  assert.notEqual(r.verdict, 'confirmed');
+  assert.equal(r.verdict, 'interstitial');
+});
+
+test('an empty or near-empty body is no-content, not a mismatch', () => {
+  assert.equal(positiveControl({ body: '', expect: { title: 'X', author: 'Y' } }).verdict, 'no-content');
+  assert.equal(positiveControl({ body: '<html><body></body></html>', expect: { title: 'X', author: 'Y' } }).verdict, 'no-content');
+});
+
+test('author without title is partial — possibly a different work by the same hand', () => {
+  const body = pad('A Treatise on the Priesthood, by John Keble, printed at Oxford.');
+  const r = positiveControl({ body, expect: { title: 'The Christian Year', author: 'John Keble' } });
+  assert.equal(r.verdict, 'partial');
+  assert.match(r.why, /different work/);
+});
+
+test('title without author is partial and says to check the edition', () => {
+  const body = pad('The Christian Year: Thoughts in Verse for the Sundays and Holydays.');
+  const r = positiveControl({ body, expect: { title: 'The Christian Year', author: 'John Keble' } });
+  assert.equal(r.verdict, 'partial');
+  assert.match(r.why, /edition/);
+});
+
+test('a majority of title words is enough — subtitles and edition wording vary', () => {
+  const body = pad('Centuries of Meditations, by Thomas Traherne, now first printed.');
+  const r = positiveControl({ body, expect: { title: 'Centuries of Meditations', author: 'Thomas Traherne' } });
+  assert.equal(r.verdict, 'confirmed');
+});
+
+test('nothing to check against is unconfirmed, never confirmed', () => {
+  const r = positiveControl({ body: pad('Some perfectly real page of text.'), expect: {} });
+  assert.equal(r.verdict, 'unconfirmed');
+});
+
+test('only text inside the window counts', () => {
+  const body = pad('irrelevant preamble') + ' John Keble The Christian Year';
+  const near = positiveControl({ body, expect: { title: 'The Christian Year', author: 'John Keble' } });
+  const far = positiveControl({ body, expect: { title: 'The Christian Year', author: 'John Keble' }, window: 100 });
+  assert.equal(near.verdict, 'confirmed');
+  assert.notEqual(far.verdict, 'confirmed');
+});
+
+test('controlPassed is strict — only confirmed proceeds unattended', () => {
+  for (const v of CONTROL_ORDER) {
+    assert.equal(controlPassed(v), v === 'confirmed', `${v} should ${v === 'confirmed' ? '' : 'not '}pass`);
+  }
+});
+
+test('Old English letters expand rather than vanish — Ælfric is in this corpus', () => {
+  assert.equal(normaliseForMatch('Ælfric'), 'aelfric');
+  assert.equal(normaliseForMatch('Þorpe and ðe olde ſtyle'), 'thorpe and de olde style');
+  assert.equal(normaliseForMatch('Œuvres'), 'oeuvres');
+});

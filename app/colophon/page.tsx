@@ -106,7 +106,7 @@ export default function ColophonPage() {
 
         <Prose>
           <p>
-            Three faces, each doing one job. All three are freely licensed, self-hosted rather than
+            Two faces, each doing one job. Both are freely licensed, self-hosted rather than
             loaded from a font service, and chosen because they belong to the same tradition as the
             texts.
           </p>
@@ -130,23 +130,23 @@ export default function ColophonPage() {
             </p>
           </TypeEntry>
 
-          <TypeEntry name="IM Fell English SC" stack="var(--serif-smallcaps)" role="Section labels and captions">
+          <TypeEntry name="Junicode" stack="var(--serif)" role="Everything you read, and the labels above it">
             <p>
-              The small-caps companion to the same Fell types. Small capitals are drawn at the
-              height of the lowercase with matching stem weights, so a label set in them sits inside
-              the page rather than shouting above it. Most websites approximate them by stretching
-              the spacing on ordinary capitals; the difference is small, and it is the difference
-              between a typographic form and an imitation of one.
+              Peter Baker began Junicode in the late 1990s because medievalists had no type that
+              could set what they needed to set — the thorns and yoghs and abbreviation marks of
+              Old English and Latin manuscripts — and it remains the face that scholarship in this
+              period is actually printed in. Its letterforms follow the Renaissance humanist
+              romans of the late fifteenth century, which is roughly the tradition the earliest
+              printed editions of these texts belonged to.
             </p>
-          </TypeEntry>
-
-          <TypeEntry name="EB Garamond" stack="var(--serif)" role="Everything you read">
             <p>
-              Claude Garamond cut his romans in Paris in the 1540s, and nearly every serif made
-              since has been measured against them. This digital version is Georg Duffner and
-              Octavio Pardo&rsquo;s, built from scans of specimens held in Antwerp. It is used at a
-              generous size on a deliberately narrow column, because the texts here were written to
-              be read slowly.
+              It is used here at a generous size on a deliberately narrow column, because the
+              texts were written to be read slowly. It also carries real small capitals, which is
+              why the section labels on this site are set in them rather than in the letterspaced
+              capitals most websites use as a substitute. Small capitals are drawn at the height
+              of the lowercase with matching stem weights, so a label sits inside the page rather
+              than shouting above it — the difference between a typographic form and an imitation
+              of one.
             </p>
           </TypeEntry>
         </div>
@@ -226,9 +226,9 @@ export default function ColophonPage() {
         <Rule />
 
         <p className="font-serif" style={{ color: 'var(--ink-faint)', fontSize: 'var(--text-sm)', lineHeight: 1.8 }}>
-          IM Fell types &copy; Igino Marini, freely licensed. EB Garamond by Georg Duffner and
-          Octavio Pardo, under the SIL Open Font License. Both are used unmodified except for
-          subsetting to the characters this site needs.
+          IM Fell types &copy; Igino Marini, freely licensed. Junicode by Peter S. Baker, under
+          the SIL Open Font License. Both are used unmodified except for subsetting to the
+          characters this site needs.
         </p>
       </main>
     </div>

@@ -116,7 +116,7 @@ export default async function TraditionPage({ params }: Props) {
 
       <main id="main-content" className="content-shell py-12">
         <div className="mb-10">
-          <p className="text-xs uppercase tracking-widest mb-3 font-serif" style={{ color: 'var(--ink-mute)' }}>
+          <p className="text-xs smallcaps mb-3" style={{ color: 'var(--ink-mute)' }}>
             Tradition
           </p>
           <h1 className="font-serif text-3xl mb-2" style={{ color: 'var(--ink)' }}>
@@ -144,7 +144,7 @@ export default async function TraditionPage({ params }: Props) {
                 <h2 className="font-serif italic text-base" style={{ color: 'var(--ink)' }}>
                   Texts in the library
                 </h2>
-                <span className="text-xs tracking-[0.18em] uppercase" style={{ color: 'var(--ink-mute)' }}>
+                <span className="text-xs smallcaps" style={{ color: 'var(--ink-mute)' }}>
                   {texts.length}
                 </span>
               </div>

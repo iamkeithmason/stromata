@@ -135,10 +135,10 @@ export function BookCover({
           <p
             className="book-cover-author"
             style={{
-              fontFamily: 'var(--serif)',
+              fontFamily: 'var(--serif-smallcaps)',
+      fontFeatureSettings: '"smcp" 1',
               fontSize: 'min(0.8rem, 6.4cqi)',
-              letterSpacing: '0.14em',
-              textTransform: 'uppercase',
+              letterSpacing: '0.08em',
               color: 'var(--ink-soft)',
               margin: 0,
             }}

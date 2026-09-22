@@ -3,51 +3,22 @@
    ============================================================= */
 
 @font-face {
-  font-family: "EB Garamond";
-  src: url("/fonts/EBGaramond-Regular.woff2") format("woff2");
-  font-weight: 400;
+  font-family: "Junicode";
+  src: url("/fonts/Junicode-Roman.woff2") format("woff2");
+  font-weight: 300 700;          /* variable wght axis — real weights, not synthesised */
   font-style: normal;
   font-display: swap;
 }
 @font-face {
-  font-family: "EB Garamond";
-  src: url("/fonts/EBGaramond-Italic.woff2") format("woff2");
-  font-weight: 400;
+  font-family: "Junicode";
+  src: url("/fonts/Junicode-Italic.woff2") format("woff2");
+  font-weight: 300 700;
   font-style: italic;
-  font-display: swap;
-}
-@font-face {
-  font-family: "EB Garamond";
-  src: url("/fonts/EBGaramond-Medium.woff2") format("woff2");
-  font-weight: 500;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: "EB Garamond";
-  src: url("/fonts/EBGaramond-SemiBold.woff2") format("woff2");
-  font-weight: 600;
-  font-style: normal;
   font-display: swap;
 }
 @font-face {
   font-family: "IM Fell English";
   src: url("/fonts/IMFellEnglish-Regular.woff2") format("woff2");
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-
-/* IM Fell English SC — a small-caps COMPANION family, not an OpenType feature.
-   Its lowercase slots hold small-cap glyphs, so you use it by setting the
-   family on normal sentence-case text with NO text-transform. This exists
-   because neither EB Garamond nor IM Fell English as subset here carries an
-   `smcp` table, so `font-variant-caps: small-caps` would fall back to the
-   browser's SYNTHETIC small caps — shrunken capitals with the wrong stem
-   weight, which is worse than the letterspaced uppercase it replaces. */
-@font-face {
-  font-family: "IM Fell English SC";
-  src: url("/fonts/IMFellEnglishSC-Regular.woff2") format("woff2");
   font-weight: 400;
   font-style: normal;
   font-display: swap;
@@ -123,9 +94,14 @@
   --shadow-panel:      0px 2px 0px rgba(30, 30, 25, 0.05), 0px 22px 50px -28px rgba(30, 30, 25, 0.45);
   --shadow-panel-drop: drop-shadow(0px 2px 0px rgba(30, 30, 25, 0.05)) drop-shadow(0px 22px 40px rgba(30, 30, 25, 0.35));
 
-  --serif:         "EB Garamond", "Garamond", Georgia, serif;
-  --serif-display: "IM Fell English", "EB Garamond", Georgia, serif;
-  --serif-smallcaps: "IM Fell English SC", "EB Garamond", Georgia, serif;
+  --serif:         "Junicode", "EB Garamond", Georgia, serif;
+  --serif-display: "IM Fell English", "Junicode", Georgia, serif;
+  /* Small caps now come from Junicode's own `smcp` table, so the family is
+     the SAME as --serif. The family alone is NOT enough: without
+     `font-feature-settings: "smcp" 1` this renders ordinary lowercase and
+     fails silently. Use the .kicker / .kicker-gold / .smallcaps classes,
+     which set both. The token is kept so the design reference can name it. */
+  --serif-smallcaps: "Junicode", "EB Garamond", Georgia, serif;
 
   /* Type scale — use these instead of raw rem values in components */
   --text-sm:      0.8rem;    /* chip/tag text, smallest labels, captions, card metadata, TOC */
@@ -438,8 +414,8 @@ html {
 
 @layer components {
   /* kicker — small-caps serif label, muted (section labels, nav chips).
-     REAL small caps via the IM Fell English SC companion family, NOT
-     `text-transform: uppercase` on a lowercase-only face. The difference is
+     REAL small caps via Junicode's own OpenType `smcp` table, NOT
+     `text-transform: uppercase` on a face that has no small caps. The difference is
      not pedantry: letterspaced full capitals are the single most recognisable
      tell of machine-generated editorial design, because they are what you
      reach for when the face you picked has no small caps. Genuine small caps
@@ -449,13 +425,22 @@ html {
      Two consequences for call sites:
        - NO text-transform. Labels are authored in sentence case ("Featured
          authors") and render as Cap + small caps, which is the correct form.
-         Adding `uppercase` back would double-transform into full capitals and
-         throw away the whole point.
+         Adding `uppercase` back would feed `smcp` capitals, which it does not
+         substitute, giving full caps and throwing away the whole point.
        - Tracking drops 0.18em -> 0.08em. Small caps are already wider-set by
          design; the heavy tracking that rescues fake uppercase makes real
          small caps fall apart. */
+  /* .smallcaps — the ONLY safe way to set small caps. Family alone silently
+     renders ordinary lowercase; these two declarations belong together. */
+  .smallcaps {
+    font-family: var(--serif-smallcaps);
+    font-feature-settings: "smcp" 1;
+    letter-spacing: 0.08em;
+  }
+
   .kicker {
     font-family: var(--serif-smallcaps);
+    font-feature-settings: "smcp" 1;
     font-size: var(--text-sm);
     letter-spacing: 0.08em;
     color: var(--ink-faint);
@@ -464,6 +449,7 @@ html {
   /* kicker-gold — same treatment, gold variant (editorial labels, "Read for the season") */
   .kicker-gold {
     font-family: var(--serif-smallcaps);
+    font-feature-settings: "smcp" 1;
     font-size: var(--text-sm);
     letter-spacing: 0.08em;
     color: var(--gold-ink);

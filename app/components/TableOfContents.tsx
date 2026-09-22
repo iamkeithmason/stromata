@@ -126,7 +126,7 @@ export default function TableOfContents({ headings, mobile = false }: Props) {
         }}
       >
         <p
-          className="text-xs uppercase tracking-widest mb-3 font-serif"
+          className="text-xs smallcaps mb-3"
           style={{ color: 'var(--ink-faint)' }}
         >
           Contents
