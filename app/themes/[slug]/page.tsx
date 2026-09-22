@@ -223,7 +223,7 @@ export default async function ThemePage({ params }: Props) {
                 <h2 className="font-serif italic text-base" style={{ color: '#1b1b1b' }}>
                   Texts in the library
                 </h2>
-                <span className="text-xs tracking-[0.18em] uppercase" style={{ color: '#6f6a60' }}>
+                <span className="smallcaps" style={{ color: '#6f6a60' }}>
                   {texts.length}
                 </span>
               </div>

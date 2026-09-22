@@ -49,6 +49,49 @@ const noMountEffectTrackSelectors = [
   },
 ]
 
+/**
+ * The fake-small-caps rule — the third thing worth machine-checking.
+ *
+ * `text-transform: uppercase` plus heavy letter-spacing is what you reach for
+ * when your typeface has no small caps, and it is the most recognisable tell of
+ * machine-generated editorial design. A reader named it on the site in
+ * September 2026 ("screams Claude/ChatGPT/Whatever") before anyone here had.
+ * The body face now carries a real OpenType `smcp` table, so the imitation has
+ * no remaining excuse: use the .kicker / .kicker-gold / .smallcaps classes,
+ * which set the family AND `font-feature-settings: "smcp" 1` together.
+ *
+ * Why a rule and not a note: 29 call sites had drifted into the imitation one
+ * at a time, each individually reasonable. Prose would not have held them, and
+ * the failure is invisible in review — it looks like a styling choice.
+ *
+ * Scope & limits: like the colour rule, it targets `style` JSX attributes only.
+ * It does NOT catch the Tailwind `uppercase` utility class; those were migrated
+ * by hand in the same change and stay a convention. Genuine full capitals — a
+ * masthead, a cover imprint — are a real typographic form and belong in the
+ * allowlist below with a reason, not in a disable comment.
+ */
+const noFakeSmallCapsSelectors = [
+  {
+    selector:
+      "JSXAttribute[name.name='style'] Property[key.name='textTransform'] > Literal[value='uppercase']",
+    message:
+      'Fake small caps: `textTransform: uppercase` in a style prop. The body face has a real smcp table — use the .kicker / .kicker-gold / .smallcaps class, which sets the family and font-feature-settings together. Setting the family alone renders ordinary lowercase and fails silently. If you genuinely want full capitals (a masthead or cover imprint), add the file to deliberateUppercase in .eslintrc.cjs with a reason.',
+  },
+]
+
+// Files where full capitals are deliberate, not an imitation of small caps.
+// Unlike the colour ratchet this is not expected to shrink to zero — these are
+// correct as they stand — but every entry needs a stated reason.
+const deliberateUppercase = [
+  // Book-cover band and reading-time imprints. Letterspaced capitals are the
+  // real form for an imprint stamped on a cover, and the display face
+  // (IM Fell English) has no smcp table to substitute from.
+  'app/components/BookCover.tsx',
+  // Renders the fake version on purpose, beside the real one, as the
+  // before/after in the type comparison.
+  'app/design/type/page.tsx',
+]
+
 const noRawColourSelectors = [
   {
     selector:
@@ -95,7 +138,12 @@ const legacyRawColour = [
 module.exports = {
   extends: ['next/core-web-vitals', 'next/typescript'],
   rules: {
-    'no-restricted-syntax': ['error', ...noRawColourSelectors, ...noMountEffectTrackSelectors],
+    'no-restricted-syntax': [
+      'error',
+      ...noRawColourSelectors,
+      ...noMountEffectTrackSelectors,
+      ...noFakeSmallCapsSelectors,
+    ],
   },
   overrides: [
     {
@@ -106,7 +154,24 @@ module.exports = {
       // umami.track. Re-declare with the analytics selectors instead of
       // disabling, so the exemption stays as narrow as it reads.
       files: legacyRawColour,
-      rules: { 'no-restricted-syntax': ['error', ...noMountEffectTrackSelectors] },
+      rules: {
+        'no-restricted-syntax': [
+          'error',
+          ...noMountEffectTrackSelectors,
+          ...noFakeSmallCapsSelectors,
+        ],
+      },
+    },
+    {
+      // Deliberate full capitals — colour and analytics rules still apply.
+      files: deliberateUppercase,
+      rules: {
+        'no-restricted-syntax': [
+          'error',
+          ...noRawColourSelectors,
+          ...noMountEffectTrackSelectors,
+        ],
+      },
     },
   ],
 }

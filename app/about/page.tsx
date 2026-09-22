@@ -137,6 +137,14 @@ export default function AboutPage() {
           The Stromata — freely accessible texts from the Christian tradition
         </p>
         <p className="text-xs mt-2">
+          <Link
+            href="/colophon"
+            className="hover:opacity-70 transition-opacity"
+            style={{ color: '#6f6a60' }}
+          >
+            Colophon
+          </Link>
+          <span style={{ color: '#c8c3bb' }}> &middot; </span>
           <a
             href="/rss"
             className="hover:opacity-70 transition-opacity"

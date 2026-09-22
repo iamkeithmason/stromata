@@ -157,3 +157,157 @@ export function summarise(results) {
   for (const r of results) counts[r.verdict] = (counts[r.verdict] ?? 0) + 1;
   return counts;
 }
+
+/* ===========================================================================
+   The positive control — does the body evidence the work we asked for?
+   ===========================================================================
+
+   `classify` above answers whether an address still answers. That is the cheap
+   half, and the file has said so in prose since it was written: "All of Grace's
+   wrong-book URL answered 200 and would pass this check." What follows makes
+   the other half mechanical.
+
+   It exists because the same mistake was made twice, in two directions:
+
+     - WRONG WORK. gutenberg.org/ebooks/27570 was pinned as Spurgeon's *All of
+       Grace* and is in fact *Buchanan's Journal of Man, July 1887*. It returned
+       200, the sync took it, and the wrong book was imported under Spurgeon's
+       name.
+
+     - WRONG DOCUMENT ENTIRELY. On 2026-09-22 a Vercel preview with Deployment
+       Protection on answered every request with an SSO login page, at 200. A
+       grep of that page for a retired font name found nothing, and the absence
+       was reported as proof the font had been removed. A negative check against
+       an unverified document is unfalsifiable: the wrong document also lacks
+       the string you searched for.
+
+   So a fetch is verified when the body contains something the RIGHT artefact
+   must contain — never by its status, and never by what it fails to contain.
+
+   Deliberately conservative about blame: not finding the expected words is
+   reported as `unconfirmed`, not as a mismatch. A legitimate page can spell an
+   author differently, or lead with a frontispiece image. `unconfirmed` means
+   "a human must look", which is the honest verdict. */
+
+/** Phrases that mean "you are looking at the gate, not the thing behind it". */
+const INTERSTITIAL_MARKERS = [
+  'sso-api', 'single sign-on', 'sign in to continue', 'authentication required',
+  'log in to continue', 'access denied', 'checking your browser',
+  'enable javascript and cookies', 'are you a robot', 'verify you are human',
+  'subscribe to read', 'this content is protected',
+];
+
+/**
+ * Strip case, accents and punctuation so "Æthelred's" and "aethelreds" meet.
+ *
+ * NFKD alone is not enough, and the gap bites precisely this corpus. Æ, Œ,
+ * þ, ð and ß are LIGATURES AND LETTERS, not accented Latin letters, so they
+ * do not decompose — and the `[^a-z0-9]` sweep below would then delete them
+ * outright, turning "Æthelred" into "thelred" and failing to match a source
+ * that spells it "Aethelred". Caught by a unit test, not in review. The long s
+ * is here for the same reason it is everywhere else in this project: scans.
+ */
+const LETTER_EXPANSIONS = [
+  [/Æ/g, 'AE'], [/æ/g, 'ae'],
+  [/Œ/g, 'OE'], [/œ/g, 'oe'],
+  [/[Þþ]/g, 'th'], [/[Ðð]/g, 'd'],
+  [/ß/g, 'ss'], [/[Øø]/g, 'o'], [/[Đđ]/g, 'd'], [/ſ/g, 's'],
+];
+
+export function normaliseForMatch(text) {
+  let out = String(text ?? '');
+  for (const [re, to] of LETTER_EXPANSIONS) out = out.replace(re, to);
+  return out
+    .normalize('NFKD')
+    .replace(/[̀-ͯ]/g, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, ' ')
+    .trim();
+}
+
+/**
+ * Words worth matching on. Drops the articles and prepositions that make
+ * "The Cloud of Unknowing" match almost any devotional page.
+ */
+const STOPWORDS = new Set([
+  'a', 'an', 'the', 'of', 'on', 'in', 'to', 'and', 'or', 'for', 'from',
+  'by', 'with', 'his', 'her', 'its', 'de', 'la', 'le',
+]);
+
+export function significantWords(text) {
+  return normaliseForMatch(text).split(' ').filter((w) => w.length > 2 && !STOPWORDS.has(w));
+}
+
+/**
+ * Decide whether `body` evidences the work named by `expect`.
+ *
+ * @param {object}  input
+ * @param {string}  input.body     the fetched text (the head of it is enough)
+ * @param {object}  input.expect   { title, author } as the queue records them
+ * @param {number} [input.window]  how many characters of the head to trust
+ * @returns {{verdict: string, why: string, matched?: object}}
+ *
+ * Verdicts, worst first: `interstitial` (a gate, not the work), `no-content`
+ * (nothing to read — a redirect shell, an image, an empty body), `unconfirmed`
+ * (readable, but neither title nor author found), `partial` (one of the two),
+ * `confirmed` (both).
+ */
+export function positiveControl({ body, expect = {}, window = 4000 } = {}) {
+  const head = String(body ?? '').slice(0, window);
+  const hay = normaliseForMatch(head);
+
+  const marker = INTERSTITIAL_MARKERS.find((m) => hay.includes(normaliseForMatch(m)));
+  if (marker) {
+    return {
+      verdict: 'interstitial',
+      why: `the body looks like an access gate, not the work (matched "${marker}") — a 200 here says nothing about the artefact`,
+    };
+  }
+
+  // Fewer than ~200 readable characters is not something you can conclude from.
+  if (hay.replace(/\s/g, '').length < 200) {
+    return { verdict: 'no-content', why: 'too little readable text in the response to confirm anything' };
+  }
+
+  const titleWords = significantWords(expect.title);
+  const authorWords = significantWords(expect.author);
+  if (titleWords.length === 0 && authorWords.length === 0) {
+    return { verdict: 'unconfirmed', why: 'no expected title or author given to check against' };
+  }
+
+  // A majority of a title's significant words, and any one author word (a
+  // surname alone is the usual case — "Spurgeon", "Keble").
+  const hit = (w) => hay.includes(w);
+  const titleHits = titleWords.filter(hit);
+  const authorHits = authorWords.filter(hit);
+  const titleFound = titleWords.length > 0 && titleHits.length * 2 >= titleWords.length;
+  const authorFound = authorHits.length > 0;
+
+  const matched = { title: titleHits, author: authorHits };
+
+  if (titleFound && authorFound) {
+    return { verdict: 'confirmed', why: `body names "${expect.title}" and "${expect.author}"`, matched };
+  }
+  if (titleFound || authorFound) {
+    return {
+      verdict: 'partial',
+      why: titleFound
+        ? `body names the title but not "${expect.author}" — check the edition before trusting it`
+        : `body names "${expect.author}" but not the title — may be a different work by the same author`,
+      matched,
+    };
+  }
+  return {
+    verdict: 'unconfirmed',
+    why: `body mentions neither "${expect.title}" nor "${expect.author}" in its first ${window} characters — this is the Spurgeon/All-of-Grace shape; read it before Stage 2`,
+    matched,
+  };
+}
+
+/** Worst-first, so the most suspicious row is the first line of a report. */
+export const CONTROL_ORDER = ['interstitial', 'no-content', 'unconfirmed', 'partial', 'confirmed'];
+
+/** Is this verdict good enough to proceed on without a human reading it? */
+export function controlPassed(verdict) {
+  return verdict === 'confirmed';
+}

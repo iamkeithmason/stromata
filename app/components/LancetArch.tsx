@@ -172,7 +172,7 @@ export function LancetArch({ initial, label, imageUrl, focusX, focusY, zoom }: P
         x="100"
         y="255"
         textAnchor="middle"
-        fontFamily="var(--serif-cormorant)"
+        fontFamily="var(--serif)"
         fontSize="120"
         fill="var(--ink)"
         opacity="0.85"

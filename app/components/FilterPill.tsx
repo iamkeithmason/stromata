@@ -18,12 +18,12 @@ export function FilterPill({
       aria-pressed={active}
       className="inline-flex items-center hover:opacity-70 transition-opacity"
       style={{
-        fontFamily: 'var(--serif)',
+        fontFamily: 'var(--serif-smallcaps)',
+        fontFeatureSettings: '"smcp" 1',
         fontSize: 'var(--text-sm)',
         color: active ? 'var(--ink)' : 'var(--ink-mute)',
         border: `1px solid ${active ? 'var(--gold)' : 'var(--rule)'}`,
-        letterSpacing: '0.1em',
-        textTransform: 'uppercase',
+        letterSpacing: '0.08em',
         padding: '2px 8px',
         background: 'transparent',
         cursor: 'pointer',

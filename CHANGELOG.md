@@ -7,6 +7,240 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-09-22 (evening) — The compensation put back on the scale; homepage subtitle stops being a label
+
+Keith on the previous entry: *"I think we were using a type scale right? I'd
+move it up the scale."* Correct, and the fault was mine — `0.95rem` compensated
+well and was not a scale step. A scale with one bespoke value in it is not a
+scale, and it was introduced into the very token system that exists to stop
+exactly that. `--text-smallcaps` is now `var(--text-base)`, referencing the step
+rather than restating its value, so the on-scale-ness is structural.
+
+`--text-label` (0.875rem) was the other candidate and is too small to be worth
+the change: at a small-cap ratio of 0.457 it stands 0.400rem against the old
+capitals' 0.533rem, still a quarter short of what was reported as too small.
+`--text-base` gives 0.457rem.
+
+**Why a label at body size is not too loud**, since it sounds as though it must
+be: small caps at 1rem stand 0.457rem tall, and prose at `--text-prose` has an
+x-height of 0.519rem. The label's letters are *shorter* than the body lowercase
+around them. Full compensation would be 1.167rem, which genuinely would shout,
+and is marked off-scale on the ladder for that reason.
+
+**The homepage subtitle is no longer a label.** "A library of public-domain
+Christian texts, edited for legibility" is now italic body text at
+`--text-base`. Nine words is too many for small caps — the forms carry no
+ascenders or descenders, so the eye gets no word-shapes and a sentence in them
+goes slowly. No size setting fixes that, and it was equally true when the line
+was letterspaced capitals.
+
+It is set roman rather than italic. The tagline "A reading room for the works of
+the ages." sits directly above it, and two stacked italic lines at different
+sizes read as one muddy block; roman separates the poetic line from the factual
+one. Raised after the italic version was approved and changed on Keith's call.
+
+The `/design/type` ladder now names each row by its scale token instead of
+listing loose rem values.
+
+---
+
+## 2026-09-22 (later still) — Small caps were 31% too short; one token now governs every label
+
+Keith, looking at the deployed preview: the homepage subtitle and the "Start
+with" chip label "look a little small now". Both are `.kicker`, and he was
+right — but it was not a size setting, it was a consequence of the conversion
+that had not been thought through.
+
+**Measured, because the intuition pointed the wrong way.** Junicode has a
+*larger* x-height than EB Garamond (0.415 vs 0.400), so "looks smaller" seemed
+backwards. The cause is that capitals and small caps are drawn to different
+heights: measured on the shipped subset across A, N, S, T and H, the small-cap
+glyphs top out at **0.686 of cap height**, consistently. Converting a label from
+capitals to small caps at an unchanged font-size therefore loses **31% of its
+apparent height**. The letters did not get smaller; they stopped being capitals.
+
+Full compensation would be 1.46×, which at `--text-sm` puts a label above
+`--text-base` and has it competing with body text — the opposite of the point,
+since small caps exist to make a label quieter. New `--text-smallcaps: 0.95rem`
+recovers about four fifths of the lost presence, and the ladder now at
+`/design/type` renders 0.8 / 0.875 / 0.95 / 1 / 1.05 / 1.167rem against the old
+capitals so the value can be chosen by eye rather than taken on trust.
+
+**A gap the fix exposed.** `.smallcaps` sits in `@layer components`, and the 21
+sites migrated in the previous change each carried `text-xs` — a Tailwind
+utility, in a later layer, which silently overrode the new size. Half the site's
+labels would have been compensated and half not. The competing utility is
+removed from all 20 affected sites, so a single token now governs every
+small-caps label on the site. This is the same class of bug as the dangling
+`--serif-cormorant` reference: a change that looks complete because the thing
+you edited is correct, while the consumers quietly disagree.
+
+Surfaces worth a glance, since they are dense and went from 0.75rem to 0.95rem:
+the author and text browser index letters, the scripture and locations indexes,
+and the reader's table of contents.
+
+**One thing no size setting fixes, raised rather than changed.** The homepage
+subtitle — "A library of public-domain Christian texts, edited for legibility" —
+is a nine-word sentence set as a label. Small caps are a form for two to five
+words; a sentence in them reads slowly because the forms carry no ascenders or
+descenders to give the eye word-shapes. This was equally true when the line was
+letterspaced capitals, so it is not a regression, but it is a real editorial
+question now visible. Noted on `/design/type` beneath the ladder.
+
+---
+
+## 2026-09-22 (later) — Junicode adopted as the body face; 29 fake-small-caps sites migrated; the positive control made mechanical
+
+Keith reviewed `/design/type` and chose Junicode. Three consequences, plus a
+check that turns this session's most expensive mistake into a contract.
+
+**Junicode is the body face.** `--serif` now resolves to it, and **EB Garamond
+is gone entirely** — keeping a second near-identical Garamond would have
+recreated the three-serifs problem the previous entry fixed. Two faces remain:
+Junicode for everything read, IM Fell English for titles, the wordmark and cover
+imprints.
+
+Two things were measured rather than assumed, and one of them caught a bug
+before it shipped:
+
+- **Weights.** The site has 98 `font-medium` / `font-semibold` uses. The
+  candidate subset was pinned to weight 400, so a naive swap would have
+  synthesised every one of them — fake bolds sitewide. Rebuilt retaining the
+  `wght` axis (300–700) as a variable subset: **80 KB roman, 88 KB italic**, one
+  file each, real weights. Against EB Garamond's four files at 89 KB total and
+  the now-retired 56 KB Fell SC, the net is about +23 KB.
+- **The type scale was left alone.** The earlier entry predicted Junicode's
+  larger x-height would need the scale retuning. Measured: 0.415 vs 0.400, a
+  3.75% difference. That is below the threshold where a speculative change is
+  justified, and it is not a change anyone here can verify without looking, so
+  the scale stands. Worth an eye on the preview.
+
+**Small caps now come from Junicode's own `smcp` table**, so the separate IM
+Fell English SC file is retired. One footgun this introduces, documented at the
+token: `--serif-smallcaps` is now the *same family* as `--serif`, so setting the
+family alone renders ordinary lowercase and fails silently. The new
+`.smallcaps` class sets family and `font-feature-settings` together, and
+`.kicker` / `.kicker-gold` do the same.
+
+**29 label sites migrated off fake small caps** — 8 inline style objects and 21
+Tailwind `uppercase` classes across the public pages. Two deliberate exclusions:
+the BookCover band and reading-time imprints stay letterspaced full capitals
+(the real form for a mark stamped on a cover, and IM Fell has no `smcp` to
+substitute from), and `/design/type` renders the fake version on purpose as the
+before/after. Admin UI labels were left alone — a separate visual language, and
+not reader-facing.
+
+**A lint rule so it cannot drift back.** `.eslintrc.cjs` now bans
+`textTransform: 'uppercase'` in `style` props, with a `deliberateUppercase`
+allowlist that — unlike the colour ratchet — is not expected to shrink to zero,
+but where every entry states a reason. Mutation-tested three ways before
+trusting it: fires in an ordinary file, fires inside a colour-ratchet file (the
+gap the colour rule's own comment warns about), and stays silent on the
+allowlist. 29 sites drifted into the imitation one at a time, each individually
+reasonable; prose would not have held them, and the failure is invisible in
+review because it looks like a styling choice.
+
+**`scripts/lib/url-check.mjs` now carries a positive control.** The file has
+said in prose since it was written that it cannot tell whether a URL resolves to
+the *right work* — All of Grace's wrong-book URL answered 200 and would pass.
+`positiveControl({ body, expect })` makes that mechanical, and covers both
+directions the mistake runs:
+
+- **Wrong work** — the body names neither the expected title nor author
+  (`unconfirmed`). The Spurgeon/Buchanan body is a test fixture.
+- **Wrong document entirely** — the body is an access gate (`interstitial`).
+  This is here because earlier the same day a Vercel SSO login page was read as
+  proof a retired font had been removed: a negative grep against an unverified
+  document is unfalsifiable, because the wrong document also lacks the string.
+
+Verdicts are deliberately conservative — not finding the expected words is
+`unconfirmed` ("a human must look"), never a mismatch, since a real page can
+spell an author differently or lead with a frontispiece. 14 new tests, both real
+failures as fixtures.
+
+One bug the tests caught rather than review: `Æ`, `Œ`, `þ`, `ð` and `ß` are
+ligatures and letters, not accented Latin, so NFKD leaves them alone and the
+punctuation sweep deleted them — `Æthelred` normalised to `thelred`. In a corpus
+holding the *Canons of Ælfric* that is not hypothetical. Now expanded
+explicitly, long s included.
+
+The colophon, `/design` and `/design/type` were all updated to describe the two
+faces that now ship rather than the three that did. `/design/type` keeps its
+scoped font block removed — it pointed at a filename the swap had renamed, which
+would have 404'd.
+
+---
+
+## 2026-09-22 — Typography: retired Cormorant, real small caps, a colophon, and a type-comparison route
+
+Prompted by reader feedback on Discord that the site's font "screams Claude/ChatGPT/Whatever." The
+diagnosis is that the font is the cheapest thing to name but probably not the actual cause: what
+reads as machine-made is a *dialect* — cream ground, Garamond-family serif everywhere with no sans,
+letterspaced uppercase kickers, gold hairline rules, and three near-identical serifs doing subtly
+different jobs. The last of those is the most diagnostic, because a human picks two faces and
+commits. This entry covers the changes that were worth making regardless of any typeface swap.
+
+**Retired Cormorant Garamond — the third serif is gone.** Dropped the `next/font` import from
+`app/layout.tsx`, the `--serif-cormorant` token, and the Tailwind `font-cormorant` family; repointed
+all six call sites (SearchBar, ScriptureSearch, SeasonalPanel, LancetArch, the homepage author
+links, the liturgical wheel) to `var(--serif)`. All of them were setting italic, and EB Garamond
+Italic is already self-hosted, so nothing lost a face. Also removes a Google Fonts request from
+every page.
+
+**The kicker labels have real small caps now.** `.kicker` and `.kicker-gold` were
+`text-transform: uppercase` on EB Garamond at 0.18em tracking — which is exactly what you reach for
+when your face has no small caps, and is the single most recognisable tell of machine-generated
+editorial design. Added IM Fell English SC (56 KB, self-hosted from Google Fonts, same Fell family
+as the display face) behind a new `--serif-smallcaps` token, dropped the transform, and cut tracking
+to 0.08em.
+
+Worth recording *why* a separate family rather than `font-variant-caps: small-caps`: **neither EB
+Garamond nor IM Fell English as subset here carries an `smcp` table** — verified with fontTools, not
+assumed — so `font-variant-caps` would have fallen back to the browser's synthetic small caps, which
+are scaled-down capitals with stems too light for the lowercase around them. Worse than what it
+replaced. IM Fell English SC is a companion family whose lowercase slots hold small-cap glyphs, so
+it needs no transform and labels stay authored in sentence case. Checked before shipping that no
+call site pairs `.kicker` with an explicit `uppercase` class and that no kicker holds an all-caps
+literal — either would have double-transformed back to full capitals.
+
+`.caption` was deliberately left on EB Garamond: it carries reading times and book counts, and
+putting numerals into a small-caps face without oldstyle figures is a different problem.
+
+**New: `/design/type`** (noindex, internal) — the body-face decision made by looking rather than
+arguing. Renders the same real passage (Traherne's *Centuries*, already in the corpus — not lorem
+ipsum) at `--text-prose` on `--reading-measure` in EB Garamond, Junicode and IM Fell English, plus
+display-size comparisons, the four ways to set a small-caps label side by side, lining against
+oldstyle figures, and a measured file-size table. Junicode is loaded by that route alone via a
+scoped `<style>` block, so no production page pays for a candidate font.
+
+**The Junicode size question, measured rather than estimated.** It ships upstream as a 978 KB
+variable font carrying the full MUFI medieval character set, which looked disqualifying. After
+pinning the `wdth` and `ENLA` axes, instancing to weight 400 and subsetting to Latin with
+`smcp`/`c2sc`/`onum` retained, it comes to **33 KB roman and 36 KB italic** — against EB Garamond's
+21/22 KB. So the swap costs ~26 KB and *returns* the 56 KB small-caps file, since Junicode is the
+only candidate with a real `smcp` table. The decision is taste, not budget.
+
+**New: `/colophon`** (public, linked from the homepage footer and `/about`) — the printer's note.
+Covers the three faces with their actual history (the Fell types John Fell left to Oxford in 1686,
+punches by Van Dijck and de Walpergen, Marini's revival; EB Garamond from Duffner and Pardo), why
+the ground is warm rather than white, why the measure is narrow, the copyright and provenance
+discipline including the pre-1929-publication rule, and an honest paragraph on machine-assisted
+transcription with editorial release by hand. This is the cheapest high-signal answer to "did anyone
+actually choose this": the typography was chosen for reasons, and until now nothing on the site said
+so.
+
+Also queued **Keble's *The Christian Year*** (Gutenberg #4272) from the same Discord message, which
+noted the library had Keble's *National Apostasy* but not this. Source verified by reading the
+file header for title and author rather than trusting a 200 — the check the Spurgeon mis-fetch
+exists to enforce. Genre set to Poem rather than Hymn, with the reasoning recorded on the prospect
+so it can be flipped in one edit.
+
+Not done here, and deliberately: the ~81 inline `uppercase`/`letterSpacing` label sites that don't
+go through `.kicker`, the background colour, a sans for UI furniture, and the Junicode decision
+itself — all in the Notion backlog under a brand-identity epic.
+
+---
+
 ## 2026-09-21 — Scanned Project Wittenberg for further prospects, queued 5
 
 Surveyed the site beyond the Small Catechism and 95 Theses already imported — its home page, the

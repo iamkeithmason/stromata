@@ -38,7 +38,7 @@ export default async function LocationsPage() {
         <div className="mb-8">
           <div className="flex items-baseline justify-between mb-3">
             <h1 className="font-serif italic text-xl" style={{ color: '#1b1b1b' }}>Locations</h1>
-            <span className="text-xs tracking-[0.18em] uppercase" style={{ color: '#6f6a60' }}>
+            <span className="smallcaps" style={{ color: '#6f6a60' }}>
               {entries.length} {entries.length === 1 ? 'country' : 'countries'}
             </span>
           </div>

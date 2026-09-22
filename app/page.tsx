@@ -253,8 +253,19 @@ export default async function Home() {
           A reading room for the works of the ages.
         </p>
 
-        {/* Subtitle — kicker style, above the search field */}
-        <p className="kicker" style={{ marginBottom: '1.25rem' }}>
+        {/* Subtitle — body text, not a label. Nine words is too many for small
+            caps: the forms carry no ascenders or descenders, so the eye gets no
+            word-shapes to read by and a sentence in them goes slowly. That was
+            equally true when this line was letterspaced capitals.
+
+            Roman, not italic, and deliberately: the tagline directly above is
+            already italic, so two stacked italic lines at different sizes read
+            as one muddy block. Roman here separates the poetic line from the
+            factual one. */}
+        <p
+          className="font-serif"
+          style={{ fontSize: 'var(--text-base)', color: 'var(--ink-mute)', marginBottom: '1.25rem' }}
+        >
           A library of public-domain Christian texts, edited for legibility
         </p>
 
@@ -287,7 +298,7 @@ export default async function Home() {
                   href={`/authors/${author.slug}`}
                   className="transition-opacity hover:opacity-70"
                   style={{
-                    fontFamily: 'var(--serif-cormorant)',
+                    fontFamily: 'var(--serif)',
                     fontSize: 'var(--text-base)',
                     color: 'var(--ink-soft)',
                     textDecoration: 'none',
@@ -365,10 +376,10 @@ export default async function Home() {
                       color: 'var(--ink-mute)',
                       border: '1px solid var(--rule)',
                       background: 'transparent',
-                      fontFamily: 'var(--serif)',
+                      fontFamily: 'var(--serif-smallcaps)',
+      fontFeatureSettings: '"smcp" 1',
                       fontSize: 'var(--text-sm)',
-                      letterSpacing: '0.1rem',
-                      textTransform: 'uppercase',
+                      letterSpacing: '0.08em',
                       padding: '3px 10px',
                       textDecoration: 'none',
                     }}
@@ -417,17 +428,17 @@ export default async function Home() {
             style={{ fontFamily: 'var(--serif)', fontSize: 'var(--text-label)', lineHeight: 1.85 }}
           >
             <div>
-              <div style={{ fontSize: 'var(--text-sm)', letterSpacing: '0.22em', textTransform: 'uppercase', color: 'var(--gold)', opacity: 0.8, marginBottom: 8, fontFamily: 'var(--serif)' }}>
+              <div style={{ fontSize: 'var(--text-sm)', letterSpacing: '0.08em', color: 'var(--gold)', opacity: 0.8, marginBottom: 8, fontFamily: 'var(--serif-smallcaps)', fontFeatureSettings: '"smcp" 1' }}>
                 Stromata
               </div>
-              {[{ label: 'About', href: '/about' }, { label: 'Authors', href: '/authors' }, { label: 'RSS feed', href: '/rss' }].map(({ label, href }) => (
+              {[{ label: 'About', href: '/about' }, { label: 'Colophon', href: '/colophon' }, { label: 'Authors', href: '/authors' }, { label: 'RSS feed', href: '/rss' }].map(({ label, href }) => (
                 <div key={label}>
                   <Link href={href} className="transition-opacity hover:opacity-70" style={{ color: 'rgba(245,240,230,0.65)', textDecoration: 'none' }}>{label}</Link>
                 </div>
               ))}
             </div>
             <div>
-              <div style={{ fontSize: 'var(--text-sm)', letterSpacing: '0.22em', textTransform: 'uppercase', color: 'var(--gold)', opacity: 0.8, marginBottom: 8, fontFamily: 'var(--serif)' }}>
+              <div style={{ fontSize: 'var(--text-sm)', letterSpacing: '0.08em', color: 'var(--gold)', opacity: 0.8, marginBottom: 8, fontFamily: 'var(--serif-smallcaps)', fontFeatureSettings: '"smcp" 1' }}>
                 Read
               </div>
               {[{ label: 'Library', href: '/texts' }, { label: 'Search', href: '/search' }].map(({ label, href }) => (
@@ -562,7 +573,7 @@ function LeadKicker({ children }: { children: React.ReactNode }) {
 
 function LeadTitle({ children }: { children: React.ReactNode }) {
   return (
-    <h3 className="font-cormorant italic" style={{ fontSize: 'clamp(1.4rem, 3vw, 2rem)', fontWeight: 400, lineHeight: 1.2, color: 'var(--ink)', marginBottom: '0.5rem' }}>
+    <h3 className="font-serif italic" style={{ fontSize: 'clamp(1.4rem, 3vw, 2rem)', fontWeight: 400, lineHeight: 1.2, color: 'var(--ink)', marginBottom: '0.5rem' }}>
       {children}
     </h3>
   )

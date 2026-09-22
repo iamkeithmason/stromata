@@ -4,7 +4,7 @@
  * Visual targets from the approved mock:
  *   - Double border: outer panel border + inset gold keyline ~28px inside
  *   - "✠ THE CHRISTIAN YEAR" in gold spaced small caps
- *   - Large italic Cormorant season name
+ *   - Large italic season name
  *   - Subtitle in gold italic (not muted)
  *   - Body text in warm cream at comfortable measure and leading
  *   - "Read for the season" in gold small caps above the CTA
@@ -133,10 +133,10 @@ const R = {
 
 // Small-caps label style — reused for "THE CHRISTIAN YEAR" and "READ FOR THE SEASON"
 const LABEL_STYLE: React.CSSProperties = {
-  fontFamily: 'var(--serif)',
+  fontFamily: 'var(--serif-smallcaps)',
+      fontFeatureSettings: '"smcp" 1',
   fontSize: 'var(--text-sm)',
-  letterSpacing: '0.24em',
-  textTransform: 'uppercase',
+  letterSpacing: '0.08em',
   color: R.gold,
 }
 
@@ -264,7 +264,7 @@ export async function SeasonalPanel({ season = resolveSeason().season }: Props =
               {/* Season name */}
               <h2
                 style={{
-                  fontFamily: 'var(--serif-cormorant)',
+                  fontFamily: 'var(--serif)',
                   fontStyle: 'italic',
                   fontSize: 'clamp(2.25rem, 5vw, 3.25rem)',
                   fontWeight: 400,

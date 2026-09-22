@@ -9,9 +9,8 @@ const config: Config = {
   theme: {
     extend: {
       fontFamily: {
-        serif: ['"EB Garamond"', 'Georgia', 'serif'],
-        display: ['"IM Fell English"', '"EB Garamond"', 'Georgia', 'serif'],
-        cormorant: ['var(--font-cormorant)', '"EB Garamond"', 'Georgia', 'serif'],
+        serif: ['"Junicode"', '"EB Garamond"', 'Georgia', 'serif'],
+        display: ['"IM Fell English"', '"Junicode"', 'Georgia', 'serif'],
       },
     },
   },

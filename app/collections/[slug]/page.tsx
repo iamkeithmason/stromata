@@ -150,7 +150,7 @@ export default async function CollectionPage({ params }: Props) {
       <main id="main-content" className="content-shell py-12">
         {/* Collection header */}
         <div className="mb-10">
-          <p className="text-xs uppercase tracking-widest mb-3" style={{ color: '#6f6a60' }}>
+          <p className="smallcaps mb-3" style={{ color: '#6f6a60' }}>
             Collection
           </p>
           <h1 className="font-serif text-3xl mb-3" style={{ color: '#1b1b1b' }}>

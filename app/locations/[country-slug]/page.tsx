@@ -113,7 +113,7 @@ export default async function CountryPage({ params }: Props) {
         <div className="mb-10">
           <div className="flex items-baseline justify-between mb-3">
             <h1 className="font-serif italic text-xl" style={{ color: '#1b1b1b' }}>{location.name}</h1>
-            <span className="text-xs tracking-[0.18em] uppercase" style={{ color: '#6f6a60' }}>
+            <span className="smallcaps" style={{ color: '#6f6a60' }}>
               {authors.length} {authors.length === 1 ? 'author' : 'authors'}
             </span>
           </div>

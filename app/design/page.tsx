@@ -188,7 +188,7 @@ export default function DesignPage() {
               {[
                 { label: 'Hero title', value: 'clamp(2.5rem, 6vw, 4rem)', style: { fontFamily: 'var(--serif-display)', fontSize: 'clamp(2.5rem, 6vw, 4rem)', color: 'var(--ink)' } },
                 { label: 'Hero subtitle', value: 'clamp(1.1rem, 2.5vw, 1.4rem)', style: { fontFamily: 'var(--serif)', fontStyle: 'italic', fontSize: 'clamp(1.1rem, 2.5vw, 1.4rem)', color: 'var(--ink-soft)' } },
-                { label: 'SeasonalPanel season name', value: 'clamp(2.25rem, 5vw, 3.25rem)', style: { fontFamily: 'var(--serif-cormorant)', fontStyle: 'italic', fontSize: 'clamp(2.25rem, 5vw, 3.25rem)', color: 'var(--ink)' } },
+                { label: 'SeasonalPanel season name', value: 'clamp(2.25rem, 5vw, 3.25rem)', style: { fontFamily: 'var(--serif)', fontStyle: 'italic', fontSize: 'clamp(2.25rem, 5vw, 3.25rem)', color: 'var(--ink)' } },
               ].map(({ label, value, style }) => (
                 <div key={label} className="py-2" style={{ borderBottom: '1px solid var(--rule-soft)' }}>
                   <div className="flex gap-4 mb-1 items-center">
@@ -205,9 +205,9 @@ export default function DesignPage() {
         {/* ── 3. Font families ──────────────────────────────────────────── */}
         <Section title="Font families">
           {[
-            { token: '--serif', family: 'EB Garamond', role: 'Body text, labels, kickers', sample: 'The works of John Chrysostom, c. 407' },
-            { token: '--serif-display', family: 'IM Fell English', role: 'Page titles, decorative headings (roman only — no italic woff2 loaded)', sample: 'On the Priesthood' },
-            { token: '--serif-cormorant', family: 'Cormorant Garamond', role: 'Search bar, season name, lead titles', sample: 'Trinitytide — the long green season' },
+            { token: '--serif', family: 'Junicode', role: 'Body text and everything read at length', sample: 'The works of John Chrysostom, c. 407' },
+            { token: '--serif-display', family: 'IM Fell English', role: 'Page titles, wordmark, cover imprints (roman only — no italic woff2 loaded)', sample: 'On the Priesthood' },
+            { token: '--serif-smallcaps', family: 'Junicode (smcp)', role: 'Section labels — REAL small caps from Junicode\u2019s own OpenType smcp table. Same family as --serif, so the token alone is NOT enough: without font-feature-settings it renders ordinary lowercase and fails silently. Use .kicker / .kicker-gold / .smallcaps, which set both. Labels are authored in sentence case \u2014 smcp does not substitute capitals.', sample: 'Texts through the year' },
           ].map(({ token, family, role, sample }) => (
             <div key={token} className="py-5" style={{ borderBottom: '1px solid var(--rule-soft)' }}>
               <div className="flex gap-8 items-baseline mb-2 flex-wrap">
@@ -377,10 +377,10 @@ export default function DesignPage() {
                   style={{
                     color: 'var(--ink-mute)',
                     border: '1px solid var(--rule)',
-                    fontFamily: 'var(--serif)',
+                    fontFamily: 'var(--serif-smallcaps)',
+      fontFeatureSettings: '"smcp" 1',
                     fontSize: 'var(--text-sm)',
-                    letterSpacing: '0.1em',
-                    textTransform: 'uppercase',
+                    letterSpacing: '0.08em',
                     padding: '3px 10px',
                   }}
                 >
@@ -397,10 +397,10 @@ export default function DesignPage() {
                   key={t}
                   style={{
                     fontSize: 'var(--text-sm)',
-                    letterSpacing: '0.15em',
-                    textTransform: 'uppercase',
+                    letterSpacing: '0.08em',
                     color: 'var(--gold)',
-                    fontFamily: 'var(--serif)',
+                    fontFamily: 'var(--serif-smallcaps)',
+      fontFeatureSettings: '"smcp" 1',
                   }}
                 >
                   {t}
@@ -413,7 +413,7 @@ export default function DesignPage() {
             <div className="max-w-md space-y-2">
               <p className="kicker-gold">New collection</p>
               <h3
-                className="font-cormorant italic"
+                className="font-serif italic"
                 style={{ fontSize: 'clamp(1.4rem, 3vw, 2rem)', fontWeight: 400, lineHeight: 1.2, color: 'var(--ink)' }}
               >
                 On the Priesthood

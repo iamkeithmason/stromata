@@ -21,12 +21,12 @@ export function ThemeChip({
       href={href}
       className="inline-flex items-center hover:opacity-70 transition-opacity"
       style={{
-        fontFamily: 'var(--serif)',
+        fontFamily: 'var(--serif-smallcaps)',
+        fontFeatureSettings: '"smcp" 1',
         fontSize: 'var(--text-sm)',
         color: dark ? 'var(--on-dark-soft)' : 'var(--ink-mute)',
         border: `1px solid ${dark ? 'var(--on-dark-border)' : 'var(--rule)'}`,
-        letterSpacing: '0.1em',
-        textTransform: 'uppercase',
+        letterSpacing: '0.08em',
         padding: '2px 8px',
         textDecoration: 'none',
       }}

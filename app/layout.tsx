@@ -1,18 +1,9 @@
 import type { Metadata } from 'next'
 import Script from 'next/script'
-import { Cormorant_Garamond } from 'next/font/google'
 import { TrackWeeklyReader } from '@/app/components/TrackWeeklyReader'
 import { TrackReaderReturn } from '@/app/components/TrackReaderReturn'
 import { OG_IMAGE } from '@/lib/metadata'
 import './globals.css'
-
-const cormorant = Cormorant_Garamond({
-  subsets: ['latin'],
-  weight: ['400', '500'],
-  style: ['normal', 'italic'],
-  variable: '--font-cormorant',
-  display: 'swap',
-})
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://www.thestromata.com'),
@@ -37,7 +28,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={cormorant.variable}>
+    <html lang="en">
       <body>
         <a href="#main-content" className="skip-link">Skip to content</a>
         {children}
