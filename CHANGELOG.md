@@ -7,6 +7,76 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-09-22 — Typography: retired Cormorant, real small caps, a colophon, and a type-comparison route
+
+Prompted by reader feedback on Discord that the site's font "screams Claude/ChatGPT/Whatever." The
+diagnosis is that the font is the cheapest thing to name but probably not the actual cause: what
+reads as machine-made is a *dialect* — cream ground, Garamond-family serif everywhere with no sans,
+letterspaced uppercase kickers, gold hairline rules, and three near-identical serifs doing subtly
+different jobs. The last of those is the most diagnostic, because a human picks two faces and
+commits. This entry covers the changes that were worth making regardless of any typeface swap.
+
+**Retired Cormorant Garamond — the third serif is gone.** Dropped the `next/font` import from
+`app/layout.tsx`, the `--serif-cormorant` token, and the Tailwind `font-cormorant` family; repointed
+all six call sites (SearchBar, ScriptureSearch, SeasonalPanel, LancetArch, the homepage author
+links, the liturgical wheel) to `var(--serif)`. All of them were setting italic, and EB Garamond
+Italic is already self-hosted, so nothing lost a face. Also removes a Google Fonts request from
+every page.
+
+**The kicker labels have real small caps now.** `.kicker` and `.kicker-gold` were
+`text-transform: uppercase` on EB Garamond at 0.18em tracking — which is exactly what you reach for
+when your face has no small caps, and is the single most recognisable tell of machine-generated
+editorial design. Added IM Fell English SC (56 KB, self-hosted from Google Fonts, same Fell family
+as the display face) behind a new `--serif-smallcaps` token, dropped the transform, and cut tracking
+to 0.08em.
+
+Worth recording *why* a separate family rather than `font-variant-caps: small-caps`: **neither EB
+Garamond nor IM Fell English as subset here carries an `smcp` table** — verified with fontTools, not
+assumed — so `font-variant-caps` would have fallen back to the browser's synthetic small caps, which
+are scaled-down capitals with stems too light for the lowercase around them. Worse than what it
+replaced. IM Fell English SC is a companion family whose lowercase slots hold small-cap glyphs, so
+it needs no transform and labels stay authored in sentence case. Checked before shipping that no
+call site pairs `.kicker` with an explicit `uppercase` class and that no kicker holds an all-caps
+literal — either would have double-transformed back to full capitals.
+
+`.caption` was deliberately left on EB Garamond: it carries reading times and book counts, and
+putting numerals into a small-caps face without oldstyle figures is a different problem.
+
+**New: `/design/type`** (noindex, internal) — the body-face decision made by looking rather than
+arguing. Renders the same real passage (Traherne's *Centuries*, already in the corpus — not lorem
+ipsum) at `--text-prose` on `--reading-measure` in EB Garamond, Junicode and IM Fell English, plus
+display-size comparisons, the four ways to set a small-caps label side by side, lining against
+oldstyle figures, and a measured file-size table. Junicode is loaded by that route alone via a
+scoped `<style>` block, so no production page pays for a candidate font.
+
+**The Junicode size question, measured rather than estimated.** It ships upstream as a 978 KB
+variable font carrying the full MUFI medieval character set, which looked disqualifying. After
+pinning the `wdth` and `ENLA` axes, instancing to weight 400 and subsetting to Latin with
+`smcp`/`c2sc`/`onum` retained, it comes to **33 KB roman and 36 KB italic** — against EB Garamond's
+21/22 KB. So the swap costs ~26 KB and *returns* the 56 KB small-caps file, since Junicode is the
+only candidate with a real `smcp` table. The decision is taste, not budget.
+
+**New: `/colophon`** (public, linked from the homepage footer and `/about`) — the printer's note.
+Covers the three faces with their actual history (the Fell types John Fell left to Oxford in 1686,
+punches by Van Dijck and de Walpergen, Marini's revival; EB Garamond from Duffner and Pardo), why
+the ground is warm rather than white, why the measure is narrow, the copyright and provenance
+discipline including the pre-1929-publication rule, and an honest paragraph on machine-assisted
+transcription with editorial release by hand. This is the cheapest high-signal answer to "did anyone
+actually choose this": the typography was chosen for reasons, and until now nothing on the site said
+so.
+
+Also queued **Keble's *The Christian Year*** (Gutenberg #4272) from the same Discord message, which
+noted the library had Keble's *National Apostasy* but not this. Source verified by reading the
+file header for title and author rather than trusting a 200 — the check the Spurgeon mis-fetch
+exists to enforce. Genre set to Poem rather than Hymn, with the reasoning recorded on the prospect
+so it can be flipped in one edit.
+
+Not done here, and deliberately: the ~81 inline `uppercase`/`letterSpacing` label sites that don't
+go through `.kicker`, the background colour, a sans for UI furniture, and the Junicode decision
+itself — all in the Notion backlog under a brand-identity epic.
+
+---
+
 ## 2026-09-21 — Scanned Project Wittenberg for further prospects, queued 5
 
 Surveyed the site beyond the Small Catechism and 95 Theses already imported — its home page, the

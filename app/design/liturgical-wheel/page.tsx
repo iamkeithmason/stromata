@@ -173,7 +173,7 @@ export default async function LiturgicalWheelPreview() {
 
                 {/* Main text column carries the page */}
                 <div className="lw-main">
-                  <h1 style={{ fontFamily: 'var(--serif-cormorant)', fontStyle: 'italic', fontWeight: 400, fontSize: 'clamp(2rem, 5vw, 3.1rem)', lineHeight: 1.05, color: 'var(--on-dark)', margin: 0 }}>
+                  <h1 style={{ fontFamily: 'var(--serif)', fontStyle: 'italic', fontWeight: 400, fontSize: 'clamp(2rem, 5vw, 3.1rem)', lineHeight: 1.05, color: 'var(--on-dark)', margin: 0 }}>
                     Read for the season
                   </h1>
 

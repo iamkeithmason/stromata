@@ -287,7 +287,7 @@ export default async function Home() {
                   href={`/authors/${author.slug}`}
                   className="transition-opacity hover:opacity-70"
                   style={{
-                    fontFamily: 'var(--serif-cormorant)',
+                    fontFamily: 'var(--serif)',
                     fontSize: 'var(--text-base)',
                     color: 'var(--ink-soft)',
                     textDecoration: 'none',
@@ -420,7 +420,7 @@ export default async function Home() {
               <div style={{ fontSize: 'var(--text-sm)', letterSpacing: '0.22em', textTransform: 'uppercase', color: 'var(--gold)', opacity: 0.8, marginBottom: 8, fontFamily: 'var(--serif)' }}>
                 Stromata
               </div>
-              {[{ label: 'About', href: '/about' }, { label: 'Authors', href: '/authors' }, { label: 'RSS feed', href: '/rss' }].map(({ label, href }) => (
+              {[{ label: 'About', href: '/about' }, { label: 'Colophon', href: '/colophon' }, { label: 'Authors', href: '/authors' }, { label: 'RSS feed', href: '/rss' }].map(({ label, href }) => (
                 <div key={label}>
                   <Link href={href} className="transition-opacity hover:opacity-70" style={{ color: 'rgba(245,240,230,0.65)', textDecoration: 'none' }}>{label}</Link>
                 </div>
@@ -562,7 +562,7 @@ function LeadKicker({ children }: { children: React.ReactNode }) {
 
 function LeadTitle({ children }: { children: React.ReactNode }) {
   return (
-    <h3 className="font-cormorant italic" style={{ fontSize: 'clamp(1.4rem, 3vw, 2rem)', fontWeight: 400, lineHeight: 1.2, color: 'var(--ink)', marginBottom: '0.5rem' }}>
+    <h3 className="font-serif italic" style={{ fontSize: 'clamp(1.4rem, 3vw, 2rem)', fontWeight: 400, lineHeight: 1.2, color: 'var(--ink)', marginBottom: '0.5rem' }}>
       {children}
     </h3>
   )

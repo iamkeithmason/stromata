@@ -6389,6 +6389,33 @@
       ],
       "rejection_reason": "",
       "notes": "Found scanning projectwittenberg.org for further prospects (2026-09-21). Melanchthon's own funeral-oration-derived account of Luther's life — the primary early biography, by Luther's closest collaborator, distinct from the pipeline's other 'about Luther' items (Bugenhagen's funeral sermon, hosted off-site and not queued). Checked Supabase and the local queue for 'life and acts' / Melanchthon + Luther before adding: no match. Two OTHER versions of this same Melanchthon biography live on the same Wittenberg page (a Latin original prepared by Steve Sohmer, and a 1995 Frazel/Sohmer English translation of it) — deliberately NOT queued as separate prospects: the Latin has no translation to verify, and the 1995 translation's copyright status (translator Frazel, unknown death year, modern date, no stated PD dedication) is far less certain than this 1845 edition's. If this 1845 English is rejected at Stage 1 for any reason, the 1995 version is not an automatic fallback — it needs its own copyright check."
+    },
+    {
+      "id": "christian-year-keble",
+      "status": "stage-1-done",
+      "added": "2026-09-22",
+      "author": "John Keble",
+      "death_year": 1866,
+      "tradition": "anglican",
+      "era": "modern",
+      "title": "The Christian Year",
+      "genre": "Poem",
+      "source_type": "gutenberg",
+      "source_url": "https://www.gutenberg.org/cache/epub/4272/pg4272.txt",
+      "collection_slug": "christian-year-keble",
+      "translation_copyright_clear": true,
+      "translator": null,
+      "translator_death_year": null,
+      "stage_1_notes": "Requested by a reader on Discord (2026-09-22), who noted the library had Keble's National Apostasy but not The Christian Year. COPYRIGHT: Keble d. 1866 (<1900). Original English verse, first published 1827 — no translator, so no translation-copyright question at all. Gutenberg ebook #4272, ed. Henry Morley, released 2003. SOURCE VERIFIED, not merely reachable: fetched pg4272.txt and read the header — 'Title: The Christian Year / Author: John Keble'. This is the check the Spurgeon All-of-Grace mis-fetch exists to enforce; a 200 alone would not have been enough. GENRE CALL — deliberate, flip it if you disagree: set to Poem rather than Hymn. The vocabulary note makes a could-be-either text a Hymn, but it also names 'devotional' explicitly under Poem, and Keble wrote these for private reading against the calendar rather than for singing; the familiar hymns ('New every morning is the love', 'Sun of my soul') are later adaptations of the verse, not its original form. The liturgical arrangement is the real argument for Hymn. NOTE FOR STAGE 2: this is a single-file collection of ~110 poems keyed to Sundays and feasts. Worth considering split-into-chapters so each poem is its own text and the collection maps onto the church year, which would also feed the seasonal panel.",
+      "stage_2_output": "",
+      "stage_3_themes": [
+        "liturgy",
+        "prayer",
+        "contemplation",
+        "scripture",
+        "providence"
+      ],
+      "rejection_reason": ""
     }
   ]
 }

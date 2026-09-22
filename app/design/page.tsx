@@ -413,7 +413,7 @@ export default function DesignPage() {
             <div className="max-w-md space-y-2">
               <p className="kicker-gold">New collection</p>
               <h3
-                className="font-cormorant italic"
+                className="font-serif italic"
                 style={{ fontSize: 'clamp(1.4rem, 3vw, 2rem)', fontWeight: 400, lineHeight: 1.2, color: 'var(--ink)' }}
               >
                 On the Priesthood

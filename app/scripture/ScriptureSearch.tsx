@@ -63,7 +63,7 @@ export default function ScriptureSearch({ initialValue = '' }: { initialValue?: 
           className="field-input flex-1 outline-none"
           style={{
             background: 'transparent',
-            fontFamily: 'var(--serif-cormorant)',
+            fontFamily: 'var(--serif)',
             fontStyle: 'italic',
             fontSize: 'var(--text-prose)',
             color: 'var(--ink-soft)',

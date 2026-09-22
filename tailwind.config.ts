@@ -11,7 +11,6 @@ const config: Config = {
       fontFamily: {
         serif: ['"EB Garamond"', 'Georgia', 'serif'],
         display: ['"IM Fell English"', '"EB Garamond"', 'Georgia', 'serif'],
-        cormorant: ['var(--font-cormorant)', '"EB Garamond"', 'Georgia', 'serif'],
       },
     },
   },

@@ -1,9 +1,4 @@
 /* =============================================================
-   Cormorant Garamond — display serif (loaded via next/font; the
-   CSS variable --font-cormorant is injected by the layout)
-   ============================================================= */
-
-/* =============================================================
    Stromata — font faces
    ============================================================= */
 
@@ -38,6 +33,21 @@
 @font-face {
   font-family: "IM Fell English";
   src: url("/fonts/IMFellEnglish-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* IM Fell English SC — a small-caps COMPANION family, not an OpenType feature.
+   Its lowercase slots hold small-cap glyphs, so you use it by setting the
+   family on normal sentence-case text with NO text-transform. This exists
+   because neither EB Garamond nor IM Fell English as subset here carries an
+   `smcp` table, so `font-variant-caps: small-caps` would fall back to the
+   browser's SYNTHETIC small caps — shrunken capitals with the wrong stem
+   weight, which is worse than the letterspaced uppercase it replaces. */
+@font-face {
+  font-family: "IM Fell English SC";
+  src: url("/fonts/IMFellEnglishSC-Regular.woff2") format("woff2");
   font-weight: 400;
   font-style: normal;
   font-display: swap;
@@ -115,7 +125,7 @@
 
   --serif:         "EB Garamond", "Garamond", Georgia, serif;
   --serif-display: "IM Fell English", "EB Garamond", Georgia, serif;
-  --serif-cormorant: var(--font-cormorant, "EB Garamond"), "Garamond", Georgia, serif;
+  --serif-smallcaps: "IM Fell English SC", "EB Garamond", Georgia, serif;
 
   /* Type scale — use these instead of raw rem values in components */
   --text-sm:      0.8rem;    /* chip/tag text, smallest labels, captions, card metadata, TOC */
@@ -427,19 +437,35 @@ html {
    ============================================================= */
 
 @layer components {
-  /* kicker — small uppercase serif label, muted (section labels, nav chips) */
+  /* kicker — small-caps serif label, muted (section labels, nav chips).
+     REAL small caps via the IM Fell English SC companion family, NOT
+     `text-transform: uppercase` on a lowercase-only face. The difference is
+     not pedantry: letterspaced full capitals are the single most recognisable
+     tell of machine-generated editorial design, because they are what you
+     reach for when the face you picked has no small caps. Genuine small caps
+     sit at x-height with stems matched to the lowercase, so a label reads as
+     part of the text rather than as a shouted fragment above it.
+
+     Two consequences for call sites:
+       - NO text-transform. Labels are authored in sentence case ("Featured
+         authors") and render as Cap + small caps, which is the correct form.
+         Adding `uppercase` back would double-transform into full capitals and
+         throw away the whole point.
+       - Tracking drops 0.18em -> 0.08em. Small caps are already wider-set by
+         design; the heavy tracking that rescues fake uppercase makes real
+         small caps fall apart. */
   .kicker {
-    @apply font-serif uppercase;
+    font-family: var(--serif-smallcaps);
     font-size: var(--text-sm);
-    letter-spacing: 0.18em;
+    letter-spacing: 0.08em;
     color: var(--ink-faint);
   }
 
-  /* kicker-gold — same treatment, gold variant (editorial labels, READ FOR THE SEASON) */
+  /* kicker-gold — same treatment, gold variant (editorial labels, "Read for the season") */
   .kicker-gold {
-    @apply font-serif uppercase;
+    font-family: var(--serif-smallcaps);
     font-size: var(--text-sm);
-    letter-spacing: 0.18em;
+    letter-spacing: 0.08em;
     color: var(--gold-ink);
   }
 
