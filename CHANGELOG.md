@@ -7,6 +7,17 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-09-28 — Claude Code hook: block a kill-by-pattern that matches its own shell
+
+Added `.claude/hooks/guard-self-kill.py` as a PreToolUse hook on Bash in
+`.claude/settings.json`, ported unchanged from Paideia (iamkeithmason/paideia#131).
+The Bash tool runs each command as `bash -c "<command>"`, so `pkill -f PATTERN`
+also matches the calling shell and kills it mid-command; this happened twice in
+one Paideia session on 28 Sep. The hook blocks `pkill -f`/`--full`, `pgrep -f`
+combined with `kill`, and `ps | grep | kill` when the pattern matches the
+command's own text, and suggests selecting by binary or a bracketed pattern
+instead. Unparseable commands are allowed through.
+
 ## 2026-09-22 (evening) — The compensation put back on the scale; homepage subtitle stops being a label
 
 Keith on the previous entry: *"I think we were using a type scale right? I'd
