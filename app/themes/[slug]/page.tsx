@@ -209,7 +209,7 @@ export default async function ThemePage({ params }: Props) {
         <div className="mb-10">
           <h1 className="font-serif text-3xl mb-2" style={{ color: '#1b1b1b' }}>{theme.name}</h1>
           {theme.plain_language_subtitle && (
-            <p className="text-sm italic" style={{ color: '#6f6a60' }}>{theme.plain_language_subtitle}</p>
+            <p className="text-sm italic" style={{ color: 'var(--ink-mute)' }}>{theme.plain_language_subtitle}</p>
           )}
         </div>
 
