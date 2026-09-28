@@ -99,7 +99,7 @@ export default async function ThemePage({ params }: Props) {
   const theme = orThrow(
     await supabase
       .from('themes')
-      .select('id, slug, name, description')
+      .select('id, slug, name, description, plain_language_subtitle')
       .eq('slug', slug)
       .maybeSingle(),
     'a theme page',
@@ -208,6 +208,9 @@ export default async function ThemePage({ params }: Props) {
       <main id="main-content" className="content-shell py-12">
         <div className="mb-10">
           <h1 className="font-serif text-3xl mb-2" style={{ color: '#1b1b1b' }}>{theme.name}</h1>
+          {theme.plain_language_subtitle && (
+            <p className="text-sm italic" style={{ color: 'var(--ink-mute)' }}>{theme.plain_language_subtitle}</p>
+          )}
         </div>
 
         {theme.description && (
