@@ -53,6 +53,7 @@ export default async function AdminDashboard({ searchParams }: Props) {
     { count: locationCount },
     { count: eraCount },
     { count: traditionCount },
+    { count: themeCount },
     { count: draftCount },
   ] = await Promise.all([
     supabase
@@ -67,6 +68,7 @@ export default async function AdminDashboard({ searchParams }: Props) {
     supabase.from('locations').select('id', { count: 'exact', head: true }),
     supabase.from('eras').select('id', { count: 'exact', head: true }),
     supabase.from('traditions').select('id', { count: 'exact', head: true }),
+    supabase.from('themes').select('id', { count: 'exact', head: true }),
     supabase.from('texts').select('id', { count: 'exact', head: true }).eq('published', false),
   ])
 
@@ -207,6 +209,7 @@ export default async function AdminDashboard({ searchParams }: Props) {
               { label: 'Authors', href: '/admin/authors', count: authorCount ?? 0 },
               { label: 'Traditions', href: '/admin/traditions', count: traditionCount ?? 0 },
               { label: 'Eras', href: '/admin/eras', count: eraCount ?? 0 },
+              { label: 'Themes', href: '/admin/themes', count: themeCount ?? 0 },
               { label: 'Locations', href: '/admin/locations', count: locationCount ?? 0 },
             ].map(({ label, href, count }) => (
               <Link

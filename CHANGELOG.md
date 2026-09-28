@@ -7,6 +7,18 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-09-28 — Theme pages: optional plain-language subtitle
+
+Added `themes.plain_language_subtitle` (nullable text) and an admin editor at
+`/admin/themes` (mirroring the Eras/Traditions description editors) so Keith
+can attach a one-sentence gloss to a formal theological theme name — e.g.
+Christology → "Writings about who Christ is, and what his life and death
+accomplish." The public theme page (`/themes/[slug]`) shows it beneath the
+theme name when set; the canonical term itself is never replaced. Seeded five
+opaque/high-value Doctrine-cluster themes (Christology, Pneumatology,
+Eschatology, Trinity, Providence) as the initial population, per the backlog
+card's "Done when." Backlog: Theme pages: plain-language subtitle.
+
 ## 2026-09-28 — Claude Code hook: block a kill-by-pattern that matches its own shell
 
 Added `.claude/hooks/guard-self-kill.py` as a PreToolUse hook on Bash in
