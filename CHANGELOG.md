@@ -7,6 +7,35 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-09-29 — Cut Vercel function CPU: daily page cache, crawlers off the downloads
+
+Stromata went over the Vercel Hobby allowance for Fluid Active CPU (5h50m in the
+30 days to 29 Sep, stepping up sharply on 21 Sep). Two causes, confirmed against
+Vercel Observability → Functions (production, last 12h): `/texts/[slug]` renders
+(327 invocations, ~3m CPU) and the **PDF download routes** (159 renders, ~3m CPU —
+as much as every text page combined, and far more downloads than readers make, i.e.
+crawlers). The 21 Sep step lines up with the merge rate to `main` (17 merges in
+1–19 Sep, 37 in 20–29 Sep): every production deploy starts with an empty ISR cache,
+so crawlers re-render the site after each merge.
+
+- **Public pages now revalidate daily, not hourly** (`revalidate = 86400`), and the
+  public Supabase client's Data Cache moved from 1h to 1 day with them — Next
+  refreshes a page as often as its shortest fetch cache, so changing only the page
+  setting would have done nothing. Publishing still appears immediately
+  (`publish-text.ts` calls `revalidatePath`). The home page stays hourly so the
+  liturgical season turns over on time (it is cheap: 8 renders in 12h). Trade-off:
+  a DB edit made from a CLI script (no `revalidatePath`) now takes up to a day to
+  show instead of an hour.
+- **`robots.ts` disallows `/texts/*/download/` and `/collections/*/download/`**, and
+  the download links carry `rel="nofollow"`. The reader page carries the same text,
+  so nothing indexable is lost.
+- **Download responses are CDN-cached for a day** (`s-maxage=86400,
+  stale-while-revalidate=86400`, was 1h), so a repeat request doesn't re-render.
+
+Not changed in code, but part of the same fix: merging in batches rather than per
+PR means fewer ISR cache resets. Check Observability → Functions in a week to confirm
+the PDF rows have fallen away.
+
 ## 2026-09-28 — Theme pages: optional plain-language subtitle
 
 Added `themes.plain_language_subtitle` (nullable text) and an admin editor at

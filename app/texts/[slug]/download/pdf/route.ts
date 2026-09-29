@@ -39,7 +39,7 @@ export async function GET(_req: Request, { params }: { params: Promise<{ slug: s
     headers: {
       'Content-Type': 'application/pdf',
       'Content-Disposition': `attachment; filename="${markdownFilename(slug).replace(/\.md$/, '.pdf')}"`,
-      'Cache-Control': 'public, max-age=3600, s-maxage=3600',
+      'Cache-Control': 'public, max-age=3600, s-maxage=86400, stale-while-revalidate=86400',
     },
   })
 }

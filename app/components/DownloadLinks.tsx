@@ -49,6 +49,9 @@ function DownloadRow({
           {i > 0 && <span aria-hidden style={{ color: dark ? 'rgba(250,246,236,0.4)' : 'var(--ink-faint)' }}>·</span>}
           <a
             href={`${base}/${format}`}
+            // Belt to robots.ts's braces: crawlers that ignore the disallow
+            // still shouldn't treat a CPU-heavy render as a page to follow.
+            rel="nofollow"
             className="hover:opacity-70 transition-opacity"
             style={linkStyle(dark)}
             data-umami-event={event}

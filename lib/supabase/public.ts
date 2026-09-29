@@ -15,7 +15,7 @@ import { createClient } from '@supabase/supabase-js'
 // Safe to call from either a Server Component or the browser — the anon key is
 // already published in the client bundle.
 //
-// EVERY READ THROUGH THIS CLIENT IS CACHED FOR AN HOUR
+// EVERY READ THROUGH THIS CLIENT IS CACHED FOR A DAY
 //
 // Next 15 sends `fetch` with `cache: 'no-store'` unless told otherwise, so each
 // of these queries ran again on every request — including every crawler hit.
@@ -29,23 +29,28 @@ import { createClient } from '@supabase/supabase-js'
 // re-downloaded the text's whole body each time.
 //
 // Tagging the fetch moves those reads into Next's Data Cache, so a repeated
-// query is answered locally and Supabase sees it at most once an hour however
-// many times the page is requested. An hour matches the `revalidate` window the
-// public pages already use, and `revalidatePath` — which the publish path calls
+// query is answered locally and Supabase sees it at most once a day however
+// many times the page is requested. A day matches the `revalidate` window the
+// public pages declare (hourly until 2026-09-29, when crawler re-renders were
+// found to be most of the site's Vercel Hobby CPU — and Next refreshes a page as
+// often as its SHORTEST data-cache entry, so this and the page setting must move
+// together; the home page keeps its own hourly window for the season turnover),
+// and `revalidatePath` — which the publish path calls
 // through `lib/publishing/publish-text.ts` — drops these entries along with the
-// rendered page, so publishing still shows up immediately rather than an hour
-// later.
+// rendered page, so publishing still shows up immediately rather than a day
+// later. Edits made straight to the database from a CLI script (no
+// revalidatePath) now take up to a day to show.
 //
 // This is deliberately on the PUBLIC client only. The admin surfaces read
 // through `createServerClient()`, which stays uncached: a back-office form must
-// show what is in the database now, not what was there this hour.
+// show what is in the database now, not what was there earlier today.
 //
 // `{ live: true }` opts a caller out. The feeds — /rss, /sitemap.xml, /llms.txt
 // — declare `dynamic = 'force-dynamic'` and `revalidate = 0` because they are
 // meant to be generated fresh on every request, and a default that quietly
 // overrode that would make them say something their own source file denies.
 /** Matches the `revalidate` window the public pages declare. */
-const CACHE_SECONDS = 3600
+const CACHE_SECONDS = 86400
 
 // A stalled read used to hang until the platform's own function timeout (up
 // to 60s on Vercel), which a click just reads as "nothing happened" — found

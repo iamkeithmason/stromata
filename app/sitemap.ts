@@ -21,7 +21,7 @@ type TextRow = {
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Live read: this feed declares `revalidate = 0` above and must reflect the
-  // database as it is now, not the public client's hourly cache.
+  // database as it is now, not the public client's daily cache.
   const supabase = createPublicClient({ live: true })
   const loc = (path: string) => `${SITE_URL}${path}`
 
