@@ -33,7 +33,7 @@ export const metadata = {
 // Incremental Static Regeneration. Without this the library index re-queried
 // Supabase on every request — including every crawler hit — and the page reads
 // the whole published corpus. See lib/reading-time.ts for the other half.
-export const revalidate = 3600
+export const revalidate = 86400
 
 export default async function TextsPage() {
   const supabase = createPublicClient()

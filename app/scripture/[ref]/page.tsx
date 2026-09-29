@@ -7,11 +7,11 @@ import { parseReferenceQuery } from '@/lib/scripture'
 import ScriptureSearch from '../ScriptureSearch'
 
 // Incremental Static Regeneration: serve a cached render and refresh it at most
-// hourly, so a crawler sweep costs one Supabase query per page per hour rather
+// daily, so a crawler sweep costs one Supabase query per page per day rather
 // than one per request.
 // 4,268 distinct reference routes are reachable from the scripture index, and
 // every one of them re-queried Supabase on each request without this.
-export const revalidate = 3600
+export const revalidate = 86400
 
 type Props = { params: Promise<{ ref: string }> }
 

@@ -53,7 +53,7 @@ function section(title: string, links: string[]): string {
 
 export async function GET() {
   // Live read: this feed declares `revalidate = 0` above and must reflect the
-  // database as it is now, not the public client's hourly cache.
+  // database as it is now, not the public client's daily cache.
   const supabase = createPublicClient({ live: true })
 
   const { data } = await supabase

@@ -62,7 +62,7 @@ export async function GET(_req: Request, { params }: { params: Promise<{ slug: s
     headers: {
       'Content-Type': 'text/markdown; charset=utf-8',
       'Content-Disposition': `attachment; filename="${markdownFilename(slug)}"`,
-      'Cache-Control': 'public, max-age=3600, s-maxage=3600',
+      'Cache-Control': 'public, max-age=3600, s-maxage=86400, stale-while-revalidate=86400',
     },
   })
 }

@@ -11,9 +11,10 @@ import { fetchCollectionAuthors, formatAuthorNames, isLinkable } from '@/lib/col
 import { OG_IMAGE, SITE_URL } from '@/lib/metadata'
 
 // Incremental Static Regeneration: cache the rendered page and revalidate
-// hourly. Safe given the manual publish cadence — a newly published or edited
+// daily (was hourly until 2026-09-29 — Vercel Hobby CPU). Safe given the manual
+// publish cadence, and publish-text.ts revalidates the path on publish — a newly published or edited
 // collection appears within the window rather than requiring a redeploy.
-export const revalidate = 3600
+export const revalidate = 86400
 
 type Props = { params: Promise<{ slug: string }> }
 
