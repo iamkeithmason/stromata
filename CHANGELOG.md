@@ -7,6 +7,16 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-09-29 — Previews are opt-in; batch small changes (Vercel usage, part 2)
+
+Follow-up to the CPU fix below. `vercel.json` now sets an Ignored Build Step
+(`scripts/vercel-ignore-build.sh`): production always builds, but a **preview builds only when the
+pushed head commit's message contains `[preview]`**. Previously every branch push produced a
+deployment, which is what drove Functions Storage to ~10 GB and added CPU whenever anything touched
+the preview. CLAUDE.md gains a "Vercel usage" section: Claude asks Keith before requesting a preview
+(and says why), rather than tagging commits on its own, and groups small related changes into one PR
+so fewer merges reset the production page cache.
+
 ## 2026-09-29 — Cut Vercel function CPU: daily page cache, crawlers off the downloads
 
 Stromata went over the Vercel Hobby allowance for Fluid Active CPU (5h50m in the
