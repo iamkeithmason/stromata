@@ -161,7 +161,8 @@ event name present but no `from` property; nobody checked the wire, and the test
 weeks of unusable data. Adding an attribute and reasoning that it "should" fire is exactly the
 failure mode.
 
-**The sweep is a command now: `node scripts/verify-analytics.mjs --url=<preview>`.** It drives a
+**The sweep is a command now: `node scripts/verify-analytics.mjs --url=<preview>`.** (Previews are
+opt-in — ask Keith before tagging a commit `[preview]`; see "Vercel usage" below.) It drives a
 real browser over a real deployment, intercepts every request to Umami's collection endpoint,
 records the payload and then **aborts** it — so a verification run never lands a synthetic event in
 the dataset. It prints a pass/fail table and exits non-zero on any failure. `--only=a,b` narrows it;
@@ -371,6 +372,34 @@ Two lessons the loop taught, worth keeping:
 
 Relevant files: `scripts/design/critic-loop.mjs`; `app/design/liturgical-wheel/page.tsx` as a worked
 example (a NOINDEX exploration, not linked in nav).
+
+---
+
+## Vercel usage — previews are opt-in, and batch small changes
+
+Stromata is on Vercel's **Hobby (free) tier**, and in Sept 2026 it went over the Fluid Active CPU
+allowance (see CHANGELOG 2026-09-29). Two habits keep it under, and both apply to every session:
+
+**1. Previews only build when asked.** `vercel.json` → `scripts/vercel-ignore-build.sh` skips every
+preview build unless the pushed head commit's message contains **`[preview]`**. Production (merges
+to `main`) always builds. So by default a pushed branch gets **no preview URL** — don't tell Keith to
+"check the preview" unless one was requested.
+
+- **When a preview would genuinely help, ask Keith first — don't add `[preview]` on your own.**
+  Good reasons: a visual or layout change he should eyeball, or an analytics change that the
+  verification rule says must be observed on the wire (`verify-analytics.mjs` needs a deployment).
+  Say why in one line and prompt him to ask for it explicitly, e.g. *"This changes the reader
+  header — want a preview to check it on your phone? If so, say 'build a preview'."*
+- **When he says yes,** put `[preview]` in the message of the next commit you push (a real change,
+  or the commit that carries his requested tweak). Only the head commit of a push counts, so a later
+  push without the tag builds nothing — tag again if he wants the preview refreshed.
+
+**2. Group small, related changes into one PR.** Every merge to `main` is a production deploy, and
+every deploy starts with an empty page cache, so crawlers re-render the site after each one — merge
+frequency, not reader traffic, drove the Sept 2026 spike (17 merges in 1–19 Sep, 37 in 20–29 Sep).
+If a session turns up several small related fixes, ship them together in one PR rather than one PR
+each; if Keith asks for a follow-up to a PR that is still open, add it to that PR. (Unrelated
+changes still get separate PRs — this is about not splitting one piece of work into many.)
 
 ---
 
