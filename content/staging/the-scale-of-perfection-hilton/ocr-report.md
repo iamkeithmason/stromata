@@ -1,0 +1,753 @@
+# OCR review report — the-scale-of-perfection-hilton
+
+Detection only — the Sourcer changed nothing below. Each class is a proposal for
+you to accept, reject, or edit. Nothing here has been applied to body.md.
+
+Estimated OCR quality: **medium** (artefact density 0.0062).
+
+## 1. Character-substitution scannos (apply-reviewed compatible)
+
+Edit a row's ACTION to `fix` / `allow`, then run:
+`node scripts/detect-scannos.mjs --apply-reviewed=content/staging/the-scale-of-perfection-hilton/ocr-report.md`
+
+```
+# (No corpus-frequency index found — scanno detection skipped.
+#  Build it with: node scripts/build-corpus-index.mjs, then re-run the Sourcer.)
+```
+
+## 2. Orphaned footnote markers (advisory — not auto-removed)
+
+- line 491: `[1]` — edition, [1] however, has solely a spiritual, not a critical object,
+- line 511: `[2]` — his advice became a disciple of St Bruno. [2] On the other hand, we
+- line 564: `[3]` — [3] Several Pontificals contain a regular office for these enclosures.
+- line 599: `[4]` — identical with those ordered in the Rule of St Dominic. [4] As the
+- line 645: `[5]` — even. [5] Balls were few, and generally took place in the daytime;
+- line 710: `[6]` — [6] The anchoress had no peculiar habit, and her office was, as has
+- line 712: `[7]` — encouraged to say English prayers. [7] At midday she made a meditation
+- line 714: `[8]` — [8] Though, according to the practice of the Church at the time, she
+- line 740: `[9]` — me altogether to Thee, with true love and belief." [9]
+- line 796: `[10]` — which proscribes pet animals. [10] She is nothing but a simple girl,
+- line 804: `[11]` — Norwich." [11] It contains visions and passages of such beauty as to
+- line 811: `[12]` — [12] who commanded the English archers at Agincourt, left a legacy in
+- line 813: `[13]` — Julian's Church at Norwich. [13] She was thirty years old and a half in
+- line 830: `[14]` — Juliana, in the crude English expression, "unmade kind is God," [14]
+- line 857: `[15]` — objections to the doctrine of everlasting punishment. [15] This,
+- line 872: `[16]` — thing exists in the predestinate. [16] In vain she takes refuge in the
+- line 874: `[17]` — of being, ne it might not be known but by the pain thereof." [17] It
+- line 880: `[18]` — teacheth me to believe." [18] The agony of soul still continued: "I
+- line 882: `[19]` — thus: Ah! Lord Jesus, King of bliss, how shall I be eased?'" [19]
+- line 897: `[20]` — [20] Yet with all this, there was that "ugly sight" of sin, obscuring
+- line 899: `[21]` — and tribulation, as men shaketh a cloth in the wind," [21] coming like
+- line 927: `[22]` — simple life," [22] and the noble Edward, his son; but the brilliancy of
+- line 946: `[23]` — at the chaste voice of the people." [23] Evidently these ladies of the
+- line 954: `[24]` — the Florentine ladies of the fourteenth century, [24] are too precise
+- line 960: `[25]` — worse, especially in the modesty of the young. [25] As for France, the
+- line 963: `[26]` — of France attacks customs which only appeared later elsewhere. [26]
+- line 966: `[27]` — 1384. [27] The same degeneracy appears in Germany. Landino, a
+- line 970: `[28]` — writer [28] : "Since the end of the thirteenth century the comfort and
+- line 1036: `[29]` — give them no bread to eat." [29] "Let the serf be too happy that I have
+- line 1043: `[30]` — be beaten," was the common talk. [30] Jacques Bonhomme took a fearful
+- line 1048: `[31]` — demesnes to exercise sovereign authority by taxing the villain. [31]
+- line 1073: `[32]` — descendants of Gnostics and Manichees. [32] Public opinion was against
+- line 1121: `[33]` — happen by absolute necessity. [33] "Accordingly all sin appears to him
+- line 1148: `[34]` — quoted, and others [34] which imply strong views about predestination,
+- line 1175: `[35]` — is free, and a being who is free is at once personal. [35] The very
+- line 1224: `[36]` — in His sweet word when He saith, Lo how I love thee.'" [36] This is the
+- line 1238: `[37]` — ghostly thirst," a "love-longing." [37] "For as truly as there is a
+- line 1265: `[38]` — but Christendom appears before her view. [38] It was not the crucifix
+- line 1287: `[39]` — life. [39] Unlike Mother Juliana's book, which remained comparatively
+- line 1353: `[40]` — Elevation, the Holy Communion, and on various feasts. [40] Didactic
+- line 1452: `[41]` — question is unequivocal, and is contained in the following words: [41]
+- line 1496: `[1]` — [1] It should be remembered that the book was written in the fourteenth
+- line 1502: `[2]` — [2] This treatise exists in manuscript in the library of Merton
+- line 1507: `[3]` — [3] Many of these particulars are taken from the very interesting
+- line 1511: `[4]` — [4] Compare "Ancren Riwle," p. 24, with Brockie, tom. IV, 121. It is
+- line 1515: `[5]` — [5] Chaire Française au Moyen Age, 414.
+- line 1517: `[6]` — [6] Ancren Riwle, p. 13.
+- line 1519: `[7]` — [7] P. 291.
+- line 1521: `[8]` — [8] P. 241.
+- line 1523: `[9]` — [9] This interpretation is rather different from that of the learned
+- line 1527: `[10]` — [10] P. 417.
+- line 1529: `[11]` — [11] Blomfield, in his History of Norfolk, p. 546, mentions a MS.,
+- line 1534: `[12]` — [12] Sir Thomas Erpingham has the credit of having been a partisan of
+- line 1542: `[13]` — [13] It is true that Juliana Lampit is there said to be the recluse of
+- line 1548: `[14]` — [14] P. 157.
+- line 1550: `[15]` — [15] Pfeiffer, p. 386.
+- line 1552: `[16]` — [16] P. 110.
+- line 1554: `[17]` — [17] P. 62.
+- line 1556: `[18]` — [18] P. 71.
+- line 1558: `[19]` — [19] P. 111.
+- line 1560: `[20]` — [20] P. 9.
+- line 1562: `[21]` — [21] P. 63.
+- line 1564: `[22]` — [22] Purg. vii.
+- line 1566: `[23]` — [23] Quoted in Longman's Edward, i, 295.
+- line 1568: `[24]` — [24] Compare Purg. 23 and Par. 15, 16.
+- line 1570: `[25]` — [25] Cantù, Histoire des Italiens, tom. 7, c. 123.
+- line 1572: `[26]` — [26] Chaire Française au Moyen Age. P. 409.
+- line 1574: `[27]` — [27] Cantù, Ibid.
+- line 1576: `[28]` — [28] Schwab, Johannes Gerson, p. 38.
+- line 1578: `[29]` — [29] Chaire Française, 357.
+- line 1580: `[30]` — [30] Longman's Life of Edward III, ii, 24.
+- line 1582: `[31]` — [31] Ibid., 259.
+- line 1584: `[32]` — [32] It is true that Malespina mentions Epicureans (Muratori, 8, 933),
+- line 1589: `[33]` — [33] Neander, vol. ix, p. 241, Bohn's edition. He appends the following
+- line 1595: `[34]` — [34] For instance, p. 131.
+- line 1597: `[35]` — [35] "We premise this, that when we attribute Personality to God, we
+- line 1606: `[36]` — [36] P. 149.
+- line 1608: `[37]` — [37] P. 67.
+- line 1610: `[38]` — [38] How accessible were anchoresses to the influence of the outer
+- line 1615: `[39]` — [39] Blomfield, 546. All that is known is that she was alive in 1443,
+- line 1619: `[40]` — [40] V. Mone, i, 286, 293, 254, and Ancren Riwle.
+- line 1621: `[41]` — [41] P. 151.
+- line 1742: `[42]` — I am nothing. [42]
+- line 1754: `[43]` — puffeth up, but charity edifies. [43] This I knowledge alone lifteth up
+- line 1767: `[42]` — [42] 1 Cor. 13.
+- line 1769: `[43]` — [43] 1 Cor. 8.
+- line 1825: `[44]` — and see how sweet our Lord is. [44]
+- line 1828: `[44]` — [44] Ps. 33.
+- line 1850: `[45]` — your hearts to our Lord. [45] Whoso hath this grace, let him keep
+- line 1855: `[45]` — [45] Ephes. 5.
+- line 1877: `[46]` — unus spiritus est cum eo; [46] that is to say, he who by ravishing of
+- line 1884: `[46]` — [46] 1 Cor. 6:17.
+- line 1896: `[47]` — little as it is) and an earnest or handsell [47] of the sight or
+- line 1900: `[48]` — then we shall see face to face. [48] This is the enlightening of the
+- line 1903: `[49]` — in my delight. [49] The other is milk for children, but this solid meat
+- line 1916: `[50]` — constraineth us; [50] that is, whether we overpass our bodily senses in
+- line 1922: `[51]` — [51] Which is as much as if in the person of himself and all perfect
+- line 1939: `[47]` — [47] Hansel, a first gift.
+- line 1941: `[48]` — [48] 1 Cor. 13.
+- line 1943: `[49]` — [49] Ps. 138.
+- line 1945: `[50]` — [50] 2 Cor. 5:13-14.
+- line 1947: `[51]` — [51] 2 Cor. 3:18.
+- line 1967: `[52]` — of light. Wherefore sith [52] they may be both good and evil, it
+- line 1982: `[53]` — God or no. [53] Wherefore by one trial that I shall tell thee,
+- line 1986: `[52]` — [52] Since.
+- line 1988: `[53]` — [53] 1 St John 4:1.
+- line 2043: `[54]` — which it shall have in the bliss of heaven; but I wot [54] not whether
+- line 2052: `[55]` — [55] These words, I confess, may be understood in many manners,
+- line 2076: `[54]` — [54] Know.
+- line 2078: `[55]` — [55] 1 St John 4:3.
+- line 2090: `[56]` — what is the breadth and length and height and depth. [56] That ye may
+- line 2101: `[57]` — that are before, I press to the mark of the supernal vocation. [57]
+- line 2111: `[56]` — [56] Ephes. 3:18.
+- line 2113: `[57]` — [57] Phil. 3:13.
+- line 2160: `[58]` — heart be much cleansed from such sins, through firm verity [58] and
+- line 2163: `[59]` — thus: Blessed are the clean in heart, for they shall see God. [59] In
+- line 2173: `[60]` — thy rect [60] in Contemplation.
+- line 2176: `[58]` — [58] Stable truth.
+- line 2178: `[59]` — [59] St Matt. 5.
+- line 2180: `[60]` — [60] Right rule.
+- line 2208: `[61]` — True worshippers shall worship the Father in spirit and in truth. [61]
+- line 2302: `[62]` — good for thee to worship [62] them all, and set them all in thy heart
+- line 2311: `[63]` — himself shall be brought low. [63]
+- line 2405: `[64]` — is not comely in the mouth of a sinner. [64] Wherefore it is profitable
+- line 2411: `[65]` — feigning; for our Lord asketh thus by His Prophet: [65] Upon whom shall
+- line 2418: `[61]` — [61] St John 4.
+- line 2420: `[62]` — [62] Respect.
+- line 2422: `[63]` — [63] St Luke 14.
+- line 2424: `[64]` — [64] Ecclus. xv.
+- line 2426: `[65]` — [65] Is. 66.
+- line 2450: `[66]` — shouldst think that some of them were unreasonable, [66] yet shalt not
+- line 2493: `[66]` — [66] Unskilful.
+- line 2572: `[67]` — the name of our Lord Jesus Christ, [67] forsaking yourselves and
+- line 2577: `[67]` — [67] 1 Cor. 10.
+- line 2595: `[68]` — exercised [68] and purified by the fire of desire in devout prayer. For
+- line 2710: `[69]` — unto the Lord, with my voice have I prayed to our Lord. [69] Behold how
+- line 2726: `[70]` — [70] Or else this: Heal my Soul, for I have sinned against Thee; or
+- line 2733: `[71]` — He is good, because His mercy endureth for ever. [71]
+- line 2736: `[72]` — the affection of the heart, and therefore never goeth away unsped [72]
+- line 2740: `[73]` — all men, to be alone that he be not letted; [73] whoso hath it let him
+- line 2758: `[74]` — fainted, not able to bear it; [74] which words may be understood thus:
+- line 2792: `[75]` — will sing in the spirit, I will sing also in the mind. [75] That is to
+- line 2806: `[76]` — fire may not go out. [76] That is, the fire of love shall ever be
+- line 2877: `[68]` — [68] Assayed.
+- line 2879: `[69]` — [69] Psalm 141.
+- line 2881: `[70]` — [70] Ps. 40.
+- line 2883: `[71]` — [71] Ps. 135.
+- line 2885: `[72]` — [72] Unprosperous.
+- line 2887: `[73]` — [73] Interrupted.
+- line 2889: `[74]` — [74] Jer. 20:9.
+- line 2891: `[75]` — [75] 1 Cor. 14:14,15.
+- line 2893: `[76]` — [76] Levit. 6.
+- line 2913: `[77]` — Holy Ghost, and began to speak the wonders of God; [77] all which
+- line 2942: `[78]` — me, O God. [78]
+- line 2981: `[79]` — and Him crucified. [79] As if he had said: My knowing and my faith is
+- line 3003: `[80]` — body], for except I go the Holy Ghost will not come. [80] As long as He
+- line 3034: `[81]` — [81] The devil tempteth others maliciously to spiritual sins, as to
+- line 3086: `[82]` — [82] As if He had said, I suffered thee to be troubled a little while,
+- line 3094: `[83]` — arise as the daystar, and thou shalt have confidence. [83] That is to
+- line 3106: `[84]` — heap upon him as treasures knowledge of understanding and justice. [84]
+- line 3167: `[77]` — [77] Acts 2.
+- line 3169: `[78]` — [78] Ps. 1.
+- line 3171: `[79]` — [79] 1 Cor. 2.
+- line 3173: `[80]` — [80] St John 16.
+- line 3175: `[81]` — [81] Ps. 90.
+- line 3177: `[82]` — [82] Is. 54:7-8.
+- line 3179: `[83]` — [83] Job 11.
+- line 3181: `[84]` — [84] Ecclus. 4:18.
+- line 3213: `[85]` — a proper gift of God, one so, and another so. [85] Also, when he said:
+- line 3215: `[86]` — another the word of knowledge, [86] etc. And also when he said: To
+- line 3217: `[87]` — donation of Christ. [87] And further, where he said: That we may know
+- line 3229: `[85]` — [85] 1 Cor. 7.
+- line 3231: `[86]` — [86] 1 Cor. 12.
+- line 3233: `[87]` — [87] Ephes. 4.
+- line 3247: `[88]` — know his own soul [88] and the powers thereof.
+- line 3281: `[89]` — life, and few men find it. [89] How strait this way is, He telleth us
+- line 3283: `[90]` — hate his own soul. [90] That is to say, forsake all fleshly love and
+- line 3289: `[91]` — Mortify your members that are upon earth, [91] not the members of our
+- line 3300: `[88]` — [88] The fairness and the foulness of it.
+- line 3302: `[89]` — [89] St Luke 13.
+- line 3304: `[90]` — [90] St Matt. 16, St John 12.
+- line 3306: `[91]` — [91] Col. 3.
+- line 3390: `[92]` — [92] that is to say, asketh salvation by Jesus and His Passion.
+- line 3416: `[93]` — no sin, we beguile ourselves, and there is as no truth in us. [93]
+- line 3452: `[94]` — are sundry mansions. [94] Some are perfect souls, who in this life are
+- line 3462: `[95]` — O My friends, and be inebriated, O My darlings. [95] As if He had said:
+- line 3475: `[92]` — [92] Romans 10.
+- line 3477: `[93]` — [93] 1 St John 1.
+- line 3479: `[94]` — [94] St John 14.
+- line 3481: `[95]` — [95] Cant. 5.
+- line 3509: `[96]` — never be taken from her. [96]
+- line 3523: `[97]` — shall be thine. [97] That is to say, so much land as thou canst tread
+- line 3528: `[96]` — [96] Luke 10.
+- line 3530: `[97]` — [97] Deut. 11.
+- line 3606: `[98]` — desire on earth besides Thee? [98] As if he had said, Lord Jesus, what
+- line 3615: `[99]` — times. [99] Seek, then, as David did, desire by desire. And if thou
+- line 3623: `[100]` — findeth. [100] The seeking is painful, but the finding is joyful; do,
+- line 3627: `[101]` — shalt find the knowledge of God. [101] It behoveth thee to delve deep
+- line 3635: `[102]` — [102] As who should say, there is none but would do so. And when she
+- line 3640: `[103]` — lanthorn to my feet. [103] By this lanthorn shalt thou see where He is,
+- line 3644: `[104]` — [104] Right so may it be said, that the lanthorn of thy soul is reason,
+- line 3648: `[105]` — lanthorn to set it under a bushel, but upon a candlestick. [105] That
+- line 3652: `[106]` — thou shalt see all the dust, all the filth and small motes [106] in thy
+- line 3655: `[107]` — knoweth all his trespasses? [107] As who should say, no man. And thou
+- line 3663: `[108]` — sweat and labour of body [108] and travail of soul. And if thou cease
+- line 3664: `[109]` — not, but seek busily, sigh and sorrow deeply, mourn stilly, [109] and
+- line 3686: `[110]` — Truly thou art the hidden God, [110] hid in thy soul, and seek Him
+- line 3690: `[111]` — field. [111] Jesus is a treasure hid in the soul. Then if thou couldst
+- line 3705: `[112]` — [112] That is, forget the people of thy worldly thoughts, and the house
+- line 3721: `[113]` — unto him. [113] There is not any virtue nor any good work that can make
+- line 3725: `[114]` — meek and humble in heart. [114] He saith not, Learn of me to go
+- line 3730: `[115]` — for by that men shall know you for My disciples. [115] Not that you
+- line 3737: `[98]` — [98] Ps. 72.
+- line 3739: `[99]` — [99] Ps. 118.
+- line 3741: `[100]` — [100] St Matt. 8.
+- line 3743: `[101]` — [101] Prov. 2.
+- line 3745: `[102]` — [102] St Luke 15.
+- line 3747: `[103]` — [103] Ps. 118.
+- line 3749: `[104]` — [104] St Matt. 6.
+- line 3751: `[105]` — [105] St Luke 8.
+- line 3753: `[106]` — [106] Molle.
+- line 3755: `[107]` — [107] Ps. 18.
+- line 3757: `[108]` — [108] Swink.
+- line 3759: `[109]` — [109] Silently.
+- line 3761: `[110]` — [110] Is. 45.
+- line 3763: `[111]` — [111] St Matt. 13.
+- line 3765: `[112]` — [112] Ps. 44.
+- line 3767: `[113]` — [113] St John 14.
+- line 3769: `[114]` — [114] St Matt. 11.
+- line 3771: `[115]` — [115] St John 13.
+- line 3810: `[116]` — calleth a body of sin and of death. [116] This image and this black
+- line 3861: `[117]` — shalt hate and loathe [117] this darkness, and this nought, just as the
+- line 3862: `[118]` — devil, and thou shalt despise and all to break it. [118] For within
+- line 3874: `[119]` — body and this image of death? [119] And then he comforted himself and
+- line 3878: `[116]` — [116] Rom. 6.
+- line 3880: `[117]` — [117] Agrise.
+- line 3882: `[118]` — [118] Brest it.
+- line 3884: `[119]` — [119] Rom. 7.
+- line 3903: `[120]` — Now mayest thou grope [120] at least that this image is not altogether
+- line 3937: `[120]` — [120] To feel.
+- line 3995: `[121]` — shall die. [121] Then say I thus: That a worldly man who loveth and
+- line 4032: `[122]` — moreover he shall have reward [122] for his good travail in
+- line 4036: `[123]` — specially His servants and domestics [123] of His court, as are all
+- line 4112: `[124]` — Virginity. [124] These works, inasmuch as they pass all others in
+- line 4136: `[125]` — thou shalt rest and stand in thy lot until the end of the days; [125]
+- line 4148: `[121]` — [121] Rom. 8.
+- line 4150: `[122]` — [122] Mede.
+- line 4152: `[123]` — [123] Homely.
+- line 4154: `[124]` — [124] Manhood.
+- line 4156: `[125]` — [125] Dan. 12.
+- line 4181: `[126]` — to a man, and the last end of it bringeth him to endless death. [126]
+- line 4223: `[127]` — at the last end he shall be cast out as a dung-heap. [127] The joy of
+- line 4240: `[128]` — something, whereas indeed he is nothing, he beguileth himself. [128]
+- line 4243: `[126]` — [126] Prov. 14.
+- line 4245: `[127]` — [127] Job 20.
+- line 4247: `[128]` — [128] Gal. 4.
+- line 4282: `[129]` — or speak evil of thee falsely, and in any other way disease [129] thee
+- line 4307: `[129]` — [129] Defame.
+- line 4340: `[130]` — sweet, and sweet for bitter. [130] Thus do all they who, when they
+- line 4346: `[130]` — [130] Is. 5.
+- line 4366: `[131]` — [131] And, therefore, it is more precious and more dainty to come by.
+- line 4419: `[132]` — nought. [132]
+- line 4430: `[133]` — I am charity? Verily no man can say it securely, [133] or of a
+- line 4436: `[134]` — anguish, or distress, [134] etc.? And he answereth himself, and saith:
+- line 4472: `[135]` — imperfection. [135] But if thou have humility perfectly, then shalt
+- line 4480: `[131]` — [131] Rom. 5.
+- line 4482: `[132]` — [132] 1 Cor. 13.
+- line 4484: `[133]` — [133] Sickerly.
+- line 4486: `[134]` — [134] Rom. 8.
+- line 4488: `[135]` — [135] Ps. 138:16.
+- line 4534: `[136]` — to them that hate you, pray for them that persecute you. [136] And,
+- line 4573: `[137]` — bidding, that you should love one another as I have loved you. [137]
+- line 4606: `[136]` — [136] S. Matt. 5.
+- line 4608: `[137]` — [137] St John 13.
+- line 4954: `[138]` — wise: There is betwixt us and you a great chaos; [138] that is to say,
+- line 4962: `[138]` — [138] St Luke 16.
+- line 4971: `[139]` — by our windows. [139] These are the five senses by which thy soul goeth
+- line 4988: `[140]` — the flock of thy fellows, and feed thy kids. [140] And it is as much as
+- line 4993: `[141]` — meat and thy liking as a beast of the flock, that is as [141] one
+- line 5008: `[142]` — cellar. [142] That is to say: Inasmuch as I forsook the drunkenness of
+- line 5028: `[143]` — third, for that he had married a wife. [143] I forbear to speak of the
+- line 5121: `[139]` — [139] Jerem. 9.
+- line 5123: `[140]` — [140] Cantic. 1.
+- line 5125: `[141]` — [141] Reprieved.
+- line 5127: `[142]` — [142] Cantic. 2.
+- line 5129: `[143]` — [143] St Luke 14.
+- line 5176: `[144]` — myself; [144] that is, a false image, which some call an idol, very
+- line 5185: `[145]` — made to Adam and his wife clothes of a beast's hide. [145] In token
+- line 5192: `[146]` — all manner of sin is pride. [146] The back and hinder part of it is
+- line 5195: `[147]` — [147] The breast (in which is the heart) is Envy; for it is no fleshly
+- line 5197: `[148]` — devil death came into the world, [148] for all those that are of his
+- line 5201: `[149]` — him again, but offer him the other. [149] The belly of this image is
+- line 5203: `[150]` — for meat, but God shall destroy them both; [150] namely, at the last
+- line 5209: `[151]` — good deeds), Run, make haste, raise thy friend, [151] that is to say,
+- line 5215: `[144]` — [144] Joel 12.
+- line 5217: `[145]` — [145] Gen. 3.
+- line 5219: `[146]` — [146] Ecclus. 10.
+- line 5221: `[147]` — [147] Phil. 3.
+- line 5223: `[148]` — [148] Wisd. 2.
+- line 5225: `[149]` — [149] St Matthew 5.
+- line 5227: `[150]` — [150] 1 Cor. 4.
+- line 5229: `[151]` — [151] Prov. 6.
+- line 5243: `[152]` — troubled in vain. [152] Which is as if he had said: Though it be so
+- line 5250: `[153]` — us bear the image of the heavenly man Jesus, [153] which is the image
+- line 5260: `[154]` — slain their flesh (that is, the image of sin) with all the lusts, [154]
+- line 5270: `[155]` — and righteousness [155] and perfection of virtues. Who shall help thee
+- line 5277: `[156]` — of it cometh life, [156] and that is when it is well kept, for then
+- line 5348: `[157]` — would bring thee into error. [157]
+- line 5401: `[152]` — [152] Ps. 38.
+- line 5403: `[153]` — [153] 1 Cor. 15.
+- line 5405: `[154]` — [154] Ga. 5.
+- line 5407: `[155]` — [155] Ephes. 4.
+- line 5409: `[156]` — [156] Prov. 4.
+- line 5411: `[157]` — [157] Is. 3.
+- line 5431: `[158]` — child with you) until Christ be shapen again in you. [158] Thou hast
+- line 5441: `[158]` — [158] Gal. 4.
+- line 5457: `[159]` — Himself saith: No man cometh to the Father but by Me. [159] That is to
+- line 5489: `[159]` — [159] St John 14.
+- line 5517: `[160]` — Man is God's Image and made to the image and likeness of Him; [160] not
+- line 5634: `[161]` — the Power of God and the Wisdom of God. [161] And therefore these men,
+- line 5688: `[160]` — [160] Gen. 1.
+- line 5690: `[161]` — [161] 1 Cor. 1.
+- line 5732: `[162]` — Lord (Jesus) in that day shall be exalted only. [162] And also the body
+- line 5755: `[163]` — for us, that they should not be consummate without us. [163] That is,
+- line 5770: `[162]` — [162] Is. 2.
+- line 5772: `[163]` — [163] Heb. 11.
+- line 5979: `[164]` — after the flesh. [164] That is, those souls that are reformed to the
+- line 5985: `[164]` — [164] Rom. 8.
+- line 5994: `[165]` — man liveth by Faith. [165] That is, he that is made righteous by
+- line 6008: `[166]` — appear like Him in glory. [166] That is, we are now, whilst we live
+- line 6025: `[165]` — [165] Heb. 10.
+- line 6027: `[166]` — [166] 1 John 3.
+- line 6165: `[167]` — spirit against the flesh. [167] That is, a soul reformed to the
+- line 6172: `[168]` — the law of my mind, and leading me captive to the law of sin. [168] By
+- line 6257: `[169]` — Blessed are the pure in heart, for they shall see God. [169] Not with
+- line 6270: `[167]` — [167] Gal. 5.
+- line 6272: `[168]` — [168] Rom. 8.
+- line 6274: `[169]` — [169] St Matt. 5.
+- line 6290: `[170]` — curtains of Solomon. [170] That is, O ye Angels of Heaven, that are
+- line 6305: `[171]` — the sun hath altered my colour. [171] The sun maketh a skin swarth only
+- line 6315: `[172]` — difference. [172] But to know this, which is the one, and which is the
+- line 6350: `[173]` — to thy house; [173] and so he did, and was whole. And soothly, right as
+- line 6365: `[174]` — burning darts of the enemy. [174]
+- line 6368: `[170]` — [170] Cant. 1.
+- line 6370: `[171]` — [171] Cant. 1.
+- line 6372: `[172]` — [172] Twining.
+- line 6374: `[173]` — [173] St John 5.
+- line 6376: `[174]` — [174] Ephes. 6.
+- line 6456: `[175]` — revenge himself [175] on him, as a lion wreaketh himself on a little
+- line 6504: `[176]` — and brimstone. [176] If the lovers of this world would often think of
+- line 6513: `[175]` — [175] Wroken of him.
+- line 6515: `[176]` — [176] Apoc. 21.
+- line 6528: `[177]` — doth; but because I have it not, I cannot, and so I need [177] seek to
+- line 6544: `[178]` — shrink [178] and loathe to think upon them, and so they cowardly and
+- line 6588: `[179]` — Pain only will give understanding. [179] For he that knoweth not this
+- line 6592: `[177]` — [177] It is to me to wyte no more.
+- line 6594: `[178]` — [178] Uggen.
+- line 6596: `[179]` — [179] Jer. 28.
+- line 6617: `[180]` — comprehendeth it not. [180] That is, these blind hearts receive not the
+- line 6657: `[181]` — that he be converted and live, [181] for our Lord's will is that the
+- line 6663: `[180]` — [180] St John 1.
+- line 6665: `[181]` — [181] Ezec. 33.
+- line 6722: `[182]` — grace, but through long exercise and cunning [182] working of the soul
+- line 6728: `[182]` — [182] Sly.
+- line 6844: `[183]` — and profitable [183] for them to use. But I would that they should hold
+- line 6852: `[184]` — [184] to others) and follow that which they feel. But if neither hinder
+- line 6857: `[185]` — to strength, and the God of Gods shall be seen in Sion. [185] That is,
+- line 6866: `[183]` — [183] Speedful.
+- line 6868: `[184]` — [184] Disease.
+- line 6870: `[185]` — [185] Ps. 83.
+- line 6984: `[186]` — labour and travail, [186] and pine their wretched bodies with
+- line 7014: `[186]` — [186] Swink and sweat.
+- line 7359: `[187]` — [187] That is, to the feeling of perfect love and height of
+- line 7365: `[188]` — coveted Thee in all its thoughts. [188] The Prophet saith he desired
+- line 7384: `[189]` — day perish wherein I was born. [189] He cursed not the day running on
+- line 7391: `[190]` — dwelleth in the light. [190] And now, what man perceiveth and seeth the
+- line 7412: `[191]` — through longing after God, be hid from the noise [191] and stirrings of
+- line 7424: `[192]` — custom and familiarity [192] that he hath formerly had with the sins of
+- line 7503: `[187]` — [187] Ps. 42.
+- line 7505: `[188]` — [188] Is. 26.
+- line 7507: `[189]` — [189] Job 3.
+- line 7509: `[190]` — [190] St John 1.
+- line 7511: `[191]` — [191] Din.
+- line 7513: `[192]` — [192] Homeliness.
+- line 7530: `[193]` — better to be hid in this dark night from beholding of the world, [193]
+- line 7541: `[194]` — [194] That is, light of grace springeth, and shall spring to all them
+- line 7556: `[195]` — saw in his visions. [195] He saith that he saw a city upon a hill
+- line 7579: `[193]` — [193] Claude fenestras ut luceat domus.
+- line 7581: `[194]` — [194] Isa. 9.
+- line 7583: `[195]` — [195] Ezec. 40.
+- line 7659: `[196]` — and contention, there is unstableness and every evil work. [196] And
+- line 7673: `[197]` — man's soul, and it shall burn all his enemies; [197] that is, it shall
+- line 7685: `[198]` — Him; [198] that is, to humble souls that humble themselves to their
+- line 7716: `[196]` — [196] St James 3.
+- line 7718: `[197]` — [197] Ps. 96.
+- line 7720: `[198]` — [198] Mal. 4.
+- line 7751: `[199]` — [199] him utterly from it, but that he follow it when he may. And that
+- line 7811: `[200]` — world is slain and crucified to me, and I to the world. [200] That is,
+- line 7842: `[201]` — [201] That is, ye that for the love of God forsake all the love of the
+- line 7851: `[202]` — life, and afterward the bliss of Heaven. [202] This hundredfold which a
+- line 7867: `[203]` — sum, et nescivi--I was brought to nought, and I knew it not. [203] That
+- line 7880: `[204]` — God. [204] That is, whoso would hide himself from the love of the
+- line 7898: `[205]` — thee rest, and shall fill thy soul with lights. [205] That is, thou
+- line 7915: `[206]` — Chaldaeorum--Go into thy darkness, thou daughter of Chaldee. [206] That
+- line 7920: `[199]` — [199] Hinder.
+- line 7922: `[200]` — [200] Gal. 6.
+- line 7924: `[201]` — [201] Colos. 3.
+- line 7926: `[202]` — [202] St Matt. 19.
+- line 7928: `[203]` — [203] Ps. 72.
+- line 7930: `[204]` — [204] Is. 9.
+- line 7932: `[205]` — [205] Isa. 58.
+- line 7934: `[206]` — [206] Is. 47.
+- line 7948: `[207]` — Prophet saith: Sicut tenebrae ejus ita et lumen ejus. [207] That is,
+- line 7957: `[208]` — those He glorified. [208] Though these words may be understood of all
+- line 8027: `[209]` — through fire fear not, for the flame shall not hurt thee. [209] It
+- line 8033: `[207]` — [207] Ps. 138.
+- line 8035: `[208]` — [208] Rom. 8.
+- line 8037: `[209]` — [209] Isa. 43.
+- line 8189: `[210]` — that is the nature of God, for the soul is but a glass, [210] in the
+- line 8274: `[211]` — shall live among folks. [211] That is, our Lord Jesus in His Godhead is
+- line 8310: `[212]` — should do so. Nevertheless other souls are not so skilful, [212] nor
+- line 8329: `[213]` — hearts, and sat upon each of them. [213] Now it is true that the Holy
+- line 8352: `[210]` — [210] Mirror.
+- line 8354: `[211]` — [211] Lam. 4.
+- line 8356: `[212]` — [212] Subtle in kind.
+- line 8358: `[213]` — [213] Acts 2.
+- line 8383: `[214]` — tried, pained, [214] mortified and purified twenty years. And therefore
+- line 8394: `[215]` — reformed in newness of feeling. [215] Lo, here thou mayest see that St
+- line 8398: `[216]` — in all understanding and in all manner of spiritual wisdom. [216] This
+- line 8406: `[217]` — &c.--Be ye renewed in the spirit of your soul. [217] That is, ye shall
+- line 8415: `[218]` — [218] That is, cast from you the love of the world with all worldly
+- line 8440: `[214]` — [214] Pyned.
+- line 8442: `[215]` — [215] In novitate sensus. Rom. 12.
+- line 8444: `[216]` — [216] Col. 1.
+- line 8446: `[217]` — [217] Eph. 4.
+- line 8448: `[218]` — [218] Col. 3.
+- line 8488: `[219]` — videbimus eum sicut est--Then shall we see Him as He is. [219]
+- line 8553: `[219]` — [219] St John 3.
+- line 8610: `[220]` — is light. [220] This light we must not take for a bodily light; but it
+- line 8619: `[221]` — shall see Thy light by Thy light. [221] That is, we shall see Thee, who
+- line 8623: `[222]` — [222] That is to say, God is not elementary fire, that heateth and
+- line 8642: `[223]` — everlasting. [223] To which sight every soul should desire to come.
+- line 8646: `[224]` — vita aeterna, &c. [224] --This is eternal life, that they know Thee the
+- line 8650: `[220]` — [220] 1 St John 1.
+- line 8652: `[221]` — [221] Ps. 35.
+- line 8654: `[222]` — [222] Heb. 12.
+- line 8656: `[223]` — [223] 2 Cor. 4.
+- line 8658: `[224]` — [224] St John 17.
+- line 8685: `[225]` — He is love uncreated, and unmade; as St John saith: God is love. [225]
+- line 8712: `[226]` — diligamus Deum, &c.--Let us love God now, for He loved us first. [226]
+- line 8735: `[227]` — [227] and appropriated principally to the working of the Holy Ghost;
+- line 8807: `[225]` — [225] 1 St John 4.
+- line 8809: `[226]` — [226] 1 St. John 4.
+- line 8811: `[227]` — [227] Arrected.
+- line 8817: `[228]` — love Him more quietly [228] by spiritual Affections only moved inwardly
+- line 8833: `[229]` — working good and meritorious, [229] if it be well tempered with
+- line 8852: `[230]` — the nearer it approacheth [230] for to perceive the gift of this
+- line 8858: `[231]` — sons. [231] That is, souls that are made so humble, and so pliable
+- line 8859: `[232]` — [232] to God, that they work not of themselves, but suffer the Holy
+- line 8877: `[233]` — the affection and into the reward [233] of His own love, as if He had
+- line 8885: `[234]` — anything as of ourselves, but all our sufficiency is of God. [234] For
+- line 8888: `[235]` — pleasure. [235] But I say that such affections are good, being made by
+- line 8897: `[236]` — measure, [236] in part, here in a pure soul through the spiritual sight
+- line 8903: `[228]` — [228] Restfully.
+- line 8905: `[229]` — [229] Medeful.
+- line 8907: `[230]` — [230] Nigheth.
+- line 8909: `[231]` — [231] Rom. 8.
+- line 8911: `[232]` — [232] Buxom.
+- line 8913: `[233]` — [233] Mede.
+- line 8915: `[234]` — [234] 1 Cor. 3.
+- line 8917: `[235]` — [235] Phil. 2.
+- line 8919: `[236]` — [236] In little.
+- line 8941: `[237]` — damnation, and maketh it God's son, and a receiver [237] of the
+- line 8962: `[238]` — I am God. [238] That is, ye that are reformed in feeling, and have your
+- line 8985: `[239]` — all into quietness, [239] and into liking, as it were, without working
+- line 8991: `[240]` — sobriety and staidness, [240] chastity and purity and love to her
+- line 8993: `[241]` — [241] painful and hard for to keep, are now turned into easiness, [242]
+- line 9007: `[243]` — [243] but they are not yet humble enough. They have not yet put
+- line 9017: `[244]` — comforted and so borne up with the restful [244] feeling of love that
+- line 9023: `[237]` — [237] Perceiver.
+- line 9025: `[238]` — [238] Ps. 45.
+- line 9027: `[239]` — [239] Softness.
+- line 9029: `[240]` — [240] Sadness.
+- line 9031: `[241]` — [241] Laboursome.
+- line 9033: `[242]` — [242] Softness.
+- line 9035: `[243]` — [243] Full mede.
+- line 9037: `[244]` — [244] Soft.
+- line 9043: `[245]` — all earthly Honours [245]
+- line 9077: `[246]` — love that it hath to behold Him. It taketh no heed [246] of any
+- line 9082: `[247]` — as nothing before Thee. [247] That is, Lord Jesus, the sight of why
+- line 9096: `[248]` — reputed as nothing, [248] and as a vain thing. [249] That is, in
+- line 9097: `[250]` — comparison [250] of the endless Being, and the unchangeable nature of
+- line 9115: `[251]` — manner of miracles, yet would he take no more delight [251] in all
+- line 9133: `[252]` — wonderfully, and beareth it up so mightily and so easily, [252] that
+- line 9136: `[253]` — [253] him, worship him or despise him, as to himself he sets it not to
+- line 9137: `[254]` — heart, neither to be well pleased [254] (for his greater humiliation)
+- line 9143: `[255]` — He shall pluck my feet out of the net. [255] For when he doth so, then
+- line 9149: `[256]` — compass thee with a shield. [256] And that is, if thou, leaving all
+- line 9165: `[257]` — [257] away and passeth forth.
+- line 9171: `[258]` — wonderfully and privily and softly, and the soul knoweth [258] not how.
+- line 9184: `[245]` — [245] Worship.
+- line 9186: `[246]` — [246] Keep.
+- line 9188: `[247]` — [247] Ps. 38.
+- line 9190: `[248]` — [248] Unnoteful.
+- line 9192: `[249]` — [249] Isa. 40.
+- line 9194: `[250]` — [250] Anentes.
+- line 9196: `[251]` — [251] Dainty.
+- line 9198: `[252]` — [252] Softly.
+- line 9200: `[253]` — [253] Lack.
+- line 9202: `[254]` — [254] Well paid.
+- line 9204: `[255]` — [255] Ps. 24.
+- line 9206: `[256]` — [256] Ps. 90:5.
+- line 9208: `[257]` — [257] Glenteth.
+- line 9210: `[258]` — [258] Wotteth.
+- line 9214: `[259]` — CHAPTER VIII: How Love slayeth all stirrings of Wrath and Envy easily; [259]
+- line 9218: `[260]` — LOVE, where it worketh, worketh wisely and easily [260] in a soul; for
+- line 9225: `[261]` — not through motion or rising of anger or bitterness [261] within him
+- line 9240: `[262]` — harm, shame or villainy, he heedeth [262] it not, he is not much
+- line 9245: `[263]` — forgiveness [263] was asked him; and so he had rather [264] forget it;
+- line 9248: `[265]` — with the pleasure [265] and content of love that it feeleth by that
+- line 9249: `[266]` — sight, and comforteth it so mightily that it taketh no heed [266]
+- line 9250: `[267]` — whatever men jangle or do against him; it resteth [267] nothing upon
+- line 9252: `[268]` — spiritual sight of Jesus; and therefore it is better [268] for him to
+- line 9274: `[269]` — accounted worthy to suffer any bodily pain for the love of Jesus. [269]
+- line 9275: `[270]` — They were not stirred to anger, nor to bitterness, [270] to be revenged
+- line 9305: `[259]` — [259] Softly.
+- line 9307: `[260]` — [260] Softly.
+- line 9309: `[261]` — [261] Melancholy.
+- line 9311: `[262]` — [262] Chargeth.
+- line 9313: `[263]` — [263] Merch.
+- line 9315: `[264]` — [264] Well lever.
+- line 9317: `[265]` — [265] Liking.
+- line 9319: `[266]` — [266] Kepe.
+- line 9321: `[267]` — [267] Hangeth.
+- line 9323: `[268]` — [268] Lever.
+- line 9325: `[269]` — [269] Acts 5.
+- line 9327: `[270]` — [270] Felness.
+- line 9443: `[271]` — song, or melody, or music [271] outward it be, if it hinder the thought
+- line 9453: `[272]` — Jesus; for there lies his skill [272] principally. And therefore would
+- line 9464: `[273]` — them, the better [273] he is. And if he could live in the body without
+- line 9472: `[271]` — [271] Minstrelsy.
+- line 9474: `[272]` — [272] Craft.
+- line 9476: `[273]` — [273] Lever.
+- line 9491: `[274]` — methinketh that I cannot, it passeth my attempt, [274] and my lips are
+- line 9498: `[275]` — lively feeling of grace and retiredness [275] of heart, the watchful
+- line 9500: `[276]` — shining in light, the gate [276] of Contemplation and reforming in
+- line 9534: `[277]` — for it is a voice of power, [277] softly founded in a pure soul, of the
+- line 9536: `[278]` — Lord Jesus is with power. [278] This voice is a lively words and
+- line 9538: `[279]` — Lord is lively and powerful, more piercing than any sword is. [279]
+- line 9542: `[280]` — in heaven as it were half an hour. [280] By Heaven is meant a pure soul
+- line 9558: `[281]` — spiritual gladness, and conceiveth a full great [281] certainty of
+- line 9563: `[282]` — that we are God's sons. [282]
+- line 9567: `[283]` — joy is the witness of my conscience: [283] and that is, when it
+- line 9581: `[284]` — disdain to be obedient [284] to the love of worldly things, for it is
+- line 9588: `[285]` — and God shall be exalted. [285] That is, a man that through grace
+- line 9597: `[286]` — familiarity [286] of the blessed presence of our Lord Jesus, and so
+- line 9604: `[287]` — her into solitude, [287] and I will speak to her heart. [288] That is,
+- line 9605: `[289]` — the grace of Jesus leadeth the soul from troublesome [289] company of
+- line 9615: `[290]` — spiritual beholding. And so it is in retiredness [290] of heart.
+- line 9624: `[291]` — [291] That is, the lover of Jesus, through inspiration of grace, taken
+- line 9632: `[292]` — taketh it. [292] This Manna is heavenly meat, and angels' food, as the
+- line 9658: `[293]` — sovereign feeling passeth away, and is withdrawn, the virtue [293] of
+- line 9659: `[294]` — it stayeth still, and keepeth the soul in sobriety, [294] and maketh it
+- line 9664: `[295]` — [295] That is, I sleep spiritually when through grace the love of the
+- line 9676: `[296]` — majestatem.--They waking beheld His glory. [296] By sleep of the
+- line 9682: `[297]` — shut [297] in this manner of sleep from the appetite of earthly things,
+- line 9684: `[298]` — [298] This sleeping and this waking doth love work through the light of
+- line 9688: `[274]` — [274] Assay.
+- line 9690: `[275]` — [275] Privity.
+- line 9692: `[276]` — [276] Entre.
+- line 9694: `[277]` — [277] Virtue.
+- line 9696: `[278]` — [278] Ps. 28.
+- line 9698: `[279]` — [279] Heb. 4.
+- line 9700: `[280]` — [280] Apoc. 8.
+- line 9702: `[281]` — [281] Boldness.
+- line 9704: `[282]` — [282] Rom. 8.
+- line 9706: `[283]` — [283] 2 Cor. 1.
+- line 9708: `[284]` — [284] Buxom.
+- line 9710: `[285]` — [285] Ps. 63.
+- line 9712: `[286]` — [286] Homeliness.
+- line 9714: `[287]` — [287] Oneliness.
+- line 9716: `[288]` — [288] Osee 2.
+- line 9718: `[289]` — [289] Noyous.
+- line 9720: `[290]` — [290] Privity.
+- line 9722: `[291]` — [291] Isa. 24.
+- line 9724: `[292]` — [292] Apoc. 2.
+- line 9726: `[293]` — [293] Relief.
+- line 9728: `[294]` — [294] Sadness.
+- line 9730: `[295]` — [295] Cant. 5.
+- line 9732: `[296]` — [296] Luke 9.
+- line 9734: `[297]` — [297] Spered.
+- line 9736: `[298]` — [298] Fairhead.
+- line 9752: `[299]` — softly hasting [299] after that blessed presence of Jesus; and I dare
+- line 9753: `[300]` — boldly [300] pronounce that this soul burneth all in love, and shineth
+- line 9762: `[301]` — soul to fall into itself in sensuality, [301] as it was before; and
+- line 9768: `[302]` — face, there is none that can behold Him. [302] When He showeth His
+- line 9777: `[303]` — I called, and He answered not. [303] That is, when I fall down to my
+- line 9782: `[304]` — my soul: Revertere, dilecte mi--Turn again, Thou my beloved. [304] And
+- line 9792: `[305]` — faithfulness, [305] and visiteth the soul that languisheth through
+- line 9794: `[306]` — anointeth it full gently [306] with the oil of gladness, and maketh it
+- line 9797: `[307]` — Name is as oil poured out. [307] Thy Name is Jesus, that is, health.
+- line 9802: `[308]` — light of Thy grace, healed and cured [308] from all the filth of sin,
+- line 9828: `[309]` — deceived. And he that maketh [309] not much of the presence of grace is
+- line 9829: `[310]` — unthankful [310] to the visiting thereof, whether he be in the state of
+- line 9832: `[311]` — more like unto Him in whom is no changeableness, [311] as the Apostle
+- line 9839: `[312]` — he be sequestered from all carnal affections and inclinations [312] to
+- line 9840: `[313]` — creatures, and hath all hindrances [313] of corruption and of sin
+- line 9841: `[314]` — betwixt Jesus and his soul broken away, and is fully united [314] to
+- line 9854: `[315]` — saith: The just shall live by faith. [315]
+- line 9918: `[316]` — not whence He cometh, nor whither He goeth. [316] He cometh secretly
+- line 9925: `[317]` — but from excess into moderation. [317] The height of feeling passeth,
+- line 9928: `[318]` — wilfully into wretchedness or carelessness [318] in sensuality, nor to
+- line 9934: `[299]` — [299] Highing.
+- line 9936: `[300]` — [300] Hardly.
+- line 9938: `[301]` — [301] Fleshly heed.
+- line 9940: `[302]` — [302] Job 34.
+- line 9942: `[303]` — [303] Cant. 3.
+- line 9944: `[304]` — [304] Cant. 4.
+- line 9946: `[305]` — [305] Sothfastness.
+- line 9948: `[306]` — [306] Softly.
+- line 9950: `[307]` — [307] Cant. 1.
+- line 9952: `[308]` — [308] Sorted.
+- line 9954: `[309]` — [309] Keeps not.
+- line 9956: `[310]` — [310] Unkind.
+- line 9958: `[311]` — [311] Jas. 1.
+- line 9960: `[312]` — [312] Commoning.
+- line 9962: `[313]` — [313] Meanes.
+- line 9964: `[314]` — [314] Oonyd.
+- line 9966: `[315]` — [315] Heb. 10.
+- line 9968: `[316]` — [316] St John 3.
+- line 9970: `[317]` — [317] Sobriety.
+- line 9972: `[318]` — [318] Dissolution.
+- line 9987: `[319]` — in will to be pliable [319] to all the stirrings of grace, ready to
+- line 10005: `[320]` — burning fire, which heateth [320] all the powers of the soul, and
+- line 10010: `[321]` — and sing the praises [321] of God with spiritual mirth in heavenly
+- line 10022: `[322]` — &c.--Let my prayer be dressed as incense in Thy sight. [322] For even
+- line 10028: `[323]` — delight rest upon a clean soul, that is all bilapped [323] and warmed
+- line 10031: `[324]` — Jesus, and receiveth grace again. It maketh a soul familiar, [324] and,
+- line 10053: `[325]` — whole in itself so far parted from sensuality, [325] that it is master
+- line 10058: `[326]` — [326] That is, ye souls that are reformed in spiritual life through
+- line 10128: `[327]` — Jesus is love, [327] Jesus is grace, Jesus is God. And because He
+- line 10133: `[319]` — [319] Buxom.
+- line 10135: `[320]` — [320] Chaffeth.
+- line 10137: `[321]` — [321] Lovings.
+- line 10139: `[322]` — [322] Ps. 140.
+- line 10141: `[323]` — [323] Happed.
+- line 10143: `[324]` — [324] Homely.
+- line 10145: `[325]` — [325] Fleshly heed.
+- line 10147: `[326]` — [326] Ps. 130.
+- line 10149: `[327]` — [327] 1 John 4.
+- line 10188: `[328]` — [328] Right so the spiritual presence of Jesus openeth the wit of His
+- line 10213: `[329]` — the Father. [329] To a clean soul whose palate is purified from filth
+- line 10234: `[330]` — of skill [330] in His keeping, as holy Writ saith, [331] and He Himself
+- line 10270: `[332]` — sweeter than honey to my mouth. [332] That is, Lord Jesus, Thy holy
+- line 10276: `[333]` — in aenigmate.--In a glass, and by a likeness, [333] as the Apostle
+- line 10316: `[328]` — [328] St Luke 24.
+- line 10318: `[329]` — [329] St John 15.
+- line 10320: `[330]` — [330] Cunning.
+- line 10322: `[331]` — [331] Is. 22.
+- line 10324: `[332]` — [332] Ps. 118.
+- line 10326: `[333]` — [333] 1 Cor. 13.
+- line 10341: `[334]` — the spirit went, thither went the wheels following him. [334] By wheels
+- line 10351: `[335]` — I know them, and they know Me. [335] The privy voice of Jesus is full
+- line 10361: `[336]` — sometimes showeth Himself as an awful [336] master, and sometimes as a
+- line 10409: `[334]` — [334] Ezec. 1.
+- line 10411: `[335]` — [335] St John 10.
+- line 10413: `[336]` — [336] Haughtful.
+- line 10432: `[337]` — whom my soul loveth. [337] That is, I will rise into highness of
+- line 10475: `[338]` — fiend, upside down, and he shall be as nought. [338] Much wonder hath
+- line 10479: `[339]` — Jesus, not so much as enter into a swine, as the Gospel saith [339] ,
+- line 10492: `[340]` — the angels? [340] namely, those that are wicked spirits through malice
+- line 10496: `[341]` — afterwards of our Lord Jesus openly in truth. Shamed and troubled [341]
+- line 10505: `[337]` — [337] Cant. 3.
+- line 10507: `[338]` — [338] Prov. 12.
+- line 10509: `[339]` — [339] St Matt. 8.
+- line 10511: `[340]` — [340] 1 Cor. 4:3.
+- line 10513: `[341]` — [341] Shent.
+- line 10540: `[342]` — [342] As if he had said thus: Know ye that all this spiritual working
+- line 10587: `[343]` — the veins of His whispering mine ear hath perceived. [343] The
+- line 10598: `[344]` — shall discover thick woods. [344] That is, the inspiration of Jesus
+- line 10653: `[342]` — [342] Heb. 1.
+- line 10655: `[343]` — [343] Job 4.
+- line 10657: `[344]` — [344] Ps. 28.
+- line 10671: `[1]` — [1]1   [2]3
+- line 10675: `[3]` — [3]6
+- line 10679: `[4]` — [4]11
+- line 10683: `[5]` — [5]3   [6]4   [7]11   [8]20   [9]34
+- line 10687: `[10]` — [10]1   [11]18   [12]24   [13]28   [14]28   [15]33   [16]35   [17]38
+- line 10688: `[18]` — [18]38   [19]40   [20]42   [21]44   [22]45   [23]63   [24]72   [25]72
+- line 10689: `[26]` — [26]83   [27]90   [28]90:5   [29]96   [30]118   [31]118   [32]118
+- line 10690: `[33]` — [33]130   [34]135   [35]138   [36]138   [37]138:16   [38]140   [39]141
+- line 10694: `[40]` — [40]2   [41]4   [42]6   [43]12   [44]14
+- line 10698: `[45]` — [45]1   [46]1   [47]1   [48]3   [49]3   [50]4   [51]5   [52]5
+- line 10702: `[53]` — [53]2   [54]3   [55]5   [56]9   [57]9   [58]22   [59]24   [60]26
+- line 10704: `[61]` — [61]40   [62]43   [63]45   [64]47   [65]54:7-8   [66]58   [67]66
+- line 10708: `[68]` — [68]9   [69]20:9   [70]28
+- line 10712: `[71]` — [71]4
+- line 10716: `[72]` — [72]12
+- line 10720: `[73]` — [73]2
+- line 10724: `[74]` — [74]12
+- line 10728: `[75]` — [75]4
+- line 10732: `[76]` — [76]5   [77]5   [78]5   [79]5   [80]6   [81]8   [82]8   [83]11
+- line 10734: `[84]` — [84]13   [85]16   [86]19
+- line 10738: `[87]` — [87]8   [88]9   [89]10   [90]13   [91]14   [92]14   [93]15   [94]16
+- line 10740: `[95]` — [95]24
+- line 10744: `[96]` — [96]1   [97]1   [98]1   [99]1   [100]3   [101]3   [102]4   [103]4
+- line 10745: `[104]` — [104]4   [105]4:1   [106]4:3   [107]5   [108]10   [109]12   [110]13
+- line 10746: `[111]` — [111]13   [112]14   [113]14   [114]14   [115]15   [116]16   [117]17
+- line 10750: `[118]` — [118]2   [119]2   [120]5
+- line 10754: `[121]` — [121]5   [122]6   [123]7   [124]8   [125]8   [126]8   [127]8   [128]8
+- line 10756: `[129]` — [129]8   [130]8   [131]10   [132]12
+- line 10760: `[133]` — [133]1   [134]2   [135]3   [136]4   [137]4:3   [138]6:17   [139]7
+- line 10761: `[140]` — [140]8   [141]10   [142]12   [143]13   [144]13   [145]13   [146]13
+- line 10762: `[147]` — [147]14:14   [148]14:15   [149]15
+- line 10766: `[150]` — [150]1   [151]3:18   [152]4   [153]5:13-14
+- line 10770: `[154]` — [154]4   [155]4   [156]5   [157]5   [158]6
+- line 10774: `[159]` — [159]3:18   [160]4   [161]4   [162]4   [163]5   [164]6
+- line 10778: `[165]` — [165]2   [166]3   [167]3:13
+- line 10782: `[168]` — [168]1   [169]3   [170]3   [171]3
+- line 10786: `[172]` — [172]1   [173]4   [174]10   [175]10   [176]11   [177]12
+- line 10790: `[178]` — [178]1   [179]3
+- line 10794: `[180]` — [180]3   [181]4
+- line 10798: `[182]` — [182]2   [183]8   [184]21
+- line 10802: `[185]` — [185]2
+- line 10806: `[186]` — [186]4:18   [187]10   [188]15
+- line 10812: `[189]` — [189]1  [190]2  [191]3  [192]4  [193]5  [194]6
+
+## 3. Garbled polytonic Greek (advisory — reconstruct by hand)
+
+_No suspect Greek runs detected._
+
+## 4. Near-homographs (choose — alternatives offered, never applied)
+
+_No known theological near-homographs present._
