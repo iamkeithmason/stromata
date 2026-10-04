@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createServerClient } from '@/lib/supabase/server'
+import { revalidateEntity } from '@/lib/publishing/revalidate-entities'
 
 export async function GET() {
   const supabase = createServerClient()
@@ -29,5 +30,6 @@ export async function POST(request: NextRequest) {
   })
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+  revalidateEntity('collection', [slug])
   return NextResponse.json({ ok: true })
 }

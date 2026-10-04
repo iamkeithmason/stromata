@@ -1,4 +1,5 @@
 import { revalidatePath } from 'next/cache'
+import { revalidateTextPages } from '@/lib/publishing/revalidate-entities'
 import type { SupabaseClient } from '@supabase/supabase-js'
 import { fetchCollectionAuthors, type CollectionAuthorRef } from '@/lib/collections/author'
 
@@ -217,7 +218,12 @@ export async function publishText(
 
   const paths = surfacePathsFor(text)
 
-  if (!skipRevalidation) revalidatePaths(paths)
+  if (!skipRevalidation) {
+    revalidatePaths(paths)
+    // A chapter's siblings link to it (prev/next), so for a text in a collection
+    // the other pages in that collection change too. See revalidate-entities.ts.
+    if (collection) revalidateTextPages()
+  }
 
   return { ok: true, id, title, slug: text.slug, paths }
 }
@@ -286,7 +292,11 @@ export async function publishCollection(
     if (author.slug) paths.push(`/authors/${author.slug}`)
   }
 
-  if (!options.skipRevalidation) revalidatePaths(paths)
+  if (!options.skipRevalidation) {
+    revalidatePaths(paths)
+    // Publishing a collection changes whether its texts show collection nav.
+    revalidateTextPages()
+  }
 
   return { ok: true, id, title, slug: collection.slug, paths }
 }
@@ -316,9 +326,11 @@ export async function revalidateText(
   try {
     const { data } = await supabase.from('texts').select(SURFACE_SELECT).eq('id', id).maybeSingle()
     if (!data) return
-    const paths = surfacePathsFor(data as unknown as TextRow)
+    const row = data as unknown as TextRow
+    const paths = surfacePathsFor(row)
     for (const s of alsoTextSlugs) if (s) paths.push(`/texts/${s}`)
     revalidatePaths([...new Set(paths)])
+    if (one(row.collection)) revalidateTextPages()
   } catch {
     // Swallowed on purpose — see above.
   }

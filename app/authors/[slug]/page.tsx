@@ -13,10 +13,10 @@ import { OG_IMAGE } from '@/lib/metadata'
 const SITE_URL = 'https://www.thestromata.com'
 
 // Incremental Static Regeneration: cache the rendered page and revalidate
-// daily (was hourly until 2026-09-29 — Vercel Hobby CPU). Safe given the manual
+// weekly (hourly until 2026-09-29, daily until 2026-10-04 — Vercel Hobby CPU). Safe given the manual
 // publish cadence, and publish-text.ts revalidates the path on publish — newly published texts for
 // this author appear within the window rather than requiring a redeploy.
-export const revalidate = 86400
+export const revalidate = 604800
 
 type Props = { params: Promise<{ slug: string }> }
 

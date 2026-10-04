@@ -7,6 +7,33 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-10-04 — Vercel CPU, round two: weekly page cache, and every admin save now refreshes its pages
+
+The 29 Sep fix halved the daily Fluid Active CPU peak but not enough: usage sat at ~12–17 min/day
+against a ~8 min/day budget for the 4h Hobby allowance (early September was already ~8 min/day, i.e.
+at the limit before the spike). Vercel Observability (production, 12h) put `/texts/[slug]` first —
+262 invocations, ~2m CPU, i.e. crawlers walking the ~770 pages and each one regenerating once per
+daily window — then the PDF routes (33 invocations, 73s: ~1s per text PDF, ~9s per collection PDF).
+The sitemap, which I had suggested caching, turned out to cost ~7s CPU/day and was left alone.
+
+- **Public pages now refresh weekly** (`revalidate = 604800`) and the public Supabase client's data
+  cache moved with them (`CACHE_SECONDS`, 1 day → 7 days; a page refreshes as often as its shortest
+  fetch cache, so changing only one would do nothing). The home page stays hourly; **`/scripture/[ref]`
+  stays daily** because publishing deliberately does not fan out to its ~4,000 leaves
+  (`createPublicClient` gained a `revalidate` option for it).
+- **Safety work that makes a week acceptable.** The era, tradition, theme, location and collection
+  admin editors had *never* called `revalidatePath` — invisible when pages refreshed hourly, a week of
+  "my edit didn't save" otherwise. New `lib/publishing/revalidate-entities.ts` (`entitySurfaces` +
+  `revalidateEntity`, unit-tested) is wired into all seven routes, including the old slug on a rename.
+  Publishing or editing a text that sits in a collection, and publishing a collection, now also mark
+  every `/texts/[slug]` page stale (lazily) because siblings render prev/next links to it.
+- CLAUDE.md "Vercel usage" gained the caching rule (item 3) and a note that the preview tag matches
+  anywhere in a commit message, body included.
+- Trade-off: an edit made straight to the database by a CLI script takes up to a week to show.
+- **Not verified here:** the CPU effect (needs a week of daily bars) and `revalidatePath(pattern,
+  'page')` against a live deployment — check once by saving an era description in the admin app and
+  reloading that era page.
+
 ## 2026-09-29 — Previews are opt-in; batch small changes (Vercel usage, part 2)
 
 Follow-up to the CPU fix below. `vercel.json` now sets an Ignored Build Step
