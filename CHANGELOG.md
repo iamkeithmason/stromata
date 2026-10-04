@@ -7,6 +7,38 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-10-04 — Docs-only and content-only production commits no longer deploy
+
+Every production deployment starts with an empty page cache, so each one makes crawlers re-render the
+site. Two kinds of commit deploy the site for nothing: the weekly analytics-digest workflow commits a
+Markdown report straight to `main` every Monday at 08:00 UTC, and each content-pipeline run commits the
+queue, staged Markdown and a run log (what changes is Supabase, never what is built). Agreed with Keith.
+
+`scripts/vercel-ignore-build.sh` now skips a **production** build when every file in the commit is on a
+short `SITE_IRRELEVANT` list: `CHANGELOG.md`, `CLAUDE.md`, `scripts/analytics/reports/`,
+`scripts/ingestion/run-log/`, `scripts/ingestion/prospect-queue.json`, `scripts/ingestion/output/`. The list
+is deliberately narrow — nothing the **public** site builds or serves reads any of it (grep of `app/` and
+`lib/`), and code such as `scripts/analytics/aggregate.mjs` (imported by `lib/analytics/dashboard.ts`) and
+`scripts/ingestion/*.mjs` (imported by an admin route) is *not* listed. Every doubt builds: no parent commit,
+empty diff, a git error, any unlisted path, and `git diff --no-renames` so moving a site file into a listed
+folder still counts as a site change. Putting `[deploy]` in a commit message forces a build (and, like the
+preview tag, matches anywhere in the message).
+
+**Accepted trade-off:** the admin pipeline and sourcer screens read the queue, staged output and run logs from
+the filesystem, so the *production* copy of those screens shows data as of the last real deploy. They are
+local operator tools; Keith chose this for the extra skipped deploys. (I had first described this trade-off
+only for the queue and output; the admin pipeline page also reads `run-log/`, so it applies to all three.)
+
+Replayed against the last 79 production commits: it would have skipped the four Monday digests, the
+content-pipeline runs and two docs-only commits, and wrongly skipped none. 14 tests in
+`scripts/vercel-ignore-build.test.mjs` build throwaway git repos for the awkward cases (renames, merge
+commits, a root commit, a multi-commit push, look-alike paths).
+
+Known blind spot, documented in the script and CLAUDE.md: a push of *several* commits at once is checked
+against the last deployed commit only if Vercel supplies `VERCEL_GIT_PREVIOUS_SHA` (its docs do not mention
+it, so the test for it is a guard rather than a promise). PR merges and the digest are single commits, so it
+does not arise today.
+
 ## 2026-10-04 — PDF downloads cached for a week
 
 Follow-up to the weekly page cache. The two PDF routes are the most CPU-expensive requests on the
