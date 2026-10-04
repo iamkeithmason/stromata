@@ -7,9 +7,9 @@ import { AuthorsBrowser, type AuthorItem } from '@/app/components/AuthorsBrowser
 
 // tradition and era are both direct FKs on authors.
 // Incremental Static Regeneration: serve a cached render and refresh it at most
-// daily, so a crawler sweep costs one Supabase query per page per day rather
+// weekly, so a crawler sweep costs one Supabase query per page per week rather
 // than one per request.
-export const revalidate = 86400
+export const revalidate = 604800
 
 type AuthorRow = {
   id: string

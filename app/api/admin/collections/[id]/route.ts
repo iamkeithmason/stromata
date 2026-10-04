@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createServerClient } from '@/lib/supabase/server'
+import { revalidateEntity } from '@/lib/publishing/revalidate-entities'
 
 type Params = { params: Promise<{ id: string }> }
 
@@ -27,6 +28,8 @@ export async function PATCH(request: NextRequest, { params }: Params) {
   }
 
   const supabase = createServerClient()
+  // The slug before this save, so a rename also refreshes the old path.
+  const { data: prior } = await supabase.from('collections').select('slug').eq('id', id).maybeSingle()
   const { error } = await supabase
     .from('collections')
     .update({
@@ -39,5 +42,6 @@ export async function PATCH(request: NextRequest, { params }: Params) {
     .eq('id', id)
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+  revalidateEntity('collection', [slug, prior?.slug])
   return NextResponse.json({ ok: true })
 }

@@ -22,10 +22,11 @@ import { CitationButton } from '@/app/components/CitationButton'
 import { resolveLicense } from '@/lib/licenses'
 
 // Incremental Static Regeneration: cache the rendered page and revalidate
-// daily (was hourly until 2026-09-29 — Vercel Hobby CPU). Safe given the manual
-// publish cadence, and publish-text.ts revalidates the path on publish — a newly published or edited
-// text appears within the window rather than requiring a redeploy.
-export const revalidate = 86400
+// weekly (hourly until 2026-09-29, daily until 2026-10-04 — Vercel Hobby CPU). Safe given the manual
+// publish cadence: publishing and every admin save revalidate the affected paths
+// straight away (publish-text.ts), so the window is only the safety net for an
+// edit made outside the admin app.
+export const revalidate = 604800
 
 type Props = { params: Promise<{ slug: string }> }
 

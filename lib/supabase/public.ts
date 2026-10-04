@@ -15,7 +15,7 @@ import { createClient } from '@supabase/supabase-js'
 // Safe to call from either a Server Component or the browser — the anon key is
 // already published in the client bundle.
 //
-// EVERY READ THROUGH THIS CLIENT IS CACHED FOR A DAY
+// EVERY READ THROUGH THIS CLIENT IS CACHED FOR A WEEK
 //
 // Next 15 sends `fetch` with `cache: 'no-store'` unless told otherwise, so each
 // of these queries ran again on every request — including every crawler hit.
@@ -29,17 +29,20 @@ import { createClient } from '@supabase/supabase-js'
 // re-downloaded the text's whole body each time.
 //
 // Tagging the fetch moves those reads into Next's Data Cache, so a repeated
-// query is answered locally and Supabase sees it at most once a day however
-// many times the page is requested. A day matches the `revalidate` window the
-// public pages declare (hourly until 2026-09-29, when crawler re-renders were
-// found to be most of the site's Vercel Hobby CPU — and Next refreshes a page as
-// often as its SHORTEST data-cache entry, so this and the page setting must move
-// together; the home page keeps its own hourly window for the season turnover),
+// query is answered locally and Supabase sees it at most once a week however
+// many times the page is requested. A week matches the `revalidate` window the
+// public pages declare (hourly until 2026-09-29, daily until 2026-10-04, when
+// crawler re-renders were found to be most of the site's Vercel Hobby CPU — and
+// Next refreshes a page as often as its SHORTEST data-cache entry, so this and
+// the page setting must move together; the home page keeps its own hourly window
+// for the season turnover, and /scripture/[ref] passes `revalidate: 86400`
+// because publishing deliberately does not fan out to its ~4,000 leaves),
 // and `revalidatePath` — which the publish path calls
 // through `lib/publishing/publish-text.ts` — drops these entries along with the
-// rendered page, so publishing still shows up immediately rather than a day
-// later. Edits made straight to the database from a CLI script (no
-// revalidatePath) now take up to a day to show.
+// rendered page, so publishing still shows up immediately rather than a week
+// later. So does every admin editor (lib/publishing/revalidate-entities.ts).
+// Edits made straight to the database from a CLI script (no revalidatePath)
+// now take up to a week to show.
 //
 // This is deliberately on the PUBLIC client only. The admin surfaces read
 // through `createServerClient()`, which stays uncached: a back-office form must
@@ -50,7 +53,7 @@ import { createClient } from '@supabase/supabase-js'
 // meant to be generated fresh on every request, and a default that quietly
 // overrode that would make them say something their own source file denies.
 /** Matches the `revalidate` window the public pages declare. */
-const CACHE_SECONDS = 86400
+const CACHE_SECONDS = 604800
 
 // A stalled read used to hang until the platform's own function timeout (up
 // to 60s on Vercel), which a click just reads as "nothing happened" — found
@@ -59,10 +62,10 @@ const CACHE_SECONDS = 86400
 // instead, caught by the nearest `error.tsx`.
 const QUERY_TIMEOUT_MS = 8000
 
-export function createPublicClient(options: { live?: boolean } = {}) {
+export function createPublicClient(options: { live?: boolean; revalidate?: number } = {}) {
   const cacheInit: RequestInit = options.live
     ? { cache: 'no-store' }
-    : ({ next: { revalidate: CACHE_SECONDS } } as RequestInit)
+    : ({ next: { revalidate: options.revalidate ?? CACHE_SECONDS } } as RequestInit)
 
   return createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,

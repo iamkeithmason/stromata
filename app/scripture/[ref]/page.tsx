@@ -11,7 +11,15 @@ import ScriptureSearch from '../ScriptureSearch'
 // than one per request.
 // 4,268 distinct reference routes are reachable from the scripture index, and
 // every one of them re-queried Supabase on each request without this.
+//
+// Deliberately NOT weekly like the other public pages: publishing refreshes the
+// scripture index but does not fan out to these ~4,000 leaves (see the
+// "does not fan out" test in lib/publishing/publish-text.test.ts), so the window
+// IS the freshness guarantee here. It must be passed to the client too — a page
+// refreshes as often as its shortest data-cache entry, and the client default
+// is a week.
 export const revalidate = 86400
+const CACHE_SECONDS = 86400
 
 type Props = { params: Promise<{ ref: string }> }
 
@@ -74,7 +82,7 @@ export default async function ScriptureLookupPage({ params }: Props) {
     )
   }
 
-  const supabase = createPublicClient()
+  const supabase = createPublicClient({ revalidate: CACHE_SECONDS })
   const label = referenceLabel(query.bookName, query.chapter, query.verse)
 
   // Reverse lookup. Exact-verse match: a text cites this verse if it has a

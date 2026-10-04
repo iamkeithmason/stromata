@@ -12,10 +12,10 @@ export const metadata = {
 }
 
 // Incremental Static Regeneration: cache the rendered page and revalidate
-// daily so "Most cited" stays fresh without a per-request Supabase hit. Given
-// the manual publish cadence, a day-stale index is an acceptable trade for
+// weekly so "Most cited" stays fresh without a per-request Supabase hit. Given
+// the manual publish cadence, a week-stale index is an acceptable trade for
 // serving this page from cache.
-export const revalidate = 86400
+export const revalidate = 604800
 
 type CountRow = {
   osis: string

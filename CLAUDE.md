@@ -393,6 +393,9 @@ to `main`) always builds. So by default a pushed branch gets **no preview URL** 
 - **When he says yes,** put `[preview]` in the message of the next commit you push (a real change,
   or the commit that carries his requested tweak). Only the head commit of a push counts, so a later
   push without the tag builds nothing — tag again if he wants the preview refreshed.
+- **The tag matches anywhere in the head commit's message, body included** — a commit that merely
+  *mentions* it builds a preview (this happened on #136). When you are not asking for a preview, don't
+  write the literal string in a commit message; say "the preview tag" instead.
 
 **2. Group small, related changes into one PR.** Every merge to `main` is a production deploy, and
 every deploy starts with an empty page cache, so crawlers re-render the site after each one — merge
@@ -400,6 +403,24 @@ frequency, not reader traffic, drove the Sept 2026 spike (17 merges in 1–19 Se
 If a session turns up several small related fixes, ship them together in one PR rather than one PR
 each; if Keith asks for a follow-up to a PR that is still open, add it to that PR. (Unrelated
 changes still get separate PRs — this is about not splitting one piece of work into many.)
+
+**3. Public pages are cached for a week, so every save must refresh what it changed.** Since
+2026-10-04 the public pages (`/texts/[slug]`, authors, collections, eras, traditions, themes,
+locations, `/scripture`) use `revalidate = 604800`, and the public Supabase client's data cache
+(`CACHE_SECONDS` in `lib/supabase/public.ts`) matches — **the two must move together**, because Next
+refreshes a page as often as its *shortest* data-cache entry. The week is only a safety net; freshness
+comes from saves calling `revalidatePath`:
+
+- Text publish/edit → `lib/publishing/publish-text.ts`; author saves → `lib/authors/revalidate.ts`;
+  era/tradition/theme/location/collection saves → `revalidateEntity` in
+  `lib/publishing/revalidate-entities.ts`.
+- **Any new admin route or script that changes something the public site renders must call one of
+  these** (or add an entity to `entitySurfaces`, with a test). A route that doesn't looks fine for an
+  hour under the old window and silently stale for a week under this one.
+- **`/scripture/[ref]` is the exception: daily, on purpose** (`revalidate: 86400`, passed to the client
+  too), because publishing does not fan out to its ~4,000 leaves.
+- An edit made straight to the database from a CLI script calls no `revalidatePath` and so takes up to
+  a week to show. If that matters, refresh the affected page by saving it once in the admin app.
 
 ---
 

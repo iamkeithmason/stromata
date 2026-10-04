@@ -4,9 +4,9 @@ import { SiteHeader } from '@/app/components/SiteHeader'
 import { TrackPageEvent } from '@/app/components/TrackPageEvent'
 
 // Incremental Static Regeneration: serve a cached render and refresh it at most
-// daily, so a crawler sweep costs one Supabase query per page per day rather
+// weekly, so a crawler sweep costs one Supabase query per page per week rather
 // than one per request.
-export const revalidate = 86400
+export const revalidate = 604800
 
 export const metadata = {
   title: 'Locations — The Stromata',

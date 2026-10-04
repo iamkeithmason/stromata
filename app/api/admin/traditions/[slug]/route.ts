@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createServerClient } from '@/lib/supabase/server'
+import { revalidateEntity } from '@/lib/publishing/revalidate-entities'
 
 type Params = { params: Promise<{ slug: string }> }
 
@@ -15,5 +16,6 @@ export async function PATCH(req: NextRequest, { params }: Params) {
     .eq('slug', slug)
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+  revalidateEntity('tradition', [slug])
   return NextResponse.json({ ok: true })
 }

@@ -7,9 +7,9 @@ import { TrackPageEvent } from '@/app/components/TrackPageEvent'
 import { readingMinutes } from '@/lib/reading-time'
 
 // Incremental Static Regeneration: serve a cached render and refresh it at most
-// daily, so a crawler sweep costs one Supabase query per page per day rather
+// weekly, so a crawler sweep costs one Supabase query per page per week rather
 // than one per request.
-export const revalidate = 86400
+export const revalidate = 604800
 
 type Props = { params: Promise<{ 'country-slug': string }> }
 
