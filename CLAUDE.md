@@ -378,7 +378,8 @@ example (a NOINDEX exploration, not linked in nav).
 ## Vercel usage — previews are opt-in, and batch small changes
 
 Stromata is on Vercel's **Hobby (free) tier**, and in Sept 2026 it went over the Fluid Active CPU
-allowance (see CHANGELOG 2026-09-29). Two habits keep it under, and both apply to every session:
+allowance (see CHANGELOG 2026-09-29 and 2026-10-04). A few habits keep it under, and all apply to
+every session:
 
 **1. Previews only build when asked.** `vercel.json` → `scripts/vercel-ignore-build.sh` skips every
 preview build unless the pushed head commit's message contains **`[preview]`**. Production (merges
@@ -403,6 +404,18 @@ frequency, not reader traffic, drove the Sept 2026 spike (17 merges in 1–19 Se
 If a session turns up several small related fixes, ship them together in one PR rather than one PR
 each; if Keith asks for a follow-up to a PR that is still open, add it to that PR. (Unrelated
 changes still get separate PRs — this is about not splitting one piece of work into many.)
+
+**Docs-only production commits don't deploy.** The same script skips a *production* build when every
+file in the commit is on `SITE_IRRELEVANT` at the top of `scripts/vercel-ignore-build.sh`: `CHANGELOG.md`,
+`CLAUDE.md`, `scripts/analytics/reports/`, `scripts/ingestion/run-log/` — chiefly so the Monday analytics-digest
+commit stops wiping the page cache. Rules: **a path goes on that list only if nothing the site builds
+or serves reads it — grep `app/` and `lib/` first** (`scripts/analytics/aggregate.mjs` is *not* listed:
+`lib/analytics/dashboard.ts` imports it). Every doubt builds (no parent commit, empty diff, git error,
+a path not listed). To force a build of a docs-only commit, put the force-deploy tag in its message —
+the literal string is `[deploy]`, and like the preview tag it matches anywhere in the message, so don't write
+it unless you mean it. A known blind spot: a push of several commits at once relies on Vercel supplying
+`VERCEL_GIT_PREVIOUS_SHA` to catch an earlier site change behind a final report-only commit (PR merges
+and the digest are single commits, so this does not arise today). Tests: `scripts/vercel-ignore-build.test.mjs`.
 
 **3. Public pages are cached for a week, so every save must refresh what it changed.** Since
 2026-10-04 the public pages (`/texts/[slug]`, authors, collections, eras, traditions, themes,

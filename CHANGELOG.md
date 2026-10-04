@@ -7,6 +7,34 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-10-04 — Docs-only production commits no longer deploy
+
+Every production deployment starts with an empty page cache, so each one makes crawlers re-render the
+site. The weekly analytics-digest workflow commits a Markdown report straight to `main` every Monday at
+08:00 UTC — a full deploy, and a full cache wipe, for a file the site never reads. Agreed with Keith.
+
+`scripts/vercel-ignore-build.sh` now skips a **production** build when every file in the commit is on a
+short `SITE_IRRELEVANT` list: `CHANGELOG.md`, `CLAUDE.md`, `scripts/analytics/reports/`,
+`scripts/ingestion/run-log/`. The list is deliberately narrow — a path qualifies only if nothing under
+`app/` or `lib/` reads it (e.g. `scripts/analytics/aggregate.mjs` is imported by
+`lib/analytics/dashboard.ts`, so it is *not* listed; nor are `prospect-queue.json` or staged `output/`,
+which the admin pipeline screen reads). Every doubt builds: no parent commit, empty diff, a git error, any
+unlisted path, and `git diff --no-renames` so moving a site file into a listed folder still counts as a
+site change. Putting `[deploy]` in a commit message forces a build (and, like the preview tag, matches
+anywhere in the message).
+
+Replayed against the last 79 production commits: it would have skipped the four Monday digests and two
+docs-only commits (6 in all) and wrongly skipped none. 13 new tests in
+`scripts/vercel-ignore-build.test.mjs` build throwaway git repos for the awkward cases (renames, merge
+commits, a root commit, a multi-commit push).
+
+Known blind spot, documented in the script and CLAUDE.md: a push of *several* commits at once is checked
+against the last deployed commit only if Vercel supplies `VERCEL_GIT_PREVIOUS_SHA` (its docs do not
+mention it, so the test for it is a guard rather than a promise). PR merges and the digest are single
+commits, so it does not arise today. Wider skipping (the pipeline's queue and staged output files) was
+left out on purpose: it would save about as many deploys again but lets the production copy of the admin
+pipeline screen lag behind.
+
 ## 2026-10-04 — PDF downloads cached for a week
 
 Follow-up to the weekly page cache. The two PDF routes are the most CPU-expensive requests on the
