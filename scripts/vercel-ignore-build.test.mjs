@@ -98,6 +98,19 @@ test('production skips a commit touching only docs and run logs', () => {
   rmSync(dir, { recursive: true, force: true })
 })
 
+test('production skips a content-pipeline run: queue, staged output and run log', () => {
+  const dir = baseRepo()
+  commit(dir, 'Weekly content pipeline run', {
+    'scripts/ingestion/prospect-queue.json': '{}',
+    'scripts/ingestion/output/some-slug/ch-1.md': 'chapter',
+    'scripts/ingestion/output/flat-text.md': 'text',
+    'scripts/ingestion/run-log/2026-10-05.md': 'log',
+    'CHANGELOG.md': 'v2',
+  })
+  assert.equal(run(dir, prod()).code, 0)
+  rmSync(dir, { recursive: true, force: true })
+})
+
 // ── production: what must build ─────────────────────────────────────────────
 
 test('production builds when any changed file is a site file', () => {
@@ -122,6 +135,12 @@ test('production builds for look-alike paths the app actually reads', () => {
     'scripts/analytics/aggregate.mjs',
     'scripts/analytics/reports-extra/x.md',
     'scripts/ingestion/run-log.md',
+    'scripts/ingestion/output-notes/x.md',
+    'scripts/ingestion/prospect-queue.json.bak',
+    // Code beside the data: an admin route imports split-into-chapters.mjs.
+    'scripts/ingestion/split-into-chapters.mjs',
+    'scripts/ingestion/config.js',
+    'scripts/ingestion/archive-ocr-config.mjs',
     'CHANGELOG.md.bak',
     'docs/CLAUDE.md',
   ]) {

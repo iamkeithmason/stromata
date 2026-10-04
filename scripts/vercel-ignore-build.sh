@@ -16,7 +16,8 @@
 #   A production commit whose changed files are ALL on the allowlist below
 #   skips the build. The weekly analytics digest is the canonical case: a bot
 #   commits one Markdown report to main every Monday, which used to wipe the
-#   page cache for nothing.
+#   page cache for nothing. A content-pipeline run (queue + staged Markdown +
+#   run log) is the other: it changes what Supabase holds, never what is built.
 #
 #   Every doubt resolves to BUILD: no previous commit, an empty diff, a git
 #   error, a path not on the list. A wasted deploy costs a little CPU; a skipped
@@ -25,11 +26,17 @@
 #   Escape hatch: the force-deploy tag in the head commit message builds
 #   regardless (for a docs-only commit that must still go out).
 #
-# THE ALLOWLIST RULE: a path belongs here only if nothing the site builds or
-# serves reads it. Not "it is a script" or "it is a log" — grep first. For
+# THE ALLOWLIST RULE: a path belongs here only if nothing the PUBLIC site builds
+# or serves reads it. Not "it is a script" or "it is a log" — grep first. For
 # example scripts/analytics/aggregate.mjs is NOT listed: lib/analytics/dashboard.ts
-# imports it, so a change there changes the site. Only the reports/ folder next to
-# it is output nobody imports.
+# imports it, so a change there changes the site. Likewise the code in
+# scripts/ingestion/*.mjs, which an admin route imports.
+#
+# The accepted exception: the content pipeline's own files (queue, staged output,
+# run logs) ARE read by the admin pipeline and sourcer screens, via the
+# filesystem. Those are local operator tools, so the cost is that the PRODUCTION
+# copy of those screens shows data as of the last real deploy. Agreed with Keith
+# 2026-10-04; do not add anything else the admin side reads without asking.
 
 # Exact files and path prefixes (a trailing slash marks a directory).
 SITE_IRRELEVANT=(
@@ -37,6 +44,8 @@ SITE_IRRELEVANT=(
   "CLAUDE.md"
   "scripts/analytics/reports/"
   "scripts/ingestion/run-log/"
+  "scripts/ingestion/prospect-queue.json"
+  "scripts/ingestion/output/"
 )
 
 is_site_irrelevant() {
