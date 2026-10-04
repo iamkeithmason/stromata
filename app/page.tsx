@@ -5,7 +5,7 @@ import { THEME_CLUSTERS } from '@/lib/constants'
 import SearchBar from './SearchBar'
 import { BookCover } from './components/BookCover'
 import { SiteHeader } from './components/SiteHeader'
-import { CelestialField } from './components/CelestialField'
+import { NocturneField } from './components/NocturneField'
 import { ReadingHistorySection } from './components/ReadingHistorySection'
 import { FeaturedAuthors } from './components/FeaturedAuthors'
 import { SeasonalPanel } from './components/SeasonalPanel'
@@ -233,8 +233,8 @@ export default async function Home() {
 
       <main id="main-content">
       {/* ── Hero ─────────────────────────────────────────────────────────── */}
-      <section className="celestial-hero">
-        <CelestialField />
+      <section className="celestial-hero celestial-hero--nocturne">
+        <NocturneField />
 
         <div className="celestial-hero-content">
           <h1>The Stromata</h1>
