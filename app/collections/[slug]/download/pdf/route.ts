@@ -10,6 +10,12 @@ export const revalidate = 0
 // GET /collections/[slug]/download/pdf
 // Renders a whole collection as one PDF: a cover/contents page, then every
 // published text in reading order on its own page-break-delimited section.
+// CDN-cached for a WEEK (was a day until 2026-10-04): a PDF render is the most
+// CPU-expensive request on the site (~1s for a text, ~9s for a collection) and
+// the content is stable. Accepted trade-off: an edit to a text does not purge
+// this cache (revalidatePath does not reach a CDN-cached function response),
+// so a corrected text can be served from an older PDF for up to a week unless
+// the CDN cache is purged by hand (Vercel → Settings → Caches).
 export async function GET(_req: Request, { params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
   const supabase = createPublicClient()
@@ -66,7 +72,7 @@ export async function GET(_req: Request, { params }: { params: Promise<{ slug: s
     headers: {
       'Content-Type': 'application/pdf',
       'Content-Disposition': `attachment; filename="${markdownFilename(slug).replace(/\.md$/, '.pdf')}"`,
-      'Cache-Control': 'public, max-age=3600, s-maxage=86400, stale-while-revalidate=86400',
+      'Cache-Control': 'public, max-age=3600, s-maxage=604800, stale-while-revalidate=604800',
     },
   })
 }

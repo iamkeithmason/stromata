@@ -7,6 +7,20 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-10-04 — PDF downloads cached for a week
+
+Follow-up to the weekly page cache. The two PDF routes are the most CPU-expensive requests on the
+site (production, 12h: text PDFs ~1s each, collection PDFs ~9s each, 73s total for 33 requests), so
+their CDN cache went from a day to a week (`s-maxage=604800, stale-while-revalidate=604800`). Accepted
+trade-off, agreed with Keith: an edit to a text does not purge this cache, so a corrected text can be
+served from an older PDF for up to a week unless the CDN cache is purged by hand. Markdown downloads
+are unchanged (46 requests, ~5s CPU in 12h — not worth the staleness).
+
+Also recorded today: Keith set Vercel Bot Protection to Challenge. From outside a browser, every
+route — including `/rss`, `/sitemap.xml`, `/llms.txt` and `/robots.txt` — now answers 429 with
+`x-vercel-mitigated: challenge`. That is the intent for scrapers; the open question is whether
+RSS readers and link-preview crawlers are caught too (see the Firewall bypass rule discussion).
+
 ## 2026-10-04 — Vercel CPU, round two: weekly page cache, and every admin save now refreshes its pages
 
 The 29 Sep fix halved the daily Fluid Active CPU peak but not enough: usage sat at ~12–17 min/day
