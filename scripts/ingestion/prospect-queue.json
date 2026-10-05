@@ -6416,6 +6416,23 @@
         "providence"
       ],
       "rejection_reason": ""
+    },
+    {
+      "id": "confession-patrick",
+      "status": "rejected",
+      "added": "2026-10-05",
+      "author": "Patrick of Ireland",
+      "death_year": 461,
+      "tradition": "patristic",
+      "era": "nicene-post-nicene",
+      "title": "The Confession of St. Patrick (with the Letter to Coroticus)",
+      "genre": "Confession",
+      "source_type": "archive_online",
+      "source_url": "https://www.ccel.org/ccel/p/patrick/confession/cache/confession.txt",
+      "collection_slug": "confession-patrick",
+      "translation_copyright_clear": false,
+      "stage_1_notes": "Source field used: Cleared edition URL (resolves; CCEL Rights: Public Domain). Author d. c.461 is clear, but the CCEL text is a numbered-paragraph translation credited only to \"The Robot Wisdom Pages\" with no translator or date, so the translation is unattributed and may be a 20th-century rendering.",
+      "rejection_reason": "translation provenance unverified (no named translator/date; CCEL file credits only Robot Wisdom Pages) - HARD CONSTRAINT 3, rejected as uncertain. Re-queue if a dated pre-1929 edition (e.g. Wright 1889 / Hanson) is pinned."
     }
   ]
 }
