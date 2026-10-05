@@ -7,6 +7,22 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-10-05 — "I have ten minutes": a time-framed entrance to the library
+
+Added `/ten-minutes`, an entrance organised by the reader's available time rather than by
+theological concept, and a one-line link to it from the homepage between the hero and the seasonal
+panel. The page lists up to twelve published texts whose reading estimate is ten minutes or less
+(400–2,000 words, from the existing `texts.word_count`), with optional theme chips that narrow the
+list (client-side, so the page stays statically cached) and a "Browse the whole library" link out; publishing refreshes it via `textPaths`. Selection is data-driven rather than hand-curated,
+so a newly published short text appears without an edit: texts Keith has introduced himself
+(`editorial_introduction`) lead, then the longer text, then title. The rule lives in
+`lib/ten-minutes.ts` with unit tests. No schema change; existing browse and search routes are
+untouched. Analytics: new surface values `ten-minutes` (on `text-open`) and `homepage-entrance`;
+new events `ten-minutes-open`, `ten-minutes-theme`, `ten-minutes-continue` and `ten-minutes-view`,
+added to the CLAUDE.md vocabulary — the Notion Events Register still needs the matching rows, and
+the beacon has not yet been observed on the wire (it needs a deployment; see the PR).
+Backlog: Newcomer path: 'I have ten minutes'.
+
 ## 2026-10-04 — Docs-only and content-only production commits no longer deploy
 
 Every production deployment starts with an empty page cache, so each one makes crawlers re-render the

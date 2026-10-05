@@ -77,6 +77,7 @@ export function textPaths(t: TextSurfaces): string[] {
   add('/')            // homepage — recent additions, featured band
   add('/texts')       // the texts index
   add('/authors')     // the authors index shows per-author text counts
+  add('/ten-minutes') // the short-reads entrance lists texts by reading time
   add(`/texts/${t.slug}`)
   if (t.authorSlug) add(`/authors/${t.authorSlug}`)
   if (t.collectionSlug) add(`/collections/${t.collectionSlug}`)

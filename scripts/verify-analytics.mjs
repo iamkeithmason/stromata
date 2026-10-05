@@ -366,6 +366,8 @@ function navSurfaces(site) {
   return [
     // text-open — every `from` PR #93 added, plus the surfaces already live.
     ['text-open', 'texts-index', ['/texts']],
+    ['text-open', 'ten-minutes', ['/ten-minutes']],
+    ['ten-minutes-open', 'homepage-entrance', ['/']],
     ['text-open', 'search-results', ['/search?q=augustine']],
     ['text-open', 'theme-page', site.themes],
     ['text-open', 'era-page', site.eras],
@@ -390,6 +392,7 @@ const NAV_EXPECT = {
   'text-open': { from: null, text: SLUG },
   'author-open': { from: null, author: true },
   'collection-open': { from: null, collection: SLUG },
+  'ten-minutes-open': { from: null },
 };
 
 async function checkNavEvents(context, site) {

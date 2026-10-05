@@ -269,8 +269,24 @@ export default async function Home() {
         </div>
       </section>
 
+      {/* ── Time-framed entrance ─────────────────────────────────────────── */}
+      <section className="content-shell pt-10 sm:pt-14">
+        <Link
+          href="/ten-minutes"
+          className="flex items-baseline justify-between gap-4 py-4 transition-opacity hover:opacity-70"
+          style={{ textDecoration: 'none', borderTop: '1px solid var(--rule)', borderBottom: '1px solid var(--rule)' }}
+          data-umami-event="ten-minutes-open"
+          data-umami-event-from="homepage-entrance"
+        >
+          <span className="font-serif italic text-xl" style={{ color: 'var(--ink)' }}>
+            I have ten minutes
+          </span>
+          <span className="kicker">A short text to begin with →</span>
+        </Link>
+      </section>
+
       {/* ── Seasonal panel ───────────────────────────────────────────────── */}
-      <div className="pt-10 sm:pt-14">
+      <div className="pt-8">
         <SeasonalPanel season={season} />
       </div>
 
