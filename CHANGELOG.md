@@ -7,7 +7,7 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
-## 2026-10-06 — What spent the Supabase egress on 21 Sep, and two guards against a repeat
+## 2026-10-06 — What spent the Supabase egress on 21 Sep, and three guards against a repeat
 
 The organisation went over its 5 GB free-plan egress (5.93 GB, cycle 17 Sep–17 Oct). Stromata's
 usage was almost all one day, **21 Sep: ~3.5 GB uncached plus ~1.1 GB cached**. Investigated
@@ -27,8 +27,7 @@ portraits, served full-size from Storage.
 Two changes so it stays fixed:
 
 - **`lib/supabase/no-body-in-listings.test.ts`** fails CI when a public page or route selects
-  `body` (or `select('*')` on `texts`) outside a short allowlist: the reader, the download routes
-  and search. It resolves `const` and composed select strings, so `` `${base}, body` `` counts.
+  `body` (or `select('*')` on `texts`) outside a short allowlist: the reader and the download routes. It resolves `const` and composed select strings, so `` `${base}, body` `` counts.
   Proven both ways: planting `body` in the theme page's query, or `select('*')`, turns it red.
   The 21 Sep fix was correct but enforced only by memory; this makes it a contract, the same
   argument as the colour lint rule.
@@ -42,9 +41,15 @@ Two changes so it stays fixed:
   has not yet been run against the real bucket.
   `sharp` is now a direct dependency; it was already in the tree as Next's optional image library.
 
-Still open, deliberately: **search's body-match query** selects `body` for up to 10 hits to build
-a snippet, so one search can move several MB. It is allowlisted rather than fixed here. A
-Postgres function that returns the snippet instead of the body would cut it to bytes.
+**Search no longer downloads bodies either.** Its body-match query selected `body` for up to 10
+hits only to cut a ~160-character snippet. It now filters on `body` without returning it
+(PostgREST allows that), and the snippet comes from a new `text_excerpts(ids, term)` function
+(migration 032, applied to production): a few hundred characters around the hit, with flags for
+whether the window was cut, so the ellipses stay honest. `SECURITY INVOKER`, so anon sees only
+published rows; the window is capped at 1,000 characters either side and the id list at 20, so it
+cannot be used to pull whole bodies back out. Measured as anon on a 10-hit search for "grace":
+**590 kB → 5.9 kB**. If the call fails, those rows fall back to their summary rather than breaking
+the page. Search has left the guard's allowlist.
 
 ---
 

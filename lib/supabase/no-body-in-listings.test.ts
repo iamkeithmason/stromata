@@ -24,15 +24,14 @@ import path from 'node:path'
 const ROOT = path.resolve(__dirname, '..', '..')
 
 // Files that legitimately ship a text's body. Paths are repo-relative.
+// Search is deliberately absent: it filters on body but takes its snippets
+// from the text_excerpts function (migration 032).
 const ALLOWED = new Set([
   'app/texts/[slug]/page.tsx', // the reader
   'app/texts/[slug]/download/markdown/route.ts',
   'app/texts/[slug]/download/pdf/route.ts',
   'app/collections/[slug]/download/markdown/route.ts',
   'app/collections/[slug]/download/pdf/route.ts',
-  // Search's body-match query (limit 10) builds a snippet around the hit.
-  // Known cost, kept on purpose for now — see CHANGELOG 2026-10-06.
-  'app/search/page.tsx',
 ])
 
 // Editorial surfaces sit behind Keith's login and are not crawled.
