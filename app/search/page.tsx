@@ -11,8 +11,9 @@ type TextResult = {
   id: string
   title: string
   slug: string
-  // Only the body-match query selects `body` — see the two selects below.
-  body?: string
+  // Set only on body-match results: the passage around the hit, from the
+  // text_excerpts function (see the body-search note below).
+  excerpt?: Excerpt
   summary: string | null
   word_count: number | null
   accession_number: number | null
@@ -25,6 +26,8 @@ type TextResult = {
   } | null
   genre: { name: string } | null
 }
+
+type Excerpt = { excerpt: string; has_before: boolean; has_after: boolean }
 
 type AuthorResult = {
   id: string
@@ -68,6 +71,16 @@ function bodySnippet(body: string, query = '', max = 160): string {
     }
   }
   return stripped.length > max ? stripped.slice(0, max).trimEnd() + '…' : stripped
+}
+
+// The snippet for a body match. The excerpt is already a window cut from the
+// middle of the body, so ellipses mark where the window, not just the
+// snippet, was cut short.
+function excerptSnippet({ excerpt, has_before, has_after }: Excerpt, query: string): string {
+  let snip = bodySnippet(excerpt, query)
+  if (has_before && !snip.startsWith('…')) snip = '…' + snip
+  if (has_after && !snip.endsWith('…')) snip += '…'
+  return snip
 }
 
 // Highlight occurrences of `query` within `text` using <mark>.
@@ -120,21 +133,18 @@ export default async function SearchPage({ searchParams }: Props) {
   let authors: AuthorResult[] = []
   let suggested: SuggestedText[] | null = null
 
-  // TWO SELECTS, DELIBERATELY.
+  // NO QUERY HERE SELECTS `body`.
   //
-  // A search ran five text queries, each asking for `body`, each capped at
-  // 10–20 rows: up to ~90 bodies averaging 55 kB, so roughly 5 MB of egress per
-  // search. Only one of those queries needs the body at all — the one matching
-  // *within* it, where the snippet is centred on the hit. The other four match
-  // on title, genre, theme or author and show the opening of the text, which
-  // `summary` gives more usefully and in a couple of hundred bytes.
+  // A search once ran five text queries that each asked for `body`: up to ~90
+  // bodies averaging 55 kB, roughly 5 MB of egress per search. Title, genre,
+  // theme and author matches show `summary` instead. The body match still
+  // *filters* on body (PostgREST can filter on a column it does not return),
+  // and its snippet comes from text_excerpts (migration 032), which sends back
+  // a few hundred characters around the hit. lib/supabase/no-body-in-listings
+  // .test.ts keeps it that way.
   const textSelect = `id, title, slug, summary, word_count, accession_number,
     author:authors(name, slug, death_year, tradition:traditions(name, slug), era:eras(label, slug)),
     genre:genres(name)`
-
-  // Body-match results only: the full text, so the snippet can be centred on
-  // the search term rather than starting at the top.
-  const bodyMatchSelect = `${textSelect}, body`
 
   if (query) {
     const pattern = `%${query}%`
@@ -194,24 +204,39 @@ export default async function SearchPage({ searchParams }: Props) {
         ? [supabase.from('texts').select(textSelect).eq('published', true).in('author_id', uniqueAuthorIds).order('title').limit(20)]
         : []),
       // Body search — runs last so title/metadata matches take priority in dedup
-      supabase.from('texts').select(bodyMatchSelect).eq('published', true).ilike('body', pattern).order('title').limit(10),
+      supabase.from('texts').select(textSelect).eq('published', true).ilike('body', pattern).order('title').limit(10),
     ]
 
     const textResults = await Promise.all(textQueryPromises)
+    const bodyResultIndex = textResults.length - 1
 
     // Phase 3: merge and deduplicate
     const seen = new Set<string>()
     const merged: TextResult[] = []
-    for (const { data } of textResults) {
+    const bodyMatchIds = new Set<string>()
+    textResults.forEach(({ data }, i) => {
       for (const t of (data ?? []) as unknown as TextResult[]) {
         if (!seen.has(t.id)) {
           seen.add(t.id)
           merged.push(t)
+          if (i === bodyResultIndex) bodyMatchIds.add(t.id)
         }
       }
-    }
+    })
     merged.sort((a, b) => a.title.localeCompare(b.title))
     texts = merged.slice(0, 20)
+
+    // Phase 4: snippets for the body matches that survived dedup. If this
+    // fails (say the migration is not applied yet), those rows fall back to
+    // their summary — a plainer snippet, never a broken page.
+    const excerptIds = texts.filter((t) => bodyMatchIds.has(t.id)).map((t) => t.id)
+    if (excerptIds.length > 0) {
+      const { data: excerpts } = await supabase.rpc('text_excerpts', { text_ids: excerptIds, term: query })
+      const byId = new Map(
+        ((excerpts ?? []) as (Excerpt & { id: string })[]).map((e) => [e.id, e])
+      )
+      for (const t of texts) t.excerpt = byId.get(t.id)
+    }
   }
 
   const total = texts.length + authors.length
@@ -323,7 +348,7 @@ export default async function SearchPage({ searchParams }: Props) {
                 const tradition = author?.tradition?.name
                 const eraLabel = author?.era?.label
                 const eraSlug = author?.era?.slug
-                const snippet = t.body ? bodySnippet(t.body, query) : (t.summary ?? '')
+                const snippet = t.excerpt ? excerptSnippet(t.excerpt, query) : (t.summary ?? '')
                 const readTime = `approx. ${readingMinutes(t.word_count)} min read`
                 return (
                   <li key={t.id} className="relative group">

@@ -7,6 +7,52 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-10-06 — What spent the Supabase egress on 21 Sep, and three guards against a repeat
+
+The organisation went over its 5 GB free-plan egress (5.93 GB, cycle 17 Sep–17 Oct). Stromata's
+usage was almost all one day, **21 Sep: ~3.5 GB uncached plus ~1.1 GB cached**. Investigated
+without log queries (the org is already far past its Log Query allowance), from git history and
+cheap SQL.
+
+**The cause was the bug the 21 Sep egress entry below fixed, in its last hours.** Before
+`word_count`, every prerendered listing page selected `texts.body`. Measured against today's
+corpus, one production build pulled ~220 MB: theme pages 131 MB (a text sits under several
+themes), eras 28, traditions 30, locations 28. 21 Sep had **29 merges to `main`** (2 on 15 Sep, 5
+on 22 Sep) and, before previews became opt-in on 29 Sep, a preview build per push. About 40
+builds ran before #118 landed at ~20:06 UTC; at roughly 3:1 compression that is ~3 GB. The
+mechanism is certain; the exact split between builds, that day's verification work and crawlers
+is inferred, since only logs could separate them. The cached 1.1 GB is most likely author
+portraits, served full-size from Storage.
+
+Two changes so it stays fixed:
+
+- **`lib/supabase/no-body-in-listings.test.ts`** fails CI when a public page or route selects
+  `body` (or `select('*')` on `texts`) outside a short allowlist: the reader and the download routes. It resolves `const` and composed select strings, so `` `${base}, body` `` counts.
+  Proven both ways: planting `body` in the theme page's query, or `select('*')`, turns it red.
+  The 21 Sep fix was correct but enforced only by memory; this makes it a contract, the same
+  argument as the colour lint rule.
+- **Portraits are stored display-sized.** `scripts/lib/portrait-resize.mjs` bounds a portrait to
+  800×1200 and re-encodes it (JPEG q80, or WebP when it has transparency). The admin upload route
+  now applies it to every new portrait, falling back to the original if resizing fails, and
+  `scripts/shrink-author-portraits.mjs` applies it to existing portraits over 250 KB (35 of the
+  bucket's 76 objects are over 300 KB; 55 MB in all, largest 5 MB). The script writes each copy to a new path and repoints
+  `authors.image_url`, keeping the original so cached pages never break and the change is
+  reversible. Dry-run by default and free; it needs `.env.local`, so it runs on Keith's machine, and it
+  has not yet been run against the real bucket.
+  `sharp` is now a direct dependency; it was already in the tree as Next's optional image library.
+
+**Search no longer downloads bodies either.** Its body-match query selected `body` for up to 10
+hits only to cut a ~160-character snippet. It now filters on `body` without returning it
+(PostgREST allows that), and the snippet comes from a new `text_excerpts(ids, term)` function
+(migration 032, applied to production): a few hundred characters around the hit, with flags for
+whether the window was cut, so the ellipses stay honest. `SECURITY INVOKER`, so anon sees only
+published rows; the window is capped at 1,000 characters either side and the id list at 20, so it
+cannot be used to pull whole bodies back out. Measured as anon on a 10-hit search for "grace":
+**590 kB → 5.9 kB**. If the call fails, those rows fall back to their summary rather than breaking
+the page. Search has left the guard's allowlist.
+
+---
+
 ## 2026-10-06 — CLAUDE.md gains a "Supabase limits" section
 
 The Supabase organisation Stromata shares with Paideia (Free plan) went over two quotas in the
@@ -24,6 +70,8 @@ Paideia's research note for the background rather than copying it. No log querie
 Sizes measured rather than assumed (catalog queries via `execute_sql`, not logs): the database is 34 MB
 of the 500 MB allowance, `texts` 19 MB of it, and the 566 bodies come to ~30 MB uncompressed. So
 storage is nowhere near its limit; the risk is egress, where each full-corpus body read costs ~30 MB.
+
+---
 
 ## 2026-10-04 — Docs-only and content-only production commits no longer deploy
 

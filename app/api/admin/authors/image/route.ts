@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createServerClient } from '@/lib/supabase/server'
+import { shrinkPortrait } from '@/scripts/lib/portrait-resize.mjs'
 
 // Copies an author portrait into Supabase Storage (the 'authors' bucket) and
 // returns its public URL. Two input shapes:
@@ -148,12 +149,28 @@ async function store(
     return NextResponse.json({ error: 'That file is not an image.' }, { status: 400 })
   }
 
+  // Store a display-sized copy, not the upload as given: every reader's browser
+  // fetches this file straight from Supabase Storage, and full-size scans were
+  // most of the bucket's egress (CHANGELOG 2026-10-06). If resizing fails, the
+  // original is still a working portrait, so store that rather than refuse.
+  let payload: ArrayBuffer | Buffer = bytes
+  let storedType = contentType
+  try {
+    const shrunk = await shrinkPortrait(bytes, contentType)
+    if (shrunk && shrunk.buffer.length < bytes.byteLength) {
+      payload = shrunk.buffer
+      storedType = shrunk.contentType
+    }
+  } catch (err) {
+    console.warn('Portrait resize failed; storing the original.', err)
+  }
+
   const supabase = createServerClient()
-  const path = objectPath(slug, contentType)
+  const path = objectPath(slug, storedType)
 
   const { error } = await supabase.storage
     .from(BUCKET)
-    .upload(path, bytes, { contentType, upsert: false })
+    .upload(path, payload, { contentType: storedType, upsert: false })
 
   if (error) {
     return NextResponse.json({ error: `Storage upload failed: ${error.message}` }, { status: 500 })

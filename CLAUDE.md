@@ -482,6 +482,12 @@ time to think is before the run.
 5. **When a usage warning appears, read the per-project split first** (Usage page, project selector).
    Egress and Log Query are organisation totals; on 2026-10-06 the egress overrun was one Stromata
    day, not Paideia.
+6. **A build is a recurring job too, and merges set its run count.** Every production build (and any
+   preview) prerenders pages that read Supabase. The 21 Sep spike was ~40 builds × ~220 MB, from
+   listing pages selecting `body` before `word_count` existed (CHANGELOG 2026-10-06).
+   `lib/supabase/no-body-in-listings.test.ts` now fails CI if a public page or route selects `body`
+   outside the reader and the downloads. Portraits are Storage egress on every page view, so the
+   upload route stores them display-sized (`scripts/lib/portrait-resize.mjs`).
 
 ---
 
@@ -1106,6 +1112,7 @@ still apply per-file, still parallelize the same way. What changes is Stage 2/5a
 | `scripts/rejoin-text-paragraphs.mjs` | Heal mid-sentence page-break splits in already-imported Supabase texts (dry-run default, `--write` to apply; `--slug=`/`--id=` to scope) | Maintenance only |
 | `scripts/dedup-draft-texts.mjs` | Find draft texts that duplicate a published text (matches on title + author *name*, so it catches the draft-author-stub case) and optionally delete the redundant draft (dry-run default, `--write` deletes HIGH-confidence body matches, `--force` includes lower-confidence, `--slug=` to scope, `--fuzzy` lists near-title matches). Never touches published rows, authors, or collections. | Maintenance only |
 | `scripts/check-prospect-urls.mjs` | Fetch every `Cleared edition URL` / `Additional edition URLs` / `Reference URL` in the Notion prospect list and report the ones that no longer answer. Read-only, and uses the **REST API with `NOTION_TOKEN`**, so it does not spend the MCP query budget. Distinguishes **dead (404/410) from blocked (403, e.g. sacred-texts behind Cloudflare)** — only dead exits non-zero, because failing on a 403 every run is how a check stops being read. **Reachability only: a 200 does not mean the URL holds the right work** — the read-the-title check before Stage 2 still stands. `--cleared-only`, `--status=`, `--json`, `--fail-on=any`. Assertion half in `scripts/lib/url-check.mjs`, unit-tested | Maintenance; before a sync |
+| `scripts/shrink-author-portraits.mjs` | Replace oversized author portraits in the `authors` bucket with display-sized copies (`scripts/lib/portrait-resize.mjs`, the same rule the admin upload route applies), repointing `authors.image_url` and keeping the originals. Dry-run default reads sizes from the bucket listing and costs no egress; `--write`, `--slug=`, `--min-kb=` | Maintenance only |
 | `scripts/generate-note-drafts.mjs` | Backfill note_draft in Supabase for existing texts | Maintenance only |
 | `scripts/generate-summaries.mjs` | Backfill summaries in Supabase | Maintenance only |
 | `scripts/repair-summaries.mjs` | Repair truncated summaries | Maintenance only |
