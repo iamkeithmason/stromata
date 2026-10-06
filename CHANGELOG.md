@@ -7,6 +7,15 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-10-06 — Research write-up: a longer cache window needs every writer
+
+Added `docs/research/2026-10-06-a-longer-cache-window-needs-every-writer.md`, covering the two
+Vercel CPU rounds (29 Sep, 4 Oct). It records what was measured, what was sized wrongly (round one
+against the peak, not the ~8 min/day budget), and what is still unverified: the CPU effect and
+`revalidatePath(pattern, 'page')` on a live deployment. Docs only; `docs/research/` is not on the
+`SITE_IRRELEVANT` list, so merging this on its own would trigger a production build — hold it for
+the next batched merge.
+
 ## 2026-10-04 — Docs-only and content-only production commits no longer deploy
 
 Every production deployment starts with an empty page cache, so each one makes crawlers re-render the
