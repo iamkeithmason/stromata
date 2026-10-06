@@ -445,7 +445,7 @@ comes from saves calling `revalidatePath`:
 
 ## Supabase limits — know which meter a job reads before you run it
 
-Added 2026-10-06. **Stromata shares one Supabase organisation with Paideia, on the Free plan**, so the
+Added 2026-10-06 (sizes measured the same day with `pg_total_relation_size`). **Stromata shares one Supabase organisation with Paideia, on the Free plan**, so the
 allowances below are shared too: a Stromata job can spend Paideia's headroom, and the reverse. In the
 17 Sep–17 Oct cycle the organisation went over two quotas and was warned of restriction from 7 Oct:
 Egress (5.93 / 5 GB, most of it one Stromata day, 21 Sep) and Log Query (249.7 / 100 GB, Stromata
@@ -454,9 +454,9 @@ Paideia's `docs/research/2026-10-06-know-the-meter-before-you-run-the-script.md`
 
 | Meter | Free allowance (per org, per cycle) | What spends it |
 |---|---|---|
-| Egress | 5 GB | every byte the API, functions or storage send out: bulk exports, wide selects, re-downloads, polling. Here, chiefly `texts.body` |
+| Egress | 5 GB | every byte the API, functions or storage send out: bulk exports, wide selects, re-downloads, polling. Here, chiefly `texts.body`: ~30 MB uncompressed across 566 texts, so one full-corpus body read is ~0.6% of the cycle and ~170 of them spend all of it |
 | Log Query | 100 GB scanned (enforced from 2027) | every log read: the dashboard log explorer, `query_logs`, the Management API logs endpoint. One 24-hour scan is gigabytes |
-| Database size | 500 MB | rows kept; `texts` (the bodies) is the bulk of it |
+| Database size | 500 MB | rows kept. Not the pressure here: 34 MB in total, of which `texts` is 19 MB and nothing else tops 1.5 MB |
 
 The cycle runs from the 17th to the 17th. What is spent cannot be clawed back before the reset, so the
 time to think is before the run.

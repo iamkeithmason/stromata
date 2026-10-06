@@ -21,6 +21,10 @@ It names the scripts that select `texts.body` across the corpus (the costly egre
 Scout, Sourcer) read metadata columns only. It states plainly that the organisation is shared, and links
 Paideia's research note for the background rather than copying it. No log queries were run.
 
+Sizes measured rather than assumed (catalog queries via `execute_sql`, not logs): the database is 34 MB
+of the 500 MB allowance, `texts` 19 MB of it, and the 566 bodies come to ~30 MB uncompressed. So
+storage is nowhere near its limit; the risk is egress, where each full-corpus body read costs ~30 MB.
+
 ## 2026-10-04 — Docs-only and content-only production commits no longer deploy
 
 Every production deployment starts with an empty page cache, so each one makes crawlers re-render the
