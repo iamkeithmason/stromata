@@ -443,6 +443,54 @@ comes from saves calling `revalidatePath`:
 
 ---
 
+## Supabase limits — know which meter a job reads before you run it
+
+Added 2026-10-06 (sizes measured the same day with `pg_total_relation_size`). **Stromata shares one Supabase organisation with Paideia, on the Free plan**, so the
+allowances below are shared too: a Stromata job can spend Paideia's headroom, and the reverse. In the
+17 Sep–17 Oct cycle the organisation went over two quotas and was warned of restriction from 7 Oct:
+Egress (5.93 / 5 GB, most of it one Stromata day, 21 Sep) and Log Query (249.7 / 100 GB, Stromata
+~29.6 GB on 21 Sep, most of the rest Paideia's simulator). Background, measured split and reasoning:
+Paideia's `docs/research/2026-10-06-know-the-meter-before-you-run-the-script.md`.
+
+| Meter | Free allowance (per org, per cycle) | What spends it |
+|---|---|---|
+| Egress | 5 GB | every byte the API, functions or storage send out: bulk exports, wide selects, re-downloads, polling. Here, chiefly `texts.body`: ~30 MB uncompressed across 566 texts, so one full-corpus body read is ~0.6% of the cycle and ~170 of them spend all of it |
+| Log Query | 100 GB scanned (enforced from 2027) | every log read: the dashboard log explorer, `query_logs`, the Management API logs endpoint. One 24-hour scan is gigabytes |
+| Database size | 500 MB | rows kept. Not the pressure here: 34 MB in total, of which `texts` is 19 MB and nothing else tops 1.5 MB |
+
+The cycle runs from the 17th to the 17th. What is spent cannot be clawed back before the reset, so the
+time to think is before the run.
+
+1. **Never read logs for routine data.** What the site and pipeline did is in tables: `texts`,
+   `authors`, `collections` for corpus state, `published`/`draft` flags for pipeline output, and Umami
+   (not Supabase) for reader behaviour. Use `execute_sql` on those. A log query is a last resort for a
+   one-off diagnosis, over the shortest window that answers it.
+2. **Before any bulk job, say which meter it draws on and roughly what one run costs**, in the
+   script's header and in the PR. The jobs that matter here select `body` across the corpus:
+   `build-corpus-index.mjs`, `strip-source-chrome.mjs` and `rejoin-text-paragraphs.mjs` without a
+   `--slug=`, `reformat-text-body.mjs`, `backfill-scripture-refs.ts`, `dedup-draft-texts.mjs`, and the
+   `generate-note-drafts`/`generate-summaries`/`repair-summaries` backfills. If you
+   cannot estimate it, run it scoped (`--slug=`, `--drafts`) first and measure.
+3. **Fetch once, keep locally, and select only the columns you need.** A script that re-downloads
+   every body on each run multiplies its egress by its run count. `data/corpus-frequency.json` is the
+   pattern: built once from the DB, gitignored, reused. A Drive batch or pipeline run should touch
+   only the rows it imports and verifies, never `select('*')` across `texts`.
+4. **Scheduled routines use the cheapest source**, and their stored prompt or workflow names the
+   meter they touch. The analytics digest (weekly), Scout (1st and 15th) and Sourcer (monthly) read
+   metadata columns, not bodies; keep them that way. A daily log scan to answer a yes/no question a
+   table already holds costs gigabytes a month.
+5. **When a usage warning appears, read the per-project split first** (Usage page, project selector).
+   Egress and Log Query are organisation totals; on 2026-10-06 the egress overrun was one Stromata
+   day, not Paideia.
+6. **A build is a recurring job too, and merges set its run count.** Every production build (and any
+   preview) prerenders pages that read Supabase. The 21 Sep spike was ~40 builds × ~220 MB, from
+   listing pages selecting `body` before `word_count` existed (CHANGELOG 2026-10-06).
+   `lib/supabase/no-body-in-listings.test.ts` now fails CI if a public page or route selects `body`
+   outside the reader and the downloads. Portraits are Storage egress on every page view, so the
+   upload route stores them display-sized (`scripts/lib/portrait-resize.mjs`).
+
+---
+
 ## Keeping the record current — which change goes where
 
 Every automated routine produces a change; each one has exactly one authoritative record,

@@ -53,6 +53,26 @@ the page. Search has left the guard's allowlist.
 
 ---
 
+## 2026-10-06 — CLAUDE.md gains a "Supabase limits" section
+
+The Supabase organisation Stromata shares with Paideia (Free plan) went over two quotas in the
+17 Sep–17 Oct cycle: Egress 5.93 / 5 GB, most of it one Stromata day (21 Sep), and Log Query
+249.7 / 100 GB scanned (Stromata ~29.6 GB on 21 Sep, most of the rest Paideia's simulator). The
+dashboard warned of restriction from 7 Oct. Root-causing the 21 Sep egress is a separate session.
+
+Adapted Paideia's section of the same name at Keith's request: the three meters (Egress, Log Query,
+Database size, per organisation, 17th to 17th) and five rules, with the examples rewritten for this repo.
+It names the scripts that select `texts.body` across the corpus (the costly egress here), points to
+`data/corpus-frequency.json` as the fetch-once pattern, and notes that the scheduled routines (digest,
+Scout, Sourcer) read metadata columns only. It states plainly that the organisation is shared, and links
+Paideia's research note for the background rather than copying it. No log queries were run.
+
+Sizes measured rather than assumed (catalog queries via `execute_sql`, not logs): the database is 34 MB
+of the 500 MB allowance, `texts` 19 MB of it, and the 566 bodies come to ~30 MB uncompressed. So
+storage is nowhere near its limit; the risk is egress, where each full-corpus body read costs ~30 MB.
+
+---
+
 ## 2026-10-04 — Docs-only and content-only production commits no longer deploy
 
 Every production deployment starts with an empty page cache, so each one makes crawlers re-render the
