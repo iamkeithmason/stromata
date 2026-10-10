@@ -405,6 +405,18 @@ If a session turns up several small related fixes, ship them together in one PR 
 each; if Keith asks for a follow-up to a PR that is still open, add it to that PR. (Unrelated
 changes still get separate PRs — this is about not splitting one piece of work into many.)
 
+**Standing rule — at most one site-changing merge a week (agreed with Keith 2026-10-10).** Until the Usage
+page's 30-day Fluid Active CPU total is back under the 4h Hobby allowance (expected between about 28 Oct and
+5 Nov — the 21–26 Sep peak and the busy first days of October are still in that window), merge at most **one**
+PR a week that changes what the site builds. Everything short of that merge is free, so keep working: code on
+branches (previews are off), draft imports, local runs, queued PRs. Merges the ignore step skips (docs- or
+content-only, below) don't count, and publishing texts in a batch is fine (about 4 min of CPU once per
+sitting; batch it, don't trickle it). **When a PR is ready and this week's slot is taken, say so and leave it
+open** — don't merge it, and tell Keith which PRs are queued. A broken site or a security fix is the exception:
+merge it and tell him. Evidence for the rule: 6–9 Oct ran at roughly 4–6 min/day (target ≤ 8) after two real
+deploys in six days, against 37 merges between 20 and 29 Sep. The slot is a guard against sliding back, not a
+claim that one more merge would hurt today; Keith decides when to lift it.
+
 **Docs-only and content-only production commits don't deploy.** The same script skips a *production*
 build when every file in the commit is on `SITE_IRRELEVANT` at the top of `scripts/vercel-ignore-build.sh`:
 `CHANGELOG.md`, `CLAUDE.md`, `scripts/analytics/reports/`, and the content pipeline's own files —
