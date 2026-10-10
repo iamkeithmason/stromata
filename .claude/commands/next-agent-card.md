@@ -113,10 +113,15 @@ to promote — never promote a card to `Agent-ready` yourself.
    CHANGELOG — see CLAUDE.md "Keeping the record current"), but a `/next-agent-card` PR is
    a code/product change, so it always gets a CHANGELOG entry.
 
-10. **Open a draft PR.** `git push -u origin claude/<card-slug>`, then create a **draft**
-   PR (mirror any PR template), and `subscribe_pr_activity`. In the PR body, record that
-   the review gate ran and what it surfaced (or "clean"). Never mark ready, never
-   merge — Keith does that. Drive its CI to green per the babysit rules.
+10. **Open a draft PR — with base `release`.** `git push -u origin claude/<card-slug>`, then
+   create a **draft** PR **against the `release` branch, not `main`** (set `base: "release"`
+   explicitly; the repo default is `main`, which deploys the site — see CLAUDE.md "Vercel
+   usage" → the release-branch rule). A card that changes only files on `SITE_IRRELEVANT`
+   (rare for a card) may target `main`. Mirror any PR template, and `subscribe_pr_activity`.
+   In the PR body, record that the review gate ran and what it surfaced (or "clean"). Never
+   mark ready, never merge — Keith does that. Drive its CI to green per the babysit rules.
+   Merged into `release` means built and reviewed, not live: it ships in the weekly
+   release PR (`release` → `main`), which Keith merges.
 
 11. **Update the card.** Add a note to the card *body* (never overwrite the `Notes`
     property) linking the PR and stating what was verified (including the review-gate

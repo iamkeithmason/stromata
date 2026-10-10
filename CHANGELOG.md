@@ -95,8 +95,9 @@ PRs open against `release` (a preview branch, so merging into it deploys nothing
 straight to `main` because the ignore step skips them; a broken site or security fix goes straight to `main` and is
 then merged into `release`. Keith merges the release PR; Claude opens it and lists what it carries. In force until
 the 30-day total is back under 4h; Keith decides whether to keep the branch. `release` was cut from `main` on
-10 Oct. Still to do, deliberately as the first PR *into* `release` (changing `.claude/commands` would otherwise
-deploy): make `/next-agent-card` name `release` as its PR base. Search Console now reads the sitemap: Success,
+10 Oct. `/next-agent-card` now names `release` as its PR base too (`.claude/commands/next-agent-card.md`, step
+10) — done as the first PR *into* `release`, because changing `.claude/commands` would otherwise deploy the site.
+Search Console now reads the sitemap: Success,
 769 pages discovered.
 
 ## 2026-10-04 — Docs-only and content-only production commits no longer deploy
