@@ -39,10 +39,15 @@ to promote — never promote a card to `Agent-ready` yourself.
    make the backlog reflect what actually shipped. List Feature Backlog cards at
    `Status = 'Planned'` that carry a linked PR in their body, and check each PR's state
    via `mcp__github__pull_request_read`:
-   - **Merged** → set the card `Status` → `Built`. (This is the only place a routine sets
-     `Built` — it does so *after* merge, never at PR time. It reconciles Keith's merge,
-     it does not pre-empt his review.) Confirm the merged PR added a CHANGELOG entry; if
-     for some reason it didn't, add one now describing the shipped change.
+   - **Merged, and on `main`** → set the card `Status` → `Built`. (This is the only place a
+     routine sets `Built` — it does so *after* the change ships, never at PR time. It
+     reconciles Keith's merge, it does not pre-empt his review.) Under the release-branch
+     flow a PR merged into `release` is **not** `Built` yet: check that the PR's merge
+     commit is reachable from `main` (`gh api repos/{owner}/{repo}/compare/main...{merge_sha}`
+     reports `behind` or `identical` once it is). Confirm the merged PR added a CHANGELOG
+     entry; if for some reason it didn't, add one now describing the shipped change.
+   - **Merged into `release`, not yet on `main`** → leave it `Planned`; it ships in the next
+     weekly release PR (`release` → `main`), which Keith merges.
    - **Closed unmerged** → leave `Status` as-is and add one line to the card body noting
      the PR was closed without merging.
    - **Still open** → leave it; it's in flight.
@@ -120,8 +125,9 @@ to promote — never promote a card to `Agent-ready` yourself.
    (rare for a card) may target `main`. Mirror any PR template, and `subscribe_pr_activity`.
    In the PR body, record that the review gate ran and what it surfaced (or "clean"). Never
    mark ready, never merge — Keith does that. Drive its CI to green per the babysit rules.
-   Merged into `release` means built and reviewed, not live: it ships in the weekly
-   release PR (`release` → `main`), which Keith merges.
+   Merged into `release` means reviewed and queued, not `Built` and not live: the card
+   becomes `Built` once it is on `main`, via the weekly release PR (`release` → `main`),
+   which Keith merges.
 
 11. **Update the card.** Add a note to the card *body* (never overwrite the `Notes`
     property) linking the PR and stating what was verified (including the review-gate
