@@ -89,9 +89,15 @@ The 30-day total still reads 6h44m because the peak is in the window. Reading th
 under 4h between about **28 Oct and 5 Nov** depending on whether days average 5 or 8 min. (An earlier note
 here said ~26 Oct; that only counted the 21–26 Sep peak leaving, not the heavy days after it.)
 
-New standing rule in CLAUDE.md "Vercel usage": at most one site-changing merge to `main` a week until the total
-is back under 4h; queued PRs wait open; docs/content-only merges and batched publishing are exempt; a broken
-site or security fix is exempt. Search Console now reads the sitemap: Success, 769 pages discovered.
+New standing rule in CLAUDE.md "Vercel usage", implemented with a long-lived **`release` branch**: site-changing
+PRs open against `release` (a preview branch, so merging into it deploys nothing); one PR a week, `release` into
+`main`, is the single production deploy. Docs- and content-only PRs (anything wholly on `SITE_IRRELEVANT`) still go
+straight to `main` because the ignore step skips them; a broken site or security fix goes straight to `main` and is
+then merged into `release`. Keith merges the release PR; Claude opens it and lists what it carries. In force until
+the 30-day total is back under 4h; Keith decides whether to keep the branch. `release` was cut from `main` on
+10 Oct. Still to do, deliberately as the first PR *into* `release` (changing `.claude/commands` would otherwise
+deploy): make `/next-agent-card` name `release` as its PR base. Search Console now reads the sitemap: Success,
+769 pages discovered.
 
 ## 2026-10-04 — Docs-only and content-only production commits no longer deploy
 
