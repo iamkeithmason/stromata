@@ -423,6 +423,8 @@ after that.
   head `release`, titled "Release YYYY-MM-DD", listing the PRs it carries and any Supabase migration that must
   be applied before it ships (never assume one has run). Merge it with a **merge commit**, not a squash. That
   merge is the week's single production deploy.
+  **Release day is Monday morning** (Keith, 2026-10-10): a weekly routine opens the draft release PR then, only
+  if `release` is ahead of `main` with site-changing commits; Keith merges it.
 - **Never merge the release PR yourself** — leave it open, say what it carries, and let Keith merge it. When a
   site-changing PR is ready, merge it into `release` only if Keith has said to; otherwise leave it open and
   tell him which PRs are queued.
