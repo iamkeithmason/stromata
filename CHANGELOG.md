@@ -73,6 +73,33 @@ storage is nowhere near its limit; the risk is egress, where each full-corpus bo
 
 ---
 
+## 2026-10-10 — Vercel usage review: back under target; weekly-merge rule recorded
+
+One week after the CPU fixes (Vercel Usage page, `stromata`, Fluid Active CPU). Daily totals, read off the
+bars so approximate: ~8 min/day in early September (already at the limit), 19–31 at the 21–26 Sep peak,
+12–17 on 27 Sep–3 Oct (24 on 2 Oct), **11 on 4 Oct and 14.5 on 5 Oct** (three deploys on 4 Oct, then Google's
+first reads of the new sitemap), then **~6, 5, 4 and 5.5 min on 6–9 Oct** — about 30–50% under the 8 min/day
+target. Production deploys since the fixes: #140 itself on 4 Oct and #144 on 6 Oct; every other commit
+(pipeline runs, the Monday digest, docs-only merges) was skipped by the ignore step. Observability, 12h on
+10 Oct: `/texts/[slug]` 1.4K invocations and ~2m CPU of ~2.8m across the top ten routes (two short crawl
+bursts, likely Googlebot working through the 769 sitemap URLs — not verified), PDFs 17 requests and ~29s,
+cold starts 7% (were 21–24%), CPU throttle 16% (was 27%).
+
+The 30-day total still reads 6h44m because the peak is in the window. Reading the bars, it should cross
+under 4h between about **28 Oct and 5 Nov** depending on whether days average 5 or 8 min. (An earlier note
+here said ~26 Oct; that only counted the 21–26 Sep peak leaving, not the heavy days after it.)
+
+New standing rule in CLAUDE.md "Vercel usage", implemented with a long-lived **`release` branch**: site-changing
+PRs open against `release` (a preview branch, so merging into it deploys nothing); one PR a week, `release` into
+`main`, is the single production deploy. Docs- and content-only PRs (anything wholly on `SITE_IRRELEVANT`) still go
+straight to `main` because the ignore step skips them; a broken site or security fix goes straight to `main` and is
+then merged into `release`. Keith merges the release PR; Claude opens it and lists what it carries. In force until
+the 30-day total is back under 4h; Keith decides whether to keep the branch. `release` was cut from `main` on
+10 Oct. Still to do, deliberately as the first PR *into* `release` (changing `.claude/commands` would otherwise
+deploy): make `/next-agent-card` name `release` as its PR base. Keith also decided that a backlog card counts as
+`Built` once its change is on `main`, not when its PR merges into `release` (recorded in CLAUDE.md; the command file
+follows in the first release PR). Search Console now reads the sitemap: Success, 769 pages discovered.
+
 ## 2026-10-04 — Docs-only and content-only production commits no longer deploy
 
 Every production deployment starts with an empty page cache, so each one makes crawlers re-render the

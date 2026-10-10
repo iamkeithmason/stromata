@@ -405,6 +405,43 @@ If a session turns up several small related fixes, ship them together in one PR 
 each; if Keith asks for a follow-up to a PR that is still open, add it to that PR. (Unrelated
 changes still get separate PRs — this is about not splitting one piece of work into many.)
 
+**Standing rule — one release a week, through a `release` branch (agreed with Keith 2026-10-10).** Production
+deploys from `main` only, and every deploy empties the page cache, so site-changing work is collected on a
+long-lived **`release`** branch and shipped to `main` once a week. In force until the Usage page's 30-day Fluid
+Active CPU total is back under the 4h Hobby allowance (expected between about 28 Oct and 5 Nov — the 21–26 Sep
+peak and the busy first days of October are still in that window); Keith decides whether to keep the branch
+after that.
+
+- **Site-changing PRs open with base `release`, not `main`** — `/next-agent-card` PRs included. A merge into
+  `release` deploys nothing (it is a preview branch, and previews are off unless asked), so those merges are
+  free and don't use the weekly slot. The test for "site-changing": **any file in the PR that is not on
+  `SITE_IRRELEVANT`** (below). Not sure? Base `release`.
+- **Docs-only and content-only PRs go straight to `main`** — every file on `SITE_IRRELEVANT`. The ignore step
+  skips them, so they cost nothing; the Monday digest and the pipeline runs already land this way.
+- **The weekly release is the one slot.** Bring `release` up to date first (a PR with base `release` and head
+  `main`, because automation and docs PRs land on `main` in between), then open **one** PR with base `main` and
+  head `release`, titled "Release YYYY-MM-DD", listing the PRs it carries and any Supabase migration that must
+  be applied before it ships (never assume one has run). Merge it with a **merge commit**, not a squash. That
+  merge is the week's single production deploy.
+- **Never merge the release PR yourself** — leave it open, say what it carries, and let Keith merge it. When a
+  site-changing PR is ready, merge it into `release` only if Keith has said to; otherwise leave it open and
+  tell him which PRs are queued.
+- **A broken site or a security fix is the exception:** it goes straight to `main` (tell Keith), and `main` is
+  then merged into `release` so the branches don't diverge.
+- Publishing texts is fine in a batch (about 4 min of CPU once per sitting; batch it, don't trickle it).
+
+Evidence for the rule: 6–9 Oct ran at roughly 4–6 min/day (target ≤ 8) after two real deploys in six days,
+against 37 merges between 20 and 29 Sep. The weekly release is a guard against sliding back, not a claim that
+one more deploy would hurt today.
+
+**A backlog card counts as `Built` once its change is on `main`** (Keith, 2026-10-10) — not when its PR merges into
+`release`. A card whose PR sits in `release` waiting for the weekly release is still `Planned`. Shipping is the
+release PR's merge, so the reconciliation sweep checks that the PR's merge commit is reachable from `main`.
+
+The `/next-agent-card` command (`.claude/commands/next-agent-card.md`) on `main` still has its old wording (it opens
+its PR without naming a base, and its sweep flips `Built` at PR merge) until PR #147 ships in the first release.
+**Until then, follow this section over the command.**
+
 **Docs-only and content-only production commits don't deploy.** The same script skips a *production*
 build when every file in the commit is on `SITE_IRRELEVANT` at the top of `scripts/vercel-ignore-build.sh`:
 `CHANGELOG.md`, `CLAUDE.md`, `scripts/analytics/reports/`, and the content pipeline's own files —
@@ -503,7 +540,7 @@ in a run-log is invisible.
 | **Code / product change** (a `/next-agent-card` build, a bug fix, an infra change) | `CHANGELOG.md`, newest entry on top | **Inside the same PR** — the entry is committed on the branch and merges atomically with the code. A code PR should always touch CHANGELOG.md; this is enforced by convention (the mechanic + this doc), not a CI gate. |
 | **Content import** (pipeline stages, Sourcer bundles) | `scripts/ingestion/run-log/YYYY-MM-DD.md` | At the end of the run. **Not** CHANGELOG.md. |
 | **Analytics digest** | Notion Growth Digest DB (+ committed report under `scripts/analytics/reports/`) | Weekly, by the digest routine/workflow. |
-| **Backlog card lifecycle** | Notion Feature Backlog `Status` | `Agent-ready` → `Planned` (at PR open, by the builder) → `Built` (after merge, by the next `/next-agent-card` run's reconciliation sweep — step 0 — or by whoever merges). |
+| **Backlog card lifecycle** | Notion Feature Backlog `Status` | `Agent-ready` → `Planned` (at PR open, by the builder) → `Built` (once the change is on `main` — after the weekly release, not at the merge into `release` — by the next `/next-agent-card` run's reconciliation sweep, step 0, or by whoever merges the release). |
 
 **The two loop-closers that make this self-healing:**
 
@@ -511,12 +548,12 @@ in a run-log is invisible.
    can never lag behind what shipped — there is no separate "remember to update the log" step
    to forget.
 2. **The weekly reconciliation sweep** (`/next-agent-card` step 0) flips `Planned` → `Built`
-   for any card whose PR has since merged, and backfills a CHANGELOG entry if one is somehow
+   for any card whose PR has since reached `main`, and backfills a CHANGELOG entry if one is somehow
    missing. This closes the merge-time gap without wiring a webhook from GitHub into Notion:
    `Built` is Keith's merge made visible, reconciled on the next run, not guessed at PR time.
 
 If you ship a code change by hand (not via a routine), you own the same two acts: a CHANGELOG
-entry in the PR, and flipping the backlog card to `Built` after merge.
+entry in the PR, and flipping the backlog card to `Built` once it is on `main`.
 
 ---
 
