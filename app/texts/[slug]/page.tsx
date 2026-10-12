@@ -20,6 +20,8 @@ import { DownloadLinks } from '@/app/components/DownloadLinks'
 import { ReaderSettings } from '@/app/components/ReaderSettings'
 import { CitationButton } from '@/app/components/CitationButton'
 import { resolveLicense } from '@/lib/licenses'
+import { ContinueExploring } from '@/app/components/ContinueExploring'
+import { pickReadNext, type ReadNextCandidate } from '@/lib/read-next'
 
 // Incremental Static Regeneration: cache the rendered page and revalidate
 // weekly (hourly until 2026-09-29, daily until 2026-10-04 — Vercel Hobby CPU). Safe given the manual
@@ -189,6 +191,61 @@ export default async function TextPage({ params }: Props) {
       }
     }
   }
+
+  // ── Continue exploring — candidate pools for lib/read-next.ts ───────────────
+  // Metadata only (never `body`); each pool is capped. Three small reads,
+  // regenerated with the page, so the module costs nothing per view.
+  const CAND = 'id, title, slug, word_count, collection_id, author_id, author:authors(name)'
+  type CandRow = {
+    id: string; title: string; slug: string; word_count: number | null
+    collection_id: string | null; author_id: string | null; author: { name: string } | null
+  }
+  const toCand = (r: CandRow, themeSlugs?: string[]): ReadNextCandidate => ({
+    id: r.id, title: r.title, slug: r.slug, word_count: r.word_count,
+    collection_id: r.collection_id, authorId: r.author_id,
+    authorName: r.author?.name ?? null, themeSlugs,
+  })
+  const themeSlugList = themes.map(t => t.slug)
+  const [authorRows, genreRows, themeRows] = await Promise.all([
+    text.author_id
+      ? supabase.from('texts').select(CAND).eq('author_id', text.author_id).eq('published', true).neq('id', text.id).order('title').limit(60)
+      : Promise.resolve({ data: [], error: null }),
+    text.genre_id
+      ? supabase.from('texts').select(CAND).eq('genre_id', text.genre_id).eq('published', true).neq('id', text.id)
+          .neq('author_id', text.author_id ?? '00000000-0000-0000-0000-000000000000').order('title').limit(60)
+      : Promise.resolve({ data: [], error: null }),
+    themeSlugList.length > 0
+      ? supabase
+          .from('text_themes')
+          .select(`theme:themes!inner(slug), text:texts!inner(${CAND})`)
+          .in('theme.slug', themeSlugList)
+          .eq('text.published', true)
+          .neq('text.id', text.id)
+          .order('text_id')
+          .limit(300)
+      : Promise.resolve({ data: [], error: null }),
+  ])
+  // Optional module: a failed read degrades to "no module", never to a failed
+  // reader page (unlike the primary text read above, which must throw).
+  const authorPool = (authorRows.error ? [] : authorRows.data ?? []) as unknown as CandRow[]
+  const genrePool = (genreRows.error ? [] : genreRows.data ?? []) as unknown as CandRow[]
+  const themePoolRaw = (themeRows.error ? [] : themeRows.data ?? []) as unknown as { theme: { slug: string } | null; text: CandRow | null }[]
+  const themeByText = new Map<string, { row: CandRow; slugs: string[] }>()
+  for (const r of themePoolRaw) {
+    if (!r.text || !r.theme) continue
+    const e = themeByText.get(r.text.id) ?? { row: r.text, slugs: [] }
+    e.slugs.push(r.theme.slug)
+    themeByText.set(r.text.id, e)
+  }
+  const readNext = pickReadNext({
+    self: { id: text.id, collectionId: collection ? text.collection_id : null, authorId: text.author_id, wordCount: text.word_count },
+    authorName: author?.name ?? null,
+    genreName: genre?.name ?? null,
+    themes,
+    sameAuthor: authorPool.map(r => toCand(r)),
+    sameGenre: genrePool.map(r => toCand(r)),
+    sameTheme: [...themeByText.values()].map(e => toCand(e.row, e.slugs)),
+  })
 
   // ── Structured data — built from real fields only (no null values) ──────────
   const canonicalUrl = `${SITE_URL}/texts/${slug}`
@@ -528,6 +585,7 @@ export default async function TextPage({ params }: Props) {
                 ) : <span />}
               </nav>
             )}
+            <ContinueExploring picks={readNext} />
           </main>
       </div>
 
