@@ -124,8 +124,8 @@ then merged into `release`. Keith merges the release PR; Claude opens it and lis
 the 30-day total is back under 4h; Keith decides whether to keep the branch. `release` was cut from `main` on
 10 Oct. `/next-agent-card` now names `release` as its PR base too (`.claude/commands/next-agent-card.md`, step
 10) — done as the first PR *into* `release`, because changing `.claude/commands` would otherwise deploy the site.
-Search Console now reads the sitemap: Success,
-769 pages discovered.
+Keith also decided that a backlog card counts as `Built` once its change is on `main`, not when its PR merges into
+`release` (recorded in CLAUDE.md). Search Console now reads the sitemap: Success, 769 pages discovered.
 
 ## 2026-10-04 — Docs-only and content-only production commits no longer deploy
 
