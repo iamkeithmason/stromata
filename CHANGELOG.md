@@ -7,6 +7,33 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-10-12 — "Continue exploring": a deterministic next-read module at the end of every text
+
+Backlog card *Continue exploring: editorial read-next module*. The end of a text had no onward path
+(only Ko-fi, citation and download), and the digest showed views/visit falling as new readers arrived.
+The reader page now ends with up to three next reads, each captioned with the rule that chose it:
+**More from {author}**, **On {theme}** (the other-author text sharing the most of this text's themes), and **Another {genre}** (a different author). The rules live in
+`lib/read-next.ts` (pure, tested): closest in length to the text just read, then title, so the same text
+always yields the same three; fragments under 400 words (unknown length is admitted, ranked last) and siblings in the text's own collection are
+excluded (prev/next already covers those). Clicks fire `text-open` with `from=read-next` (new `from`
+value, added to the CLAUDE.md vocabulary; the Events Register row is still owed in Notion). The page
+adds three metadata-only reads (no `body`, capped at 60/60/300 rows, ordered), run at regeneration, not per view, and a failed read hides the
+module rather than failing the page. **Meter: Egress.** About 90 KB per text regeneration (~420 rows at
+~200 B); a full 566-text regeneration is roughly 50 MB, ~1% of the cycle allowance. Pools are capped, so
+for very prolific authors/popular themes the picks come from the first 60/300 rows by title, not the whole set.
+
+**Not built, on purpose:** the card's manual editorial override (a per-text recommendation field) needs
+a schema column, an anon grant (migration 026 pattern) and an admin input; it is a follow-up, so every
+rationale here is deterministic. The module is on every text rather than a pilot subset, so the
+comparison is against pre-ship weeks, not a control group. Because the pools are read at regeneration,
+a newly published text shows up in other texts' modules at their next refresh (up to a week).
+
+**Baseline not recorded:** the card asks for the depth-2 ÷ depth-1 rate for the last two full weeks
+before shipping. The Umami share token ignores event filters and this session has no dashboard access,
+so the figures (and date) need to come from the Umami dashboard before release. No migration.
+
+---
+
 ## 2026-10-06 — What spent the Supabase egress on 21 Sep, and three guards against a repeat
 
 The organisation went over its 5 GB free-plan egress (5.93 GB, cycle 17 Sep–17 Oct). Stromata's
