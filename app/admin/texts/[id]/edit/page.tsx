@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { createServerClient } from '@/lib/supabase/server'
 import EditTextForm from './EditTextForm'
+import ProvenancePanel from './ProvenancePanel'
 
 type Props = { params: Promise<{ id: string }> }
 
@@ -14,6 +15,10 @@ export default async function EditTextPage({ params }: Props) {
     .select('*, note_draft, summary, genre:genres(slug), text_themes(theme:themes(slug)), collection:collections(id, slug)')
     .eq('id', id)
     .single()
+
+  const { data: author } = text?.author_id
+    ? await supabase.from('authors').select('name, death_year, draft').eq('id', text.author_id).single()
+    : { data: null }
 
   if (!text) notFound()
 
@@ -30,6 +35,18 @@ export default async function EditTextPage({ params }: Props) {
           </Link>
         </div>
         <h1 className="text-2xl font-serif text-stone-800 mb-8">Edit text</h1>
+        <ProvenancePanel
+          sourceUrl={text.source_url}
+          sourceAttribution={text.source_attribution}
+          provenanceNotes={text.provenance_notes}
+          translationNotes={text.translation_notes}
+          ocrQuality={text.ocr_quality}
+          license={text.license}
+          published={text.published}
+          authorName={author?.name}
+          authorDeathYear={author?.death_year}
+          authorIsDraft={author?.draft}
+        />
         <EditTextForm
           id={id}
           initialTitle={text.title}
