@@ -188,7 +188,7 @@ export function ReaderSettings() {
           </div>
 
           <p className="kicker" style={{ marginBottom: '0.5rem' }}>Text size</p>
-          <div className="flex gap-1.5 mb-4">
+          <div className="flex gap-1.5 md:mb-4">
             {SCALES.map(s => {
               const active = prefs.scale === s.value
               return (
@@ -213,6 +213,10 @@ export function ReaderSettings() {
             })}
           </div>
 
+          {/* Width only has room to act from md up: below 768px the column is already
+              narrower than the narrowest measure (680px), so every option looked the same
+              on a phone (Keith, 26 Oct). Hidden there rather than shown doing nothing. */}
+          <div className="hidden md:block">
           <p className="kicker" style={{ marginBottom: '0.5rem' }}>Width</p>
           <div className="flex gap-1.5">
             {MEASURES.map(m => {
@@ -237,6 +241,7 @@ export function ReaderSettings() {
                 </button>
               )
             })}
+          </div>
           </div>
         </div>
       )}

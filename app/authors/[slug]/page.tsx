@@ -273,45 +273,49 @@ export default async function AuthorPage({ params }: Props) {
             {author.name}
           </h1>
 
-          {(dates || tradition || eraLabel || locationObj) && (
+          {/* Short lines rather than one long one that always wrapped on a phone:
+              when and where first, then the tradition and era (Keith, 26 Oct). */}
+          {(dates || locationObj || locationCity) && (
             <p className="text-sm" style={{ color: 'var(--ink-mute)' }}>
               {dates}
-              {dates && tradition ? ' · ' : ''}
-              {tradition && traditionObj?.slug ? (
-                <Link href={`/traditions/${traditionObj.slug}`} className="hover:opacity-70 transition-opacity">
-                  {tradition}
-                </Link>
-              ) : tradition}
-              {eraLabel && eraSlug && (
-                <>
-                  {(dates || tradition) ? ' · ' : ''}
-                  <Link href={`/eras/${eraSlug}`} className="hover:opacity-70 transition-opacity">
-                    {eraLabel}
-                  </Link>
-                </>
-              )}
-              {eraLabel && !eraSlug && (
-                <>{(dates || tradition) ? ' · ' : ''}{eraLabel}</>
-              )}
+              {dates && (locationObj || locationCity) ? ' · ' : ''}
+              {locationCity && <>{locationCity}{locationObj ? ', ' : ''}</>}
               {locationObj && (
-                <>
-                  {(dates || tradition || eraLabel) ? ' · ' : ''}
-                  <Link
-                    href={`/locations/${locationObj.slug}`}
-                    className="hover:opacity-70 transition-opacity"
-                    data-umami-event="location-country-click"
-                    data-umami-event-country={locationObj.name}
-                    data-umami-event-from="author-page"
-                  >
-                    {locationObj.name}
-                  </Link>
-                </>
+                <Link
+                  href={`/locations/${locationObj.slug}`}
+                  className="hover:opacity-70 transition-opacity"
+                  data-umami-event="location-country-click"
+                  data-umami-event-country={locationObj.name}
+                  data-umami-event-from="author-page"
+                >
+                  {locationObj.name}
+                </Link>
               )}
             </p>
           )}
-          {locationCity && (
+          {(tradition || eraLabel) && (
             <p className="text-sm mt-0.5" style={{ color: 'var(--ink-mute)' }}>
-              {locationCity}
+              {/* Beside the portrait a phone has ~190px for this, so tradition and era
+                  each take a line there rather than breaking mid-phrase; inline from sm. */}
+              {tradition && (
+                <span className="block sm:inline">
+                  {traditionObj?.slug ? (
+                    <Link href={`/traditions/${traditionObj.slug}`} className="hover:opacity-70 transition-opacity">
+                      {tradition}
+                    </Link>
+                  ) : tradition}
+                </span>
+              )}
+              {tradition && eraLabel && <span className="hidden sm:inline"> · </span>}
+              {eraLabel && (
+                <span className="block sm:inline">
+                  {eraSlug ? (
+                    <Link href={`/eras/${eraSlug}`} className="hover:opacity-70 transition-opacity">
+                      {eraLabel}
+                    </Link>
+                  ) : eraLabel}
+                </span>
+              )}
             </p>
           )}
           {/* A long biography still sits above the texts, so offer a direct way down. */}
