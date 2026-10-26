@@ -475,6 +475,10 @@ export default async function TextPage({ params }: Props) {
 
           {/* Main reading column */}
           <main id="reader-main" className="margin-body">
+            {/* Skip-link target. The root layout's skip link points at #main-content, but this
+                element keeps id="reader-main" because ReaderSettings and globals.css depend on it,
+                so the target sits as the main column's first child. tabIndex -1 lets it take focus. */}
+            <span id="main-content" tabIndex={-1} className="outline-none" />
             {/* Mobile TOC disclosure — visible below xl where the fixed TOC is hidden */}
             {hasToc && (
               <div className="xl:hidden mb-8">

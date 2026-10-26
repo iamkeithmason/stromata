@@ -7,6 +7,19 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-10-26 — The skip link now works on text pages
+
+The root layout's "Skip to content" link points at `#main-content`, but the text reader's `<main>` keeps
+`id="reader-main"` (ReaderSettings and `globals.css` depend on it), so on the site's most-visited page type the
+skip link jumped nowhere. The 2026-09-08 accessibility entry noted the exception without fixing it. The reader
+now has a focusable, empty `#main-content` target as the first child of its main column (`tabIndex={-1}`), so
+Tab then Enter lands focus in the reading column; `reader-main` is untouched. Backlog card: "Skip link has no
+target on the text-reader page". Base `release`. **Still to check by hand in real Chrome** (synthetic key
+events are unreliable in agent browsers): on a preview text page, Tab once, press Enter, then Tab again and
+confirm focus moves into the reading column rather than back to the header.
+
+---
+
 ## 2026-10-06 — Research write-up: a longer cache window needs every writer
 
 Added `docs/research/2026-10-06-a-longer-cache-window-needs-every-writer.md`, covering the two
