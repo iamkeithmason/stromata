@@ -7,6 +7,31 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-10-26 — Reader line length counted in characters; default about 70
+
+The Width setting offered 680/800/920px, but the reading column is 744px wide from 1024px to 1400px (the side
+rail takes the rest) and 808px above that. So Normal and Wide rendered identically on most laptops, Wide only
+differed at about 900px and from 1440px, and the default ran to 87–93 characters a line. Even Narrow (about
+80) was past the 60–75 that reads comfortably.
+
+The measure is now a multiple of the prose size, `max-width: calc(var(--text-prose) * var(--reader-measure))` on
+`#reader-main`, set from `ReaderSettings`: Narrow 25.5, Normal 30, Wide 34. Measured at text size M, the lines
+hold about 60, 71 and 80 characters at every width from 768px to 1440px, and the three options are visibly
+different everywhere. Line length now holds when the text size changes. At XL, Normal and Wide meet the
+column's own limit on laptops (both about 68 characters at 744px), which is the layout doing its job. The
+default moves from about 90 characters to about 70 (Keith's choice of the two offered, 26 Oct), set in CSS so
+it applies before any script runs, with no shift on load. Stored preferences keep their names, so existing
+choices and the `reader-setting-change` series carry over.
+
+Also noted: at 1440px and above the body is now centred inside the 808px column, so the footer line ("free to
+read", Ko-fi, Cite) sits about 100px wider than the text on each side. Left as is: it's page furniture.
+
+Verified locally against the live database at 390, 768, 1024, 1280 and 1440px, with each option at text sizes M
+and XL set through the stored preference, as a reader would set it. No overflow on phones, where the column is
+already narrower than any measure. `tsc`, lint and 541 tests clean. Base `release`.
+
+---
+
 ## 2026-10-26 — Phone follow-ups from Keith's preview check
 
 Keith checked the quick-wins preview on his phone and asked for three more changes:

@@ -29,10 +29,13 @@ const SCALES = [
   { value: 1.15, label: 'L' },
   { value: 1.3, label: 'XL' },
 ]
+// Measure as a multiple of the prose size (--reader-measure in globals.css), so it
+// counts characters: about 60 / 70 / 80 a line at any text size. Values keep their
+// old names so stored preferences and the reader-setting-change series carry over.
 const MEASURES = [
-  { value: 'narrow', px: '680px', label: 'Narrow' },
-  { value: 'normal', px: '800px', label: 'Normal' },
-  { value: 'wide', px: '920px', label: 'Wide' },
+  { value: 'narrow', em: 25.5, label: 'Narrow' },
+  { value: 'normal', em: 30, label: 'Normal' },
+  { value: 'wide', em: 34, label: 'Wide' },
 ] as const
 
 const THEMES = [
@@ -53,7 +56,7 @@ function applyPrefs(p: Prefs) {
   if (main) {
     main.style.setProperty('--reader-font-scale', String(p.scale))
     const m = MEASURES.find(x => x.value === p.measure) ?? MEASURES[1]
-    main.style.maxWidth = m.px
+    main.style.setProperty('--reader-measure', String(m.em))
   }
   const page = document.getElementById('reader-page')
   if (page) {
