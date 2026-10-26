@@ -373,6 +373,8 @@ function navSurfaces(site) {
     ['text-open', 'collection-page', site.collections],
     ['text-open', 'location-page', site.locations],
     ['text-open', 'scripture-page', site.scripture],
+    // End-of-text "Continue exploring" (PR #150). Release prediction 2 counts these.
+    ['text-open', 'read-next', site.texts],
     // author-open
     ['author-open', 'authors-index', ['/authors']],
     ['author-open', 'search-results', ['/search?q=augustine']],
