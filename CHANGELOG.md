@@ -7,6 +7,25 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-10-26 — Admin Library: one searchable texts index
+
+Added `/admin/texts`, a server-paginated (50 per page), searchable index of every text, and took the
+unpaginated texts list off the `/admin` dashboard. The dashboard used to select all texts with four
+embeds on every request, which only gets slower as the corpus grows. Search matches title, slug or
+author name; facets are status, genre, tradition, era, has-intro, author-is-draft and a provenance
+check (missing source URL or provenance notes). Every facet is a URL parameter, so a view can be
+bookmarked. Parameter parsing and search-term escaping are pure and tested in `lib/admin/text-index.ts`.
+
+The dashboard's two integrity alerts (published text with a draft author, published text in an
+unpublished collection) are now targeted queries that return only the offending rows, and the page
+gains a Library card with the total count. Collection bylines still derive from each collection's
+texts, so the dashboard keeps one narrow read (collection id and author, no titles, no `body`) over
+collection members; paginating or moving the collections list is the remaining step to reach "no admin
+page reads every text row". No schema change and no public page touched. Meter: Egress, metadata
+columns only. Not verified by rendering (`/admin` needs Keith's login).
+
+---
+
 ## 2026-10-19 — Admin text record: a source & provenance panel
 
 Backlog card *Admin text record: source & provenance panel*. Verifying a text's source meant reading four
