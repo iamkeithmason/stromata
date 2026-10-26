@@ -7,6 +7,25 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-10-26 — Reader no longer pans sideways on phones; read-next wire-checked
+
+**Phone overflow.** The provenance block in the reader's margin rail prints `source_attribution` verbatim, and
+on some texts that is a bare URL (`https://archive.org/stream/…`), one token too long to break. At 390px it
+made the reader page 540px wide. On a phone the page then panned sideways, and the fixed header, which
+stretched to the full 540px, put the menu button off screen. Found by a phone-width audit of the core pages after
+Keith noted about a third of traffic is mobile. 23 of 559 published texts carry a 40-plus-character token in a
+provenance field, including the current top landing text (Chrysostom, *Address on Vainglory*), *A Short Rule of
+Life* and Pliny's letters to Trajan. Fix: `break-words` on the provenance section. Verified locally against the
+live database: all 23, a 15-text sample and 21 index and entity pages show no horizontal overflow at 390px or
+360px. The rest of the audit was clean: no other page overflows.
+
+**Read-next on the wire.** `scripts/verify-analytics.mjs` now checks `text-open` from `read-next` (PR #150). Run
+locally against the `release` code with the real Umami tracker, beacons intercepted and aborted: all nine
+`text-open` surfaces pass, read-next included (`{"from":"read-next","text":"the-shepherd-of-hermas-book-i"}`).
+That is the attribute release prediction 2 counts. Base `release`.
+
+---
+
 ## 2026-10-26 — Reader sub-headings (h4–h6) set in serif small caps
 
 `MarkdownBody` mapped h1–h3 but not h4–h6, so those headings fell through to Tailwind preflight's sans stack

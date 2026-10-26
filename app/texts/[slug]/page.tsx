@@ -440,8 +440,11 @@ export default async function TextPage({ params }: Props) {
               {/* Provenance — sourced metadata. The accession number is no longer
                   repeated here: it now leads the frontispiece as the hero kicker. */}
               {(text.source_attribution || text.provenance_notes || text.translation_notes || license) && (
+                // break-words: a bare source URL (archive.org/stream/…) is one unbreakable
+                // token, and at phone width it pushed the page 150px wide, so the reader
+                // panned sideways and the fixed header's menu button sat off screen.
                 <section
-                  className="flex flex-col gap-3 text-xs"
+                  className="flex flex-col gap-3 text-xs break-words"
                   style={{ color: 'var(--ink-mute)' }}
                 >
                   {text.source_attribution && <p>Source: {text.source_attribution}</p>}
