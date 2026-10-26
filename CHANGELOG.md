@@ -38,7 +38,9 @@ line spacing on phones.
 
 Verified locally against the live database at 390px and 1280px: positions and sizes measured, button
 hide/show driven by real scroll, desktop line spacing unchanged (20/40px), no horizontal overflow on 39 pages
-at 390px and 360px. `tsc`, lint and 541 tests clean. Base `release`.
+at 390px and 360px. `tsc`, lint and 541 tests clean. Base `release`. Keith kept the texts-first order at
+every width and asked for a preview to check the tucking button on his phone, since iOS Safari's scroll
+events can't be tested from the cloud browser.
 
 ---
 
