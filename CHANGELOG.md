@@ -26,6 +26,23 @@ columns only. Not verified by rendering (`/admin` needs Keith's login).
 
 ---
 
+## 2026-10-19 — Admin text record: a source & provenance panel
+
+Backlog card *Admin text record: source & provenance panel*. Verifying a text's source meant reading four
+form fields and the author record separately. The text edit page (`/admin/texts/[id]/edit`) now opens with
+one panel showing edition (source attribution), translation notes, source URL, dates found in the
+translation notes, acquisition method (source host, plus OCR grade) and rights, coloured green / amber / red.
+Flags: unknown or post-1899 author death year, a licensed text missing attribution or URL, and a published
+text with unresolved problems are **unsafe**; missing URL, edition or provenance notes are **incomplete**;
+a year after 1928 in the translation notes, low OCR and a draft author stub are notes. The logic is pure in
+`lib/review/provenance-panel.ts` (8 tests). A late year is only a prompt, not a verdict: a pre-1929
+publication is public domain whatever the translator's death date (CLAUDE.md), and the notes mix birth,
+death and publication years. The panel is advisory and never blocks publishing, so the human gate is
+unchanged. No schema change: there are no dedicated edition, acquisition or publication-date columns, so
+the panel reads the existing fields, and a structured version would need a migration. One extra read of
+`authors` (name, death year, draft) per page view in admin; no `body`, no public pages touched. Not
+verified visually: `/admin` needs Keith's login.
+
 ## 2026-10-06 — Research write-up: a longer cache window needs every writer
 
 Added `docs/research/2026-10-06-a-longer-cache-window-needs-every-writer.md`, covering the two
