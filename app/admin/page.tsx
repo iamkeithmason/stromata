@@ -13,15 +13,15 @@ import {
 import AgentSchedule from './AgentSchedule'
 
 type TextAuthor = CollectionAuthorRef & { id: string; draft: boolean }
-type TextGenre = { name: string }
 type TextCollection = { id: string; title: string; slug: string; published: boolean }
 
-type TextRow = {
-  id: string; title: string; slug: string; published: boolean; editorial_introduction: string | null
+// Integrity alerts only — the full texts list lives in the Library (/admin/texts).
+type AlertRow = {
+  id: string; title: string
   author: MaybeEmbedded<TextAuthor>
-  genre: MaybeEmbedded<TextGenre>
   collection: MaybeEmbedded<TextCollection>
 }
+type CollectionTextRow = { collection_id: string; author: MaybeEmbedded<TextAuthor> }
 type CollectionRow = {
   id: string; title: string; slug: string; published: boolean; description: string | null
   author: MaybeEmbedded<CollectionAuthorRef>
@@ -47,8 +47,11 @@ export default async function AdminDashboard({ searchParams }: Props) {
   const supabase = createServerClient()
 
   const [
-    { data: texts },
+    { data: draftAuthorTexts },
+    { data: draftCollectionTexts },
+    { data: collectionTexts },
     { data: collections },
+    { count: textCount },
     { count: authorCount },
     { count: locationCount },
     { count: eraCount },
@@ -56,14 +59,29 @@ export default async function AdminDashboard({ searchParams }: Props) {
     { count: themeCount },
     { count: draftCount },
   ] = await Promise.all([
+    // Integrity alerts as targeted queries: only the offending rows come back,
+    // however large the corpus grows.
     supabase
       .from('texts')
-      .select('id, title, slug, published, editorial_introduction, author:authors(id, name, slug, draft), genre:genres(name), collection:collections(id, title, slug, published)')
-      .order('created_at', { ascending: false }),
+      .select('id, title, author:authors!inner(id, name, slug, draft), collection:collections(id, title, slug, published)')
+      .eq('published', true)
+      .eq('author.draft', true),
+    supabase
+      .from('texts')
+      .select('id, title, author:authors(id, name, slug, draft), collection:collections!inner(id, title, slug, published)')
+      .eq('published', true)
+      .eq('collection.published', false),
+    // Collection bylines derive from each collection's texts. Narrow projection:
+    // no title or body, only the collection id and the author.
+    supabase
+      .from('texts')
+      .select('collection_id, author:authors(id, name, slug, draft)')
+      .not('collection_id', 'is', null),
     supabase
       .from('collections')
       .select('id, title, slug, published, description, author:authors(name, slug)')
       .order('title'),
+    supabase.from('texts').select('id', { count: 'exact', head: true }),
     supabase.from('authors').select('id', { count: 'exact', head: true }),
     supabase.from('locations').select('id', { count: 'exact', head: true }),
     supabase.from('eras').select('id', { count: 'exact', head: true }),
@@ -103,23 +121,18 @@ export default async function AdminDashboard({ searchParams }: Props) {
   // but it's almost always an oversight worth finishing. Surface it here.
   //  • draft author  → author has live works but no public bio / not in the index
   //  • draft (unpublished) collection → collection hidden; text shows on its own
-  const allTexts = (texts ?? []) as unknown as TextRow[]
-  const liveTextDraftAuthor = allTexts.filter(t => t.published && one(t.author)?.draft)
-  const liveTextDraftCollection = allTexts.filter(t => t.published && one(t.collection)?.published === false)
+  const liveTextDraftAuthor = (draftAuthorTexts ?? []) as unknown as AlertRow[]
+  const liveTextDraftCollection = (draftCollectionTexts ?? []) as unknown as AlertRow[]
 
   // Collection bylines are derived from the collection's texts, matching the
-  // public page (lib/collections/author.ts). No extra query: allTexts already
-  // carries each text's author and collection. Order here follows the texts
-  // query (newest first) rather than collection_order, which only shows on a
-  // multi-author collection and doesn't matter for an admin index line.
+  // public page (lib/collections/author.ts).
   const textAuthorsByCollection = new Map<string, TextAuthor[]>()
-  for (const t of allTexts) {
-    const collection = one(t.collection)
+  for (const t of (collectionTexts ?? []) as unknown as CollectionTextRow[]) {
     const author = one(t.author)
-    if (!collection?.id || !author) continue
-    const found = textAuthorsByCollection.get(collection.id) ?? []
+    if (!t.collection_id || !author) continue
+    const found = textAuthorsByCollection.get(t.collection_id) ?? []
     found.push(author)
-    textAuthorsByCollection.set(collection.id, found)
+    textAuthorsByCollection.set(t.collection_id, found)
   }
   const integrityCount = liveTextDraftAuthor.length + liveTextDraftCollection.length
 
@@ -205,6 +218,7 @@ export default async function AdminDashboard({ searchParams }: Props) {
               { label: 'Pipeline', href: '/admin/pipeline', count: pendingCount ?? 0 },
               { label: 'Sourcer', href: '/admin/sourcer', count: sourcerCount ?? 0 },
               { label: 'Analytics', href: '/admin/analytics', count: '→' as number | string },
+              { label: 'Library', href: '/admin/texts', count: textCount ?? 0 },
               { label: 'Drafts', href: '/admin/drafts', count: draftCount ?? 0 },
               { label: 'Authors', href: '/admin/authors', count: authorCount ?? 0 },
               { label: 'Traditions', href: '/admin/traditions', count: traditionCount ?? 0 },
@@ -264,52 +278,15 @@ export default async function AdminDashboard({ searchParams }: Props) {
           )}
         </section>
 
-        {/* Texts */}
-        <section>
-          <div className="flex items-baseline justify-between mb-4">
-            <h2 className="text-lg font-semibold text-stone-800">
-              Texts <span className="text-stone-400 font-normal text-sm">({texts?.length ?? 0})</span>
-            </h2>
-            <Link href="/admin/texts/new" className="text-sm text-stone-600 hover:text-stone-900">
-              + Add text
-            </Link>
+        {/* Texts — the full, searchable index is the Library */}
+        <section className="flex items-baseline justify-between">
+          <h2 className="text-lg font-semibold text-stone-800">
+            Texts <span className="text-stone-400 font-normal text-sm">({textCount ?? 0})</span>
+          </h2>
+          <div className="flex items-center gap-4 text-sm">
+            <Link href="/admin/texts/new" className="text-stone-600 hover:text-stone-900">+ Add text</Link>
+            <Link href="/admin/texts" className="text-stone-600 hover:text-stone-900">Open the Library →</Link>
           </div>
-          {texts && texts.length > 0 ? (
-            <div className="border border-stone-200 rounded divide-y divide-stone-100">
-              {(texts as unknown as TextRow[]).map((t: TextRow) => {
-                const author = one(t.author)
-                const genre = one(t.genre)
-                const collection = one(t.collection)
-                return (
-                  <div key={t.id} className="flex items-center justify-between px-4 py-3">
-                    <div>
-                      <span className="text-stone-800 text-sm font-medium">{t.title}</span>
-                      <span className="text-stone-400 text-xs ml-3">
-                        {author?.name} · {genre?.name}
-                        {collection?.title && (
-                          <> · <span className="italic">{collection.title}</span></>
-                        )}
-                      </span>
-                      <span className={`ml-3 text-xs ${t.published ? 'text-green-600' : 'text-stone-400'}`}>
-                        {t.published ? '● Published' : '○ Draft'}
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <Dot filled={!!t.editorial_introduction} emptyLabel="No editorial introduction" />
-                      <Link href={`/admin/texts/new?from=${t.id}`} className="text-xs text-stone-400 hover:text-stone-700">
-                        Duplicate
-                      </Link>
-                      <Link href={`/admin/texts/${t.id}/edit`} className="text-xs text-stone-500 hover:text-stone-900">
-                        Edit
-                      </Link>
-                    </div>
-                  </div>
-                )
-              })}
-            </div>
-          ) : (
-            <p className="text-sm text-stone-400">No texts yet.</p>
-          )}
         </section>
 
       </div>
