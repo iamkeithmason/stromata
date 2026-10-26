@@ -129,7 +129,9 @@ export default function MarkdownBody({ content, numbered = true, size = 'default
                   {num}
                 </span>
               )}
-              <p className={`font-serif mb-5 ${size === 'small' ? 'leading-relaxed' : 'leading-loose'}`} style={{ color: 'var(--reader-text)', fontSize: proseSize }}>
+              {/* Double leading suits the desktop measure; on a phone's ~38-character line it
+                  spreads the text thin, so phones get 1.65 (about a fifth more text per screen). */}
+              <p className={`font-serif mb-5 ${size === 'small' ? 'leading-relaxed' : 'leading-[1.65] sm:leading-loose'}`} style={{ color: 'var(--reader-text)', fontSize: proseSize }}>
                 {children}
               </p>
             </div>

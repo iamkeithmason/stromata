@@ -87,6 +87,31 @@ export function ReaderSettings() {
     applyPrefs(p)
   }, [])
 
+  // Step out of the way while the reader reads. The button floats over the text and
+  // on a phone it covered the last words of a line on every screen (26 Oct critique),
+  // so it slides away while scrolling down and returns on any scroll up or near the top.
+  const [tucked, setTucked] = useState(false)
+  useEffect(() => {
+    let last = window.scrollY
+    let ticking = false
+    const onScroll = () => {
+      if (ticking) return
+      ticking = true
+      requestAnimationFrame(() => {
+        const y = window.scrollY
+        const delta = y - last
+        if (y < 200) setTucked(false)
+        else if (delta > 8) setTucked(true)
+        else if (delta < -8) setTucked(false)
+        if (Math.abs(delta) > 8 || y < 200) last = y
+        ticking = false
+      })
+    }
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
+  const hidden = tucked && !open
+
   const update = useCallback((patch: Partial<Prefs>, setting: 'font-size' | 'measure' | 'theme', value: string) => {
     setPrefs(prev => {
       const next = { ...prev, ...patch }
@@ -105,7 +130,21 @@ export function ReaderSettings() {
   const border = '1px solid var(--rule)'
 
   return (
-    <div style={{ position: 'fixed', bottom: '1.5rem', right: '1.5rem', zIndex: 45 }} className="print:hidden">
+    <div
+      style={{
+        position: 'fixed',
+        bottom: '1.5rem',
+        right: '1.5rem',
+        zIndex: 45,
+        transform: hidden ? 'translateY(calc(100% + 2rem))' : 'none',
+        opacity: hidden ? 0 : 1,
+        pointerEvents: hidden ? 'none' : 'auto',
+        transition: 'transform var(--dur-slow) var(--ease), opacity var(--dur-slow) var(--ease)',
+      }}
+      className="print:hidden"
+      // A keyboard user tabbing to the button brings it back.
+      onFocus={() => setTucked(false)}
+    >
       {open && (
         <div
           role="dialog"

@@ -117,7 +117,6 @@ const noRawColourSelectors = [
 // path characters (Next dynamic-route dirs) rather than character classes.
 const legacyRawColour = [
   'app/about/page.tsx',
-  'app/collections/\\[slug\\]/page.tsx',
   'app/components/AuthorsBrowser.tsx',
   'app/components/DownloadLinks.tsx',
   'app/components/MarkdownEditor.tsx',
