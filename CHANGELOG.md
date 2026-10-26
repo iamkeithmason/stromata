@@ -7,6 +7,17 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-10-26 — "Continue exploring" sits in a row from tablet width
+
+Keith's call after reviewing the preview: the three next reads at the end of a text now sit side by side from
+the `md` breakpoint up, one column per pick (so one or two picks don't leave an empty column), and stay stacked
+on phones. Same plain type, reason labels and analytics attributes as before (`text-open` from `read-next`);
+only the list's layout classes changed. Long titles wrap within their column; `items-start` keeps the reason
+labels aligned along the top. Base `release`. **Not verified by rendering here:** check the row on the preview at
+tablet and desktop widths, and that a long title (the Pliny letters) wraps cleanly.
+
+---
+
 ## 2026-10-26 — The skip link now works on text pages
 
 The root layout's "Skip to content" link points at `#main-content`, but the text reader's `<main>` keeps
