@@ -407,10 +407,10 @@ changes still get separate PRs — this is about not splitting one piece of work
 
 **Standing rule — one release a week, through a `release` branch (agreed with Keith 2026-10-10).** Production
 deploys from `main` only, and every deploy empties the page cache, so site-changing work is collected on a
-long-lived **`release`** branch and shipped to `main` once a week. In force until the Usage page's 30-day Fluid
-Active CPU total is back under the 4h Hobby allowance (expected between about 28 Oct and 5 Nov — the 21–26 Sep
-peak and the busy first days of October are still in that window); Keith decides whether to keep the branch
-after that.
+long-lived **`release`** branch and shipped to `main` once a week. **Permanent** (Keith, 2026-10-26): the
+weekly release stays after the Usage page's 30-day Fluid Active CPU total is back under the 4h Hobby allowance
+(expected between about 28 Oct and 5 Nov). The Monday release task reports every week, even when there is
+nothing to ship.
 
 - **Site-changing PRs open with base `release`, not `main`** — `/next-agent-card` PRs included. A merge into
   `release` deploys nothing (it is a preview branch, and previews are off unless asked), so those merges are
