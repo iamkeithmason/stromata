@@ -29,10 +29,13 @@ const SCALES = [
   { value: 1.15, label: 'L' },
   { value: 1.3, label: 'XL' },
 ]
+// Measure as a multiple of the prose size (--reader-measure in globals.css), so it
+// counts characters: about 60 / 70 / 80 a line at any text size. Values keep their
+// old names so stored preferences and the reader-setting-change series carry over.
 const MEASURES = [
-  { value: 'narrow', px: '680px', label: 'Narrow' },
-  { value: 'normal', px: '800px', label: 'Normal' },
-  { value: 'wide', px: '920px', label: 'Wide' },
+  { value: 'narrow', em: 25.5, label: 'Narrow' },
+  { value: 'normal', em: 30, label: 'Normal' },
+  { value: 'wide', em: 34, label: 'Wide' },
 ] as const
 
 const THEMES = [
@@ -47,15 +50,17 @@ type Prefs = { scale: number; measure: Measure; theme: Theme }
 const DEFAULTS: Prefs = { scale: 1.0, measure: 'normal', theme: 'light' }
 
 function applyPrefs(p: Prefs) {
-  // Font size + measure live on the reading column; theme lives on the page
-  // root (so the whole reading surface — hero, margins, footer — flips).
-  const main = document.getElementById('reader-main')
-  if (main) {
-    main.style.setProperty('--reader-font-scale', String(p.scale))
-    const m = MEASURES.find(x => x.value === p.measure) ?? MEASURES[1]
-    main.style.maxWidth = m.px
-  }
+  // Font size and measure are custom properties on the page root: the reading
+  // column inherits them, and so does the footer outside it, which matches the
+  // body's width. Theme is an attribute on the same root, so the whole reading
+  // surface (hero, margins, footer) flips.
   const page = document.getElementById('reader-page')
+  const root = page ?? document.getElementById('reader-main')
+  if (root) {
+    root.style.setProperty('--reader-font-scale', String(p.scale))
+    const m = MEASURES.find(x => x.value === p.measure) ?? MEASURES[1]
+    root.style.setProperty('--reader-measure', String(m.em))
+  }
   if (page) {
     if (p.theme === 'dark') page.setAttribute('data-reader-theme', 'dark')
     else page.removeAttribute('data-reader-theme')
