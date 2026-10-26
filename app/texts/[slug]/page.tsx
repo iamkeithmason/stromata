@@ -596,9 +596,12 @@ export default async function TextPage({ params }: Props) {
           </main>
       </div>
 
-      {/* Footer — aligned to the reading column measure */}
+      {/* Footer — shares the body's edges at every width: same .margin-cols grid,
+          an empty rail to hold the body's left edge, and the reader's measure. */}
+      <div className="margin-cols">
+      <div className="margin-rail hidden lg:block" aria-hidden="true" />
       <footer
-        className="measure-shell mt-4 border-t pt-6 pb-12 text-xs"
+        className="margin-body reader-measure mt-4 border-t pt-6 pb-12 text-xs"
         style={{ borderColor: 'var(--rule)', color: 'var(--ink-mute)' }}
       >
           <p>
@@ -626,6 +629,7 @@ export default async function TextPage({ params }: Props) {
             />
           </p>
       </footer>
+      </div>
 
       {/* Desktop TOC — fixed in right viewport margin, hover to expand.
           Renders outside the reading container so it doesn't affect column width.

@@ -725,19 +725,13 @@ html {
   padding-inline: var(--content-pad);
 }
 
-/* Aligns a rail-less block (e.g. the reading footer) to the reading
-   body: within the content area below the breakpoint, centred on the
-   808px measure once the body itself centres. */
-.measure-shell {
-  max-width: var(--content-max);
-  margin-inline: auto;
-  padding-inline: var(--content-pad);
-}
-@media (min-width: 1400px) {
-  .measure-shell {
-    max-width: var(--reading-measure);
-    padding-inline: 0;
-  }
+/* The reading footer sits in its own .margin-cols row with an empty rail, so it
+   takes the body's left edge at every tier; .reader-measure gives it the body's
+   width (the reader's measure in characters, capped by the column). The values
+   come from #reader-page, where ReaderSettings sets them. Specificity beats the
+   .margin-cols > .margin-body tier rules. */
+.margin-cols > .margin-body.reader-measure {
+  max-width: calc(1.25rem * var(--reader-font-scale, 1) * var(--reader-measure, 30));
 }
 
 /* =============================================================

@@ -23,8 +23,13 @@ default moves from about 90 characters to about 70 (Keith's choice of the two of
 it applies before any script runs, with no shift on load. Stored preferences keep their names, so existing
 choices and the `reader-setting-change` series carry over.
 
-Also noted: at 1440px and above the body is now centred inside the 808px column, so the footer line ("free to
-read", Ko-fi, Cite) sits about 100px wider than the text on each side. Left as is: it's page furniture.
+**The footer line ("free to read", Ko-fi, Cite) now shares the body's edges at every width** (Keith asked,
+26 Oct). It sits in its own `.margin-cols` row with an empty rail, so it takes the body's left edge in each
+layout tier, and `.reader-measure` gives it the body's width. `ReaderSettings` now sets `--reader-font-scale`
+and `--reader-measure` on `#reader-page`, so the footer follows a reader's own size and width; the column
+inherits them. Previously the footer ran under the rail at 1024–1399px and was 808px wide above that. The
+now-unused `.measure-shell` class is gone. Checked at 390, 768, 1024, 1280, 1440 and 1920px across
+measure and size combinations: body and footer edges match to the pixel.
 
 Verified locally against the live database at 390, 768, 1024, 1280 and 1440px, with each option at text sizes M
 and XL set through the stored preference, as a reader would set it. No overflow on phones, where the column is

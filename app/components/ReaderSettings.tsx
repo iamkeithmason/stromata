@@ -50,15 +50,17 @@ type Prefs = { scale: number; measure: Measure; theme: Theme }
 const DEFAULTS: Prefs = { scale: 1.0, measure: 'normal', theme: 'light' }
 
 function applyPrefs(p: Prefs) {
-  // Font size + measure live on the reading column; theme lives on the page
-  // root (so the whole reading surface — hero, margins, footer — flips).
-  const main = document.getElementById('reader-main')
-  if (main) {
-    main.style.setProperty('--reader-font-scale', String(p.scale))
-    const m = MEASURES.find(x => x.value === p.measure) ?? MEASURES[1]
-    main.style.setProperty('--reader-measure', String(m.em))
-  }
+  // Font size and measure are custom properties on the page root: the reading
+  // column inherits them, and so does the footer outside it, which matches the
+  // body's width. Theme is an attribute on the same root, so the whole reading
+  // surface (hero, margins, footer) flips.
   const page = document.getElementById('reader-page')
+  const root = page ?? document.getElementById('reader-main')
+  if (root) {
+    root.style.setProperty('--reader-font-scale', String(p.scale))
+    const m = MEASURES.find(x => x.value === p.measure) ?? MEASURES[1]
+    root.style.setProperty('--reader-measure', String(m.em))
+  }
   if (page) {
     if (p.theme === 'dark') page.setAttribute('data-reader-theme', 'dark')
     else page.removeAttribute('data-reader-theme')
