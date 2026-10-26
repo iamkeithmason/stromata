@@ -7,6 +7,24 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-10-26 — Phone follow-ups from Keith's preview check
+
+Keith checked the quick-wins preview on his phone and asked for three more changes:
+
+- **Reader settings: the Width option is hidden below `md`.** Measured: at 390px and 640px the reading column
+  is narrower than the narrowest measure (680px), so Narrow, Normal and Wide all render identically; from 768px
+  they differ. Also noted, not changed: from 1024px to 1280px, when the margin rail appears, Normal and Wide
+  both come out at 744px, so Wide only shows a difference at about 900px and from about 1440px.
+- **Author page: the line under the name is split.** Dates and place come first (a city, where recorded, as
+  "Antioch, Syria"), then tradition and era. On phones, beside the portrait there is only about 190px, so
+  tradition and era each take their own line rather than breaking mid-phrase; from `sm` they share a line.
+  Swept all 91 published author pages at 390px: no meta line wraps.
+- **Homepage "Reading history": two covers per row on phones**, matching "Recently added".
+
+`tsc`, lint and 541 tests clean. Base `release`.
+
+---
+
 ## 2026-10-26 — Phone quick wins on the landing pages
 
 From a 390px design critique of the four templates readers land on (reader, author, homepage, collection),
