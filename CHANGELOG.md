@@ -7,6 +7,17 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-10-26 — Reader sub-headings (h4–h6) set in serif small caps
+
+`MarkdownBody` mapped h1–h3 but not h4–h6, so those headings fell through to Tailwind preflight's sans stack
+and read as a rendering glitch inside the serif text. Only 2 of 559 published texts use `####`, but one is the
+most-read text (Pliny, Letters 10.96–97: "Pliny to the Emperor Trajan", "Trajan to Pliny"). h4–h6 now use the
+`.smallcaps` class in the reader text colour, a quieter step below h3; they stay out of the table of contents,
+so no anchor IDs. Found by the 26 Oct design critique. Verified locally against the live database: both h4s on
+the Pliny page compute to Junicode and render as small caps. Base `release`.
+
+---
+
 ## 2026-10-26 — "Continue exploring" sits in a row from tablet width
 
 Keith's call after reviewing the preview: the three next reads at the end of a text now sit side by side from

@@ -147,6 +147,18 @@ export default function MarkdownBody({ content, numbered = true, size = 'default
         h3: ({ children }) => (
           <h3 id={slugify(nodeToText(children))} className="font-serif text-lg mt-6 mb-2" style={{ color: 'var(--reader-text)' }}>{children}</h3>
         ),
+        // h4–h6 were unmapped, so they fell through to Tailwind preflight's sans stack and
+        // read as a glitch (e.g. "Pliny to the Emperor Trajan"). Set them in serif small caps,
+        // a quieter step below h3. Not in the TOC, so no anchor IDs.
+        h4: ({ children }) => (
+          <h4 className="smallcaps mt-6 mb-2" style={{ color: 'var(--reader-text)' }}>{children}</h4>
+        ),
+        h5: ({ children }) => (
+          <h5 className="smallcaps mt-5 mb-2" style={{ color: 'var(--reader-text)' }}>{children}</h5>
+        ),
+        h6: ({ children }) => (
+          <h6 className="smallcaps mt-5 mb-2" style={{ color: 'var(--reader-text)' }}>{children}</h6>
+        ),
         // Blockquote — useful for scripture references
         blockquote: ({ children }) => (
           <blockquote
