@@ -7,6 +7,41 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-10-26 — Phone quick wins on the landing pages
+
+From a 390px design critique of the four templates readers land on (reader, author, homepage, collection),
+prompted by about a third of traffic being mobile. Keith chose the top three plus the small fixes, and tighter
+line spacing on phones.
+
+- **Author page: texts before "Kindred authors".** The page is one column at every width, so the 20-row
+  kindred list stood between a search arrival and the author's own texts. The texts list now comes first
+  (all widths), and a "10 texts in the library ↓" link under the name jumps past a long biography. On
+  Chrysostom at 390px the list now starts at 1,161px, from 1,701px.
+- **Collection page: short row titles, colour tokens.** When every part of a collection starts with the same
+  work name ending at a separator, rows show only what differs ("Book IV", not "The Refutation of All
+  Heresies, Book IV"). Display only: links, analytics and JSON-LD keep the full title. The rule is
+  `lib/collections/short-titles.ts`, with tests built from real collections, and it leaves alone titles that
+  share only a word ("Tractate 1", "Tractate 2"). The page's raw hex colours became tokens, which fixes two
+  contrast failures (read time 2.6:1, row numbers about 1.6:1) and takes the file off the `legacyRawColour`
+  list.
+- **Reader: the "Aa" settings button tucks away while scrolling down** and returns on any scroll up, near
+  the top, or on keyboard focus. It had covered the last words of a line on every screen.
+- **Reader: line spacing on phones is 1.65, not 2.** At the phone's ~38-character measure, double leading
+  spread the text thin; this puts about a fifth more text on each screen. `sm` and up keep double leading.
+  The same `MarkdownBody` paragraphs set author biographies, so those tighten on phones too.
+- **Homepage "Recently added": two covers per row on phones**, theme chips hidden below `sm` (they stacked
+  one per line at half width). The page is about 6,700px at 390px, from about 9,700px. Small covers (under
+  200px) clamp the title to three lines, since the fourth was cut through the middle.
+- **Separators wrap with the item before them** in "Start with" and "Texts through the year", so a wrapped
+  line no longer starts with "·".
+- **Tap targets:** Markdown, PDF and "Cite this text" reach the 24px minimum.
+
+Verified locally against the live database at 390px and 1280px: positions and sizes measured, button
+hide/show driven by real scroll, desktop line spacing unchanged (20/40px), no horizontal overflow on 39 pages
+at 390px and 360px. `tsc`, lint and 541 tests clean. Base `release`.
+
+---
+
 ## 2026-10-26 — Reader no longer pans sideways on phones; read-next wire-checked
 
 **Phone overflow.** The provenance block in the reader's margin rail prints `source_attribution` verbatim, and

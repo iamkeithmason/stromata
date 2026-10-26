@@ -314,6 +314,16 @@ export default async function AuthorPage({ params }: Props) {
               {locationCity}
             </p>
           )}
+          {/* A long biography still sits above the texts, so offer a direct way down. */}
+          {rows.length > 0 && !author.draft && author.bio && (
+            <a
+              href="#texts"
+              className="inline-block mt-3 py-1 text-sm hover:opacity-70 transition-opacity"
+              style={{ color: 'var(--gold-ink)' }}
+            >
+              {rows.length === 1 ? '1 text' : `${rows.length} texts`} in the library ↓
+            </a>
+          )}
           </div>
         </div>
 
@@ -326,50 +336,12 @@ export default async function AuthorPage({ params }: Props) {
           </div>
         )}
 
-        {/* ── Kindred authors ──────────────────────────────────────────────── */}
-        {relatedAuthors.length > 0 && (
-          <div className="mb-10">
-            <div className="mb-4">
-              <div className="flex items-baseline justify-between mb-3">
-                <h2 className="font-serif italic text-base" style={{ color: 'var(--ink)' }}>
-                  Kindred authors
-                </h2>
-                {tradition && <span className="kicker">{tradition}</span>}
-              </div>
-              <hr className="rule-gold" />
-            </div>
-            <ul className="divide-y" style={{ borderColor: 'var(--rule-soft)' }}>
-              {relatedAuthors.map(a => {
-                const aDates = formatDates(a.birth_year, a.death_year)
-                return (
-                  <li key={a.id}>
-                    <Link
-                      href={`/authors/${a.slug}`}
-                      className="flex items-baseline justify-between py-3 group hover:opacity-70 transition-opacity"
-                      style={{ textDecoration: 'none' }}
-                      data-umami-event="author-open"
-                      data-umami-event-from="related-figures"
-                      data-umami-event-author={a.name}
-                    >
-                      <span className="font-serif" style={{ color: 'var(--ink)' }}>
-                        {a.name}
-                      </span>
-                      {aDates && (
-                        <span className="text-xs ml-4 shrink-0" style={{ color: 'var(--ink-mute)' }}>
-                          {aDates}
-                        </span>
-                      )}
-                    </Link>
-                  </li>
-                )
-              })}
-            </ul>
-          </div>
-        )}
-
         {/* ── Texts in the library ─────────────────────────────────────────── */}
+        {/* Before "Kindred authors": the page is one column at every width, so on a
+            phone the 20-row kindred list used to stand between a search arrival and
+            this author's own texts (texts began ~2 screens down; 26 Oct critique). */}
         {rows.length > 0 && (
-          <div>
+          <div id="texts" className="mb-10">
             <div className="mb-6">
               <div className="flex items-baseline justify-between mb-3">
                 <h2 className="font-serif italic text-base" style={{ color: 'var(--ink)' }}>
@@ -423,7 +395,48 @@ export default async function AuthorPage({ params }: Props) {
         )}
 
         {rows.length === 0 && (
-          <p className="text-sm" style={{ color: 'var(--ink-mute)' }}>No texts published yet.</p>
+          <p className="text-sm mb-10" style={{ color: 'var(--ink-mute)' }}>No texts published yet.</p>
+        )}
+
+        {/* ── Kindred authors ──────────────────────────────────────────────── */}
+        {relatedAuthors.length > 0 && (
+          <div className="mb-10">
+            <div className="mb-4">
+              <div className="flex items-baseline justify-between mb-3">
+                <h2 className="font-serif italic text-base" style={{ color: 'var(--ink)' }}>
+                  Kindred authors
+                </h2>
+                {tradition && <span className="kicker">{tradition}</span>}
+              </div>
+              <hr className="rule-gold" />
+            </div>
+            <ul className="divide-y" style={{ borderColor: 'var(--rule-soft)' }}>
+              {relatedAuthors.map(a => {
+                const aDates = formatDates(a.birth_year, a.death_year)
+                return (
+                  <li key={a.id}>
+                    <Link
+                      href={`/authors/${a.slug}`}
+                      className="flex items-baseline justify-between py-3 group hover:opacity-70 transition-opacity"
+                      style={{ textDecoration: 'none' }}
+                      data-umami-event="author-open"
+                      data-umami-event-from="related-figures"
+                      data-umami-event-author={a.name}
+                    >
+                      <span className="font-serif" style={{ color: 'var(--ink)' }}>
+                        {a.name}
+                      </span>
+                      {aDates && (
+                        <span className="text-xs ml-4 shrink-0" style={{ color: 'var(--ink-mute)' }}>
+                          {aDates}
+                        </span>
+                      )}
+                    </Link>
+                  </li>
+                )
+              })}
+            </ul>
+          </div>
         )}
 
       </main>
