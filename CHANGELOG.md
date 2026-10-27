@@ -33,10 +33,15 @@ the Distinctive Visual Identity epic (UI sans, ground colour) are untouched.
   epic: no sans today, one deliberate UI sans planned.
 - Verified by rendering a local build against the live database (`npm run screens -- --only=…`), since
   GitHub Actions minutes are spent until 2 Nov: lint, `tsc` and all 557 tests pass locally.
-- **Found, not fixed (needs Keith):** five published texts carry more than six themes —
-  `the-stromata-book-i` (11), `a-short-rule-of-life` (9), `on-prayer` (8),
-  `how-the-office-of-curates-is-ordained-of-god` (7), `the-didache` (7). The text edit form does not
-  enforce the cap. Wycliffe's introduction opens with a typo ("Thos is a short piece").
+- **Theme cap restored (Keith's call, applied by SQL).** Five published texts carried more than six themes,
+  because the text edit form does not enforce the cap. Now six each:
+  `the-stromata-book-i` (11 → scripture, tradition, providence, christology, contemplation, virtue),
+  `a-short-rule-of-life` (9 → prayer, vocation, work, justice, virtue, humility),
+  `on-prayer` (8 → prayer, ministry, virtue, vice, repentance, scripture),
+  `how-the-office-of-curates-is-ordained-of-god` (7 → drops prayer),
+  `the-didache` (7 → sacraments, fasting, hospitality, ministry, prayer, eschatology). No text is over the cap.
+  Also fixed the opening typo in Wycliffe's introduction ("Thos" → "This"). Both were direct DB edits, so the
+  pages refresh on the next save in the admin form or the next release; the form still does not enforce the cap.
 
 ---
 
