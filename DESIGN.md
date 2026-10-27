@@ -158,9 +158,14 @@ calendar.
 One serif family, Junicode, does nearly all the work: body, headings, labels and captions. It is a
 scholar's face, built for medieval texts, with a variable weight axis and a genuine small-caps table.
 **IM Fell English**, a 17th-century Oxford face, is reserved for display: the masthead, the reader's
-frontispiece title, and the drop cap. There is no sans-serif on the public site.
+frontispiece title, and the drop cap. There is no sans-serif on the public site today. A deliberately
+chosen humanist sans for UI furniture (navigation, chips, metadata) is planned under the Distinctive
+Visual Identity epic; until that face is chosen, `body` is set in the serif so nothing falls back to
+the browser's default sans.
 
 - **Prose** is 1.25rem on a loose leading, in an 808px column. This is the most important type on the site.
+  Quotes and dashes are made typographic at render time (`lib/markdown/smart-punctuation.ts`), so the
+  stored text stays as imported.
 - **Labels and kickers** use real small caps (`.kicker`, `.kicker-gold`, `.smallcaps`): sentence-case
   source, `font-feature-settings: "smcp" 1`, letter-spacing 0.08em, at 1rem so the small caps carry the
   same weight as the surrounding text. Never letterspaced uppercase, which is the tell of a face without
@@ -204,7 +209,9 @@ take 2–4px at most. The only round shapes are on the reader-settings toggle an
 - Do use real small caps for labels, and gold-ink for gold text.
 - Do use tokens for every colour in a `style` prop. The lint rule in `.eslintrc.cjs` enforces this in CI.
 - Do keep shadows for the seasonal panel and popovers only.
-- Don't add a sans-serif, a filled CTA button, or a second accent colour.
+- Don't add a sans-serif except the one the identity epic chooses, and then only for furniture, never
+  inside a text.
+- Don't add a filled CTA button or a second accent colour.
 - Don't letterspace uppercase labels.
 - Don't use pure white or pure black on the public site.
 - Don't crowd the reading column; 808px and loose leading are deliberate.

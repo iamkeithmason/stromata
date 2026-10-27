@@ -7,6 +7,38 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-10-27 — Design review, session 1: the quick wins
+
+From a design audit of the screens PDF (report: claude.ai artifact "Stromata Reading Room Review", with a
+scored library of 22 reference sites, now also in Notion). Everything here is mechanical; the taste calls in
+the Distinctive Visual Identity epic (UI sans, ground colour) are untouched.
+
+- **No more accidental sans.** `<body>` set no font, so anything without `font-serif` fell back to the
+  browser default: the reader's edition notes, the library list's metadata, the end-of-text bylines and the
+  Ko-fi line. `body` is now `var(--serif)`; the admin layout opts back into `font-sans`. This is a baseline,
+  not the epic's answer: the deliberate UI sans still needs choosing.
+- **Smart punctuation at render.** `lib/markdown/smart-punctuation.ts` (remark plugin, unit-tested) turns
+  straight quotes curly and `--` into an em dash in every text body and introduction. Pliny now reads
+  ‘as to a god’ and "Christ—none". Stored bodies are unchanged, so no bulk job and no egress.
+- **"About this edition" in the reader rail.** A heading, a bare-URL attribution shown as a labelled host
+  link (`archive.org ↗`) instead of the raw URL, and provenance notes over 280 characters folded behind
+  "Notes on this edition". Helpers in `lib/edition.ts`, tested.
+- **Library index.** The three rows of facet pills (35 boxes before the first title) sit behind one
+  "Filter by tradition, era or genre" disclosure, open whenever a filter is set. Its hard-coded greys are
+  now tokens (`#9c9589` on paper was about 2.6:1, below AA), and `TextsBrowser.tsx` leaves the
+  `legacyRawColour` list.
+- **Hero labels.** The homepage's "Public-domain Christian texts…" and "Start with" were the last
+  letterspaced-capital labels outside the cover imprints; both are real small caps now.
+- **DESIGN.md** added at the root (the design system as built, from `globals.css`), and aligned with the
+  epic: no sans today, one deliberate UI sans planned.
+- Verified by rendering a local build against the live database (`npm run screens -- --only=…`), since
+  GitHub Actions minutes are spent until 2 Nov: lint, `tsc` and all 557 tests pass locally.
+- **Found, not fixed (needs Keith):** five published texts carry more than six themes —
+  `the-stromata-book-i` (11), `a-short-rule-of-life` (9), `on-prayer` (8),
+  `how-the-office-of-curates-is-ordained-of-god` (7), `the-didache` (7). The text edit form does not
+  enforce the cap. Wycliffe's introduction opens with a typo ("Thos is a short piece").
+
+
 ## 2026-10-27 — Screens reference: a PDF of the site, refreshed with each release
 
 Ported from Paideia at Keith's request: Paideia's chats can review the interface because a PDF of its current

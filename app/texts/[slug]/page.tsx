@@ -20,6 +20,7 @@ import { DownloadLinks } from '@/app/components/DownloadLinks'
 import { ReaderSettings } from '@/app/components/ReaderSettings'
 import { CitationButton } from '@/app/components/CitationButton'
 import { resolveLicense } from '@/lib/licenses'
+import { PROVENANCE_INLINE_MAX, hostLabel, isBareUrl } from '@/lib/edition'
 import { ContinueExploring } from '@/app/components/ContinueExploring'
 import { pickReadNext, type ReadNextCandidate } from '@/lib/read-next'
 
@@ -444,12 +445,43 @@ export default async function TextPage({ params }: Props) {
                 // token, and at phone width it pushed the page 150px wide, so the reader
                 // panned sideways and the fixed header's menu button sat off screen.
                 <section
-                  className="flex flex-col gap-3 text-xs break-words"
-                  style={{ color: 'var(--ink-mute)' }}
+                  className="flex flex-col gap-3 break-words"
+                  style={{ fontSize: 'var(--text-sm)', lineHeight: 1.5, color: 'var(--ink-mute)' }}
                 >
-                  {text.source_attribution && <p>Source: {text.source_attribution}</p>}
-                  {text.provenance_notes && <p>{text.provenance_notes}</p>}
+                  <h2 className="kicker">About this edition</h2>
+                  {text.source_attribution && (
+                    isBareUrl(text.source_attribution) ? (
+                      <p>
+                        Source:{' '}
+                        <a
+                          href={text.source_attribution}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="underline underline-offset-2 hover:opacity-70 transition-opacity"
+                        >
+                          {hostLabel(text.source_attribution)} ↗
+                        </a>
+                      </p>
+                    ) : (
+                      <p>{text.source_attribution}</p>
+                    )
+                  )}
                   {text.translation_notes && <p>Translation: {text.translation_notes}</p>}
+                  {/* Long provenance notes are an editor's working account — worth
+                      keeping, but not worth a rail of small type before the
+                      reader has started. Short ones stay in view. */}
+                  {text.provenance_notes && (
+                    text.provenance_notes.length > PROVENANCE_INLINE_MAX ? (
+                      <details>
+                        <summary className="cursor-pointer" style={{ color: 'var(--ink-soft)' }}>
+                          Notes on this edition
+                        </summary>
+                        <p className="mt-2">{text.provenance_notes}</p>
+                      </details>
+                    ) : (
+                      <p>{text.provenance_notes}</p>
+                    )
+                  )}
                   {license && (
                     <p>
                       License:{' '}

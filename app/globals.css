@@ -353,12 +353,14 @@
   pointer-events: none;
 }
 
+/* Real small caps, as in .kicker — these two were the last letterspaced-
+   capital labels on the public site outside the cover imprints. */
 .celestial-description,
 .celestial-authors-label {
-  font-family: var(--serif);
-  font-size: var(--text-sm);
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
+  font-family: var(--serif-smallcaps);
+  font-feature-settings: "smcp" 1;
+  font-size: var(--text-smallcaps);
+  letter-spacing: 0.08em;
 }
 
 .celestial-hero-content h1 {
@@ -381,7 +383,6 @@
 .celestial-description {
   margin-bottom: 1rem;
   color: var(--on-dark-soft);
-  letter-spacing: 0.14em;
 }
 
 .search-bar-celestial input::placeholder {
@@ -433,7 +434,6 @@
 
 .celestial-authors-label {
   color: var(--on-dark-gold);
-  letter-spacing: 0.16em;
 }
 
 .celestial-authors-rule {
@@ -537,6 +537,15 @@
    plus a small breathing gap. Applies to all #fragment navigation. */
 html {
   scroll-padding-top: 5.5rem;
+}
+
+/* The page face. Without this, anything that doesn't set font-serif itself
+   (edition notes, list metadata, footer lines) fell back to the browser's
+   default sans — an unchosen face. A deliberate UI sans is a separate decision
+   (Feature Backlog: "Introduce a sans for UI furniture"); until then the whole
+   public site is set in the serif. The admin layout opts back into font-sans. */
+body {
+  font-family: var(--serif);
 }
 
 /* Respect a reader's reduced-motion preference site-wide. */
