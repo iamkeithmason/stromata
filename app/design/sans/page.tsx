@@ -59,6 +59,18 @@ const CANDIDATES: Candidate[] = [
     note: 'A technical voice like Space Grotesk’s, with humanist touches, from a family that also has a matching serif and mono. Distinctive without being the current default.',
   },
   {
+    id: 'archivo',
+    name: 'Archivo',
+    stack: '"Archivo", system-ui, sans-serif',
+    note: 'From Omnibus-Type, on Open Foundry. A grotesque drawn for print and screen, with a slightly condensed, newspaper-catalogue voice. Firmer than Plex, less familiar than Space Grotesk.',
+  },
+  {
+    id: 'mplus',
+    name: 'M+ M Type-1',
+    stack: '"M PLUS 1 Code", ui-monospace, monospace',
+    note: 'From the M+ project, on Open Foundry (loaded here through Google Fonts as M PLUS 1 Code, its monospaced cut). Rounded, light and unusual in Western typesetting; the most original of the set, and the furthest from Junicode.',
+  },
+  {
     id: 'mono',
     name: 'Courier Prime',
     stack: '"Courier Prime", ui-monospace, monospace',
@@ -67,7 +79,7 @@ const CANDIDATES: Candidate[] = [
 ]
 
 const FONTS_HREF =
-  'https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600&family=Alegreya+Sans:wght@400;500&family=Work+Sans:wght@400;500&family=Courier+Prime&family=Space+Grotesk:wght@400;500&family=IBM+Plex+Sans:wght@400;500&display=swap'
+  'https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600&family=Alegreya+Sans:wght@400;500&family=Work+Sans:wght@400;500&family=Courier+Prime&family=Space+Grotesk:wght@400;500&family=IBM+Plex+Sans:wght@400;500&family=Archivo:wght@400;500&family=M+PLUS+1+Code:wght@400;500&display=swap'
 
 const FILTERS = ['Patristic', 'Reformed', 'Anglican', 'Lutheran', 'Roman Catholic']
 

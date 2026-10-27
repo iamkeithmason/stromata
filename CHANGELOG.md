@@ -7,6 +7,31 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-10-27 — Eleven editorial "Read next" picks seeded on the most-read texts
+
+Keith asked to seed the most popular pages to see whether editorial picks raise text depth. The sources
+are the top texts in the 12 and 19 Oct analytics digests; each target is published, and each sentence was
+drafted by Claude for Keith to keep or rewrite in the text edit form. Set directly in the database (only
+where no pick existed); the pages pick them up when this release ships, which empties the cache.
+
+| Source text | Reads next |
+|---|---|
+| Pliny, Letters 10.96–97 | The Didache |
+| The Didache | Pliny, Letters 10.96–97 |
+| Chrysostom, Address on Vainglory | Basil, Address to Young Men |
+| Basil, Address to Young Men | Clement, Stromata I |
+| Clement, Stromata I | Basil, Address to Young Men |
+| Evagrius, Treatise on the Practical Life | Cassian, Conference 1 |
+| Cassian, Conference 13 | Augustine, On the Predestination of the Saints I |
+| Origen, De Principiis I | Gregory of Nyssa, Catechetical Oration |
+| Cyril, Procatechesis | The Didache |
+| Luther, Daily Devotions | Wycliffe, A Short Rule of Life |
+| The Nicene Creed | Cyril, Procatechesis |
+
+`/design/sans` also gains Archivo and M+ M Type-1 (via Google's M PLUS 1 Code), both on Open Foundry.
+
+---
+
 ## 2026-10-27 — Session 2: a phone frontispiece that shows the text, and "Read next" with an editorial pick
 
 Keith chose option C for the phone frontispiece and option B for the end of a text from the decision
