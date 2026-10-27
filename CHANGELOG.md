@@ -7,6 +7,18 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-10-27 — `/next-agent-card` reads the backlog through its saved view
+
+Step 1 of `/next-agent-card` used to rank the queue with a SQL query against the Feature Backlog data
+source. It now runs the saved *Agent queue, approved* view (`view://3d2d9194-805d-8188-9ddb-000c4cbc0eba`)
+in view mode, which applies the view's own filter and ICE sort. View mode carries no plan quota, so a card
+run no longer spends the shared SQL budget the Prospect List sync depends on. SQL stays as the fallback.
+
+CLAUDE.md's Notion note had listed view mode as gated on this plan. A test query on 27 Oct returned the
+view's rows without error, and the tool documents view mode as unmetered, so the note now says so. Two
+quirks recorded in both places: `ICE Score` arrives as a `formulaResult://` reference rather than a number,
+and rows come back with every long text field, so the page size stays small.
+
 ## 2026-10-26 — Reader line length counted in characters; default about 70
 
 The Width setting offered 680/800/920px, but the reading column is 744px wide from 1024px to 1400px (the side
