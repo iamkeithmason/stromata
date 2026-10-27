@@ -375,6 +375,29 @@ example (a NOINDEX exploration, not linked in nav).
 
 ---
 
+## Mobile-first — design at 390px, then add width
+
+Adopted by Keith on 27 Oct 2026. The site was built desktop-first and adapted for phones afterwards, and
+every phone fix since has been found by accident or a one-off audit. About a third of readers are on
+phones, and most arrive from search straight onto a text, so **new public UI starts at 390px** and widens
+from there.
+
+- **Write the phone layout first.** Unprefixed Tailwind classes and base CSS are the phone; `md:`/`lg:` and
+  `min-width` media queries add the wider tiers. A `max-width` override to rescue a desktop layout on
+  phones (as `.frontispiece` had to do in PR #167) is a sign the work started at the wrong end.
+- **The checklist every public change meets at 390px:** the first screen shows what the reader came for
+  (on a text, the text); tap targets are at least 44px; nothing scrolls sideways (long URLs and slugs
+  wrap); furniture collapses before content does; text reads without zoom; nothing fixed covers content.
+- **Look at it before calling it done.** Render the changed pages at 390px as well as 1440px, from a local
+  build against the live data (`npm run screens -- --url=http://localhost:3000 --only=<page>`, see
+  "Screens reference" once it ships), and put the phone shot in the PR. A new page added to
+  `scripts/screens/manifest.json` gets both widths.
+- **Existing pages** are being brought up to this standard by the backlog card "Mobile-first audit: bring
+  every public page up to phone-first standard". Until a page has been through it, don't assume its phone
+  layout was designed; check it.
+
+---
+
 ## Vercel usage — previews are opt-in, and batch small changes
 
 Stromata is on Vercel's **Hobby (free) tier**, and in Sept 2026 it went over the Fluid Active CPU
