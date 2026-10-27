@@ -7,6 +7,28 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-10-27 — The seasonal panel, phone first; mobile-first becomes the rule
+
+**Seasonal panel (`app/components/SeasonalPanel.tsx`).** On a 390px phone the panel ran 1,147px tall:
+eleven lines of body copy at `--text-xl` with 1.75 leading, then "Read for the season", then the
+portrait at the bottom, below the fold. It now starts from the phone:
+
+- The season name, then the pick in one row (portrait beside "For the season · title →" and the
+  author; the label is shortened from "Read for the season" on phones so it holds one line), then the note at `--text-prose` with 1.6 leading. The panel is 741px tall and fits
+  one screen.
+- The portrait is 140px wide on phones, the width FeaturedAuthors draws every author at. It was
+  `clamp(110px, 18vw, 150px)`, which rendered at about 83px on a phone; from `sm` up the floor is
+  now 140px too.
+- Plaque and inner padding are thinner on phones (12px and 1rem × 1.5rem).
+- The no-pick § emblem is hidden on phones, since furniture gives way before content.
+- From `sm` up the layout is unchanged: a grid places the pick in the right-hand column across
+  both rows, with the CTA under the note. Desktop height is the same, 538px.
+- Analytics are unchanged: the whole panel is still the one `text-open` link with
+  `from=seasonal-panel`.
+
+**CLAUDE.md.** Adds the "Mobile-first — design at 390px, then add width" section that Keith adopted
+today, next to the Screens reference section.
+
 ## 2026-10-27 — Courier Prime for the furniture, a `pick` property on read-next, chip bevel options
 
 - **UI-furniture face: Courier Prime** (Keith's choice from `/design/sans`, over Archivo and IBM Plex Sans:
