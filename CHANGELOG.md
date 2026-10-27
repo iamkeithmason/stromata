@@ -7,6 +7,30 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-10-27 — Screens reference: a PDF of the site, refreshed with each release
+
+Ported from Paideia at Keith's request: Paideia's chats can review the interface because a PDF of its current
+screens sits in the project, and Stromata had nothing equivalent. `npm run screens` (`scripts/screens/render.mjs`)
+renders the pages in `scripts/screens/manifest.json` (14 pages, 32 shots) at 390px (2×) and 1440px into
+`docs/screens/stromata-screens.pdf`. The PDF has a cover saying what was rendered, then one page per shot, each
+page sized to the screenshot with a caption band (page, viewport, route, note). Long pages are cut after about
+two phone or three desktop screens, and `shots` in the manifest capture what matters further down: the reader's
+end-of-text module and the homepage's recently added. Umami, Hotjar and Ko-fi requests are aborted, so a run
+never lands in the analytics. `pdfkit` is now a declared devDependency (it was already installed through
+`@react-pdf/renderer`).
+
+- `docs/screens/` is on `SITE_IRRELEVANT` (nothing in `app/` or `lib/` reads `docs/`), with two new tests: a
+  PDF-only commit skips the production build, and a commit that also changes the script builds.
+- CLAUDE.md, "Screens reference": UI sessions read the PDF first; how to regenerate it from a cloud session
+  (render a local build, since Vercel's bot checkpoint stops cloud browsers) or from Keith's laptop (production).
+- First PDF: rendered from a local build of `release` at d1576ee against the live database (4.2 MB, 33 pages).
+  The claude.ai project tool stores text documents only (it refused the PDF's binary bytes), so the copy in the
+  "3 - Stromata" project is added by hand.
+- Seen in the first render: `/this-page-does-not-exist` shows Next's bare default 404 ("404 | This page could
+  not be found."), with no site header or styling, because the app has no `not-found.tsx`.
+
+---
+
 ## 2026-10-26 — Reader line length counted in characters; default about 70
 
 The Width setting offered 680/800/920px, but the reading column is 744px wide from 1024px to 1400px (the side

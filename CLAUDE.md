@@ -375,6 +375,30 @@ example (a NOINDEX exploration, not linked in nav).
 
 ---
 
+## Screens reference — look at the site before changing it
+
+**`docs/screens/stromata-screens.pdf`** holds the key public pages as they currently look, at phone (390px) and
+desktop (1440px): home, the reader (top landing text, its end-of-text module, dark theme, a short text), the
+library, authors and an author page, a collection, a theme, an era, a tradition, Scripture, search and the 404.
+The cover says when it was rendered and from which code. **Any session doing UI work reads it first**, so
+changes start from how the site actually looks rather than from the code alone. A copy sits in the claude.ai
+project "3 - Stromata", so ordinary chats can review the interface too (the practice Paideia uses).
+
+- **Regenerate it after each release:** `npm run screens`. The pages come from `scripts/screens/manifest.json`,
+  where you can add a page or an extra shot further down one. The PDF commit is docs-only (`docs/screens/` is on
+  `SITE_IRRELEVANT`), so it goes straight to `main` and deploys nothing. Then replace the copy in the claude.ai
+  project.
+- **From a cloud session, render the code, not the live site.** Vercel's bot checkpoint stops a cloud browser on
+  thestromata.com and on previews, and that protection is not to be bypassed. Check out the code, write a
+  throwaway `.env.local` with the public anon key (Supabase MCP `get_publishable_keys`) plus dummy `ADMIN_*`
+  values, run `next dev`, then `npm run screens -- --url=http://localhost:3000`. Delete `.env.local` afterwards.
+  From Keith's laptop, plain `npm run screens` renders production.
+- **Meters:** one run is about 30 shots against the live database, a few MB of Supabase egress (and, against
+  production, a little Fluid CPU). Once per release; don't re-run it for polish.
+- `--png` also writes each shot to `docs/screens/png/` (gitignored); `--only=<name>` renders a subset.
+
+---
+
 ## Vercel usage — previews are opt-in, and batch small changes
 
 Stromata is on Vercel's **Hobby (free) tier**, and in Sept 2026 it went over the Fluid Active CPU
