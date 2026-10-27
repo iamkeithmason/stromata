@@ -4,6 +4,7 @@ import { useState, useEffect, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import { GENRES, THEME_CLUSTERS } from '@/lib/constants'
 import MarkdownEditor from '@/app/components/MarkdownEditor'
+import { MAX_THEMES, toggleThemeCapped } from '@/lib/admin/theme-cap'
 
 type Author = { id: string; name: string }
 type Collection = { id: string; title: string }
@@ -113,9 +114,7 @@ export default function EditTextForm({
   }, [])
 
   function toggleTheme(themeSlug: string) {
-    setSelectedThemes(prev =>
-      prev.includes(themeSlug) ? prev.filter(s => s !== themeSlug) : [...prev, themeSlug]
-    )
+    setSelectedThemes(prev => toggleThemeCapped(prev, themeSlug))
   }
 
   async function handleGenerateSummary() {
@@ -267,7 +266,7 @@ export default function EditTextForm({
       </div>
 
       <div>
-        <p className={label}>Themes</p>
+        <p className={label}>Themes <span className="text-stone-400 font-normal">({selectedThemes.length}/{MAX_THEMES})</span></p>
         <div className="space-y-4 mt-2">
           {THEME_CLUSTERS.map(cluster => (
             <div key={cluster.cluster}>
@@ -280,6 +279,7 @@ export default function EditTextForm({
                     <input
                       type="checkbox"
                       checked={selectedThemes.includes(theme.slug)}
+                      disabled={!selectedThemes.includes(theme.slug) && selectedThemes.length >= MAX_THEMES}
                       onChange={() => toggleTheme(theme.slug)}
                       className="rounded border-stone-300"
                     />

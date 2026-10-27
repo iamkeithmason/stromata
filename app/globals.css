@@ -546,6 +546,12 @@ html {
    public site is set in the serif. The admin layout opts back into font-sans. */
 body {
   font-family: var(--serif);
+  /* Oldstyle figures: dates, reading times and paragraph numbers sit inside the
+     line instead of standing at capital height. Junicode carries a real onum
+     table (Feature Backlog: "Oldstyle figures for dates and reading times").
+     Tabular columns opt back out with Tailwind's tabular-nums, which replaces
+     this value; the admin layout keeps lining figures. */
+  font-variant-numeric: oldstyle-nums;
 }
 
 /* Respect a reader's reduced-motion preference site-wide. */

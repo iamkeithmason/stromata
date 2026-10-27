@@ -4,7 +4,7 @@ import AnalyticsDeviceNote from './AnalyticsDeviceNote'
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="min-h-screen bg-stone-50 font-sans">
+    <div className="min-h-screen bg-stone-50 font-sans normal-nums">
       <header className="bg-stone-800 text-white px-4 sm:px-8 py-3 flex justify-between items-center">
         <Link href="/admin" className="text-sm font-medium hover:text-stone-300 transition-colors">
           Stromata Admin

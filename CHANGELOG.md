@@ -7,6 +7,29 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-10-27 — Theme cap in the admin forms, oldstyle figures, and a sans comparison page
+
+Same session as the entry below; Keith asked for all four of the follow-ups while CI is out.
+
+- **Theme cap enforced in the admin text forms** (HARD CONSTRAINT 5). The pipeline screens capped
+  themes at six; the new-text and edit forms did not, which is how five published texts reached 7–11.
+  `lib/admin/theme-cap.ts` (tested): both forms stop the seventh tick and show `n/6`, and both text
+  routes refuse an over-cap save with a 400 naming the count.
+- **Oldstyle figures** (epic card "Oldstyle figures for dates and reading times", approved by Keith
+  today). `body` sets `font-variant-numeric: oldstyle-nums`, so dates, reading times, counts and
+  paragraph numbers sit inside the line; Junicode carries a real `onum` table. Tabular columns keep
+  `tabular-nums`; the admin layout keeps lining figures (`normal-nums`).
+- **`/design/sans`** (noindex): the comparison surface the epic's "Introduce a sans for UI furniture"
+  card asks for. The same header, filters, list row and edition note in Source Sans 3, Alegreya Sans,
+  Work Sans and Courier Prime, beside the same Junicode paragraph, with today's all-serif furniture as
+  the control. Candidates load from Google Fonts on that page only. The choice stays Keith's.
+- Session 2 mockups (phone frontispiece, end-of-text read-next) were rendered from a temporary route
+  that is not committed; they live in the decision sheet artifact.
+- Verified locally: lint, `tsc`, 560 tests, `check:tests-in-ci`; each surface rendered against the live
+  database and checked on screen.
+
+---
+
 ## 2026-10-27 — Design review, session 1: the quick wins
 
 From a design audit of the screens PDF (report: claude.ai artifact "Stromata Reading Room Review", with a
