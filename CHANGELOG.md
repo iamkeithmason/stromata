@@ -7,6 +7,26 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-10-27 — Courier Prime for the furniture, a `pick` property on read-next, chip bevel options
+
+- **UI-furniture face: Courier Prime** (Keith's choice from `/design/sans`, over Archivo and IBM Plex Sans:
+  "the library card"). Self-hosted Latin subset, regular and bold, ~38 KB (`public/fonts/CourierPrime-*`),
+  behind a new `--ui-face` token. Applied first to the epic card's MVP surfaces: the site header's
+  navigation, the filter pills, theme chips, the library list's sort controls and metadata. Not inside
+  texts or titles. Note: the epic's success signal says "at most two font families", and the site now
+  ships three (Junicode, IM Fell English, Courier Prime); Keith to revise the signal or retire one.
+- **`pick` on read-next clicks.** `text-open` from `read-next` now carries `pick` = `editorial` | `author`
+  | `theme` | `genre`, so the editor's picks can be compared with the rules' from one event. Matcher
+  `READ_NEXT_PICK` in `scripts/lib/wire-check.mjs` (tested) and expected by `verify-analytics.mjs`.
+  **Wire-verified** against a local build on the live database: the sweep's read-next row passed with
+  `pick: theme`, and a direct capture on Pliny's page read `{"from":"read-next","text":"the-didache",
+  "pick":"editorial"}` (beacons aborted). Events Register and the CLAUDE.md vocabulary table updated.
+- **Theme-chip treatments** on `/design/sans`: flat (today), a slight bevel (new `--chip-bevel` token),
+  and cut corners. For Keith's choice; chips stay flat until then.
+- Verified locally: lint, `tsc`, 565 tests, `check:tests-in-ci`; surfaces rendered against the live data.
+
+---
+
 ## 2026-10-27 — Eleven editorial "Read next" picks seeded on the most-read texts
 
 Keith asked to seed the most popular pages to see whether editorial picks raise text depth. The sources

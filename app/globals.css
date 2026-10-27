@@ -16,6 +16,22 @@
   font-style: italic;
   font-display: swap;
 }
+/* Courier Prime (Quote-Unquote Apps, SIL OFL 1.1) — the UI-furniture face,
+   Keith's choice on 27 Oct 2026. Latin subset only: furniture is short labels. */
+@font-face {
+  font-family: "Courier Prime";
+  src: url("/fonts/CourierPrime-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Courier Prime";
+  src: url("/fonts/CourierPrime-Bold.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
 @font-face {
   font-family: "IM Fell English";
   src: url("/fonts/IMFellEnglish-Regular.woff2") format("woff2");
@@ -92,6 +108,9 @@
      never hand-author shadow rgba() values inline.
      --------------------------------------------------------------- */
   --shadow-panel:      0px 2px 0px rgba(30, 30, 25, 0.05), 0px 22px 50px -28px rgba(30, 30, 25, 0.45);
+  /* A theme chip's raised edge, for the bevel option on /design/sans: a paper
+     highlight on the top edge, a faint ink shade on the bottom. */
+  --chip-bevel: inset 0 1px 0 rgba(255, 253, 248, 0.85), inset 0 -1px 0 rgba(30, 30, 25, 0.10), 0 1px 1px rgba(30, 30, 25, 0.06);
   --shadow-panel-drop: drop-shadow(0px 2px 0px rgba(30, 30, 25, 0.05)) drop-shadow(0px 22px 40px rgba(30, 30, 25, 0.35));
 
   --serif:         "Junicode", "EB Garamond", Georgia, serif;
@@ -102,6 +121,13 @@
      fails silently. Use the .kicker / .kicker-gold / .smallcaps classes,
      which set both. The token is kept so the design reference can name it. */
   --serif-smallcaps: "Junicode", "EB Garamond", Georgia, serif;
+  /* The library speaking, as against the text: navigation, filters, theme
+     chips and catalogue metadata (Distinctive Visual Identity epic, card
+     "Introduce a sans for UI furniture"). Keith chose a typewriter face over a
+     sans on 27 Oct 2026: the catalogue card, beside the book. Never inside a
+     text and never for titles. Monospace has no small caps, so furniture set in
+     it is sentence case with light tracking, not .kicker. */
+  --ui-face: "Courier Prime", ui-monospace, "SFMono-Regular", Menlo, monospace;
 
   /* Type scale — use these instead of raw rem values in components */
   --text-sm:      0.8rem;    /* chip/tag text, smallest labels, captions, card metadata, TOC */

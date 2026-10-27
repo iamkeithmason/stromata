@@ -204,21 +204,21 @@ export function TextsBrowser({
                       {t.title}
                     </span>
                     {t.author && (
-                      <span className="text-sm ml-3" style={{ color: 'var(--ink-faint)' }}>
+                      <span className="text-sm ml-3" style={{ fontFamily: 'var(--ui-face)', color: 'var(--ink-faint)' }}>
                         {t.author.name}
                       </span>
                     )}
                     {t.themes.length > 0 && (
-                      <span className="text-xs ml-3" style={{ color: 'var(--ink-faint)' }}>
+                      <span className="text-xs ml-3" style={{ fontFamily: 'var(--ui-face)', color: 'var(--ink-faint)' }}>
                         {t.themes.join(' · ')}
                       </span>
                     )}
                   </div>
-                  <div className="text-xs mt-0.5" style={{ color: 'var(--ink-mute)' }}>
+                  <div className="text-xs mt-0.5" style={{ fontFamily: 'var(--ui-face)', color: 'var(--ink-mute)' }}>
                     approx. {t.minutes} min read
                   </div>
                 </div>
-                <span className="text-xs ml-4 shrink-0 mt-0.5" style={{ color: 'var(--ink-faint)' }}>
+                <span className="text-xs ml-4 shrink-0 mt-0.5" style={{ fontFamily: 'var(--ui-face)', color: 'var(--ink-faint)' }}>
                   {t.genre?.name}
                 </span>
               </Link>
@@ -285,6 +285,7 @@ function SortButton({
       aria-pressed={active}
       className="text-xs hover:opacity-70 transition-opacity"
       style={{
+        fontFamily: 'var(--ui-face)',
         color: active ? 'var(--ink)' : 'var(--ink-mute)',
         borderBottom: `1px solid ${active ? 'var(--gold)' : 'transparent'}`,
         paddingBottom: '1px',

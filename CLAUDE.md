@@ -218,6 +218,7 @@ Two traps worth knowing:
 | `author` | which author | display name (matches `authors.name`) |
 | `country` | which location | display name |
 | `depth` | how many distinct texts this session has reached | integer, `1` or `2` only (`text-session-depth`) |
+| `pick` | which rule chose a `read-next` pick, or the editor | `editorial` \| `author` \| `theme` \| `genre` (on `text-open` from `read-next` only) |
 | `state`, `direction` | qualifiers | short enum-ish string |
 
 Rules:

@@ -66,6 +66,10 @@ typography:
     fontFeatureSettings: "\"smcp\" 1"         # REAL small caps; never text-transform
     fontSize: "1rem"                          # --text-smallcaps
     letterSpacing: "0.08em"
+  ui:
+    fontFamily: "Courier Prime"               # --ui-face: nav, chips, filters, metadata
+    fontSize: "0.8rem–0.875rem"
+    letterSpacing: "0.02em"
   caption:
     fontFamily: "Junicode"
     fontSize: "0.8rem"                        # --text-sm
@@ -103,7 +107,7 @@ components:
   chip:
     backgroundColor: "transparent"
     textColor: "{colors.muted}"
-    typography: "small caps, 0.8rem, 0.08em tracking"
+    typography: "Courier Prime, 0.8rem, 0.02em tracking"
     border: "1px solid --rule (--on-dark-border on dark)"
     rounded: "{rounded.none}"
     padding: "2px 8px"
@@ -158,10 +162,11 @@ calendar.
 One serif family, Junicode, does nearly all the work: body, headings, labels and captions. It is a
 scholar's face, built for medieval texts, with a variable weight axis and a genuine small-caps table.
 **IM Fell English**, a 17th-century Oxford face, is reserved for display: the masthead, the reader's
-frontispiece title, and the drop cap. There is no sans-serif on the public site today. A deliberately
-chosen humanist sans for UI furniture (navigation, chips, metadata) is planned under the Distinctive
-Visual Identity epic; until that face is chosen, `body` is set in the serif so nothing falls back to
-the browser's default sans.
+frontispiece title, and the drop cap. **Courier Prime** is the UI-furniture face (`--ui-face`, chosen by
+Keith on 27 Oct 2026): navigation, filter pills, theme chips, sort controls and catalogue metadata, so
+the typewriter of the catalogue card speaks for the library and the serif speaks for the text. It is
+never used inside a text or for titles, and it has no small caps, so furniture set in it is sentence case
+with light tracking.
 
 - **Prose** is 1.25rem on a loose leading, in an 808px column. This is the most important type on the site.
   Quotes and dashes are made typographic at render time (`lib/markdown/smart-punctuation.ts`), so the
@@ -199,7 +204,8 @@ take 2–4px at most. The only round shapes are on the reader-settings toggle an
 - **Text links / CTAs** are typographic: gold-ink text with a gold hairline underline. There are no filled
   buttons on the public site.
 - **Search** is a single underline that draws in on focus, with no box.
-- **Theme chips** are small-caps tags in a square hairline frame, in a light and a dark tone.
+- **Theme chips** are Courier Prime tags in a square hairline frame, in a light and a dark tone (a bevel
+  or cut-corner treatment is under consideration on `/design/sans`).
 - **Scripture references** carry a dotted gold underline and open a vellum popover with the KJV verse.
 - **Reader settings** let a reader switch to a warm dark theme (`[data-reader-theme="dark"]`), which flips
   the paper and ink tokens only. Covers, the hero, and seasonal grounds stay as they are.
@@ -209,8 +215,7 @@ take 2–4px at most. The only round shapes are on the reader-settings toggle an
 - Do use real small caps for labels, and gold-ink for gold text.
 - Do use tokens for every colour in a `style` prop. The lint rule in `.eslintrc.cjs` enforces this in CI.
 - Do keep shadows for the seasonal panel and popovers only.
-- Don't add a sans-serif except the one the identity epic chooses, and then only for furniture, never
-  inside a text.
+- Don't set Courier Prime inside a text or in a title, and don't add another face for furniture.
 - Don't add a filled CTA button or a second accent colour.
 - Don't letterspace uppercase labels.
 - Don't use pure white or pure black on the public site.

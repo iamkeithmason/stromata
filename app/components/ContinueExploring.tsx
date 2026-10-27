@@ -13,7 +13,8 @@ import { readingMinutes } from '@/lib/reading-time'
  * not a recommendation grid.
  *
  * Every click fires `text-open` from `read-next`, as before, so the series
- * continues across the redesign.
+ * continues across the redesign, and carries `pick` (editorial / author /
+ * theme / genre) so the editor's picks can be compared with the rules'.
  */
 export function ContinueExploring({ picks }: { picks: ReadNextPick[] }) {
   if (picks.length === 0) return null
@@ -28,6 +29,7 @@ export function ContinueExploring({ picks }: { picks: ReadNextPick[] }) {
         data-umami-event="text-open"
         data-umami-event-from="read-next"
         data-umami-event-text={lead.slug}
+        data-umami-event-pick={lead.kind}
       >
         <div className="shrink-0 w-[92px] md:w-[110px] group-hover:opacity-90 transition-opacity">
           <BookCover
@@ -67,6 +69,7 @@ export function ContinueExploring({ picks }: { picks: ReadNextPick[] }) {
                   data-umami-event="text-open"
                   data-umami-event-from="read-next"
                   data-umami-event-text={p.slug}
+                  data-umami-event-pick={p.kind}
                 >
                   <span className="group-hover:opacity-70 transition-opacity" style={{ color: 'var(--ink)' }}>{p.title}</span>
                   {p.authorName && (

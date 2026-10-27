@@ -1,3 +1,4 @@
+import type React from 'react'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
@@ -150,6 +151,65 @@ function Specimen({ c }: { c: Candidate }) {
   )
 }
 
+const CHIP_THEMES = ['Community', 'Christology', 'Liturgy', 'Sacraments', 'Tradition']
+
+// A chamfered "library tag": corners cut at 45°. Drawn as a fill rather than a
+// border, because clip-path would also cut a border's corners away.
+const CHAMFER = 'polygon(5px 0, calc(100% - 5px) 0, 100% 5px, 100% calc(100% - 5px), calc(100% - 5px) 100%, 5px 100%, 0 calc(100% - 5px), 0 5px)'
+
+const CHIP_BASE = {
+  fontFamily: 'var(--ui-face)',
+  fontSize: 'var(--text-sm)',
+  letterSpacing: '0.02em',
+  padding: '3px 9px',
+  color: 'var(--ink-mute)',
+} as const
+
+const TREATMENTS: { id: string; name: string; note: string; style: React.CSSProperties }[] = [
+  {
+    id: 'flat',
+    name: 'A · Flat (today)',
+    note: 'A hairline rule, nothing else.',
+    style: { ...CHIP_BASE, border: '1px solid var(--rule)' },
+  },
+  {
+    id: 'bevel',
+    name: 'B · Slight bevel',
+    note: 'The same rule with a paper highlight on top and a faint shade below, so the chip sits proud of the page like a pressed label.',
+    style: { ...CHIP_BASE, border: '1px solid var(--rule)', background: 'var(--vellum)', boxShadow: 'var(--chip-bevel)' },
+  },
+  {
+    id: 'chamfer',
+    name: 'C · Cut corners',
+    note: 'A filled tag with its corners cut, like a catalogue tab or luggage label. No outline at all.',
+    style: { ...CHIP_BASE, background: 'var(--paper-deep)', color: 'var(--ink-soft)', clipPath: CHAMFER },
+  },
+]
+
+function ChipTreatments() {
+  return (
+    <section className="mt-16">
+      <p className="kicker">Theme chips</p>
+      <h2 className="font-serif italic mt-1" style={{ fontSize: 'var(--text-xl)', color: 'var(--ink)' }}>
+        Three treatments, in Courier Prime
+      </h2>
+      <div className="grid gap-6 mt-6 md:grid-cols-3">
+        {TREATMENTS.map(t => (
+          <div key={t.id} className="flex flex-col gap-3 p-5" style={{ background: 'var(--paper)', border: '1px solid var(--rule)' }}>
+            <p className="font-serif" style={{ color: 'var(--ink)' }}>{t.name}</p>
+            <div className="flex flex-wrap gap-2">
+              {CHIP_THEMES.map(name => (
+                <span key={name} style={t.style}>{name}</span>
+              ))}
+            </div>
+            <p className="font-serif" style={{ fontSize: 'var(--text-label)', color: 'var(--ink-mute)' }}>{t.note}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+  )
+}
+
 export default function SansComparisonPage() {
   return (
     <main className="content-shell py-12">
@@ -168,6 +228,7 @@ export default function SansComparisonPage() {
           <Specimen key={c.id} c={c} />
         ))}
       </div>
+      <ChipTreatments />
     </main>
   )
 }
