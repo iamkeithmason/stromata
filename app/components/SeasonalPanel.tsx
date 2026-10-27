@@ -323,8 +323,10 @@ export async function SeasonalPanel({ season = resolveSeason().season }: Props =
                 {/* Phone only: the CTA beside the portrait. From sm up it
                     sits under the note instead (hidden there on phones). */}
                 <div className="min-w-0 sm:hidden">
+                  {/* Shortened from "Read for the season" so it holds one
+                      line beside a 140px portrait. */}
                   <p style={{ ...LABEL_STYLE, marginBottom: '0.4rem' }}>
-                    Read for the season
+                    For the season
                   </p>
                   <span
                     style={{

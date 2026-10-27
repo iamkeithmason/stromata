@@ -13,8 +13,8 @@ Backlog, not here; this is what actually happened and why.
 eleven lines of body copy at `--text-xl` with 1.75 leading, then "Read for the season", then the
 portrait at the bottom, below the fold. It now starts from the phone:
 
-- The season name, then the pick in one row (portrait beside "Read for the season · title →" and
-  the author), then the note at `--text-prose` with 1.6 leading. The panel is 741px tall and fits
+- The season name, then the pick in one row (portrait beside "For the season · title →" and the
+  author; the label is shortened from "Read for the season" on phones so it holds one line), then the note at `--text-prose` with 1.6 leading. The panel is 741px tall and fits
   one screen.
 - The portrait is 140px wide on phones, the width FeaturedAuthors draws every author at. It was
   `clamp(110px, 18vw, 150px)`, which rendered at about 83px on a phone; from `sm` up the floor is
