@@ -415,7 +415,7 @@ from there.
   wrap); furniture collapses before content does; text reads without zoom; nothing fixed covers content.
 - **Look at it before calling it done.** Render the changed pages at 390px as well as 1440px, from a local
   build against the live data (`npm run screens -- --url=http://localhost:3000 --only=<page>`, see
-  "Screens reference" below), and put the phone shot in the PR. A new page added to
+  "Screens reference" above), and put the phone shot in the PR. A new page added to
   `scripts/screens/manifest.json` gets both widths.
 - **Existing pages** are being brought up to this standard by the backlog card "Mobile-first audit: bring
   every public page up to phone-first standard". Until a page has been through it, don't assume its phone
