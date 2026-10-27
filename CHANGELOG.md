@@ -38,6 +38,7 @@ the Distinctive Visual Identity epic (UI sans, ground colour) are untouched.
   `how-the-office-of-curates-is-ordained-of-god` (7), `the-didache` (7). The text edit form does not
   enforce the cap. Wycliffe's introduction opens with a typo ("Thos is a short piece").
 
+---
 
 ## 2026-10-27 — Screens reference: a PDF of the site, refreshed with each release
 
