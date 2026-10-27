@@ -21,8 +21,10 @@ Backlog, not here; this is what actually happened and why.
   **Wire-verified** against a local build on the live database: the sweep's read-next row passed with
   `pick: theme`, and a direct capture on Pliny's page read `{"from":"read-next","text":"the-didache",
   "pick":"editorial"}` (beacons aborted). Events Register and the CLAUDE.md vocabulary table updated.
-- **Theme-chip treatments** on `/design/sans`: flat (today), a slight bevel (new `--chip-bevel` token),
-  and cut corners. For Keith's choice; chips stay flat until then.
+- **Theme chips are cut-corner catalogue tags** (Keith chose option C from the three on `/design/sans`,
+  flat / slight bevel / cut corners, noting it echoes the seasonal panel). `.chip-tag` clips the corners;
+  the chip is now filled (`--paper-deep`, or `--on-dark-rule` on dark grounds) with no outline.
+  `--chip-bevel` stays as a token for the comparison page.
 - Verified locally: lint, `tsc`, 565 tests, `check:tests-in-ci`; surfaces rendered against the live data.
 
 ---

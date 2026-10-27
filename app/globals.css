@@ -851,6 +851,13 @@ body {
     color: var(--ink-mute);
   }
 
+  /* chip-tag — a catalogue tag with its corners cut at 45°, the theme chip's
+     shape. Drawn as a fill: clip-path would also cut a border's corners. */
+  .chip-tag {
+    clip-path: polygon(5px 0, calc(100% - 5px) 0, 100% 5px, 100% calc(100% - 5px),
+      calc(100% - 5px) 100%, 5px 100%, 0 calc(100% - 5px), 0 5px);
+  }
+
   /* rule-gold — thin gold hairline divider */
   .rule-gold {
     border-top: 1px solid var(--gold-rule);

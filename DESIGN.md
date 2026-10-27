@@ -105,12 +105,11 @@ components:
     typography: "{typography.kicker}"
     textColor: "{colors.muted}"   # .kicker-gold uses secondary-ink
   chip:
-    backgroundColor: "transparent"
-    textColor: "{colors.muted}"
+    textColor: "{colors.on-surface-soft} (on-dark-soft on dark)"
     typography: "Courier Prime, 0.8rem, 0.02em tracking"
-    border: "1px solid --rule (--on-dark-border on dark)"
-    rounded: "{rounded.none}"
-    padding: "2px 8px"
+    background: "--paper-deep (--on-dark-rule on dark)"
+    shape: "corners cut 5px (.chip-tag clip-path)"
+    padding: "3px 9px"
   rule:
     borderTop: "1px solid --gold-rule (rule-gold) or --rule (rule-muted)"
   search-input:
@@ -204,8 +203,8 @@ take 2–4px at most. The only round shapes are on the reader-settings toggle an
 - **Text links / CTAs** are typographic: gold-ink text with a gold hairline underline. There are no filled
   buttons on the public site.
 - **Search** is a single underline that draws in on focus, with no box.
-- **Theme chips** are Courier Prime tags in a square hairline frame, in a light and a dark tone (a bevel
-  or cut-corner treatment is under consideration on `/design/sans`).
+- **Theme chips** are filled Courier Prime catalogue tags with their corners cut (`.chip-tag`), in a
+  light (`--paper-deep`) and a dark (`--on-dark-rule`) tone, echoing the seasonal panel's notched corners.
 - **Scripture references** carry a dotted gold underline and open a vellum popover with the KJV verse.
 - **Reader settings** let a reader switch to a warm dark theme (`[data-reader-theme="dark"]`), which flips
   the paper and ink tokens only. Covers, the hero, and seasonal grounds stay as they are.

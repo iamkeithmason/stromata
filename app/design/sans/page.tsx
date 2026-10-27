@@ -168,7 +168,7 @@ const CHIP_BASE = {
 const TREATMENTS: { id: string; name: string; note: string; style: React.CSSProperties }[] = [
   {
     id: 'flat',
-    name: 'A · Flat (today)',
+    name: 'A · Flat (before)',
     note: 'A hairline rule, nothing else.',
     style: { ...CHIP_BASE, border: '1px solid var(--rule)' },
   },
@@ -180,7 +180,7 @@ const TREATMENTS: { id: string; name: string; note: string; style: React.CSSProp
   },
   {
     id: 'chamfer',
-    name: 'C · Cut corners',
+    name: 'C · Cut corners (chosen)',
     note: 'A filled tag with its corners cut, like a catalogue tab or luggage label. No outline at all.',
     style: { ...CHIP_BASE, background: 'var(--paper-deep)', color: 'var(--ink-soft)', clipPath: CHAMFER },
   },
