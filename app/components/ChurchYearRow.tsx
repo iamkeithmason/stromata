@@ -48,14 +48,6 @@ export function ChurchYearRow({ currentSeason }: Props) {
           const isActive = season.slug === currentSeason
           return (
             <span key={season.slug} className="flex items-center gap-x-3">
-              {i > 0 && (
-                <span
-                  aria-hidden
-                  style={{ color: 'var(--rule-soft)', userSelect: 'none' }}
-                >
-                  ·
-                </span>
-              )}
               <span
                 style={{
                   color: isActive ? 'var(--gold)' : 'var(--ink-faint)',
@@ -69,6 +61,15 @@ export function ChurchYearRow({ currentSeason }: Props) {
               >
                 {season.name}
               </span>
+              {/* Separator after the name so a wrapped line never starts with a dot. */}
+              {i < SEASONS.length - 1 && (
+                <span
+                  aria-hidden
+                  style={{ color: 'var(--rule-soft)', userSelect: 'none' }}
+                >
+                  ·
+                </span>
+              )}
             </span>
           )
         })}

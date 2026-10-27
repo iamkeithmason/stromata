@@ -89,6 +89,13 @@ export function checkProps(event, expected) {
 /** A slug-shaped identifier — the rule that identifiers are slugs, not titles. */
 export const SLUG = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
+/**
+ * Which rule chose a read-next pick (`pick` on text-open from=read-next): the
+ * editor's own choice, or one of lib/read-next.ts's rules. Lets editorial picks
+ * be compared with automatic ones without joining sessions.
+ */
+export const READ_NEXT_PICK = /^(editorial|author|theme|genre)$/;
+
 /** Render result rows as a fixed-width table. */
 export function formatTable(rows) {
   const head = ['', 'EVENT', 'CASE', 'DETAIL'];

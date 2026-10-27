@@ -46,6 +46,9 @@ SITE_IRRELEVANT=(
   "scripts/ingestion/run-log/"
   "scripts/ingestion/prospect-queue.json"
   "scripts/ingestion/output/"
+  # The screens reference PDF (npm run screens), refreshed after each release.
+  # Nothing in app/ or lib/ reads docs/ (grepped 2026-10-27).
+  "docs/screens/"
 )
 
 is_site_irrelevant() {

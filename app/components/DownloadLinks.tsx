@@ -52,7 +52,9 @@ function DownloadRow({
             // Belt to robots.ts's braces: crawlers that ignore the disallow
             // still shouldn't treat a CPU-heavy render as a page to follow.
             rel="nofollow"
-            className="hover:opacity-70 transition-opacity"
+            // inline-block + padding brings each link to the 24px minimum tap target
+            // ("PDF" was 23×16 on a phone; 26 Oct critique).
+            className="inline-block py-1 min-w-[1.5rem] text-center hover:opacity-70 transition-opacity"
             style={linkStyle(dark)}
             data-umami-event={event}
             data-umami-event-from={from}
