@@ -49,6 +49,7 @@ import {
   formatTable,
   summarise,
   SLUG,
+  READ_NEXT_PICK,
 } from './lib/wire-check.mjs';
 
 // ───────────────────────────── arguments ─────────────────────────────
@@ -415,7 +416,8 @@ async function checkNavEvents(context, site) {
       row(event, label, 'skip', `no element matching ${selector} on ${candidates.length} candidate page(s)`);
       continue;
     }
-    const expect = { ...NAV_EXPECT[event], from };
+    // read-next clicks also say which rule (or the editor) chose the pick.
+    const expect = { ...NAV_EXPECT[event], from, ...(from === 'read-next' ? { pick: READ_NEXT_PICK } : {}) };
     await expectEvent({
       event,
       case: label,

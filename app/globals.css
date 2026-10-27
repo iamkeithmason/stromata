@@ -16,6 +16,22 @@
   font-style: italic;
   font-display: swap;
 }
+/* Courier Prime (Quote-Unquote Apps, SIL OFL 1.1) — the UI-furniture face,
+   Keith's choice on 27 Oct 2026. Latin subset only: furniture is short labels. */
+@font-face {
+  font-family: "Courier Prime";
+  src: url("/fonts/CourierPrime-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Courier Prime";
+  src: url("/fonts/CourierPrime-Bold.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
 @font-face {
   font-family: "IM Fell English";
   src: url("/fonts/IMFellEnglish-Regular.woff2") format("woff2");
@@ -92,6 +108,9 @@
      never hand-author shadow rgba() values inline.
      --------------------------------------------------------------- */
   --shadow-panel:      0px 2px 0px rgba(30, 30, 25, 0.05), 0px 22px 50px -28px rgba(30, 30, 25, 0.45);
+  /* A theme chip's raised edge, for the bevel option on /design/sans: a paper
+     highlight on the top edge, a faint ink shade on the bottom. */
+  --chip-bevel: inset 0 1px 0 rgba(255, 253, 248, 0.85), inset 0 -1px 0 rgba(30, 30, 25, 0.10), 0 1px 1px rgba(30, 30, 25, 0.06);
   --shadow-panel-drop: drop-shadow(0px 2px 0px rgba(30, 30, 25, 0.05)) drop-shadow(0px 22px 40px rgba(30, 30, 25, 0.35));
 
   --serif:         "Junicode", "EB Garamond", Georgia, serif;
@@ -102,6 +121,13 @@
      fails silently. Use the .kicker / .kicker-gold / .smallcaps classes,
      which set both. The token is kept so the design reference can name it. */
   --serif-smallcaps: "Junicode", "EB Garamond", Georgia, serif;
+  /* The library speaking, as against the text: navigation, filters, theme
+     chips and catalogue metadata (Distinctive Visual Identity epic, card
+     "Introduce a sans for UI furniture"). Keith chose a typewriter face over a
+     sans on 27 Oct 2026: the catalogue card, beside the book. Never inside a
+     text and never for titles. Monospace has no small caps, so furniture set in
+     it is sentence case with light tracking, not .kicker. */
+  --ui-face: "Courier Prime", ui-monospace, "SFMono-Regular", Menlo, monospace;
 
   /* Type scale — use these instead of raw rem values in components */
   --text-sm:      0.8rem;    /* chip/tag text, smallest labels, captions, card metadata, TOC */
@@ -353,12 +379,14 @@
   pointer-events: none;
 }
 
+/* Real small caps, as in .kicker — these two were the last letterspaced-
+   capital labels on the public site outside the cover imprints. */
 .celestial-description,
 .celestial-authors-label {
-  font-family: var(--serif);
-  font-size: var(--text-sm);
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
+  font-family: var(--serif-smallcaps);
+  font-feature-settings: "smcp" 1;
+  font-size: var(--text-smallcaps);
+  letter-spacing: 0.08em;
 }
 
 .celestial-hero-content h1 {
@@ -381,7 +409,6 @@
 .celestial-description {
   margin-bottom: 1rem;
   color: var(--on-dark-soft);
-  letter-spacing: 0.14em;
 }
 
 .search-bar-celestial input::placeholder {
@@ -433,7 +460,6 @@
 
 .celestial-authors-label {
   color: var(--on-dark-gold);
-  letter-spacing: 0.16em;
 }
 
 .celestial-authors-rule {
@@ -537,6 +563,21 @@
    plus a small breathing gap. Applies to all #fragment navigation. */
 html {
   scroll-padding-top: 5.5rem;
+}
+
+/* The page face. Without this, anything that doesn't set font-serif itself
+   (edition notes, list metadata, footer lines) fell back to the browser's
+   default sans — an unchosen face. A deliberate UI sans is a separate decision
+   (Feature Backlog: "Introduce a sans for UI furniture"); until then the whole
+   public site is set in the serif. The admin layout opts back into font-sans. */
+body {
+  font-family: var(--serif);
+  /* Oldstyle figures: dates, reading times and paragraph numbers sit inside the
+     line instead of standing at capital height. Junicode carries a real onum
+     table (Feature Backlog: "Oldstyle figures for dates and reading times").
+     Tabular columns opt back out with Tailwind's tabular-nums, which replaces
+     this value; the admin layout keeps lining figures. */
+  font-variant-numeric: oldstyle-nums;
 }
 
 /* Respect a reader's reduced-motion preference site-wide. */
@@ -658,6 +699,22 @@ html {
    places by column, so order is moot there. */
 .margin-cols.rail-first > .margin-rail { order: 1; }
 .margin-cols.rail-first > .margin-body { order: 2; }
+
+/* frontispiece: the reader's hero. Stacked tiers would put a 200px cover, the
+   title, the summary and the chips above the text, so on a phone the first
+   words of the text fell below the fold. Below the desktop tier the cover sits
+   as a thumbnail beside a smaller title instead. */
+.frontispiece { --frontispiece-title-size: var(--text-hero); }
+@media (max-width: 1023.98px) {
+  .margin-cols.frontispiece {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+  .margin-cols.frontispiece > .margin-rail { width: 84px; flex: 0 0 84px; }
+  .margin-cols.frontispiece > .margin-body { flex: 1 1 auto; }
+  .frontispiece { --frontispiece-title-size: clamp(1.6rem, 6.5vw, 2.25rem); }
+}
 
 @media (min-width: 1024px) {
   .margin-cols {
@@ -792,6 +849,13 @@ html {
     font-size: var(--text-sm);
     letter-spacing: 0.12em;
     color: var(--ink-mute);
+  }
+
+  /* chip-tag — a catalogue tag with its corners cut at 45°, the theme chip's
+     shape. Drawn as a fill: clip-path would also cut a border's corners. */
+  .chip-tag {
+    clip-path: polygon(5px 0, calc(100% - 5px) 0, 100% 5px, 100% calc(100% - 5px),
+      calc(100% - 5px) 100%, 5px 100%, 0 calc(100% - 5px), 0 5px);
   }
 
   /* rule-gold — thin gold hairline divider */

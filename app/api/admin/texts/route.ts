@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { revalidateText } from '@/lib/publishing/publish-text'
 import { createServerClient } from '@/lib/supabase/server'
+import { themeCapError } from '@/lib/admin/theme-cap'
 
 export async function GET() {
   const supabase = createServerClient()
@@ -36,6 +37,11 @@ export async function POST(request: NextRequest) {
 
   if (!title || !slug || !author_id || !genre_slug || !textBody) {
     return NextResponse.json({ error: 'Required fields missing.' }, { status: 400 })
+  }
+
+  const capError = themeCapError(theme_slugs)
+  if (capError) {
+    return NextResponse.json({ error: capError }, { status: 400 })
   }
 
   const supabase = createServerClient()
