@@ -47,6 +47,18 @@ const CANDIDATES: Candidate[] = [
     note: 'From your card’s bookmarks. Grotesque roots, wider and more modern; the clearest contrast, and the riskiest.',
   },
   {
+    id: 'space',
+    name: 'Space Grotesk',
+    stack: '"Space Grotesk", system-ui, sans-serif',
+    note: 'Keith’s suggestion. A quirky, technical grotesque cut from Space Mono. Also one of the faces most used in AI-generated and startup design right now, which is the dialect the identity epic is trying to leave.',
+  },
+  {
+    id: 'plex',
+    name: 'IBM Plex Sans',
+    stack: '"IBM Plex Sans", system-ui, sans-serif',
+    note: 'A technical voice like Space Grotesk’s, with humanist touches, from a family that also has a matching serif and mono. Distinctive without being the current default.',
+  },
+  {
     id: 'mono',
     name: 'Courier Prime',
     stack: '"Courier Prime", ui-monospace, monospace',
@@ -55,7 +67,7 @@ const CANDIDATES: Candidate[] = [
 ]
 
 const FONTS_HREF =
-  'https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600&family=Alegreya+Sans:wght@400;500&family=Work+Sans:wght@400;500&family=Courier+Prime&display=swap'
+  'https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600&family=Alegreya+Sans:wght@400;500&family=Work+Sans:wght@400;500&family=Courier+Prime&family=Space+Grotesk:wght@400;500&family=IBM+Plex+Sans:wght@400;500&display=swap'
 
 const FILTERS = ['Patristic', 'Reformed', 'Anglican', 'Lutheran', 'Roman Catholic']
 

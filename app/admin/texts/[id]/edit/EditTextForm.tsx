@@ -57,6 +57,8 @@ type Props = {
   initialFeatured: boolean
   initialFeaturedFrom: string
   initialFeaturedNote: string
+  initialReadNextSlug: string
+  initialReadNextNote: string
 }
 
 export default function EditTextForm({
@@ -81,6 +83,8 @@ export default function EditTextForm({
   initialFeatured,
   initialFeaturedFrom,
   initialFeaturedNote,
+  initialReadNextSlug,
+  initialReadNextNote,
 }: Props) {
   const router = useRouter()
   const [authors, setAuthors] = useState<Author[]>([])
@@ -167,6 +171,8 @@ export default function EditTextForm({
       featured: data.get('featured') === 'on',
       featured_from: (data.get('featured_from') as string) || null,
       featured_note: (data.get('featured_note') as string) || null,
+      read_next_slug: ((data.get('read_next_slug') as string) || '').trim() || null,
+      read_next_note: ((data.get('read_next_note') as string) || '').trim() || null,
     }
 
     setLoading(true)
@@ -489,6 +495,39 @@ export default function EditTextForm({
             defaultValue={initialFeaturedNote}
             className={input}
             placeholder="Here is why I chose this text this week…"
+          />
+        </div>
+      </div>
+
+      {/* Read next — the editorial override for the end-of-text module (migration 033) */}
+      <div className="border border-stone-200 rounded p-4 space-y-4">
+        <p className="text-sm font-medium text-stone-700">Read next</p>
+        <p className="text-xs text-stone-400 -mt-2">
+          The text a reader should go to after finishing this one. It leads the end-of-text module,
+          with its cover; the automatic picks fill the rest. Leave blank for automatic picks only.
+        </p>
+        <div>
+          <label className={label} htmlFor="read_next_slug">Text to read next (slug)</label>
+          <input
+            type="text"
+            name="read_next_slug"
+            id="read_next_slug"
+            defaultValue={initialReadNextSlug}
+            className={input}
+            placeholder="the-didache"
+          />
+        </div>
+        <div>
+          <label className={label} htmlFor="read_next_note">Why, in one sentence</label>
+          <p className="text-xs text-stone-400 mb-1">Shown under the pick. Up to 280 characters.</p>
+          <textarea
+            name="read_next_note"
+            id="read_next_note"
+            rows={2}
+            maxLength={280}
+            defaultValue={initialReadNextNote}
+            className={input}
+            placeholder="The same worship Pliny heard about, described from the inside."
           />
         </div>
       </div>

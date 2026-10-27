@@ -21,15 +21,23 @@ export type ReadNextCandidate = {
   authorName: string | null
   /** Slugs of the themes this candidate carries (theme pool only). */
   themeSlugs?: string[]
+  /** Cover fields, for the lead pick's book cover. */
+  accessionNumber?: number | null
+  deathYear?: number | null
+  traditionSlug?: string | null
 }
 
 export type ReadNextPick = {
   slug: string
   title: string
   authorName: string | null
-  /** The rule that chose it, shown to the reader. */
+  /** The rule that chose it, or the editor's sentence, shown to the reader. */
   reason: string
-  kind: 'author' | 'theme' | 'genre'
+  kind: 'editorial' | 'author' | 'theme' | 'genre'
+  wordCount: number | null
+  accessionNumber: number | null
+  deathYear: number | null
+  traditionSlug: string | null
 }
 
 export type ReadNextInput = {
@@ -41,7 +49,18 @@ export type ReadNextInput = {
   sameAuthor: ReadNextCandidate[]
   sameTheme: ReadNextCandidate[]
   sameGenre: ReadNextCandidate[]
+  /**
+   * The editor's pick (texts.read_next_text_id, migration 033) and the sentence
+   * saying why (read_next_note). It leads the module; the rules fill the rest.
+   */
+  editorial?: { candidate: ReadNextCandidate; note: string | null } | null
 }
+
+/** At most this many next reads: the module is a nudge, not a feed. */
+const MAX_PICKS = 3
+
+/** Caption for an editorial pick whose sentence has not been written yet. */
+const EDITORIAL_FALLBACK = 'The editor’s choice'
 
 /** Below this a text is a fragment, not a next read. Unknown length is admitted (ranked last). */
 const MIN_WORDS = 400
@@ -72,7 +91,20 @@ export function pickReadNext(input: ReadNextInput): ReadNextPick[] {
   const take = (c: ReadNextCandidate | undefined, reason: string, kind: ReadNextPick['kind']) => {
     if (!c) return
     taken.add(c.id)
-    picks.push({ slug: c.slug, title: c.title, authorName: c.authorName, reason, kind })
+    picks.push({
+      slug: c.slug, title: c.title, authorName: c.authorName, reason, kind,
+      wordCount: c.word_count,
+      accessionNumber: c.accessionNumber ?? null,
+      deathYear: c.deathYear ?? null,
+      traditionSlug: c.traditionSlug ?? null,
+    })
+  }
+
+  // 0. The editor's pick leads. It skips the rule filters (an editor may send a
+  //    reader to a short text or a sibling part on purpose) but never to itself.
+  const ed = input.editorial
+  if (ed && ed.candidate.id !== self.id) {
+    take(ed.candidate, ed.note?.trim() || EDITORIAL_FALLBACK, 'editorial')
   }
 
   const cmp = byCloseness(self.wordCount)
@@ -105,5 +137,5 @@ export function pickReadNext(input: ReadNextInput): ReadNextPick[] {
     .sort(cmp)[0]
   take(genre, input.genreName ? `Another ${input.genreName.toLowerCase()}` : 'In the same genre', 'genre')
 
-  return picks
+  return picks.slice(0, MAX_PICKS)
 }

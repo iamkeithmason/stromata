@@ -99,7 +99,7 @@ export default async function TextPage({ params }: Props) {
         accession_number, author_id, body, collection_id, collection_order,
         created_at, editorial_introduction, featured, featured_from, featured_note,
         genre_id, id, license, ocr_quality, provenance_notes, published, published_at,
-        slug, source_attribution, source_url, summary, title, translation_notes,
+        read_next_note, read_next_text_id, slug, source_attribution, source_url, summary, title, translation_notes,
         updated_at, word_count,
         author:authors(name, slug, bio, birth_year, death_year, image_url, image_focus_x, image_focus_y, image_zoom, loc:locations(name, slug), tradition:traditions(slug, name), era:eras(label, slug)),
         genre:genres(name),
@@ -196,18 +196,25 @@ export default async function TextPage({ params }: Props) {
   // ── Continue exploring — candidate pools for lib/read-next.ts ───────────────
   // Metadata only (never `body`); each pool is capped. Three small reads,
   // regenerated with the page, so the module costs nothing per view.
-  const CAND = 'id, title, slug, word_count, collection_id, author_id, author:authors(name)'
+  const CAND = 'id, title, slug, word_count, collection_id, author_id, accession_number, author:authors(name, death_year, tradition:traditions(slug))'
   type CandRow = {
     id: string; title: string; slug: string; word_count: number | null
-    collection_id: string | null; author_id: string | null; author: { name: string } | null
+    collection_id: string | null; author_id: string | null; accession_number: number | null
+    author: { name: string; death_year: number | null; tradition: { slug: string } | null } | null
   }
   const toCand = (r: CandRow, themeSlugs?: string[]): ReadNextCandidate => ({
     id: r.id, title: r.title, slug: r.slug, word_count: r.word_count,
     collection_id: r.collection_id, authorId: r.author_id,
     authorName: r.author?.name ?? null, themeSlugs,
+    accessionNumber: r.accession_number, deathYear: r.author?.death_year ?? null,
+    traditionSlug: r.author?.tradition?.slug ?? null,
   })
   const themeSlugList = themes.map(t => t.slug)
-  const [authorRows, genreRows, themeRows] = await Promise.all([
+  const [editorialRow, authorRows, genreRows, themeRows] = await Promise.all([
+    // The editor's pick (migration 033), if one is set; published only.
+    text.read_next_text_id
+      ? supabase.from('texts').select(CAND).eq('id', text.read_next_text_id).eq('published', true).maybeSingle()
+      : Promise.resolve({ data: null, error: null }),
     text.author_id
       ? supabase.from('texts').select(CAND).eq('author_id', text.author_id).eq('published', true).neq('id', text.id).order('title').limit(60)
       : Promise.resolve({ data: [], error: null }),
@@ -238,7 +245,11 @@ export default async function TextPage({ params }: Props) {
     e.slugs.push(r.theme.slug)
     themeByText.set(r.text.id, e)
   }
+  const editorialPick = editorialRow.error || !editorialRow.data
+    ? null
+    : { candidate: toCand(editorialRow.data as unknown as CandRow), note: text.read_next_note ?? null }
   const readNext = pickReadNext({
+    editorial: editorialPick,
     self: { id: text.id, collectionId: collection ? text.collection_id : null, authorId: text.author_id, wordCount: text.word_count },
     authorName: author?.name ?? null,
     genreName: genre?.name ?? null,
@@ -329,11 +340,14 @@ export default async function TextPage({ params }: Props) {
 
       {/* ─── Frontispiece hero — book cover + title on the dark ink ground ─── */}
       <section style={{ background: 'var(--hero-ground)' }}>
-        <div className="margin-cols rail-first py-12 lg:py-20">
+        {/* frontispiece: on phones the cover drops to a thumbnail beside the
+            title (globals.css), so the text starts in the first screen —
+            most readers land here straight from search. */}
+        <div className="margin-cols rail-first frontispiece py-6 lg:py-20">
           {/* Book cover — sits in the left margin rail, aligned with the
               author rail in the reading container below */}
           <div className="margin-rail flex justify-center lg:justify-start">
-            <div className="w-[200px]">
+            <div className="w-[84px] lg:w-[200px]">
               <BookCover
                 title={text.title}
                 authorName={author?.name ?? null}
@@ -346,7 +360,7 @@ export default async function TextPage({ params }: Props) {
           </div>
 
           {/* Title block — aligned with the main reading column below */}
-          <div className="margin-body flex flex-col items-center gap-6 text-center lg:items-start lg:gap-8 lg:text-left">
+          <div className="margin-body flex flex-col items-start gap-3 text-left lg:gap-8">
             {heroKicker && (
               <p
                 className="font-mono uppercase"
@@ -357,11 +371,11 @@ export default async function TextPage({ params }: Props) {
             )}
 
             {/* Title + summary — grouped tightly */}
-            <div className="flex flex-col items-center gap-4 lg:items-start">
+            <div className="flex flex-col items-start gap-4">
               <h1
                 style={{
                   fontFamily: 'var(--serif-display)',
-                  fontSize: 'var(--text-hero)',
+                  fontSize: 'var(--frontispiece-title-size)',
                   lineHeight: 1.05,
                   letterSpacing: '-0.01em',
                   color: '#FAF6EC',
@@ -371,7 +385,9 @@ export default async function TextPage({ params }: Props) {
               </h1>
               {summary && (
                 <p
-                  className="font-serif"
+                  // On phones the introduction follows at once and says more,
+                  // so the summary yields its space unless there is none.
+                  className={`font-serif ${editorialIntro ? 'hidden lg:block' : ''}`}
                   style={{
                     fontSize: 'var(--text-base)',
                     lineHeight: 1.5,
@@ -392,7 +408,7 @@ export default async function TextPage({ params }: Props) {
             </p>
 
             {themes.length > 0 && (
-              <div className="flex flex-wrap justify-center gap-2 lg:justify-start">
+              <div className="hidden lg:flex flex-wrap gap-2">
                 {themes.map(theme => (
                   <ThemeChip key={theme.slug} href={`/themes/${theme.slug}`} name={theme.name} source="text-page" tone="dark" />
                 ))}
@@ -551,6 +567,16 @@ export default async function TextPage({ params }: Props) {
                 <div className="prose-body" style={{ color: 'var(--ink-soft)' }}>
                   <MarkdownBody content={editorialIntro} numbered={false} />
                 </div>
+              </div>
+            )}
+
+            {/* Phones: the theme chips moved out of the frontispiece land here,
+                after the introduction, where they no longer push the text down. */}
+            {themes.length > 0 && (
+              <div className="flex flex-wrap gap-2 mb-10 lg:hidden">
+                {themes.map(theme => (
+                  <ThemeChip key={theme.slug} href={`/themes/${theme.slug}`} name={theme.name} source="text-page" />
+                ))}
               </div>
             )}
 

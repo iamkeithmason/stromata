@@ -7,6 +7,32 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-10-27 — Session 2: a phone frontispiece that shows the text, and "Read next" with an editorial pick
+
+Keith chose option C for the phone frontispiece and option B for the end of a text from the decision
+sheet (claude.ai artifact "Stromata Decision Sheet").
+
+- **Phone frontispiece (C).** Below the desktop tier the reader's hero puts the book cover at 84px beside a
+  smaller title (`.frontispiece` in `globals.css`), drops the summary when an introduction follows, and moves
+  the theme chips to just after the introduction. On Pliny's letters the introduction now starts in the top
+  third of a 390px screen instead of at the fold, and the settings button no longer sits on a chip. Desktop
+  is unchanged.
+- **"Read next" (B).** `ContinueExploring` now leads with one pick (its cover, length and a sentence saying
+  why) and lists up to two more under "Or". Clicks still fire `text-open` from `read-next`, so the series
+  continues across the redesign.
+- **Editorial override, the part of the backlog card PR #150 left unbuilt.** Migration
+  `033_text_read_next.sql` adds `texts.read_next_text_id` and `texts.read_next_note` (≤280 chars, never
+  self), granted to anon. **Already applied to production on 27 Oct**, because the reader selects both
+  columns and `texts` fails closed: shipping the code without the columns would 404 every text page. The
+  text edit form has a "Read next" box (slug + one sentence); the route checks the slug exists and is not
+  the text itself. `pickReadNext` puts the editorial pick first, with the editor's sentence or "The
+  editor's choice", and caps the module at three (4 new tests).
+- **`/design/sans`** gains Space Grotesk (Keith's suggestion) and IBM Plex Sans.
+- Verified locally: lint, `tsc`, 564 tests, `check:tests-in-ci`; the phone and desktop reader, the module
+  and the sans page rendered against the live database and checked on screen.
+
+---
+
 ## 2026-10-27 — Theme cap in the admin forms, oldstyle figures, and a sans comparison page
 
 Same session as the entry below; Keith asked for all four of the follow-ups while CI is out.

@@ -68,6 +68,30 @@ export async function PATCH(request: NextRequest, { params }: Params) {
 
   // Read before writing: if this save renames the text, /texts/{old-slug} keeps
   // serving its cached copy unless we revalidate that path too.
+  // Read next (migration 033): only touched when the form sends the fields, so
+  // other callers of this route leave an existing editorial pick alone.
+  const readNextUpdate: { read_next_text_id?: string | null; read_next_note?: string | null } = {}
+  if ('read_next_slug' in payload || 'read_next_note' in payload) {
+    const nextSlug = typeof payload.read_next_slug === 'string' ? payload.read_next_slug.trim() : ''
+    const nextNote = typeof payload.read_next_note === 'string' ? payload.read_next_note.trim() : ''
+    if (nextNote.length > 280) {
+      return NextResponse.json({ error: 'The read-next sentence is limited to 280 characters.' }, { status: 400 })
+    }
+    let nextId: string | null = null
+    if (nextSlug) {
+      const { data: target } = await supabase.from('texts').select('id').eq('slug', nextSlug).maybeSingle()
+      if (!target) {
+        return NextResponse.json({ error: `No text has the slug "${nextSlug}".` }, { status: 400 })
+      }
+      if ((target as { id: string }).id === id) {
+        return NextResponse.json({ error: 'A text cannot be its own read-next pick.' }, { status: 400 })
+      }
+      nextId = (target as { id: string }).id
+    }
+    readNextUpdate.read_next_text_id = nextId
+    readNextUpdate.read_next_note = nextNote || null
+  }
+
   const { data: prior } = await supabase.from('texts').select('slug').eq('id', id).maybeSingle()
   const priorSlug = (prior as { slug: string } | null)?.slug ?? null
 
@@ -92,6 +116,7 @@ export async function PATCH(request: NextRequest, { params }: Params) {
       featured: featured ?? false,
       featured_from: featured_from || null,
       featured_note: featured_note || null,
+      ...readNextUpdate,
     })
     .eq('id', id)
 

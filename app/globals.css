@@ -674,6 +674,22 @@ body {
 .margin-cols.rail-first > .margin-rail { order: 1; }
 .margin-cols.rail-first > .margin-body { order: 2; }
 
+/* frontispiece: the reader's hero. Stacked tiers would put a 200px cover, the
+   title, the summary and the chips above the text, so on a phone the first
+   words of the text fell below the fold. Below the desktop tier the cover sits
+   as a thumbnail beside a smaller title instead. */
+.frontispiece { --frontispiece-title-size: var(--text-hero); }
+@media (max-width: 1023.98px) {
+  .margin-cols.frontispiece {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+  .margin-cols.frontispiece > .margin-rail { width: 84px; flex: 0 0 84px; }
+  .margin-cols.frontispiece > .margin-body { flex: 1 1 auto; }
+  .frontispiece { --frontispiece-title-size: clamp(1.6rem, 6.5vw, 2.25rem); }
+}
+
 @media (min-width: 1024px) {
   .margin-cols {
     flex-direction: row;
