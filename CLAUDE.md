@@ -4,6 +4,27 @@ The Stromata is a curated digital library of public-domain Christian theological
 
 ---
 
+## TEMPORARY — GitHub Actions is off until 2 Nov 2026; run CI locally before every push
+
+**Delete this section once Actions runs again** (expected Monday 2 Nov 2026; Keith, 2026-10-28).
+Until then every `CI — lint & types` run fails about 3 seconds after it starts, before any step
+runs, and leaves no log. That red check says nothing about the code, so it cannot gate a PR.
+
+Before every push, run the workflow's steps yourself and record the result in the PR body:
+
+```bash
+npm ci && npm run lint && npx tsc --noEmit && npm test && npm run check:tests-in-ci
+```
+
+A PR is ready when that command passes, whatever the GitHub check shows. Don't re-run the failed
+job or push to retry it. On 27 Oct the command passed on `release` (541 tests), which covers
+PRs #160–#163 merged during the outage.
+
+**To remove:** once a run on `main` or a PR completes its steps (green, or red with a real log),
+delete this section in a docs-only PR straight to `main`.
+
+---
+
 ## Notion access — this workspace is on the free tier
 
 Any time you use the Notion MCP tools against this workspace (not just for the content pipeline —
