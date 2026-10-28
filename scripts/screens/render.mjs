@@ -38,7 +38,7 @@
 import { chromium } from 'playwright'
 import PDFDocument from 'pdfkit'
 import { createWriteStream, mkdirSync, readFileSync, writeFileSync, statSync } from 'node:fs'
-import { dirname, join } from 'node:path'
+import { dirname, join, resolve } from 'node:path'
 import { execSync } from 'node:child_process'
 import { fileURLToPath } from 'node:url'
 
@@ -51,7 +51,7 @@ for (const a of process.argv.slice(2)) {
   if (m) flags[m[1]] = m[2] === undefined ? true : m[2]
 }
 const BASE = String(flags.url || 'https://thestromata.com').replace(/\/$/, '')
-const OUT = join(ROOT, String(flags.out || 'docs/screens/stromata-screens.pdf'))
+const OUT = resolve(ROOT, String(flags.out || 'docs/screens/stromata-screens.pdf'))
 const PNG_DIR = join(ROOT, 'docs/screens/png')
 const BYPASS = flags['bypass-token'] || process.env.VERCEL_AUTOMATION_BYPASS_SECRET || ''
 

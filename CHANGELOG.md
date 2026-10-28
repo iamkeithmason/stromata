@@ -7,6 +7,26 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-10-27 — A designed 404 page
+
+The first screens-reference render showed that a broken link landed on Next's bare default ("404 | This page
+could not be found.") in system sans, with no site header and no way back. The app had no `not-found.tsx`.
+`app/not-found.tsx` now renders inside the site: header, a "Not found" kicker, "This page isn't on the shelves",
+one plain sentence, the search bar, and links to the library, all authors and the front page. It applies to
+unknown URLs and to every `notFound()` call (a missing text, author or collection slug). Tokens only, serif
+type, and links padded to the 24px tap minimum. Checked locally at 390px and 1440px: unknown URLs return 404
+with `noindex` and the title "Page not found — The Stromata".
+
+Noticed, not changed: a missing *text* slug (`/texts/no-such-slug`) shows this page but answers **200** with the
+title "Text — The Stromata" in `next dev`, because the route's `loading.tsx` starts streaming before `notFound()`
+runs (Next then falls back to a `noindex` tag instead of the status). Production may behave the same. Search
+engines see the `noindex`, so it isn't urgent, but it is a soft 404.
+
+Also: `npm run screens --out=` now accepts an absolute path (it was joined onto the repo root, so a scratch
+path landed inside the repo).
+
+---
+
 ## 2026-10-27 — The seasonal panel, phone first; mobile-first becomes the rule
 
 **Seasonal panel (`app/components/SeasonalPanel.tsx`).** On a 390px phone the panel ran 1,147px tall:
