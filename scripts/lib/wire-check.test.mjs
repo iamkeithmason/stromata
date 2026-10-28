@@ -9,7 +9,7 @@
 
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { isUmamiCollect, parseBeacon, checkProps, SLUG, summarise } from './wire-check.mjs';
+import { isUmamiCollect, parseBeacon, checkProps, SLUG, READ_NEXT_PICK, summarise } from './wire-check.mjs';
 
 test('the collection endpoint is matched, the tracker script is not', () => {
   assert.equal(isUmamiCollect('https://cloud.umami.is/api/send'), true);
@@ -86,4 +86,12 @@ test('summarise tallies by status', () => {
     summarise([{ status: 'pass' }, { status: 'pass' }, { status: 'fail' }, { status: 'skip' }]),
     { pass: 2, fail: 1, skip: 1 }
   );
+});
+
+test('read-next pick accepts the four kinds and nothing else', () => {
+  for (const kind of ['editorial', 'author', 'theme', 'genre']) {
+    assert.equal(checkProps({ data: { pick: kind } }, { pick: READ_NEXT_PICK }).ok, true, kind);
+  }
+  assert.equal(checkProps({ data: { pick: 'Editorial' } }, { pick: READ_NEXT_PICK }).ok, false);
+  assert.equal(checkProps({ data: {} }, { pick: READ_NEXT_PICK }).ok, false);
 });

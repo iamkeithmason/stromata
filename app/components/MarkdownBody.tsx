@@ -3,6 +3,7 @@ import remarkGfm from 'remark-gfm'
 import { slugify } from '@/lib/headings'
 import { rehypeScripture } from '@/lib/scripture/rehype-scripture'
 import { isPlateParagraphMdast, plateFromHast } from '@/lib/markdown/plate'
+import { remarkSmartPunctuation } from '@/lib/markdown/smart-punctuation'
 import ScriptureRef from '@/app/components/ScriptureRef'
 
 // Extracts plain text from a React node tree so we can slugify heading children.
@@ -59,7 +60,9 @@ function remarkNumberParagraphs() {
 }
 
 export default function MarkdownBody({ content, numbered = true, size = 'default' }: { content: string; numbered?: boolean; size?: 'default' | 'large' | 'small' }) {
-  const remarkPlugins = numbered ? [remarkGfm, remarkNumberParagraphs] : [remarkGfm]
+  const remarkPlugins = numbered
+    ? [remarkGfm, remarkSmartPunctuation, remarkNumberParagraphs]
+    : [remarkGfm, remarkSmartPunctuation]
   const proseSize = size === 'large' ? 'var(--text-xl)' : size === 'small' ? 'var(--text-label)' : 'var(--text-prose)'
 
   return (

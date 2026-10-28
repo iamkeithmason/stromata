@@ -98,3 +98,47 @@ test('a text with unknown length is admitted, ranked after known lengths', () =>
   const only = pickReadNext({ ...base, sameAuthor: [c('1', { authorId: 'a1', word_count: null })] })
   assert.equal(only[0].slug, 'text-1')
 })
+
+test('the editorial pick leads with its sentence, and the rules fill the rest up to three', () => {
+  const picks = pickReadNext({
+    ...base,
+    editorial: { candidate: c('ed', { title: 'The Didache' }), note: 'The same worship, described from the inside.' },
+    sameAuthor: [c('1', { authorId: 'a1', authorName: 'Augustine' })],
+    sameTheme: [c('2', { themeSlugs: ['humility'] })],
+    sameGenre: [c('3')],
+  })
+  assert.deepEqual(picks.map(p => [p.kind, p.reason, p.slug]), [
+    ['editorial', 'The same worship, described from the inside.', 'text-ed'],
+    ['author', 'More from Augustine', 'text-1'],
+    ['theme', 'On Humility', 'text-2'],
+  ])
+})
+
+test('an editorial pick without a sentence gets a plain caption, and is never repeated by a rule', () => {
+  const ed = c('ed', { authorId: 'a1' })
+  const picks = pickReadNext({ ...base, editorial: { candidate: ed, note: '  ' }, sameAuthor: [ed] })
+  assert.deepEqual(picks.map(p => [p.kind, p.reason]), [['editorial', 'The editor’s choice']])
+})
+
+test('an editorial pick may be short or a sibling part, but never the text itself', () => {
+  const sibling = c('sib', { collection_id: 'col', word_count: 120 })
+  const withSibling = pickReadNext({
+    ...base,
+    self: { ...base.self, collectionId: 'col' },
+    editorial: { candidate: sibling, note: null },
+  })
+  assert.equal(withSibling[0]?.slug, 'text-sib')
+  const toSelf = pickReadNext({ ...base, editorial: { candidate: c('self'), note: 'x' } })
+  assert.deepEqual(toSelf, [])
+})
+
+test('picks carry the cover fields through', () => {
+  const [p] = pickReadNext({
+    ...base,
+    sameGenre: [c('3', { accessionNumber: 41, deathYear: 430, traditionSlug: 'patristic', word_count: 2500 })],
+  })
+  assert.deepEqual(
+    [p.accessionNumber, p.deathYear, p.traditionSlug, p.wordCount],
+    [41, 430, 'patristic', 2500],
+  )
+})

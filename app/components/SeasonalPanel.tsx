@@ -189,7 +189,6 @@ export async function SeasonalPanel({ season = resolveSeason().season }: Props =
   }
 
   const s = { ...copy, pick: pickIsLive ? configuredPick : null }
-  const hasNoPick = s.pick === null
 
   const panelHref = s.pick ? s.pick.href : '/texts'
   const panelUmamiProps = s.pick
@@ -227,13 +226,12 @@ export async function SeasonalPanel({ season = resolveSeason().season }: Props =
           `has-[a:hover]` keeps the trigger area exactly the link — the click
           target — rather than the 28px plaque padding around it. ── */}
       <div
-        className="transition-transform duration-200 ease-out has-[a:hover]:-translate-y-0.5 has-[a:focus-visible]:-translate-y-0.5"
+        className="p-3 sm:p-7 transition-transform duration-200 ease-out has-[a:hover]:-translate-y-0.5 has-[a:focus-visible]:-translate-y-0.5"
         style={{
           backgroundImage: concaveBg,
           backgroundSize: '51% 51%',
           backgroundRepeat: 'no-repeat',
           backgroundPosition: 'top left, top right, bottom left, bottom right',
-          padding: '28px',
           filter: 'var(--shadow-panel-drop)',
         }}
       >
@@ -241,20 +239,20 @@ export async function SeasonalPanel({ season = resolveSeason().season }: Props =
         <Link
           href={panelHref}
           {...panelUmamiProps}
-          className="block no-underline border border-[color:var(--gold-border)] transition-[border-color] duration-200 ease-out hover:border-[color:var(--gold-border-strong)] focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--gold)] focus-visible:border-[color:var(--gold-border-strong)]"
+          className="block px-4 py-6 sm:px-8 sm:py-7 no-underline border border-[color:var(--gold-border)] transition-[border-color] duration-200 ease-out hover:border-[color:var(--gold-border-strong)] focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--gold)] focus-visible:border-[color:var(--gold-border-strong)]"
           style={{
-            padding: '1.75rem 2rem',
             boxShadow: 'var(--shadow-panel)',
           }}
         >
-          <div
-            className={`flex gap-10 ${hasNoPick
-              ? 'flex-col sm:flex-row sm:items-center'
-              : 'flex-col sm:flex-row sm:items-start'
-            }`}
-          >
-            {/* ── Left: text content ──────────────────────────────── */}
-            <div className="flex-1 min-w-0">
+          {/* Phone first: season name, then the pick (portrait beside its
+              link), then the note — so the reading suggestion sits in the
+              first screen rather than under eleven lines of prose. From sm up
+              the grid puts the pick in a right-hand column spanning both
+              rows, as before; the second row takes any spare height so the
+              note stays snug under the heading. */}
+          <div className="grid sm:grid-cols-[minmax(0,1fr)_auto] sm:grid-rows-[auto_1fr] sm:gap-x-10">
+            {/* ── Heading ─────────────────────────────────────────── */}
+            <div className="min-w-0 sm:col-start-1 sm:row-start-1">
 
               {/* Section label: ✠ THE CHRISTIAN YEAR */}
               <p style={{ ...LABEL_STYLE, fontSize: 'var(--text-base)', marginBottom: '1rem' }}>
@@ -289,7 +287,78 @@ export async function SeasonalPanel({ season = resolveSeason().season }: Props =
               >
                 {s.subtitle}
               </p>
+            </div>
 
+            {/* ── Pick: arch emblem (visual only — see wrapping Link above) ──
+                The ratio box holds the arch and nothing else, with the caption
+                as a sibling below it — the same shape FeaturedAuthors uses.
+                Putting the caption inside the box made it overflow, and the
+                extra wrapper it needed collapsed the portrait variant to zero
+                height (see LancetArch's note). The portrait is 140px on phones,
+                the width FeaturedAuthors draws every author at, so the season's
+                author is not the smallest face on the page. */}
+            {s.pick ? (
+              <div className="mb-6 flex items-center gap-4 sm:col-start-2 sm:row-span-2 sm:row-start-1 sm:mb-0 sm:block sm:self-start">
+                <div className="w-[140px] shrink-0 sm:w-[clamp(140px,18vw,150px)]">
+                  <div className="opacity-90" style={{ aspectRatio: '200 / 380' }}>
+                    <LancetArch
+                      initial={s.pick.author.charAt(0)}
+                      label={`${s.pick.title} by ${s.pick.author}`}
+                      imageUrl={pickImageUrl}
+                      focusX={pickFocusX}
+                      focusY={pickFocusY}
+                      zoom={pickZoom}
+                    />
+                  </div>
+                  <div className="mt-2 hidden text-center sm:block">
+                    <p style={{ fontFamily: 'var(--serif)', fontStyle: 'italic', fontSize: 'var(--text-sm)', color: R.title, lineHeight: 1.3 }}>
+                      {s.pick.title}
+                    </p>
+                    <p style={{ fontFamily: 'var(--serif)', fontSize: 'var(--text-sm)', color: R.dim, marginTop: '0.2rem' }}>
+                      {s.pick.author}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Phone only: the CTA beside the portrait. From sm up it
+                    sits under the note instead (hidden there on phones). */}
+                <div className="min-w-0 sm:hidden">
+                  {/* Shortened from "Read for the season" so it holds one
+                      line beside a 140px portrait. */}
+                  <p style={{ ...LABEL_STYLE, marginBottom: '0.4rem' }}>
+                    For the season
+                  </p>
+                  <span
+                    style={{
+                      fontFamily: 'var(--serif)',
+                      fontSize: 'var(--text-prose)',
+                      lineHeight: 1.3,
+                      color: R.cta,
+                      textDecoration: 'underline',
+                      textUnderlineOffset: '3px',
+                      textDecorationColor: R.goldFaint,
+                    }}
+                  >
+                    {s.pick.title} →
+                  </span>
+                  <p style={{ fontFamily: 'var(--serif)', fontSize: 'var(--text-base)', color: R.dim, marginTop: '0.4rem' }}>
+                    {s.pick.author}
+                  </p>
+                </div>
+              </div>
+            ) : (
+              /* No pick — § emblem, deliberate and present. Furniture, so on
+                 phones it gives way to the note and the library link. */
+              <div
+                className="hidden w-[clamp(90px,14vw,130px)] sm:col-start-2 sm:row-span-2 sm:row-start-1 sm:block sm:self-center"
+                style={{ opacity: 0.72, aspectRatio: '200 / 380' }}
+              >
+                <LancetArch initial="§" label="Seasonal emblem" />
+              </div>
+            )}
+
+            {/* ── Note + CTA ──────────────────────────────────────── */}
+            <div className="min-w-0 sm:col-start-1 sm:row-start-2">
               <hr
                 style={{
                   borderColor: R.rule,
@@ -300,10 +369,9 @@ export async function SeasonalPanel({ season = resolveSeason().season }: Props =
 
               {/* Body note — warm cream, comfortable measure */}
               <p
+                className="text-[length:var(--text-prose)] leading-[1.6] sm:text-[length:var(--text-xl)] sm:leading-[1.75]"
                 style={{
                   fontFamily: 'var(--serif)',
-                  fontSize: 'var(--text-xl)',
-                  lineHeight: 1.75,
                   color: R.note,
                   maxWidth: '46ch',
                 }}
@@ -313,7 +381,7 @@ export async function SeasonalPanel({ season = resolveSeason().season }: Props =
 
               {/* "Read for the season" + CTA (visual affordance only — the
                   whole panel is the click target, see the wrapping Link above) */}
-              <div style={{ marginTop: '1.5rem' }}>
+              <div className={s.pick ? 'hidden sm:block' : undefined} style={{ marginTop: '1.5rem' }}>
                 <p style={{ ...LABEL_STYLE, marginBottom: '0.4rem' }}>
                   Read for the season
                 </p>
@@ -346,45 +414,6 @@ export async function SeasonalPanel({ season = resolveSeason().season }: Props =
                   </span>
                 )}
               </div>
-            </div>
-
-            {/* ── Right: arch emblem (visual only — see wrapping Link above) ──
-                The ratio box holds the arch and nothing else, with the caption
-                as a sibling below it — the same shape FeaturedAuthors uses.
-                Putting the caption inside the box made it overflow, and the
-                extra wrapper it needed collapsed the portrait variant to zero
-                height (see LancetArch's note). */}
-            <div
-              className="shrink-0 mx-auto sm:mx-0"
-              style={{ width: hasNoPick ? 'clamp(90px, 14vw, 130px)' : 'clamp(110px, 18vw, 150px)' }}
-            >
-              {s.pick ? (
-                <>
-                  <div className="opacity-90" style={{ aspectRatio: '200 / 380' }}>
-                    <LancetArch
-                      initial={s.pick.author.charAt(0)}
-                      label={`${s.pick.title} by ${s.pick.author}`}
-                      imageUrl={pickImageUrl}
-                      focusX={pickFocusX}
-                      focusY={pickFocusY}
-                      zoom={pickZoom}
-                    />
-                  </div>
-                  <div className="mt-2 text-center">
-                    <p style={{ fontFamily: 'var(--serif)', fontStyle: 'italic', fontSize: 'var(--text-sm)', color: R.title, lineHeight: 1.3 }}>
-                      {s.pick.title}
-                    </p>
-                    <p style={{ fontFamily: 'var(--serif)', fontSize: 'var(--text-sm)', color: R.dim, marginTop: '0.2rem' }}>
-                      {s.pick.author}
-                    </p>
-                  </div>
-                </>
-              ) : (
-                /* No pick — § emblem, deliberate and present */
-                <div style={{ opacity: 0.72, aspectRatio: '200 / 380' }}>
-                  <LancetArch initial="§" label="Seasonal emblem" />
-                </div>
-              )}
             </div>
 
           </div>
