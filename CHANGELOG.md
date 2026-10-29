@@ -7,6 +7,16 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-10-29 — The mobile menu's close X no longer looks cropped
+
+Keith spotted on his phone that the menu's X looked clipped at the top right. The three menu lines sit 7px
+apart (`gap-1.5` plus a 1px line), but on open the outer two moved only 3.5px towards the middle before
+rotating, so the two strokes crossed off-centre and read as a cropped X. `MobileNav` now moves them 7px, and
+all three line centres coincide (checked at 390px). Same code on `main` and `release`, so this fixes live
+once the release ships.
+
+---
+
 ## 2026-10-27 — A designed 404 page
 
 The first screens-reference render showed that a broken link landed on Next's bare default ("404 | This page
