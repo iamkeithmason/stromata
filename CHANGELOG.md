@@ -24,7 +24,12 @@ flashes the header at each section boundary, for Keith to judge whether that is 
 first try on his phone: the reading header now carries the site menu and the sheet links Home and Library
 (he could not leave the text mid-way), and while the header is away a small pill stays at the top
 ("§ 1 of 8 · Contents ▾", filled to show progress) so casual scrollers can see the text has navigation;
-`?pill=0` hides it, because a fixed pill covers part of a line, against the mobile-first checklist. Limited to
+`?pill=0` hides it, because a fixed pill covers part of a line, against the mobile-first checklist.
+Second round of Keith's notes: the pill now fills with progress through the *current section* while the
+hairline along the top edge keeps the whole-text progress; crossing a boundary slides the new section name
+in (pill and header) and glows the pill's keyline, rather than blinking; the sheet slides down and back up
+(the iOS sheet curve, 460ms in, 340ms out) instead of appearing; `?pill=slim` is a smaller variant (position
+and caret only). All motion is off under `prefers-reduced-motion`. Limited to
 three test texts: Chrysostom (long, no headings; eight draft editorial sections stand in for the proposed
 `texts.sections` field, marked as not part of the original text), Tertullian's *Prescription Against
 Heretics* (44 chapters) and Cyril's *Catechetical Lecture XXIII* (part 24 of 24). It reads everything else

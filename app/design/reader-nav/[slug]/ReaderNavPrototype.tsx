@@ -102,7 +102,13 @@ export function ReaderNavPrototype({ sections }: { sections: PrototypeSection[] 
   const [expanded, setExpanded] = useState(false)
   const [back, setBack] = useState<number | null>(null)
   const [reveal, setReveal] = useState(false)
-  const [pill, setPill] = useState(true)
+  const [pill, setPill] = useState<'on' | 'slim' | 'off'>('on')
+  const [sectionFraction, setSectionFraction] = useState(0)
+  const [reduceMotion, setReduceMotion] = useState(false)
+  const pillRef = useRef<HTMLButtonElement>(null)
+  const pillLabelRef = useRef<HTMLSpanElement>(null)
+  const headLabelRef = useRef<HTMLSpanElement>(null)
+  const animatedIndex = useRef<number | null>(null)
   const lastY = useRef(0)
   const lastIndex = useRef(-1)
   const revealTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -112,7 +118,8 @@ export function ReaderNavPrototype({ sections }: { sections: PrototypeSection[] 
   useEffect(() => {
     const q = new URLSearchParams(window.location.search)
     setReveal(q.get('reveal') === '1')
-    setPill(q.get('pill') !== '0')
+    setPill(q.get('pill') === '0' ? 'off' : q.get('pill') === 'slim' ? 'slim' : 'on')
+    setReduceMotion(window.matchMedia('(prefers-reduced-motion: reduce)').matches)
     // Let fonts and images settle before measuring the frontispiece.
     const t = setTimeout(() => setPage(readPage(sections)), 300)
     return () => clearTimeout(t)
@@ -145,6 +152,15 @@ export function ReaderNavPrototype({ sections }: { sections: PrototypeSection[] 
       page.entries.forEach((e, i) => { if (e.el.getBoundingClientRect().top <= HEADER + 24) idx = i })
       setCurrent(idx)
 
+      // Progress through the current section, for the pill's fill (the hairline at the
+      // top of the screen keeps showing progress through the whole text).
+      if (idx >= 0 && article) {
+        const start = page.entries[idx].el.getBoundingClientRect().top + y
+        const next = page.entries.at(idx + 1)
+        const end = next ? next.el.getBoundingClientRect().top + y : article.getBoundingClientRect().bottom + y
+        setSectionFraction(Math.min(Math.max((y + HEADER + 24 - start) / Math.max(end - start, 1), 0), 1))
+      }
+
       if (y < page.threshold) { setMode('top'); lastIndex.current = idx; return }
       // A boundary reveal holds for REVEAL_MS even while the reader keeps scrolling down.
       const revealing = Date.now() < revealUntil.current
@@ -173,6 +189,26 @@ export function ReaderNavPrototype({ sections }: { sections: PrototypeSection[] 
     document.body.style.overflow = 'hidden'
     return () => { document.removeEventListener('keydown', onKey); document.body.style.overflow = prev }
   }, [open])
+
+  // Crossing into a new section: the new name slides in, and the pill's keyline glows
+  // gold for a moment, instead of the text blinking from one name to the next.
+  useEffect(() => {
+    if (animatedIndex.current === null || reduceMotion) { animatedIndex.current = current; return }
+    if (animatedIndex.current === current) return
+    const down = current > animatedIndex.current
+    animatedIndex.current = current
+    const slide = [
+      { opacity: 0, transform: `translateY(${down ? 8 : -8}px)` },
+      { opacity: 1, transform: 'translateY(0)' },
+    ]
+    const timing = { duration: 320, easing: 'cubic-bezier(.2,.6,.2,1)' }
+    pillLabelRef.current?.animate(slide, timing)
+    headLabelRef.current?.animate(slide, timing)
+    pillRef.current?.animate(
+      [{ borderColor: 'var(--gold)', transform: 'translateX(-50%) scale(1.06)' }, { borderColor: 'var(--gold-rule)', transform: 'translateX(-50%) scale(1)' }],
+      { duration: 520, easing: 'cubic-bezier(.2,.6,.2,1)' },
+    )
+  }, [current, reduceMotion])
 
   const jump = useCallback((el: HTMLElement) => {
     const from = window.scrollY
@@ -253,7 +289,7 @@ export function ReaderNavPrototype({ sections }: { sections: PrototypeSection[] 
             <span className="block truncate text-sm" style={{ ...smallcaps, color: 'var(--ink-mute)' }}>
               {position ? `${position} · ${minutesLeft} min left` : `${minutesLeft} min left`}
             </span>
-            <span className="block truncate font-serif italic" style={{ color: 'var(--ink)', fontSize: '1.02rem' }}>{label}</span>
+            <span ref={headLabelRef} className="block truncate font-serif italic" style={{ color: 'var(--ink)', fontSize: '1.02rem' }}>{label}</span>
           </span>
           <span className="shrink-0 font-serif" style={{ color: 'var(--gold-ink)', fontSize: '0.95rem' }}>
             {n > 1 ? 'Contents' : 'Way on'} ▾
@@ -264,24 +300,34 @@ export function ReaderNavPrototype({ sections }: { sections: PrototypeSection[] 
         <span aria-hidden style={{ position: 'absolute', left: 0, bottom: -1, height: 2, width: `${fraction * 100}%`, background: 'var(--gold)' }} />
       </div>
 
-      {/* While the header is away, a small pill keeps the navigation in sight: where
-          you are, with the progress through the text as its fill. ?pill=0 hides it. */}
-      {pill && mode === 'hidden' && !open && (
+      {/* While the header is away, a small pill keeps the navigation in sight. Its fill
+          is the progress through the CURRENT section (the whole-text progress is the
+          hairline along the top edge). ?pill=slim is a smaller variant; ?pill=0 hides it. */}
+      {pill !== 'off' && mode === 'hidden' && !open && (
         <button
+          ref={pillRef}
           type="button"
           onClick={() => setOpen(true)}
           aria-label={`Where you are: ${label}. Open contents and next reading.`}
           style={{
-            position: 'fixed', top: 10, left: '50%', transform: 'translateX(-50%)', zIndex: 54,
+            position: 'fixed', top: pill === 'slim' ? 8 : 10, left: '50%', transform: 'translateX(-50%)', zIndex: 54,
             background: 'var(--vellum)', border: '1px solid var(--gold-rule)', boxShadow: 'var(--shadow-panel)',
             overflow: 'hidden', maxWidth: 'calc(100vw - 96px)',
           }}
-          className="rounded-full font-serif text-sm"
+          className={`rounded-full font-serif ${pill === 'slim' ? 'text-xs' : 'text-sm'}`}
         >
-          <span aria-hidden style={{ position: 'absolute', inset: 0, width: `${fraction * 100}%`, background: 'var(--gold-rule)', opacity: 0.35 }} />
-          <span className="relative flex items-center gap-2 px-4 py-1.5 whitespace-nowrap" style={{ color: 'var(--ink)' }}>
-            <span style={{ ...smallcaps, color: 'var(--ink-mute)' }}>{position ?? `${minutesLeft} min left`}</span>
-            <span style={{ color: 'var(--gold-ink)' }}>{n > 1 ? 'Contents' : 'Way on'} ▾</span>
+          <span
+            key={current}
+            aria-hidden
+            style={{
+              position: 'absolute', inset: 0, width: `${(n > 1 && current >= 0 ? sectionFraction : fraction) * 100}%`,
+              background: 'var(--gold-rule)', opacity: 0.45,
+              transition: reduceMotion ? 'none' : 'width 240ms linear',
+            }}
+          />
+          <span className={`relative flex items-center gap-2 whitespace-nowrap ${pill === 'slim' ? 'px-3 py-0.5' : 'px-4 py-1.5'}`} style={{ color: 'var(--ink)' }}>
+            <span ref={pillLabelRef} style={{ ...smallcaps, color: 'var(--ink-mute)' }}>{position ?? `${minutesLeft} min left`}</span>
+            <span style={{ color: 'var(--gold-ink)' }}>{pill === 'slim' ? '▾' : `${n > 1 ? 'Contents' : 'Way on'} ▾`}</span>
           </span>
         </button>
       )}
@@ -297,15 +343,31 @@ export function ReaderNavPrototype({ sections }: { sections: PrototypeSection[] 
         </button>
       )}
 
-      {open && (
-        <>
-          <div aria-hidden onClick={() => setOpen(false)} style={{ position: 'fixed', inset: 0, zIndex: 57, background: 'var(--hero-ground)', opacity: 0.32 }} />
+      {/* The sheet is always mounted so it can slide: down on open with a long, soft
+          ease-out (the curve iOS uses for sheets), back up a little faster on close.
+          `visibility` waits for the slide to finish before hiding it from taps and focus. */}
+      <>
+          <div
+            aria-hidden
+            onClick={() => setOpen(false)}
+            style={{
+              position: 'fixed', inset: 0, zIndex: 57, background: 'var(--hero-ground)',
+              opacity: open ? 0.32 : 0, pointerEvents: open ? 'auto' : 'none',
+              transition: reduceMotion ? 'none' : `opacity ${open ? 420 : 320}ms ease`,
+            }}
+          />
           <div
             role="dialog"
             aria-label="Contents and next reading"
+            aria-hidden={!open}
             style={{
               position: 'fixed', top: 0, left: 0, right: 0, zIndex: 58, maxHeight: 'calc(100dvh - 72px)', overflowY: 'auto',
               background: 'var(--vellum)', borderBottom: '1px solid var(--gold-rule)', boxShadow: 'var(--shadow-panel)',
+              transform: open ? 'translateY(0)' : 'translateY(-104%)',
+              visibility: open ? 'visible' : 'hidden',
+              transition: reduceMotion ? 'none'
+                : open ? 'transform 460ms cubic-bezier(.32,.72,0,1), visibility 0s'
+                : 'transform 340ms cubic-bezier(.32,.72,0,1), visibility 0s linear 340ms',
             }}
             className="px-6 pt-5 pb-6"
           >
@@ -385,14 +447,23 @@ export function ReaderNavPrototype({ sections }: { sections: PrototypeSection[] 
                 <Link href="/texts" style={{ color: 'var(--accent)' }}>Library</Link>
               </span>
             </div>
-            <p className="font-serif text-sm mt-4 flex gap-4" style={{ color: 'var(--ink-mute)' }}>
+            <p className="font-serif text-sm mt-4 flex flex-wrap gap-x-4 gap-y-1" style={{ color: 'var(--ink-mute)' }}>
               <span>Prototype:</span>
               <a href={query({ reveal: reveal ? null : '1' })} style={{ color: 'var(--ink-mute)', textDecoration: 'underline' }}>boundary reveal {reveal ? 'on' : 'off'}</a>
-              <a href={query({ pill: pill ? '0' : null })} style={{ color: 'var(--ink-mute)', textDecoration: 'underline' }}>pill {pill ? 'on' : 'off'}</a>
+              <span>
+                pill:{' '}
+                {(['on', 'slim', 'off'] as const).map((v, i) => (
+                  <span key={v}>
+                    {i > 0 && ' · '}
+                    {v === pill
+                      ? <strong style={{ color: 'var(--ink)' }}>{v}</strong>
+                      : <a href={query({ pill: v === 'on' ? null : v === 'off' ? '0' : 'slim' })} style={{ color: 'var(--ink-mute)', textDecoration: 'underline' }}>{v}</a>}
+                  </span>
+                ))}
+              </span>
             </p>
           </div>
-        </>
-      )}
+      </>
     </>
   )
 }
