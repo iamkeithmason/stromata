@@ -7,6 +7,28 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-10-29 — Reader-navigation prototype at /design/reader-nav (noindex)
+
+An interaction prototype for the backlog card "Mid-text navigation on phones". On a phone every way off a
+long text sits on screen 1 or after the last line, and readers stall in between (the Vainglory page: 115
+visitors, no second text). Two rounds of Figma exploration settled the shape, but a hide-and-reveal header
+is motion, which static frames could not show, so this lets Keith try it on his own phone.
+
+`/design/reader-nav/[slug]` renders the real reader page (it imports `app/texts/[slug]/page.tsx`, so it
+selects no body itself and the egress guard is untouched) and `ReaderNavPrototype` layers on: past the
+frontispiece the site header hides on scroll-down; scrolling up brings back a reading header ("§ 2 of 8 · 46
+min left / The newborn child", "Contents ▾") with a gold progress hairline; tapping it drops a top sheet
+with where-you-are, windowed contents (first, fold, current ±2, fold), the collection block, Read next (a
+collection's next part leads, per Keith), and "Back to where you were" after a jump. `?reveal=1` also
+flashes the header at each section boundary, for Keith to judge whether that is intrusive. Limited to
+three test texts: Chrysostom (long, no headings; eight draft editorial sections stand in for the proposed
+`texts.sections` field, marked as not part of the original text), Tertullian's *Prescription Against
+Heretics* (44 chapters) and Cyril's *Catechetical Lecture XXIII* (part 24 of 24). It reads everything else
+from the page's DOM, so it is throwaway by design. Visiting it fires the reader page's normal events, since
+it is the real page. Not linked anywhere; not a shipping decision.
+
+---
+
 ## 2026-10-27 — A designed 404 page
 
 The first screens-reference render showed that a broken link landed on Next's bare default ("404 | This page
