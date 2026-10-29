@@ -8,6 +8,8 @@
  */
 
 import { useCallback, useEffect, useRef, useState } from 'react'
+import Link from 'next/link'
+import { MobileNav } from '@/app/components/MobileNav'
 
 export type PrototypeSection = { label: string; startsWith: string }
 
@@ -100,6 +102,7 @@ export function ReaderNavPrototype({ sections }: { sections: PrototypeSection[] 
   const [expanded, setExpanded] = useState(false)
   const [back, setBack] = useState<number | null>(null)
   const [reveal, setReveal] = useState(false)
+  const [pill, setPill] = useState(true)
   const lastY = useRef(0)
   const lastIndex = useRef(-1)
   const revealTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -107,7 +110,9 @@ export function ReaderNavPrototype({ sections }: { sections: PrototypeSection[] 
   const backTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   useEffect(() => {
-    setReveal(new URLSearchParams(window.location.search).get('reveal') === '1')
+    const q = new URLSearchParams(window.location.search)
+    setReveal(q.get('reveal') === '1')
+    setPill(q.get('pill') !== '0')
     // Let fonts and images settle before measuring the frontispiece.
     const t = setTimeout(() => setPage(readPage(sections)), 300)
     return () => clearTimeout(t)
@@ -183,6 +188,14 @@ export function ReaderNavPrototype({ sections }: { sections: PrototypeSection[] 
 
   if (!page) return null
 
+  // A link to this page with one prototype switch changed and the others kept.
+  const query = (change: Record<string, string | null>) => {
+    const q = new URLSearchParams(window.location.search)
+    Object.entries(change).forEach(([k, v]) => (v === null ? q.delete(k) : q.set(k, v)))
+    const s = q.toString()
+    return s ? `?${s}` : window.location.pathname
+  }
+
   const minutesLeft = Math.max(1, Math.round(page.minutes * (1 - fraction)))
   const n = page.entries.length
   const here = current >= 0 ? page.entries[current] : null
@@ -217,32 +230,61 @@ export function ReaderNavPrototype({ sections }: { sections: PrototypeSection[] 
 
   return (
     <>
-      {/* The reading header: occupies the site header's place mid-text. */}
-      <button
-        type="button"
-        onClick={() => setOpen(true)}
-        aria-expanded={open}
-        aria-label={`Where you are: ${label}. Open contents and next reading.`}
+      {/* The reading header: occupies the site header's place mid-text. The site
+          menu stays at its right, so the reader can always leave the text. */}
+      <div
         style={{
           position: 'fixed', top: 0, left: 0, right: 0, height: HEADER, zIndex: 55,
           background: 'var(--paper)', borderBottom: '1px solid var(--rule)',
           transform: showBar ? 'translateY(0)' : 'translateY(-110%)',
           transition: 'transform var(--dur-slow) var(--ease)',
-          textAlign: 'left',
         }}
-        className="flex items-center gap-3 px-6"
+        className="flex items-center gap-3 pl-6 pr-8"
       >
-        <span className="min-w-0 flex-1">
-          <span className="block truncate text-sm" style={{ ...smallcaps, color: 'var(--ink-mute)' }}>
-            {position ? `${position} · ${minutesLeft} min left` : `${minutesLeft} min left`}
+        <button
+          type="button"
+          onClick={() => setOpen(true)}
+          aria-expanded={open}
+          aria-label={`Where you are: ${label}. Open contents and next reading.`}
+          className="min-w-0 flex-1 h-full flex items-center gap-3"
+          style={{ textAlign: 'left' }}
+        >
+          <span className="min-w-0 flex-1">
+            <span className="block truncate text-sm" style={{ ...smallcaps, color: 'var(--ink-mute)' }}>
+              {position ? `${position} · ${minutesLeft} min left` : `${minutesLeft} min left`}
+            </span>
+            <span className="block truncate font-serif italic" style={{ color: 'var(--ink)', fontSize: '1.02rem' }}>{label}</span>
           </span>
-          <span className="block truncate font-serif italic" style={{ color: 'var(--ink)', fontSize: '1.02rem' }}>{label}</span>
-        </span>
-        <span className="shrink-0 font-serif" style={{ color: 'var(--gold-ink)', fontSize: '0.95rem' }}>
-          {n > 1 ? 'Contents' : 'Way on'} ▾
-        </span>
+          <span className="shrink-0 font-serif" style={{ color: 'var(--gold-ink)', fontSize: '0.95rem' }}>
+            {n > 1 ? 'Contents' : 'Way on'} ▾
+          </span>
+        </button>
+        <span className="shrink-0 h-6" style={{ borderLeft: '1px solid var(--rule)' }} aria-hidden />
+        <MobileNav />
         <span aria-hidden style={{ position: 'absolute', left: 0, bottom: -1, height: 2, width: `${fraction * 100}%`, background: 'var(--gold)' }} />
-      </button>
+      </div>
+
+      {/* While the header is away, a small pill keeps the navigation in sight: where
+          you are, with the progress through the text as its fill. ?pill=0 hides it. */}
+      {pill && mode === 'hidden' && !open && (
+        <button
+          type="button"
+          onClick={() => setOpen(true)}
+          aria-label={`Where you are: ${label}. Open contents and next reading.`}
+          style={{
+            position: 'fixed', top: 10, left: '50%', transform: 'translateX(-50%)', zIndex: 54,
+            background: 'var(--vellum)', border: '1px solid var(--gold-rule)', boxShadow: 'var(--shadow-panel)',
+            overflow: 'hidden', maxWidth: 'calc(100vw - 96px)',
+          }}
+          className="rounded-full font-serif text-sm"
+        >
+          <span aria-hidden style={{ position: 'absolute', inset: 0, width: `${fraction * 100}%`, background: 'var(--gold-rule)', opacity: 0.35 }} />
+          <span className="relative flex items-center gap-2 px-4 py-1.5 whitespace-nowrap" style={{ color: 'var(--ink)' }}>
+            <span style={{ ...smallcaps, color: 'var(--ink-mute)' }}>{position ?? `${minutesLeft} min left`}</span>
+            <span style={{ color: 'var(--gold-ink)' }}>{n > 1 ? 'Contents' : 'Way on'} ▾</span>
+          </span>
+        </button>
+      )}
 
       {back !== null && !open && (
         <button
@@ -338,10 +380,16 @@ export function ReaderNavPrototype({ sections }: { sections: PrototypeSection[] 
               <button type="button" onClick={() => { setOpen(false); window.scrollTo({ top: 0, behavior: 'smooth' }) }} className="font-serif text-sm" style={{ color: 'var(--ink-mute)' }}>
                 Back to the beginning ↑
               </button>
-              <a href={reveal ? '?' : '?reveal=1'} className="font-serif text-sm" style={{ color: 'var(--ink-mute)' }}>
-                Prototype: boundary reveal {reveal ? 'on' : 'off'}
-              </a>
+              <span className="font-serif text-sm flex gap-4">
+                <Link href="/" style={{ color: 'var(--accent)' }}>Home</Link>
+                <Link href="/texts" style={{ color: 'var(--accent)' }}>Library</Link>
+              </span>
             </div>
+            <p className="font-serif text-sm mt-4 flex gap-4" style={{ color: 'var(--ink-mute)' }}>
+              <span>Prototype:</span>
+              <a href={query({ reveal: reveal ? null : '1' })} style={{ color: 'var(--ink-mute)', textDecoration: 'underline' }}>boundary reveal {reveal ? 'on' : 'off'}</a>
+              <a href={query({ pill: pill ? '0' : null })} style={{ color: 'var(--ink-mute)', textDecoration: 'underline' }}>pill {pill ? 'on' : 'off'}</a>
+            </p>
           </div>
         </>
       )}

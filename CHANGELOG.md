@@ -20,7 +20,11 @@ frontispiece the site header hides on scroll-down; scrolling up brings back a re
 min left / The newborn child", "Contents ▾") with a gold progress hairline; tapping it drops a top sheet
 with where-you-are, windowed contents (first, fold, current ±2, fold), the collection block, Read next (a
 collection's next part leads, per Keith), and "Back to where you were" after a jump. `?reveal=1` also
-flashes the header at each section boundary, for Keith to judge whether that is intrusive. Limited to
+flashes the header at each section boundary, for Keith to judge whether that is intrusive. After Keith's
+first try on his phone: the reading header now carries the site menu and the sheet links Home and Library
+(he could not leave the text mid-way), and while the header is away a small pill stays at the top
+("§ 1 of 8 · Contents ▾", filled to show progress) so casual scrollers can see the text has navigation;
+`?pill=0` hides it, because a fixed pill covers part of a line, against the mobile-first checklist. Limited to
 three test texts: Chrysostom (long, no headings; eight draft editorial sections stand in for the proposed
 `texts.sections` field, marked as not part of the original text), Tertullian's *Prescription Against
 Heretics* (44 chapters) and Cyril's *Catechetical Lecture XXIII* (part 24 of 24). It reads everything else
