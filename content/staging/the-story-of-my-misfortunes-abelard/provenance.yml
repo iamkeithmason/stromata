@@ -1,0 +1,16 @@
+# provenance.yml — copied verbatim from the human clearance record.
+# Values copied verbatim from the human clearance record on the Content Prospect List, not synthesised by the Sourcer. Copyright and translation-rights judgement remain the editor’s.
+
+cleared_edition_url: https://ccel.org/ccel/a/abelard/misfortunes/cache/misfortunes.txt
+fetched_url: https://ccel.org/ccel/a/abelard/misfortunes/cache/misfortunes.txt
+translator: null
+edition_year: 1922
+publication_year: 1923
+pd_basis: |-
+  Henry Adams Bellows's 1922 translation is public domain (pre-1923) and is the standard old English rendering; likely mirrored on Wikisource. Complexity 1.
+  
+  UNVERIFIED agent proposal. Source, copyright status, and translation provenance are triage hints only and require editorial confirmation before any sourcing or import.
+ocr_source: ccel.org
+fetched_at: 2026-11-01T14:08:10.722Z
+sourcer_version: sourcer-agent v0
+provenance_note: Values copied verbatim from the human clearance record on the Content Prospect List, not synthesised by the Sourcer. Copyright and translation-rights judgement remain the editor’s.

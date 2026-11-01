@@ -1,0 +1,16 @@
+# provenance.yml — copied verbatim from the human clearance record.
+# Values copied verbatim from the human clearance record on the Content Prospect List, not synthesised by the Sourcer. Copyright and translation-rights judgement remain the editor’s.
+
+cleared_edition_url: https://www.ccel.org/ccel/h/hilton/ladder/cache/ladder.txt
+fetched_url: https://www.ccel.org/ccel/h/hilton/ladder/cache/ladder.txt
+translator: null
+edition_year: 1923
+publication_year: 1923
+pd_basis: |-
+  Evelyn Underhill's 1923 modernized edition is now public domain in the US (95-year term expired); exact Archive.org identifier is a plausible guess needing Sourcer confirmation. Complexity 1.
+  
+  UNVERIFIED agent proposal. Source, copyright status, and translation provenance are triage hints only and require editorial confirmation before any sourcing or import.
+ocr_source: ccel.org
+fetched_at: 2026-11-01T14:07:47.121Z
+sourcer_version: sourcer-agent v0
+provenance_note: Values copied verbatim from the human clearance record on the Content Prospect List, not synthesised by the Sourcer. Copyright and translation-rights judgement remain the editor’s.
