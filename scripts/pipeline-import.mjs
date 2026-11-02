@@ -29,6 +29,7 @@ import { normaliseTitle, normaliseName } from './lib/dedup-match.mjs';
 import { parseFrontmatter } from './lib/frontmatter.mjs';
 import { stripChrome, assertNoChrome } from './lib/source-chrome.mjs';
 import { leadingH1Verdict } from './lib/leading-h1.mjs';
+import { needsSections } from './lib/sections.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 dotenv.config({ path: path.join(__dirname, '..', '.env.local') });
@@ -384,6 +385,13 @@ async function importTextFile(filePath, prospect, authorId, collectionId) {
   }
 
   console.log(`  + imported: ${data.title}`);
+  // No flag is stored: the drafting script selects texts by the same definition,
+  // so this one is drafted on its next run. The line just says it will be.
+  // (word_count itself is set by the database; this count is only for the hint.)
+  const wordCount = cleanBody.trim().split(/\s+/).filter(Boolean).length;
+  if (needsSections({ word_count: wordCount, body: cleanBody })) {
+    console.log(`    long, with no headings: sections will be drafted by the next \`npm run generate:review-drafts\``);
+  }
   return { skipped: false, warnings, corrections };
 }
 

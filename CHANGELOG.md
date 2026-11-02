@@ -7,6 +7,45 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-11-02 — Editor's sections for long texts without headings: drafts, review, import hook
+
+Backlog card "Sections for long texts without headings" (agent scope: data, scripts, admin; no public UI).
+A long text with headings gets a contents list on the reader page; one without gets nothing, so a phone
+reader cannot find the part they came for. Keith agreed on 29 Oct to review Claude-drafted sections.
+
+- **The definition** (`needsSections` in `scripts/lib/sections.mjs`): 9,000+ words, as Keith confirmed,
+  and fewer than three headings. The card said "no `##` headings" (57 texts). The rule now mirrors the
+  reader page instead: `hasToc` needs three headings of any level, so a text with two `#` headings has no
+  contents either. That gives **33 texts**, all published; the other 24 the card counted already show
+  contents. A test runs the module's heading count and the reader's `extractHeadings` over the same
+  bodies and requires the same answer, since the script runs under plain node and cannot import the
+  TypeScript.
+- **Migration 034** (`034_text_sections.sql`, **not yet applied**): `texts.sections_draft` and
+  `texts.sections`, both `{source: "editorial", sections: [{label, starts_with}]}`, with shape checks.
+  `source: editorial` carries Keith's rule that sections are not part of the original text. `sections` is
+  granted to anon ahead of the reader code that will read it (`texts` fails closed since 026).
+- **Anchors, not numbers.** A section stores the opening words of its paragraph (`starts_with`), derived
+  from the body by `anchorFor` and lengthened until unique. People and the model handle paragraph
+  indexes; the server converts them, so nothing stored can point at text the body lacks, and a body edit
+  shows up as a named missing section rather than a silently wrong division.
+- **Drafting**: `generate-review-drafts.mjs` gains a sections step (`--sections`, `--slug=`). It selects
+  its own rows, because the targets are published. The "already has contents" test runs on the server as
+  a Postgres regex, so no body is downloaded for a text that does not need sections; checked: the
+  prefilter returns the same 33. The model sees each paragraph cut to 50 words and returns
+  `[{label, paragraph}]`; replies are parsed and validated before anything is written. Meters: about
+  3.4 MB of egress and roughly $2 of Opus tokens for the 33-text backfill.
+- **Review**: `/admin/review/sections` lists drafts (metadata only); each text has its own page that reads
+  only that body. On a phone: rename a section, nudge its start a paragraph at a time with the opening
+  words in view, add or remove one, Save or Approve. Approve copies the draft to `sections` and calls
+  `revalidateText`. The queue page links to it with a count.
+- **Import hook**: `pipeline-import.mjs` prints a line when an imported text meets the definition. No flag
+  is stored, since the drafting step selects by the same rule (derived, not stored).
+
+Not verified in a browser: `/admin` needs Keith's login. Verified with `tsc`, lint, the unit tests (12 new; 577 in all) and a
+read-only production query of the prefilter.
+
+---
+
 ## 2026-11-02 — Screens manifest finds the reader's "Read next" module again
 
 PR #167 renamed the reader's end-of-text module, so its `nav` now carries `aria-label="Read next"`
