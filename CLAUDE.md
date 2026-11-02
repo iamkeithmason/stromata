@@ -90,6 +90,15 @@ queue reopens at the first pending card), then "Publish N approved". Every publi
 `lib/publishing/publish-text.ts` — the one publish path, which the admin edit form now shares; never
 add a second one.
 
+**Sections** (`/admin/review/sections`, linked from the queue) are reviewed separately, because their texts
+are mostly already published. A long text with no contents list (9,000+ words and fewer than three
+headings, `needsSections` in `scripts/lib/sections.mjs`; 33 texts on 2 Nov 2026) gets an editor's division
+into labelled sections. `npm run generate:review-drafts -- --sections` (`--slug=`, `--dry-run`, `--force`)
+drafts them into `texts.sections_draft`; Keith edits and approves each, which copies it to `texts.sections`
+and refreshes the page. Sections are editorial, **not part of the original text**, and are stored as
+`{source: "editorial", sections: [{label, starts_with}]}` so the reader can mark them as the editor's.
+`starts_with` is derived from the body, never typed; keep every caller on the shared functions.
+
 ## Pipeline GUI — `/admin/pipeline` (local operator UI, for Keith not Claude)
 
 There is a browser GUI for the whole pipeline, living inside the existing admin app at
