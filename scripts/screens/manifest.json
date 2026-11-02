@@ -11,7 +11,7 @@
       "route": "/texts/letters-109697-to-trajan-on-the-christians",
       "name": "Reader: top landing text",
       "note": "Pliny's letters to Trajan, the most-read text. Frontispiece, editorial note, body, margin rail.",
-      "shots": [{ "label": "End of text: Continue exploring", "selector": "nav[aria-label='Continue exploring']" }]
+      "shots": [{ "label": "End of text: Read next", "selector": "nav[aria-label='Read next']" }]
     },
     {
       "route": "/texts/letters-109697-to-trajan-on-the-christians",

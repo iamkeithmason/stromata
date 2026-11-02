@@ -7,6 +7,15 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-11-02 — Screens manifest finds the reader's "Read next" module again
+
+PR #167 renamed the reader's end-of-text module, so its `nav` now carries `aria-label="Read next"`
+rather than "Continue exploring". `scripts/screens/manifest.json` still asked for the old label, and
+the post-release `npm run screens` on 2 Nov reported both end-of-text shots missing. The selector and
+shot label now use the new name. The PDF committed that day (#179) was rendered with this fix applied
+locally, so it already shows the module. Without it, the next refresh would drop those two shots
+again.
+
 ## 2026-10-29 — The mobile menu's close X no longer looks cropped
 
 Keith spotted on his phone that the menu's X looked clipped at the top right. The three menu lines sit 7px
