@@ -955,3 +955,16 @@ article.prose-body > div:first-of-type > p::first-letter {
 .scripture-popover-link:hover {
   border-bottom-color: var(--gold);
 }
+
+/* Reader, phones: past the frontispiece the site header steps aside while a
+   reading header and a slim pill take its place (app/components/reader/ReaderNav).
+   ReaderNav sets the attribute only below 1024px, so desktop never hides it. */
+.site-header {
+  transition: transform var(--dur-slow) var(--ease);
+}
+html[data-reader-chrome="away"] .site-header {
+  transform: translateY(-110%);
+}
+@media (prefers-reduced-motion: reduce) {
+  .site-header { transition: none; }
+}

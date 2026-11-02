@@ -7,6 +7,47 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-11-02 — Mid-text navigation on phones: reading header, slim pill, top sheet
+
+Backlog card "Mid-text navigation on phones". On a phone every way off a long text sat on screen 1 or after
+the last line, and readers stalled in between (the Vainglory page: 115 visitors, no second text). The
+design was settled with Keith over two Figma rounds and a phone prototype (closed PR #170); this is the
+real build, on the reader page, below 1024px only.
+
+- **Behaviour** (`app/components/reader/ReaderNav.tsx`): past the frontispiece the site header hides on
+  scroll-down (`html[data-reader-chrome="away"] .site-header`, globals.css). Scrolling up brings back a
+  reading header: position ("22 of 44", "§ 2 of 8", "Part 24 of 24") with minutes left, the current
+  heading, a contextual label (**Contents** / **Next part** / **Read next**, named after whatever leads
+  the sheet), and the site menu kept at its right. While the header is away a slim pill stays at the top,
+  filled with progress through the current section; the existing top progress bar shows the whole text.
+  Either opens a sheet that slides down from the top: where you are, windowed contents (first, fold,
+  current ±2, fold), the collection (previous part, all parts), the ways on (in a collection the next
+  part always leads, then Read next), Back to the beginning, Home, Library. A jump from the contents
+  offers "Back to where you were" for seven seconds. Section changes slide in rather than blink; all
+  motion is off under `prefers-reduced-motion`. No automatic reveal at boundaries (Keith found it
+  intrusive).
+- **Screen 1, phones**: the author's name and dates, linked; "Contents (n) ▾" beside the reading time
+  when the text has contents. The "Jump to section" box goes below 1024px (the sheet holds the contents),
+  with a `<noscript>` copy for readers without JavaScript; between 1024 and 1280px it stays, since
+  neither the sheet nor the fixed desktop contents is shown there.
+- **Data, not DOM-scraping**: `lib/reader/outline.ts` (unit-tested) builds the outline from the text's own
+  headings when the reader shows a contents list, else from approved editor's sections
+  (`texts.sections`, migration 034, now in the public select and `PUBLIC_TEXT_COLUMNS`), and decides the
+  position wording, the label, the windowing and the order of the ways on. Section anchors find their
+  paragraph with `blockKey` from `scripts/lib/sections.mjs`, the same function that wrote them.
+- **Short texts** (under 3 minutes) get none of it: they barely scroll, and the menu and Read next serve
+  them. Desktop is unchanged.
+- **Analytics** (CLAUDE.md vocabulary and the Events Register updated): new `text-sheet-open` (from
+  `text-running-head` | `text-pill` | `text-hero-contents`) and `text-jump` (from `text-sheet`, state
+  headings | sections); `text-open` from `text-sheet` with pick `next-part` | `prev-part` | the read-next
+  picks; `collection-open` from `text-sheet`; `author-open` from `text-hero`. Seen locally against a mocked
+  tracker; **not yet wire-verified on a deployment** (needs a preview), so the register rows stay Planned.
+
+Collection neighbours need no new revalidation: publishing a collection text already refreshes every text
+page (`revalidateTextPages`).
+
+---
+
 ## 2026-11-02 — Editor's sections for long texts without headings: drafts, review, import hook
 
 Backlog card "Sections for long texts without headings" (agent scope: data, scripts, admin; no public UI).

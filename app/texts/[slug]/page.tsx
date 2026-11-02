@@ -23,6 +23,9 @@ import { resolveLicense } from '@/lib/licenses'
 import { PROVENANCE_INLINE_MAX, hostLabel, isBareUrl } from '@/lib/edition'
 import { ContinueExploring } from '@/app/components/ContinueExploring'
 import { pickReadNext, type ReadNextCandidate } from '@/lib/read-next'
+import { buildOutline, MIN_NAV_MINUTES, type CollectionPosition, type SectionsDoc } from '@/lib/reader/outline'
+import ReaderNav from '@/app/components/reader/ReaderNav'
+import OpenReaderNav from '@/app/components/reader/OpenReaderNav'
 
 // Incremental Static Regeneration: cache the rendered page and revalidate
 // weekly (hourly until 2026-09-29, daily until 2026-10-04 — Vercel Hobby CPU). Safe given the manual
@@ -99,7 +102,7 @@ export default async function TextPage({ params }: Props) {
         accession_number, author_id, body, collection_id, collection_order,
         created_at, editorial_introduction, featured, featured_from, featured_note,
         genre_id, id, license, ocr_quality, provenance_notes, published, published_at,
-        read_next_note, read_next_text_id, slug, source_attribution, source_url, summary, title, translation_notes,
+        read_next_note, read_next_text_id, sections, slug, source_attribution, source_url, summary, title, translation_notes,
         updated_at, word_count,
         author:authors(name, slug, bio, birth_year, death_year, image_url, image_focus_x, image_focus_y, image_zoom, loc:locations(name, slug), tradition:traditions(slug, name), era:eras(label, slug)),
         genre:genres(name),
@@ -259,6 +262,25 @@ export default async function TextPage({ params }: Props) {
     sameTheme: [...themeByText.values()].map(e => toCand(e.row, e.slugs)),
   })
 
+  // ── Mid-text navigation (phones) — lib/reader/outline.ts ────────────────────
+  // The text's own headings when it has a contents list, else the editor's
+  // approved sections (migration 034), else none. Built here so the client
+  // component gets data, not a DOM to scrape.
+  const outline = buildOutline(headings, (text.sections ?? null) as unknown as SectionsDoc)
+  const minutes = readingTime(body)
+  const collectionPosition: CollectionPosition | null =
+    collection && collectionPart && collectionTotal
+      ? {
+          title: collection.title,
+          slug: collection.slug,
+          part: collectionPart,
+          total: collectionTotal,
+          prev: prevText ? { slug: prevText.slug, title: prevText.title } : null,
+          next: nextText ? { slug: nextText.slug, title: nextText.title } : null,
+        }
+      : null
+  const showReaderNav = minutes >= MIN_NAV_MINUTES
+
   // ── Structured data — built from real fields only (no null values) ──────────
   const canonicalUrl = `${SITE_URL}/texts/${slug}`
   const bookJsonLd: Record<string, unknown> = {
@@ -400,11 +422,35 @@ export default async function TextPage({ params }: Props) {
               )}
             </div>
 
+            {/* Phones: who wrote it, linked, on screen 1 (the header shows the
+                name only after the frontispiece scrolls away). */}
+            {author?.slug && (
+              <Link
+                href={`/authors/${author.slug}`}
+                className="lg:hidden font-serif hover:opacity-70 transition-opacity -mt-1"
+                style={{ fontSize: 'var(--text-base)', color: 'var(--on-dark-body)', textDecoration: 'none' }}
+                data-umami-event="author-open"
+                data-umami-event-from="text-hero"
+                data-umami-event-author={author.name}
+              >
+                {author.name}
+                {author.birth_year && author.death_year ? `, ${author.birth_year}–${author.death_year}` : ''}
+              </Link>
+            )}
+
             <p
-              className="font-serif italic"
+              className="font-serif italic flex flex-wrap items-baseline gap-x-2"
               style={{ fontSize: 'var(--text-base)', color: 'rgba(250,246,236,0.6)' }}
             >
-              Approx. {readingTime(body)} min read
+              <span>Approx. {minutes} min read</span>
+              {showReaderNav && outline.entries.length > 1 && (
+                <>
+                  <span aria-hidden className="lg:hidden">·</span>
+                  <span className="not-italic">
+                    <OpenReaderNav label={`Contents (${outline.entries.length})`} />
+                  </span>
+                </>
+              )}
             </p>
 
             {themes.length > 0 && (
@@ -530,11 +576,23 @@ export default async function TextPage({ params }: Props) {
                 element keeps id="reader-main" because ReaderSettings and globals.css depend on it,
                 so the target sits as the main column's first child. tabIndex -1 lets it take focus. */}
             <span id="main-content" tabIndex={-1} className="outline-none" />
-            {/* Mobile TOC disclosure — visible below xl where the fixed TOC is hidden */}
+            {/* TOC disclosure between 1024 and 1280px, where neither the fixed
+                desktop TOC nor ReaderNav (phones) is shown. Below 1024px ReaderNav's
+                sheet holds the contents; the <noscript> copy serves phones without
+                JavaScript, where the sheet cannot open. */}
             {hasToc && (
-              <div className="xl:hidden mb-8">
-                <TableOfContents headings={headings} mobile />
-              </div>
+              <>
+                <div className={`${showReaderNav ? 'hidden lg:block' : ''} xl:hidden mb-8`}>
+                  <TableOfContents headings={headings} mobile />
+                </div>
+                {showReaderNav && (
+                  <noscript>
+                    <div className="lg:hidden mb-8">
+                      <TableOfContents headings={headings} mobile />
+                    </div>
+                  </noscript>
+                )}
+              </>
             )}
 
             {/* OCR quality notice */}
@@ -695,6 +753,17 @@ export default async function TextPage({ params }: Props) {
       {hasToc && <TableOfContents headings={headings} />}
 
       <ReaderSettings />
+
+      {showReaderNav && (
+        <ReaderNav
+          slug={slug}
+          title={text.title}
+          minutes={minutes}
+          outline={outline}
+          collection={collectionPosition}
+          readNext={readNext.map(p => ({ slug: p.slug, title: p.title, kind: p.kind }))}
+        />
+      )}
 
       <RecordVisit
         slug={slug}
