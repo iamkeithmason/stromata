@@ -24,6 +24,111 @@ of Supabase egress) and reads `REPORT.md` to decide whether to continue.
 
 ---
 
+## 2026-11-02 — The wire sweep fails, and says why, when a reader control is missing
+
+On 2 Nov `verify-analytics.mjs` reported `reader-setting-change · panel · reader settings control not found`
+as a skip, and the guess was that PR #167's phone reader rework had broken the selector. It had not. The
+control is still `<button aria-label="Reading settings">`, mounted on every text page, and the check passes
+3/3 on the wire (theme, font-size, measure, all carrying `from: text-reader`) against a local build and
+against production in the default mode. Only `--via-node` against production skips, and that run
+intercepted zero beacons, not even a pageview, so the browser was not looking at a working text page.
+Production then began answering this cloud session with Vercel's Security Checkpoint, which is not to be
+bypassed, so the exact page it saw on 2 Nov is unconfirmed.
+
+Two changes so the next occurrence explains itself. `open()` now stops with a plain message when a page is
+Vercel's bot checkpoint rather than the site; before this, the message blamed Deployment Protection. And
+the reader-settings and "Cite this text" rows, both controls every text page renders, now **fail** rather
+than skip when absent, with the path, HTTP status and page title in the detail. A skip stays for surfaces
+that depend on content (downloads, collection nav, a themed text). `describeMissing` and
+`isVercelCheckpoint` live in `scripts/lib/wire-check.mjs` with tests. The selector was right.
+
+Two follow-ups Keith approved the same day. `ReaderSettings` called `umami.track` inside its `setPrefs`
+updater; React may run an updater twice (dev Strict Mode always does), so in dev each click sent two
+beacons. The call now sits after the updater, and the local sweep sees exactly one per click. Production
+sends one either way, so no data changed. And CLAUDE.md now says production sweeps run from Keith's
+laptop, with cloud sessions verifying against a local build.
+
+---
+
+## 2026-11-02 — `text-open` means a click again; the wire sweep stops failing on its own races
+
+**The page-load `text-open` is gone** (`app/texts/[slug]/page.tsx`). Every text page sent a
+`text-open` on load, with no `from`, next to a `text-view` carrying the same data. It broke two
+analytics rules (one event per user action; `from` on every navigational event), counted page
+views as clicks, and put an unattributed bucket in every `from` breakdown. `text-view` still
+counts page views. Keith ruled to remove it on 2 Nov; CLAUDE.md's legacy-exceptions list dates the
+break, so `text-open` totals before and after the release that carries this aren't compared.
+
+**The sweep (`scripts/verify-analytics.mjs`)** reported correct links as broken. The 2 Nov
+production run failed the tradition and location pages with "from missing". The links were right:
+the first, non-navigating click lost its beacon, the retry navigated, and the landing page's own
+from-less `text-open` was judged instead. Three fixes:
+
+- A check now judges only beacons sent from the page the click happened on, preferring one that
+  passes (`pickEvent` in `scripts/lib/wire-check.mjs`, five new tests). A lost beacon now reads
+  "no beacon captured" instead of a misleading "from missing".
+- The click helper waits for the page to settle before swapping in its non-navigating copy of the
+  link, so hydration can't put the real link back. On production, every click case now passes on
+  the first attempt (two runs); before, three or four a run needed the retry.
+- A new row, `text-open · none on page load`, fails if a text page sends `text-open` without a
+  click. It waits for `text-view` first, so silence means absent rather than late.
+
+Verified on the wire. Against a local build of this branch reading the live database, all 10
+`text-open` rows pass, the new one included. Against production, which still has the old code,
+the new row fails with the exact page-load payload, and the full sweep otherwise passes 30 of 30
+(one pre-existing skip: the reader-settings control is not found, which happens on the unchanged
+sweep too).
+
+## 2026-11-02 — Editor's sections for long texts without headings: drafts, review, import hook
+
+Backlog card "Sections for long texts without headings" (agent scope: data, scripts, admin; no public UI).
+A long text with headings gets a contents list on the reader page; one without gets nothing, so a phone
+reader cannot find the part they came for. Keith agreed on 29 Oct to review Claude-drafted sections.
+
+- **The definition** (`needsSections` in `scripts/lib/sections.mjs`): 9,000+ words, as Keith confirmed,
+  and fewer than three headings. The card said "no `##` headings" (57 texts). The rule now mirrors the
+  reader page instead: `hasToc` needs three headings of any level, so a text with two `#` headings has no
+  contents either. That gives **33 texts**, all published; the other 24 the card counted already show
+  contents. A test runs the module's heading count and the reader's `extractHeadings` over the same
+  bodies and requires the same answer, since the script runs under plain node and cannot import the
+  TypeScript.
+- **Migration 034** (`034_text_sections.sql`, **not yet applied**): `texts.sections_draft` and
+  `texts.sections`, both `{source: "editorial", sections: [{label, starts_with}]}`, with shape checks.
+  `source: editorial` carries Keith's rule that sections are not part of the original text. `sections` is
+  granted to anon ahead of the reader code that will read it (`texts` fails closed since 026).
+- **Anchors, not numbers.** A section stores the opening words of its paragraph (`starts_with`), derived
+  from the body by `anchorFor` and lengthened until unique. People and the model handle paragraph
+  indexes; the server converts them, so nothing stored can point at text the body lacks, and a body edit
+  shows up as a named missing section rather than a silently wrong division.
+- **Drafting**: `generate-review-drafts.mjs` gains a sections step (`--sections`, `--slug=`). It selects
+  its own rows, because the targets are published. The "already has contents" test runs on the server as
+  a Postgres regex, so no body is downloaded for a text that does not need sections; checked: the
+  prefilter returns the same 33. The model sees each paragraph cut to 50 words and returns
+  `[{label, paragraph}]`; replies are parsed and validated before anything is written. Meters: about
+  3.4 MB of egress and roughly $2 of Opus tokens for the 33-text backfill.
+- **Review**: `/admin/review/sections` lists drafts (metadata only); each text has its own page that reads
+  only that body. On a phone: rename a section, nudge its start a paragraph at a time with the opening
+  words in view, add or remove one, Save or Approve. Approve copies the draft to `sections` and calls
+  `revalidateText`. The queue page links to it with a count.
+- **Import hook**: `pipeline-import.mjs` prints a line when an imported text meets the definition. No flag
+  is stored, since the drafting step selects by the same rule (derived, not stored).
+
+Not verified in a browser: `/admin` needs Keith's login. Verified with `tsc`, lint, the unit tests (12 new; 577 in all) and a
+read-only production query of the prefilter.
+
+---
+
+## 2026-11-02 — Screens manifest finds the reader's "Read next" module again
+
+PR #167 renamed the reader's end-of-text module, so its `nav` now carries `aria-label="Read next"`
+rather than "Continue exploring". `scripts/screens/manifest.json` still asked for the old label, and
+the post-release `npm run screens` on 2 Nov reported both end-of-text shots missing. The selector and
+shot label now use the new name. The PDF committed that day (#179) was rendered with this fix applied
+locally, so it already shows the module. Without it, the next refresh would drop those two shots
+again.
+
+---
+
 ## 2026-10-29 — The mobile menu's close X no longer looks cropped
 
 Keith spotted on his phone that the menu's X looked clipped at the top right. The three menu lines sit 7px

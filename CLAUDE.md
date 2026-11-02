@@ -90,6 +90,15 @@ queue reopens at the first pending card), then "Publish N approved". Every publi
 `lib/publishing/publish-text.ts` — the one publish path, which the admin edit form now shares; never
 add a second one.
 
+**Sections** (`/admin/review/sections`, linked from the queue) are reviewed separately, because their texts
+are mostly already published. A long text with no contents list (9,000+ words and fewer than three
+headings, `needsSections` in `scripts/lib/sections.mjs`; 33 texts on 2 Nov 2026) gets an editor's division
+into labelled sections. `npm run generate:review-drafts -- --sections` (`--slug=`, `--dry-run`, `--force`)
+drafts them into `texts.sections_draft`; Keith edits and approves each, which copies it to `texts.sections`
+and refreshes the page. Sections are editorial, **not part of the original text**, and are stored as
+`{source: "editorial", sections: [{label, starts_with}]}` so the reader can mark them as the editor's.
+`starts_with` is derived from the body, never typed; keep every caller on the shared functions.
+
 ## Pipeline GUI — `/admin/pipeline` (local operator UI, for Keith not Claude)
 
 There is a browser GUI for the whole pipeline, living inside the existing admin app at
@@ -178,7 +187,13 @@ rather than the site: pass `--bypass-token=<automation bypass secret>` (Vercel �
 Deployment Protection → Protection Bypass for Automation), or set
 `VERCEL_AUTOMATION_BYPASS_SECRET`. Behind a TLS-inspecting proxy, where Chromium rejects the
 re-signed certificate, `--via-node` routes each request through Playwright's Node-side stack
-instead — certificates are still verified, just by Node. The assertion half lives in
+instead — certificates are still verified, just by Node. **Production sweeps run from Keith's
+laptop, not a cloud session** (Keith, 2 Nov 2026): Vercel's bot checkpoint answers a cloud browser
+in place of the site, and that is not to be bypassed. A cloud session verifies against a local
+build instead (`next dev` with the throwaway `.env.local` described under "Screens reference",
+then `--url=http://localhost:3000`). On 2 Nov a cloud `--prod --via-node` run reported a reader
+control "not found" that was really this, so the sweep now stops on the checkpoint page, and a
+control every text page renders fails rather than skips when absent. The assertion half lives in
 `scripts/lib/wire-check.mjs` and is unit-tested, so the sweep cannot go green by looking in the
 wrong place. Two things it deliberately does not do: block the tracker script (that would leave
 `window.umami` undefined and every check would "pass" by firing nothing) and treat a page that
@@ -281,6 +296,13 @@ cleared from the admin header), so the founder's own browsing never inflates the
   this date `text-read` values are titles and don't join to Supabase; after, they're slugs — the two
   spans aren't directly comparable. Surfaced by the `stromata-analytics` digest's Events Register
   reconciliation on its first run.
+- From the **release after 2 Nov 2026** (the first one carrying this change), `text-open` counts
+  **clicks only**. Until then every text page also sent a `text-open` on load, with no `from`, beside
+  `text-view` carrying the same data, so `text-open` mixed page views into its click count and left a
+  large unattributed bucket in any `from` breakdown. Keith ruled to remove it on 2 Nov; `text-view`
+  still counts page views. Before the release, total `text-open` ≈ clicks + text-page views; after,
+  clicks alone. Compare `from`-attributed counts across the date, never totals. The sweep's
+  "none on page load" row guards it.
 
 ---
 
