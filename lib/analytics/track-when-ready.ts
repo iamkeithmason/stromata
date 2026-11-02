@@ -7,8 +7,8 @@
  * the event without a trace.
  *
  * This is not hypothetical. Over 30 days of production data the two events that
- * fire on text-page mount (`text-open` without a `from`, and `text-view`)
- * recorded 8 each, while `text-read` — same pages, but fired later, after a
+ * then fired on text-page mount (`text-view`, and a from-less `text-open` that
+ * was removed on 2 Nov 2026) recorded 8 each, while `text-read` — same pages, but fired later, after a
  * scroll — recorded 52. `text-read` cannot outnumber the mounts it happens on,
  * so roughly six in seven mount-time events were being dropped on the floor.
  *

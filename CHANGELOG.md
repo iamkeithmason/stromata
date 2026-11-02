@@ -7,6 +7,35 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-11-02 — `text-open` means a click again; the wire sweep stops failing on its own races
+
+**The page-load `text-open` is gone** (`app/texts/[slug]/page.tsx`). Every text page sent a
+`text-open` on load, with no `from`, next to a `text-view` carrying the same data. It broke two
+analytics rules (one event per user action; `from` on every navigational event), counted page
+views as clicks, and put an unattributed bucket in every `from` breakdown. `text-view` still
+counts page views. Keith ruled to remove it on 2 Nov; CLAUDE.md's legacy-exceptions list dates the
+break, so `text-open` totals before and after the release that carries this aren't compared.
+
+**The sweep (`scripts/verify-analytics.mjs`)** reported correct links as broken. The 2 Nov
+production run failed the tradition and location pages with "from missing". The links were right:
+the first, non-navigating click lost its beacon, the retry navigated, and the landing page's own
+from-less `text-open` was judged instead. Three fixes:
+
+- A check now judges only beacons sent from the page the click happened on, preferring one that
+  passes (`pickEvent` in `scripts/lib/wire-check.mjs`, five new tests). A lost beacon now reads
+  "no beacon captured" instead of a misleading "from missing".
+- The click helper waits for the page to settle before swapping in its non-navigating copy of the
+  link, so hydration can't put the real link back. On production, every click case now passes on
+  the first attempt (two runs); before, three or four a run needed the retry.
+- A new row, `text-open · none on page load`, fails if a text page sends `text-open` without a
+  click. It waits for `text-view` first, so silence means absent rather than late.
+
+Verified on the wire. Against a local build of this branch reading the live database, all 10
+`text-open` rows pass, the new one included. Against production, which still has the old code,
+the new row fails with the exact page-load payload, and the full sweep otherwise passes 30 of 30
+(one pre-existing skip: the reader-settings control is not found, which happens on the unchanged
+sweep too).
+
 ## 2026-11-02 — Screens manifest finds the reader's "Read next" module again
 
 PR #167 renamed the reader's end-of-text module, so its `nav` now carries `aria-label="Read next"`

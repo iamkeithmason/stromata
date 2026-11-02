@@ -707,15 +707,6 @@ export default async function TextPage({ params }: Props) {
       />
       <TrackTextSessionDepth slug={slug} />
       <TrackPageEvent
-        event="text-open"
-        data={{
-          text: text.slug,
-          author: author?.slug ?? null,
-          tradition: author?.tradition?.slug ?? null,
-          genre: genre?.name ?? null,
-        }}
-      />
-      <TrackPageEvent
         event="text-view"
         data={{
           text: text.slug,

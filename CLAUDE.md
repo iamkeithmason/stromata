@@ -281,6 +281,13 @@ cleared from the admin header), so the founder's own browsing never inflates the
   this date `text-read` values are titles and don't join to Supabase; after, they're slugs — the two
   spans aren't directly comparable. Surfaced by the `stromata-analytics` digest's Events Register
   reconciliation on its first run.
+- From the **release after 2 Nov 2026** (the first one carrying this change), `text-open` counts
+  **clicks only**. Until then every text page also sent a `text-open` on load, with no `from`, beside
+  `text-view` carrying the same data, so `text-open` mixed page views into its click count and left a
+  large unattributed bucket in any `from` breakdown. Keith ruled to remove it on 2 Nov; `text-view`
+  still counts page views. Before the release, total `text-open` ≈ clicks + text-page views; after,
+  clicks alone. Compare `from`-attributed counts across the date, never totals. The sweep's
+  "none on page load" row guards it.
 
 ---
 

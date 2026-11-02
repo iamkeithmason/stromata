@@ -46,6 +46,7 @@ import {
   isUmamiCollect,
   parseBeacon,
   checkProps,
+  pickEvent,
   formatTable,
   summarise,
   SLUG,
@@ -147,13 +148,20 @@ function reset() {
   captured.length = 0;
 }
 
-/** Poll the recorder for a named event. Returns the event or null. */
-async function waitForEvent(name, { timeout = TIMEOUT } = {}) {
+/**
+ * Poll the recorder for a named event. Returns the event or null.
+ *
+ * With `expected`, keep polling until an event of the name passes it, and only
+ * at the deadline settle for the first of the name (see pickEvent): a
+ * navigating click can record the landing page's own event of the same name
+ * first.
+ */
+async function waitForEvent(name, { timeout = TIMEOUT, expected, onPath } = {}) {
   const deadline = Date.now() + timeout;
   for (;;) {
-    const hit = captured.find((e) => e.name === name);
-    if (hit) return hit;
-    if (Date.now() > deadline) return null;
+    const { event, ok } = pickEvent(captured, name, expected, { onPath });
+    if (event && (ok || !expected)) return event;
+    if (Date.now() > deadline) return event;
     await new Promise((r) => setTimeout(r, 100));
   }
 }
@@ -226,7 +234,7 @@ const row = (event, name, status, detail) => rows.push({ event, case: name, stat
  * that fails intermittently because of the harness teaches readers to ignore
  * red. Only the last outcome is recorded.
  */
-async function expectEvent({ event, case: label, expect, action, actions }) {
+async function expectEvent({ event, case: label, expect, action, actions, onPath }) {
   const wanted = normaliseExpect(expect);
   const attempts = actions ?? [action];
   let outcome;
@@ -239,7 +247,7 @@ async function expectEvent({ event, case: label, expect, action, actions }) {
       outcome = ['fail', `action failed: ${String(err.message || err).slice(0, 90)}`];
       continue;
     }
-    const hit = await waitForEvent(event);
+    const hit = await waitForEvent(event, { expected: wanted, onPath });
     const { ok, problems } = checkProps(hit, wanted);
     if (ok) {
       outcome = ['pass', JSON.stringify(hit.data) + (i > 0 ? ' (on retry)' : '')];
@@ -340,6 +348,11 @@ async function clickFirst(page, selector, { nav = false } = {}) {
   const el = page.locator(selector).first();
   await el.scrollIntoViewIfNeeded();
   if (!nav) {
+    // Let hydration finish first. Swapped in before React hydrates, the clone
+    // can be thrown away and the real <Link> put back, and the click then
+    // navigates and loses its beacon: on production the first attempt often
+    // failed this way and only the navigating retry passed.
+    await page.waitForLoadState('networkidle', { timeout: 10000 }).catch(() => {});
     await page
       .$eval(selector, (node) => {
         if (node.tagName !== 'A' || !node.getAttribute('href')) return;
@@ -422,6 +435,8 @@ async function checkNavEvents(context, site) {
       event,
       case: label,
       expect,
+      // Only the page the link sits on can send the click's beacon.
+      onPath: found.path,
       actions: [
         () => clickFirst(found.page, selector),
         // Second try: let the click navigate for real. Slower and racier, but
@@ -435,6 +450,29 @@ async function checkNavEvents(context, site) {
     });
     await found.page.close();
   }
+}
+
+/**
+ * A text page must not send `text-open` by itself. Until 2 Nov 2026 every text
+ * page did, on load and without a `from`, which counted page views as clicks
+ * and broke the one-event-per-action rule. `text-view` arriving first proves
+ * the page-load events had their chance to fire, so silence here means
+ * absent, not merely late.
+ */
+async function checkNoTextOpenOnLoad(context, site) {
+  const [a] = site.texts;
+  if (!a) {
+    row('text-open', 'none on page load', 'skip', 'no published text');
+    return;
+  }
+  reset();
+  const page = await open(context, a);
+  const view = await waitForEvent('text-view');
+  const stray = captured.find((e) => e.name === 'text-open');
+  if (!view) row('text-open', 'none on page load', 'fail', 'text-view never arrived, so page load cannot be judged');
+  else if (stray) row('text-open', 'none on page load', 'fail', `fired on load with ${JSON.stringify(stray.data)}`);
+  else row('text-open', 'none on page load', 'pass', 'silent on load; text-view arrived');
+  await page.close();
 }
 
 async function checkSessionDepth(context, site) {
@@ -700,6 +738,7 @@ async function main() {
     ['citation', ['citation-copy'], checkCitationCopy],
     ['reader settings', ['reader-setting-change'], checkReaderSettings],
     ['downloads', ['text-download', 'collection-download'], checkDownloads],
+    ['text page load', ['text-open'], checkNoTextOpenOnLoad],
     ['navigation links', ['text-open', 'author-open', 'collection-open'], checkNavEvents],
   ];
 

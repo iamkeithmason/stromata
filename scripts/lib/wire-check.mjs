@@ -86,6 +86,41 @@ export function checkProps(event, expected) {
   return { ok: problems.length === 0, problems };
 }
 
+/**
+ * Choose which captured event a check should judge.
+ *
+ * Taking the first event with the right name is not enough: one action can
+ * produce two events of the same name. A click that really navigates lands on
+ * a new page, and that page may fire its own event before the click's beacon
+ * is recorded, so "first of this name" can be the wrong one. That turned a
+ * correct link into a red row (tradition-page and location-page, 2 Nov 2026,
+ * when every text page still fired a from-less `text-open` on load).
+ *
+ * So judge only events sent from the page the click happened on (`onPath`,
+ * compared by pathname; an event with no url is kept rather than guessed
+ * about), and among those prefer one that passes the expectation. When none
+ * does, fall back to the first of the name, so a genuine failure still reports
+ * what was wrong with the event that did arrive. Returns `{ event, ok }`;
+ * `event` is null when no event of the name was captured from that page.
+ */
+export function pickEvent(captured, name, expected = {}, { onPath } = {}) {
+  const want = onPath ? pathOf(onPath) : null;
+  const named = captured.filter(
+    (e) => e.name === name && (!want || !e.url || pathOf(e.url) === want)
+  );
+  const match = named.find((e) => checkProps(e, expected).ok);
+  if (match) return { event: match, ok: true };
+  return { event: named[0] ?? null, ok: false };
+}
+
+function pathOf(url) {
+  try {
+    return new URL(url, 'http://wire.check').pathname;
+  } catch {
+    return url;
+  }
+}
+
 /** A slug-shaped identifier — the rule that identifiers are slugs, not titles. */
 export const SLUG = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
