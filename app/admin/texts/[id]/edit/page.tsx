@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { createServerClient } from '@/lib/supabase/server'
 import EditTextForm from './EditTextForm'
+import ProvenancePanel from './ProvenancePanel'
 
 type Props = { params: Promise<{ id: string }> }
 
@@ -15,7 +16,15 @@ export default async function EditTextPage({ params }: Props) {
     .eq('id', id)
     .single()
 
+  const { data: author } = text?.author_id
+    ? await supabase.from('authors').select('name, death_year, draft').eq('id', text.author_id).single()
+    : { data: null }
+
   if (!text) notFound()
+
+  const { data: readNext } = text.read_next_text_id
+    ? await supabase.from('texts').select('slug').eq('id', text.read_next_text_id).maybeSingle()
+    : { data: null }
 
   const themeSlugs = (text.text_themes ?? [])
     .map((tt: { theme: { slug: string } | null }) => tt.theme?.slug)
@@ -30,6 +39,18 @@ export default async function EditTextPage({ params }: Props) {
           </Link>
         </div>
         <h1 className="text-2xl font-serif text-stone-800 mb-8">Edit text</h1>
+        <ProvenancePanel
+          sourceUrl={text.source_url}
+          sourceAttribution={text.source_attribution}
+          provenanceNotes={text.provenance_notes}
+          translationNotes={text.translation_notes}
+          ocrQuality={text.ocr_quality}
+          license={text.license}
+          published={text.published}
+          authorName={author?.name}
+          authorDeathYear={author?.death_year}
+          authorIsDraft={author?.draft}
+        />
         <EditTextForm
           id={id}
           initialTitle={text.title}
@@ -52,6 +73,8 @@ export default async function EditTextPage({ params }: Props) {
           initialFeatured={text.featured ?? false}
           initialFeaturedFrom={text.featured_from ?? ''}
           initialFeaturedNote={text.featured_note ?? ''}
+          initialReadNextSlug={(readNext as { slug: string } | null)?.slug ?? ''}
+          initialReadNextNote={text.read_next_note ?? ''}
         />
       </div>
     </main>

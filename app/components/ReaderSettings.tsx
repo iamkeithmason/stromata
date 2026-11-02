@@ -29,10 +29,13 @@ const SCALES = [
   { value: 1.15, label: 'L' },
   { value: 1.3, label: 'XL' },
 ]
+// Measure as a multiple of the prose size (--reader-measure in globals.css), so it
+// counts characters: about 60 / 70 / 80 a line at any text size. Values keep their
+// old names so stored preferences and the reader-setting-change series carry over.
 const MEASURES = [
-  { value: 'narrow', px: '680px', label: 'Narrow' },
-  { value: 'normal', px: '800px', label: 'Normal' },
-  { value: 'wide', px: '920px', label: 'Wide' },
+  { value: 'narrow', em: 25.5, label: 'Narrow' },
+  { value: 'normal', em: 30, label: 'Normal' },
+  { value: 'wide', em: 34, label: 'Wide' },
 ] as const
 
 const THEMES = [
@@ -47,15 +50,17 @@ type Prefs = { scale: number; measure: Measure; theme: Theme }
 const DEFAULTS: Prefs = { scale: 1.0, measure: 'normal', theme: 'light' }
 
 function applyPrefs(p: Prefs) {
-  // Font size + measure live on the reading column; theme lives on the page
-  // root (so the whole reading surface — hero, margins, footer — flips).
-  const main = document.getElementById('reader-main')
-  if (main) {
-    main.style.setProperty('--reader-font-scale', String(p.scale))
-    const m = MEASURES.find(x => x.value === p.measure) ?? MEASURES[1]
-    main.style.maxWidth = m.px
-  }
+  // Font size and measure are custom properties on the page root: the reading
+  // column inherits them, and so does the footer outside it, which matches the
+  // body's width. Theme is an attribute on the same root, so the whole reading
+  // surface (hero, margins, footer) flips.
   const page = document.getElementById('reader-page')
+  const root = page ?? document.getElementById('reader-main')
+  if (root) {
+    root.style.setProperty('--reader-font-scale', String(p.scale))
+    const m = MEASURES.find(x => x.value === p.measure) ?? MEASURES[1]
+    root.style.setProperty('--reader-measure', String(m.em))
+  }
   if (page) {
     if (p.theme === 'dark') page.setAttribute('data-reader-theme', 'dark')
     else page.removeAttribute('data-reader-theme')
@@ -87,6 +92,31 @@ export function ReaderSettings() {
     applyPrefs(p)
   }, [])
 
+  // Step out of the way while the reader reads. The button floats over the text and
+  // on a phone it covered the last words of a line on every screen (26 Oct critique),
+  // so it slides away while scrolling down and returns on any scroll up or near the top.
+  const [tucked, setTucked] = useState(false)
+  useEffect(() => {
+    let last = window.scrollY
+    let ticking = false
+    const onScroll = () => {
+      if (ticking) return
+      ticking = true
+      requestAnimationFrame(() => {
+        const y = window.scrollY
+        const delta = y - last
+        if (y < 200) setTucked(false)
+        else if (delta > 8) setTucked(true)
+        else if (delta < -8) setTucked(false)
+        if (Math.abs(delta) > 8 || y < 200) last = y
+        ticking = false
+      })
+    }
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
+  const hidden = tucked && !open
+
   const update = useCallback((patch: Partial<Prefs>, setting: 'font-size' | 'measure' | 'theme', value: string) => {
     setPrefs(prev => {
       const next = { ...prev, ...patch }
@@ -105,7 +135,21 @@ export function ReaderSettings() {
   const border = '1px solid var(--rule)'
 
   return (
-    <div style={{ position: 'fixed', bottom: '1.5rem', right: '1.5rem', zIndex: 45 }} className="print:hidden">
+    <div
+      style={{
+        position: 'fixed',
+        bottom: '1.5rem',
+        right: '1.5rem',
+        zIndex: 45,
+        transform: hidden ? 'translateY(calc(100% + 2rem))' : 'none',
+        opacity: hidden ? 0 : 1,
+        pointerEvents: hidden ? 'none' : 'auto',
+        transition: 'transform var(--dur-slow) var(--ease), opacity var(--dur-slow) var(--ease)',
+      }}
+      className="print:hidden"
+      // A keyboard user tabbing to the button brings it back.
+      onFocus={() => setTucked(false)}
+    >
       {open && (
         <div
           role="dialog"
@@ -149,7 +193,7 @@ export function ReaderSettings() {
           </div>
 
           <p className="kicker" style={{ marginBottom: '0.5rem' }}>Text size</p>
-          <div className="flex gap-1.5 mb-4">
+          <div className="flex gap-1.5 md:mb-4">
             {SCALES.map(s => {
               const active = prefs.scale === s.value
               return (
@@ -174,6 +218,10 @@ export function ReaderSettings() {
             })}
           </div>
 
+          {/* Width only has room to act from md up: below 768px the column is already
+              narrower than the narrowest measure (680px), so every option looked the same
+              on a phone (Keith, 26 Oct). Hidden there rather than shown doing nothing. */}
+          <div className="hidden md:block">
           <p className="kicker" style={{ marginBottom: '0.5rem' }}>Width</p>
           <div className="flex gap-1.5">
             {MEASURES.map(m => {
@@ -198,6 +246,7 @@ export function ReaderSettings() {
                 </button>
               )
             })}
+          </div>
           </div>
         </div>
       )}

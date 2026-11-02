@@ -49,6 +49,7 @@ import {
   formatTable,
   summarise,
   SLUG,
+  READ_NEXT_PICK,
 } from './lib/wire-check.mjs';
 
 // ───────────────────────────── arguments ─────────────────────────────
@@ -373,6 +374,8 @@ function navSurfaces(site) {
     ['text-open', 'collection-page', site.collections],
     ['text-open', 'location-page', site.locations],
     ['text-open', 'scripture-page', site.scripture],
+    // End-of-text "Continue exploring" (PR #150). Release prediction 2 counts these.
+    ['text-open', 'read-next', site.texts],
     // author-open
     ['author-open', 'authors-index', ['/authors']],
     ['author-open', 'search-results', ['/search?q=augustine']],
@@ -413,7 +416,8 @@ async function checkNavEvents(context, site) {
       row(event, label, 'skip', `no element matching ${selector} on ${candidates.length} candidate page(s)`);
       continue;
     }
-    const expect = { ...NAV_EXPECT[event], from };
+    // read-next clicks also say which rule (or the editor) chose the pick.
+    const expect = { ...NAV_EXPECT[event], from, ...(from === 'read-next' ? { pick: READ_NEXT_PICK } : {}) };
     await expectEvent({
       event,
       case: label,

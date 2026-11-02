@@ -113,6 +113,25 @@ test('production skips a content-pipeline run: queue, staged output and run log'
 
 // ── production: what must build ─────────────────────────────────────────────
 
+test('production skips a screens-reference refresh (the weekly PDF)', () => {
+  const dir = baseRepo()
+  commit(dir, 'Screens reference — 2026-11-02', {
+    'docs/screens/stromata-screens.pdf': 'pdf bytes',
+  })
+  assert.equal(run(dir, prod()).code, 0)
+  rmSync(dir, { recursive: true, force: true })
+})
+
+test('production builds when the screens script itself changes', () => {
+  const dir = baseRepo()
+  commit(dir, 'Tweak the screens script', {
+    'docs/screens/stromata-screens.pdf': 'pdf bytes',
+    'scripts/screens/render.mjs': 'code',
+  })
+  assert.equal(run(dir, prod()).code, 1)
+  rmSync(dir, { recursive: true, force: true })
+})
+
 test('production builds when any changed file is a site file', () => {
   const dir = baseRepo()
   commit(dir, 'Real change', { 'app/page.tsx': 'v2' })

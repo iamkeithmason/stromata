@@ -84,7 +84,7 @@ export function CitationButton({
       type="button"
       onClick={onClick}
       className="hover:opacity-70 transition-opacity underline underline-offset-2 print:hidden"
-      style={{ color: 'var(--ink-mute)', background: 'none', border: 'none', padding: 0, cursor: 'pointer', font: 'inherit' }}
+      style={{ color: 'var(--ink-mute)', background: 'none', border: 'none', padding: '0.25rem 0', cursor: 'pointer', font: 'inherit' }}
     >
       {copied ? 'Citation copied ✓' : 'Cite this text'}
     </button>

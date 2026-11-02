@@ -7,6 +7,439 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-10-29 — The mobile menu's close X no longer looks cropped
+
+Keith spotted on his phone that the menu's X looked clipped at the top right. The three menu lines sit 7px
+apart (`gap-1.5` plus a 1px line), but on open the outer two moved only 3.5px towards the middle before
+rotating, so the two strokes crossed off-centre and read as a cropped X. `MobileNav` now moves them 7px, and
+all three line centres coincide (checked at 390px). Same code on `main` and `release`, so this fixes live
+once the release ships.
+
+---
+
+## 2026-10-27 — A designed 404 page
+
+The first screens-reference render showed that a broken link landed on Next's bare default ("404 | This page
+could not be found.") in system sans, with no site header and no way back. The app had no `not-found.tsx`.
+`app/not-found.tsx` now renders inside the site: header, a "Not found" kicker, "This page isn't on the shelves",
+one plain sentence, the search bar, and links to the library, all authors and the front page. It applies to
+unknown URLs and to every `notFound()` call (a missing text, author or collection slug). Tokens only, serif
+type, and links padded to the 24px tap minimum. Checked locally at 390px and 1440px: unknown URLs return 404
+with `noindex` and the title "Page not found — The Stromata".
+
+Noticed, not changed: a missing *text* slug (`/texts/no-such-slug`) shows this page but answers **200** with the
+title "Text — The Stromata" in `next dev`, because the route's `loading.tsx` starts streaming before `notFound()`
+runs (Next then falls back to a `noindex` tag instead of the status). Production may behave the same. Search
+engines see the `noindex`, so it isn't urgent, but it is a soft 404.
+
+Also: `npm run screens --out=` now accepts an absolute path (it was joined onto the repo root, so a scratch
+path landed inside the repo).
+
+---
+
+## 2026-10-27 — The seasonal panel, phone first; mobile-first becomes the rule
+
+**Seasonal panel (`app/components/SeasonalPanel.tsx`).** On a 390px phone the panel ran 1,147px tall:
+eleven lines of body copy at `--text-xl` with 1.75 leading, then "Read for the season", then the
+portrait at the bottom, below the fold. It now starts from the phone:
+
+- The season name, then the pick in one row (portrait beside "For the season · title →" and the
+  author; the label is shortened from "Read for the season" on phones so it holds one line), then the note at `--text-prose` with 1.6 leading. The panel is 741px tall and fits
+  one screen.
+- The portrait is 140px wide on phones, the width FeaturedAuthors draws every author at. It was
+  `clamp(110px, 18vw, 150px)`, which rendered at about 83px on a phone; from `sm` up the floor is
+  now 140px too.
+- Plaque and inner padding are thinner on phones (12px and 1rem × 1.5rem).
+- The no-pick § emblem is hidden on phones, since furniture gives way before content.
+- From `sm` up the layout is unchanged: a grid places the pick in the right-hand column across
+  both rows, with the CTA under the note. Desktop height is the same, 538px.
+- Analytics are unchanged: the whole panel is still the one `text-open` link with
+  `from=seasonal-panel`.
+
+**CLAUDE.md.** Adds the "Mobile-first — design at 390px, then add width" section that Keith adopted
+today, next to the Screens reference section.
+
+## 2026-10-27 — Courier Prime for the furniture, a `pick` property on read-next, chip bevel options
+
+- **UI-furniture face: Courier Prime** (Keith's choice from `/design/sans`, over Archivo and IBM Plex Sans:
+  "the library card"). Self-hosted Latin subset, regular and bold, ~38 KB (`public/fonts/CourierPrime-*`),
+  behind a new `--ui-face` token. Applied first to the epic card's MVP surfaces: the site header's
+  navigation, the filter pills, theme chips, the library list's sort controls and metadata. Not inside
+  texts or titles. Note: the epic's success signal says "at most two font families", and the site now
+  ships three (Junicode, IM Fell English, Courier Prime); Keith to revise the signal or retire one.
+- **`pick` on read-next clicks.** `text-open` from `read-next` now carries `pick` = `editorial` | `author`
+  | `theme` | `genre`, so the editor's picks can be compared with the rules' from one event. Matcher
+  `READ_NEXT_PICK` in `scripts/lib/wire-check.mjs` (tested) and expected by `verify-analytics.mjs`.
+  **Wire-verified** against a local build on the live database: the sweep's read-next row passed with
+  `pick: theme`, and a direct capture on Pliny's page read `{"from":"read-next","text":"the-didache",
+  "pick":"editorial"}` (beacons aborted). Events Register and the CLAUDE.md vocabulary table updated.
+- **Theme chips are cut-corner catalogue tags** (Keith chose option C from the three on `/design/sans`,
+  flat / slight bevel / cut corners, noting it echoes the seasonal panel). `.chip-tag` clips the corners;
+  the chip is now filled (`--paper-deep`, or `--on-dark-rule` on dark grounds) with no outline.
+  `--chip-bevel` stays as a token for the comparison page.
+- Verified locally: lint, `tsc`, 565 tests, `check:tests-in-ci`; surfaces rendered against the live data.
+
+---
+
+## 2026-10-27 — Eleven editorial "Read next" picks seeded on the most-read texts
+
+Keith asked to seed the most popular pages to see whether editorial picks raise text depth. The sources
+are the top texts in the 12 and 19 Oct analytics digests; each target is published, and each sentence was
+drafted by Claude for Keith to keep or rewrite in the text edit form. Set directly in the database (only
+where no pick existed); the pages pick them up when this release ships, which empties the cache.
+
+| Source text | Reads next |
+|---|---|
+| Pliny, Letters 10.96–97 | The Didache |
+| The Didache | Pliny, Letters 10.96–97 |
+| Chrysostom, Address on Vainglory | Basil, Address to Young Men |
+| Basil, Address to Young Men | Clement, Stromata I |
+| Clement, Stromata I | Basil, Address to Young Men |
+| Evagrius, Treatise on the Practical Life | Cassian, Conference 1 |
+| Cassian, Conference 13 | Augustine, On the Predestination of the Saints I |
+| Origen, De Principiis I | Gregory of Nyssa, Catechetical Oration |
+| Cyril, Procatechesis | The Didache |
+| Luther, Daily Devotions | Wycliffe, A Short Rule of Life |
+| The Nicene Creed | Cyril, Procatechesis |
+
+`/design/sans` also gains Archivo and M+ M Type-1 (via Google's M PLUS 1 Code), both on Open Foundry.
+
+---
+
+## 2026-10-27 — Session 2: a phone frontispiece that shows the text, and "Read next" with an editorial pick
+
+Keith chose option C for the phone frontispiece and option B for the end of a text from the decision
+sheet (claude.ai artifact "Stromata Decision Sheet").
+
+- **Phone frontispiece (C).** Below the desktop tier the reader's hero puts the book cover at 84px beside a
+  smaller title (`.frontispiece` in `globals.css`), drops the summary when an introduction follows, and moves
+  the theme chips to just after the introduction. On Pliny's letters the introduction now starts in the top
+  third of a 390px screen instead of at the fold, and the settings button no longer sits on a chip. Desktop
+  is unchanged.
+- **"Read next" (B).** `ContinueExploring` now leads with one pick (its cover, length and a sentence saying
+  why) and lists up to two more under "Or". Clicks still fire `text-open` from `read-next`, so the series
+  continues across the redesign.
+- **Editorial override, the part of the backlog card PR #150 left unbuilt.** Migration
+  `033_text_read_next.sql` adds `texts.read_next_text_id` and `texts.read_next_note` (≤280 chars, never
+  self), granted to anon. **Already applied to production on 27 Oct**, because the reader selects both
+  columns and `texts` fails closed: shipping the code without the columns would 404 every text page. The
+  text edit form has a "Read next" box (slug + one sentence); the route checks the slug exists and is not
+  the text itself. `pickReadNext` puts the editorial pick first, with the editor's sentence or "The
+  editor's choice", and caps the module at three (4 new tests).
+- **`/design/sans`** gains Space Grotesk (Keith's suggestion) and IBM Plex Sans.
+- Verified locally: lint, `tsc`, 564 tests, `check:tests-in-ci`; the phone and desktop reader, the module
+  and the sans page rendered against the live database and checked on screen.
+
+---
+
+## 2026-10-27 — Theme cap in the admin forms, oldstyle figures, and a sans comparison page
+
+Same session as the entry below; Keith asked for all four of the follow-ups while CI is out.
+
+- **Theme cap enforced in the admin text forms** (HARD CONSTRAINT 5). The pipeline screens capped
+  themes at six; the new-text and edit forms did not, which is how five published texts reached 7–11.
+  `lib/admin/theme-cap.ts` (tested): both forms stop the seventh tick and show `n/6`, and both text
+  routes refuse an over-cap save with a 400 naming the count.
+- **Oldstyle figures** (epic card "Oldstyle figures for dates and reading times", approved by Keith
+  today). `body` sets `font-variant-numeric: oldstyle-nums`, so dates, reading times, counts and
+  paragraph numbers sit inside the line; Junicode carries a real `onum` table. Tabular columns keep
+  `tabular-nums`; the admin layout keeps lining figures (`normal-nums`).
+- **`/design/sans`** (noindex): the comparison surface the epic's "Introduce a sans for UI furniture"
+  card asks for. The same header, filters, list row and edition note in Source Sans 3, Alegreya Sans,
+  Work Sans and Courier Prime, beside the same Junicode paragraph, with today's all-serif furniture as
+  the control. Candidates load from Google Fonts on that page only. The choice stays Keith's.
+- Session 2 mockups (phone frontispiece, end-of-text read-next) were rendered from a temporary route
+  that is not committed; they live in the decision sheet artifact.
+- Verified locally: lint, `tsc`, 560 tests, `check:tests-in-ci`; each surface rendered against the live
+  database and checked on screen.
+
+---
+
+## 2026-10-27 — Design review, session 1: the quick wins
+
+From a design audit of the screens PDF (report: claude.ai artifact "Stromata Reading Room Review", with a
+scored library of 22 reference sites, now also in Notion). Everything here is mechanical; the taste calls in
+the Distinctive Visual Identity epic (UI sans, ground colour) are untouched.
+
+- **No more accidental sans.** `<body>` set no font, so anything without `font-serif` fell back to the
+  browser default: the reader's edition notes, the library list's metadata, the end-of-text bylines and the
+  Ko-fi line. `body` is now `var(--serif)`; the admin layout opts back into `font-sans`. This is a baseline,
+  not the epic's answer: the deliberate UI sans still needs choosing.
+- **Smart punctuation at render.** `lib/markdown/smart-punctuation.ts` (remark plugin, unit-tested) turns
+  straight quotes curly and `--` into an em dash in every text body and introduction. Pliny now reads
+  ‘as to a god’ and "Christ—none". Stored bodies are unchanged, so no bulk job and no egress.
+- **"About this edition" in the reader rail.** A heading, a bare-URL attribution shown as a labelled host
+  link (`archive.org ↗`) instead of the raw URL, and provenance notes over 280 characters folded behind
+  "Notes on this edition". Helpers in `lib/edition.ts`, tested.
+- **Library index.** The three rows of facet pills (35 boxes before the first title) sit behind one
+  "Filter by tradition, era or genre" disclosure, open whenever a filter is set. Its hard-coded greys are
+  now tokens (`#9c9589` on paper was about 2.6:1, below AA), and `TextsBrowser.tsx` leaves the
+  `legacyRawColour` list.
+- **Hero labels.** The homepage's "Public-domain Christian texts…" and "Start with" were the last
+  letterspaced-capital labels outside the cover imprints; both are real small caps now.
+- **DESIGN.md** added at the root (the design system as built, from `globals.css`), and aligned with the
+  epic: no sans today, one deliberate UI sans planned.
+- Verified by rendering a local build against the live database (`npm run screens -- --only=…`), since
+  GitHub Actions minutes are spent until 2 Nov: lint, `tsc` and all 557 tests pass locally.
+- **Theme cap restored (Keith's call, applied by SQL).** Five published texts carried more than six themes,
+  because the text edit form does not enforce the cap. Now six each:
+  `the-stromata-book-i` (11 → scripture, tradition, providence, christology, contemplation, virtue),
+  `a-short-rule-of-life` (9 → prayer, vocation, work, justice, virtue, humility),
+  `on-prayer` (8 → prayer, ministry, virtue, vice, repentance, scripture),
+  `how-the-office-of-curates-is-ordained-of-god` (7 → drops prayer),
+  `the-didache` (7 → sacraments, fasting, hospitality, ministry, prayer, eschatology). No text is over the cap.
+  Also fixed the opening typo in Wycliffe's introduction ("Thos" → "This"). Both were direct DB edits, so the
+  pages refresh on the next save in the admin form or the next release; the form still does not enforce the cap.
+
+---
+
+## 2026-10-27 — Screens reference: a PDF of the site, refreshed with each release
+
+Ported from Paideia at Keith's request: Paideia's chats can review the interface because a PDF of its current
+screens sits in the project, and Stromata had nothing equivalent. `npm run screens` (`scripts/screens/render.mjs`)
+renders the pages in `scripts/screens/manifest.json` (14 pages, 32 shots) at 390px (2×) and 1440px into
+`docs/screens/stromata-screens.pdf`. The PDF has a cover saying what was rendered, then one page per shot, each
+page sized to the screenshot with a caption band (page, viewport, route, note). Long pages are cut after about
+two phone or three desktop screens, and `shots` in the manifest capture what matters further down: the reader's
+end-of-text module and the homepage's recently added. Umami, Hotjar and Ko-fi requests are aborted, so a run
+never lands in the analytics. `pdfkit` is now a declared devDependency (it was already installed through
+`@react-pdf/renderer`).
+
+- `docs/screens/` is on `SITE_IRRELEVANT` (nothing in `app/` or `lib/` reads `docs/`), with two new tests: a
+  PDF-only commit skips the production build, and a commit that also changes the script builds.
+- CLAUDE.md, "Screens reference": UI sessions read the PDF first; how to regenerate it from a cloud session
+  (render a local build, since Vercel's bot checkpoint stops cloud browsers) or from Keith's laptop (production).
+- First PDF: rendered from a local build of `release` at d1576ee against the live database (4.2 MB, 33 pages).
+  The claude.ai project tool stores text documents only (it refused the PDF's binary bytes), so the copy in the
+  "3 - Stromata" project is added by hand.
+- Seen in the first render: `/this-page-does-not-exist` shows Next's bare default 404 ("404 | This page could
+  not be found."), with no site header or styling, because the app has no `not-found.tsx`.
+
+---
+
+## 2026-10-27 — `/next-agent-card` reads the backlog through its saved view
+
+Step 1 of `/next-agent-card` used to rank the queue with a SQL query against the Feature Backlog data
+source. It now runs the saved *Agent queue, approved* view (`view://3d2d9194-805d-8188-9ddb-000c4cbc0eba`)
+in view mode, which applies the view's own filter and ICE sort. View mode carries no plan quota, so a card
+run no longer spends the shared SQL budget the Prospect List sync depends on. SQL stays as the fallback.
+
+CLAUDE.md's Notion note had listed view mode as gated on this plan. A test query on 27 Oct returned the
+view's rows without error, and the tool documents view mode as unmetered, so the note now says so. Two
+quirks recorded in both places: `ICE Score` arrives as a `formulaResult://` reference rather than a number,
+and rows come back with every long text field, so the page size stays small.
+
+## 2026-10-26 — Reader line length counted in characters; default about 70
+
+The Width setting offered 680/800/920px, but the reading column is 744px wide from 1024px to 1400px (the side
+rail takes the rest) and 808px above that. So Normal and Wide rendered identically on most laptops, Wide only
+differed at about 900px and from 1440px, and the default ran to 87–93 characters a line. Even Narrow (about
+80) was past the 60–75 that reads comfortably.
+
+The measure is now a multiple of the prose size, `max-width: calc(var(--text-prose) * var(--reader-measure))` on
+`#reader-main`, set from `ReaderSettings`: Narrow 25.5, Normal 30, Wide 34. Measured at text size M, the lines
+hold about 60, 71 and 80 characters at every width from 768px to 1440px, and the three options are visibly
+different everywhere. Line length now holds when the text size changes. At XL, Normal and Wide meet the
+column's own limit on laptops (both about 68 characters at 744px), which is the layout doing its job. The
+default moves from about 90 characters to about 70 (Keith's choice of the two offered, 26 Oct), set in CSS so
+it applies before any script runs, with no shift on load. Stored preferences keep their names, so existing
+choices and the `reader-setting-change` series carry over.
+
+**The footer line ("free to read", Ko-fi, Cite) now shares the body's edges at every width** (Keith asked,
+26 Oct). It sits in its own `.margin-cols` row with an empty rail, so it takes the body's left edge in each
+layout tier, and `.reader-measure` gives it the body's width. `ReaderSettings` now sets `--reader-font-scale`
+and `--reader-measure` on `#reader-page`, so the footer follows a reader's own size and width; the column
+inherits them. Previously the footer ran under the rail at 1024–1399px and was 808px wide above that. The
+now-unused `.measure-shell` class is gone. Checked at 390, 768, 1024, 1280, 1440 and 1920px across
+measure and size combinations: body and footer edges match to the pixel.
+
+Verified locally against the live database at 390, 768, 1024, 1280 and 1440px, with each option at text sizes M
+and XL set through the stored preference, as a reader would set it. No overflow on phones, where the column is
+already narrower than any measure. `tsc`, lint and 541 tests clean. Base `release`.
+
+---
+
+## 2026-10-26 — Phone follow-ups from Keith's preview check
+
+Keith checked the quick-wins preview on his phone and asked for three more changes:
+
+- **Reader settings: the Width option is hidden below `md`.** Measured: at 390px and 640px the reading column
+  is narrower than the narrowest measure (680px), so Narrow, Normal and Wide all render identically; from 768px
+  they differ. Also noted, not changed: from 1024px to 1280px, when the margin rail appears, Normal and Wide
+  both come out at 744px, so Wide only shows a difference at about 900px and from about 1440px.
+- **Author page: the line under the name is split.** Dates and place come first (a city, where recorded, as
+  "Antioch, Syria"), then tradition and era. On phones, beside the portrait there is only about 190px, so
+  tradition and era each take their own line rather than breaking mid-phrase; from `sm` they share a line.
+  Swept all 91 published author pages at 390px: no meta line wraps.
+- **Homepage "Reading history": two covers per row on phones**, matching "Recently added".
+
+`tsc`, lint and 541 tests clean. Base `release`.
+
+---
+
+## 2026-10-26 — Phone quick wins on the landing pages
+
+From a 390px design critique of the four templates readers land on (reader, author, homepage, collection),
+prompted by about a third of traffic being mobile. Keith chose the top three plus the small fixes, and tighter
+line spacing on phones.
+
+- **Author page: texts before "Kindred authors".** The page is one column at every width, so the 20-row
+  kindred list stood between a search arrival and the author's own texts. The texts list now comes first
+  (all widths), and a "10 texts in the library ↓" link under the name jumps past a long biography. On
+  Chrysostom at 390px the list now starts at 1,161px, from 1,701px.
+- **Collection page: short row titles, colour tokens.** When every part of a collection starts with the same
+  work name ending at a separator, rows show only what differs ("Book IV", not "The Refutation of All
+  Heresies, Book IV"). Display only: links, analytics and JSON-LD keep the full title. The rule is
+  `lib/collections/short-titles.ts`, with tests built from real collections, and it leaves alone titles that
+  share only a word ("Tractate 1", "Tractate 2"). The page's raw hex colours became tokens, which fixes two
+  contrast failures (read time 2.6:1, row numbers about 1.6:1) and takes the file off the `legacyRawColour`
+  list.
+- **Reader: the "Aa" settings button tucks away while scrolling down** and returns on any scroll up, near
+  the top, or on keyboard focus. It had covered the last words of a line on every screen.
+- **Reader: line spacing on phones is 1.65, not 2.** At the phone's ~38-character measure, double leading
+  spread the text thin; this puts about a fifth more text on each screen. `sm` and up keep double leading.
+  The same `MarkdownBody` paragraphs set author biographies, so those tighten on phones too.
+- **Homepage "Recently added": two covers per row on phones**, theme chips hidden below `sm` (they stacked
+  one per line at half width). The page is about 6,700px at 390px, from about 9,700px. Small covers (under
+  200px) clamp the title to three lines, since the fourth was cut through the middle.
+- **Separators wrap with the item before them** in "Start with" and "Texts through the year", so a wrapped
+  line no longer starts with "·".
+- **Tap targets:** Markdown, PDF and "Cite this text" reach the 24px minimum.
+
+Verified locally against the live database at 390px and 1280px: positions and sizes measured, button
+hide/show driven by real scroll, desktop line spacing unchanged (20/40px), no horizontal overflow on 39 pages
+at 390px and 360px. `tsc`, lint and 541 tests clean. Base `release`. Keith kept the texts-first order at
+every width and asked for a preview to check the tucking button on his phone, since iOS Safari's scroll
+events can't be tested from the cloud browser.
+
+---
+
+## 2026-10-26 — Reader no longer pans sideways on phones; read-next wire-checked
+
+**Phone overflow.** The provenance block in the reader's margin rail prints `source_attribution` verbatim, and
+on some texts that is a bare URL (`https://archive.org/stream/…`), one token too long to break. At 390px it
+made the reader page 540px wide. On a phone the page then panned sideways, and the fixed header, which
+stretched to the full 540px, put the menu button off screen. Found by a phone-width audit of the core pages after
+Keith noted about a third of traffic is mobile. 23 of 559 published texts carry a 40-plus-character token in a
+provenance field, including the current top landing text (Chrysostom, *Address on Vainglory*), *A Short Rule of
+Life* and Pliny's letters to Trajan. Fix: `break-words` on the provenance section. Verified locally against the
+live database: all 23, a 15-text sample and 21 index and entity pages show no horizontal overflow at 390px or
+360px. The rest of the audit was clean: no other page overflows.
+
+**Read-next on the wire.** `scripts/verify-analytics.mjs` now checks `text-open` from `read-next` (PR #150). Run
+locally against the `release` code with the real Umami tracker, beacons intercepted and aborted: all nine
+`text-open` surfaces pass, read-next included (`{"from":"read-next","text":"the-shepherd-of-hermas-book-i"}`).
+That is the attribute release prediction 2 counts. Base `release`.
+
+---
+
+## 2026-10-26 — Reader sub-headings (h4–h6) set in serif small caps
+
+`MarkdownBody` mapped h1–h3 but not h4–h6, so those headings fell through to Tailwind preflight's sans stack
+and read as a rendering glitch inside the serif text. Only 2 of 559 published texts use `####`, but one is the
+most-read text (Pliny, Letters 10.96–97: "Pliny to the Emperor Trajan", "Trajan to Pliny"). h4–h6 now use the
+`.smallcaps` class in the reader text colour, a quieter step below h3; they stay out of the table of contents,
+so no anchor IDs. Found by the 26 Oct design critique. Verified locally against the live database: both h4s on
+the Pliny page compute to Junicode and render as small caps. Base `release`.
+
+---
+
+## 2026-10-26 — "Continue exploring" sits in a row from tablet width
+
+Keith's call after reviewing the preview: the three next reads at the end of a text now sit side by side from
+the `md` breakpoint up, one column per pick (so one or two picks don't leave an empty column), and stay stacked
+on phones. Same plain type, reason labels and analytics attributes as before (`text-open` from `read-next`);
+only the list's layout classes changed. Long titles wrap within their column; `items-start` keeps the reason
+labels aligned along the top. Base `release`. **Not verified by rendering here:** check the row on the preview at
+tablet and desktop widths, and that a long title (the Pliny letters) wraps cleanly.
+
+---
+
+## 2026-10-26 — The skip link now works on text pages
+
+The root layout's "Skip to content" link points at `#main-content`, but the text reader's `<main>` keeps
+`id="reader-main"` (ReaderSettings and `globals.css` depend on it), so on the site's most-visited page type the
+skip link jumped nowhere. The 2026-09-08 accessibility entry noted the exception without fixing it. The reader
+now has a focusable, empty `#main-content` target as the first child of its main column (`tabIndex={-1}`), so
+Tab then Enter lands focus in the reading column; `reader-main` is untouched. Backlog card: "Skip link has no
+target on the text-reader page". Base `release`. **Still to check by hand in real Chrome** (synthetic key
+events are unreliable in agent browsers): on a preview text page, Tab once, press Enter, then Tab again and
+confirm focus moves into the reading column rather than back to the header.
+
+---
+
+## 2026-10-26 — Admin Library: one searchable texts index
+
+Added `/admin/texts`, a server-paginated (50 per page), searchable index of every text, and took the
+unpaginated texts list off the `/admin` dashboard. The dashboard used to select all texts with four
+embeds on every request, which only gets slower as the corpus grows. Search matches title, slug or
+author name; facets are status, genre, tradition, era, has-intro, author-is-draft and a provenance
+check (missing source URL or provenance notes). Every facet is a URL parameter, so a view can be
+bookmarked. Parameter parsing and search-term escaping are pure and tested in `lib/admin/text-index.ts`.
+
+The dashboard's two integrity alerts (published text with a draft author, published text in an
+unpublished collection) are now targeted queries that return only the offending rows, and the page
+gains a Library card with the total count. Collection bylines still derive from each collection's
+texts, so the dashboard keeps one narrow read (collection id and author, no titles, no `body`) over
+collection members; paginating or moving the collections list is the remaining step to reach "no admin
+page reads every text row". No schema change and no public page touched. Meter: Egress, metadata
+columns only. Not verified by rendering (`/admin` needs Keith's login).
+
+---
+
+## 2026-10-19 — Admin text record: a source & provenance panel
+
+Backlog card *Admin text record: source & provenance panel*. Verifying a text's source meant reading four
+form fields and the author record separately. The text edit page (`/admin/texts/[id]/edit`) now opens with
+one panel showing edition (source attribution), translation notes, source URL, dates found in the
+translation notes, acquisition method (source host, plus OCR grade) and rights, coloured green / amber / red.
+Flags: unknown or post-1899 author death year, a licensed text missing attribution or URL, and a published
+text with unresolved problems are **unsafe**; missing URL, edition or provenance notes are **incomplete**;
+a year after 1928 in the translation notes, low OCR and a draft author stub are notes. The logic is pure in
+`lib/review/provenance-panel.ts` (8 tests). A late year is only a prompt, not a verdict: a pre-1929
+publication is public domain whatever the translator's death date (CLAUDE.md), and the notes mix birth,
+death and publication years. The panel is advisory and never blocks publishing, so the human gate is
+unchanged. No schema change: there are no dedicated edition, acquisition or publication-date columns, so
+the panel reads the existing fields, and a structured version would need a migration. One extra read of
+`authors` (name, death year, draft) per page view in admin; no `body`, no public pages touched. Not
+verified visually: `/admin` needs Keith's login.
+
+## 2026-10-06 — Research write-up: a longer cache window needs every writer
+
+Added `docs/research/2026-10-06-a-longer-cache-window-needs-every-writer.md`, covering the two
+Vercel CPU rounds (29 Sep, 4 Oct). It records what was measured, what was sized wrongly (round one
+against the peak, not the ~8 min/day budget), and what is still unverified: the CPU effect and
+`revalidatePath(pattern, 'page')` on a live deployment. Docs only; `docs/research/` is not on the
+`SITE_IRRELEVANT` list, so merging this on its own would trigger a production build — hold it for
+the next batched merge.
+
+## 2026-10-12 — "Continue exploring": a deterministic next-read module at the end of every text
+
+Backlog card *Continue exploring: editorial read-next module*. The end of a text had no onward path
+(only Ko-fi, citation and download), and the digest showed views/visit falling as new readers arrived.
+The reader page now ends with up to three next reads, each captioned with the rule that chose it:
+**More from {author}**, **On {theme}** (the other-author text sharing the most of this text's themes), and **Another {genre}** (a different author). The rules live in
+`lib/read-next.ts` (pure, tested): closest in length to the text just read, then title, so the same text
+always yields the same three; fragments under 400 words (unknown length is admitted, ranked last) and siblings in the text's own collection are
+excluded (prev/next already covers those). Clicks fire `text-open` with `from=read-next` (new `from`
+value, added to the CLAUDE.md vocabulary; the Events Register row is still owed in Notion). The page
+adds three metadata-only reads (no `body`, capped at 60/60/300 rows, ordered), run at regeneration, not per view, and a failed read hides the
+module rather than failing the page. **Meter: Egress.** About 90 KB per text regeneration (~420 rows at
+~200 B); a full 566-text regeneration is roughly 50 MB, ~1% of the cycle allowance. Pools are capped, so
+for very prolific authors/popular themes the picks come from the first 60/300 rows by title, not the whole set.
+
+**Not built, on purpose:** the card's manual editorial override (a per-text recommendation field) needs
+a schema column, an anon grant (migration 026 pattern) and an admin input; it is a follow-up, so every
+rationale here is deterministic. The module is on every text rather than a pilot subset, so the
+comparison is against pre-ship weeks, not a control group. Because the pools are read at regeneration,
+a newly published text shows up in other texts' modules at their next refresh (up to a week).
+
+**Baseline not recorded:** the card asks for the depth-2 ÷ depth-1 rate for the last two full weeks
+before shipping. The Umami share token ignores event filters and this session has no dashboard access,
+so the figures (and date) need to come from the Umami dashboard before release. No migration.
+
+---
+
 ## 2026-10-06 — What spent the Supabase egress on 21 Sep, and three guards against a repeat
 
 The organisation went over its 5 GB free-plan egress (5.93 GB, cycle 17 Sep–17 Oct). Stromata's
@@ -95,10 +528,10 @@ PRs open against `release` (a preview branch, so merging into it deploys nothing
 straight to `main` because the ignore step skips them; a broken site or security fix goes straight to `main` and is
 then merged into `release`. Keith merges the release PR; Claude opens it and lists what it carries. In force until
 the 30-day total is back under 4h; Keith decides whether to keep the branch. `release` was cut from `main` on
-10 Oct. Still to do, deliberately as the first PR *into* `release` (changing `.claude/commands` would otherwise
-deploy): make `/next-agent-card` name `release` as its PR base. Keith also decided that a backlog card counts as
-`Built` once its change is on `main`, not when its PR merges into `release` (recorded in CLAUDE.md; the command file
-follows in the first release PR). Search Console now reads the sitemap: Success, 769 pages discovered.
+10 Oct. `/next-agent-card` now names `release` as its PR base too (`.claude/commands/next-agent-card.md`, step
+10) — done as the first PR *into* `release`, because changing `.claude/commands` would otherwise deploy the site.
+Keith also decided that a backlog card counts as `Built` once its change is on `main`, not when its PR merges into
+`release` (recorded in CLAUDE.md). Search Console now reads the sitemap: Success, 769 pages discovered.
 
 ## 2026-10-04 — Docs-only and content-only production commits no longer deploy
 

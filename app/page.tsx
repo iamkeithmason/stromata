@@ -252,7 +252,6 @@ export default async function Home() {
               <span className="celestial-authors-links">
                 {authorChips.map((author, index) => (
                   <span key={author.slug}>
-                    {index > 0 && <span className="celestial-author-dot" aria-hidden="true">·</span>}
                     <Link
                       href={`/authors/${author.slug}`}
                       data-umami-event="author-open"
@@ -261,6 +260,9 @@ export default async function Home() {
                     >
                       {author.name}
                     </Link>
+                    {/* After the name, not before: a wrapped line then ends on a dot
+                        rather than starting with one. */}
+                    {index < authorChips.length - 1 && <span className="celestial-author-dot" aria-hidden="true">·</span>}
                   </span>
                 ))}
               </span>
@@ -301,7 +303,9 @@ export default async function Home() {
 
           {/* ── Grid ── */}
           {gridEntries.length > 0 && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            // Two per row on phones too: one full-width cover per row made this section
+            // about a screen per book (26 Oct critique).
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-4 gap-y-6 sm:gap-6">
               {gridEntries.map((entry, i) => (
                 <FeedGridCard key={entry.kind === 'text' ? entry.text.id : entry.collection.id} entry={entry} index={i + 1} />
               ))}
@@ -569,7 +573,7 @@ function FeedGridCard({ entry, index }: { entry: FeedEntry; index: number }) {
       ? `№ ${accessionRange.min}–${accessionRange.max}`
       : null
     return (
-      <div className="w-2/3 mx-auto sm:w-full">
+      <div className="w-full">
         <Link
           href={`/collections/${collection.slug}`}
           className="group block"
@@ -601,7 +605,7 @@ function FeedGridCard({ entry, index }: { entry: FeedEntry; index: number }) {
   const themes = text.text_themes.map(tt => tt.theme).filter(Boolean) as { name: string; slug: string }[]
 
   return (
-    <div className="w-2/3 mx-auto sm:w-full">
+    <div className="w-full">
       <Link
         href={`/texts/${text.slug}`}
         className="group block"
@@ -620,8 +624,9 @@ function FeedGridCard({ entry, index }: { entry: FeedEntry; index: number }) {
       </Link>
       <div className="px-0.5 mt-3">
         <p className="caption mb-2">~ {readingMinutes(text.word_count)} min</p>
+        {/* Chips are hidden in the two-up phone grid: at half width they stacked one per line. */}
         {themes.length > 0 && (
-          <div className="flex flex-wrap gap-1">
+          <div className="hidden sm:flex flex-wrap gap-1">
             {themes.map(t => (
               <ThemeChip key={t.slug} href={`/themes/${t.slug}`} name={t.name} source="homepage" />
             ))}

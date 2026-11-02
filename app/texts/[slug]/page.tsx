@@ -20,6 +20,9 @@ import { DownloadLinks } from '@/app/components/DownloadLinks'
 import { ReaderSettings } from '@/app/components/ReaderSettings'
 import { CitationButton } from '@/app/components/CitationButton'
 import { resolveLicense } from '@/lib/licenses'
+import { PROVENANCE_INLINE_MAX, hostLabel, isBareUrl } from '@/lib/edition'
+import { ContinueExploring } from '@/app/components/ContinueExploring'
+import { pickReadNext, type ReadNextCandidate } from '@/lib/read-next'
 
 // Incremental Static Regeneration: cache the rendered page and revalidate
 // weekly (hourly until 2026-09-29, daily until 2026-10-04 — Vercel Hobby CPU). Safe given the manual
@@ -96,7 +99,7 @@ export default async function TextPage({ params }: Props) {
         accession_number, author_id, body, collection_id, collection_order,
         created_at, editorial_introduction, featured, featured_from, featured_note,
         genre_id, id, license, ocr_quality, provenance_notes, published, published_at,
-        slug, source_attribution, source_url, summary, title, translation_notes,
+        read_next_note, read_next_text_id, slug, source_attribution, source_url, summary, title, translation_notes,
         updated_at, word_count,
         author:authors(name, slug, bio, birth_year, death_year, image_url, image_focus_x, image_focus_y, image_zoom, loc:locations(name, slug), tradition:traditions(slug, name), era:eras(label, slug)),
         genre:genres(name),
@@ -190,6 +193,72 @@ export default async function TextPage({ params }: Props) {
     }
   }
 
+  // ── Continue exploring — candidate pools for lib/read-next.ts ───────────────
+  // Metadata only (never `body`); each pool is capped. Three small reads,
+  // regenerated with the page, so the module costs nothing per view.
+  const CAND = 'id, title, slug, word_count, collection_id, author_id, accession_number, author:authors(name, death_year, tradition:traditions(slug))'
+  type CandRow = {
+    id: string; title: string; slug: string; word_count: number | null
+    collection_id: string | null; author_id: string | null; accession_number: number | null
+    author: { name: string; death_year: number | null; tradition: { slug: string } | null } | null
+  }
+  const toCand = (r: CandRow, themeSlugs?: string[]): ReadNextCandidate => ({
+    id: r.id, title: r.title, slug: r.slug, word_count: r.word_count,
+    collection_id: r.collection_id, authorId: r.author_id,
+    authorName: r.author?.name ?? null, themeSlugs,
+    accessionNumber: r.accession_number, deathYear: r.author?.death_year ?? null,
+    traditionSlug: r.author?.tradition?.slug ?? null,
+  })
+  const themeSlugList = themes.map(t => t.slug)
+  const [editorialRow, authorRows, genreRows, themeRows] = await Promise.all([
+    // The editor's pick (migration 033), if one is set; published only.
+    text.read_next_text_id
+      ? supabase.from('texts').select(CAND).eq('id', text.read_next_text_id).eq('published', true).maybeSingle()
+      : Promise.resolve({ data: null, error: null }),
+    text.author_id
+      ? supabase.from('texts').select(CAND).eq('author_id', text.author_id).eq('published', true).neq('id', text.id).order('title').limit(60)
+      : Promise.resolve({ data: [], error: null }),
+    text.genre_id
+      ? supabase.from('texts').select(CAND).eq('genre_id', text.genre_id).eq('published', true).neq('id', text.id)
+          .neq('author_id', text.author_id ?? '00000000-0000-0000-0000-000000000000').order('title').limit(60)
+      : Promise.resolve({ data: [], error: null }),
+    themeSlugList.length > 0
+      ? supabase
+          .from('text_themes')
+          .select(`theme:themes!inner(slug), text:texts!inner(${CAND})`)
+          .in('theme.slug', themeSlugList)
+          .eq('text.published', true)
+          .neq('text.id', text.id)
+          .order('text_id')
+          .limit(300)
+      : Promise.resolve({ data: [], error: null }),
+  ])
+  // Optional module: a failed read degrades to "no module", never to a failed
+  // reader page (unlike the primary text read above, which must throw).
+  const authorPool = (authorRows.error ? [] : authorRows.data ?? []) as unknown as CandRow[]
+  const genrePool = (genreRows.error ? [] : genreRows.data ?? []) as unknown as CandRow[]
+  const themePoolRaw = (themeRows.error ? [] : themeRows.data ?? []) as unknown as { theme: { slug: string } | null; text: CandRow | null }[]
+  const themeByText = new Map<string, { row: CandRow; slugs: string[] }>()
+  for (const r of themePoolRaw) {
+    if (!r.text || !r.theme) continue
+    const e = themeByText.get(r.text.id) ?? { row: r.text, slugs: [] }
+    e.slugs.push(r.theme.slug)
+    themeByText.set(r.text.id, e)
+  }
+  const editorialPick = editorialRow.error || !editorialRow.data
+    ? null
+    : { candidate: toCand(editorialRow.data as unknown as CandRow), note: text.read_next_note ?? null }
+  const readNext = pickReadNext({
+    editorial: editorialPick,
+    self: { id: text.id, collectionId: collection ? text.collection_id : null, authorId: text.author_id, wordCount: text.word_count },
+    authorName: author?.name ?? null,
+    genreName: genre?.name ?? null,
+    themes,
+    sameAuthor: authorPool.map(r => toCand(r)),
+    sameGenre: genrePool.map(r => toCand(r)),
+    sameTheme: [...themeByText.values()].map(e => toCand(e.row, e.slugs)),
+  })
+
   // ── Structured data — built from real fields only (no null values) ──────────
   const canonicalUrl = `${SITE_URL}/texts/${slug}`
   const bookJsonLd: Record<string, unknown> = {
@@ -271,11 +340,14 @@ export default async function TextPage({ params }: Props) {
 
       {/* ─── Frontispiece hero — book cover + title on the dark ink ground ─── */}
       <section style={{ background: 'var(--hero-ground)' }}>
-        <div className="margin-cols rail-first py-12 lg:py-20">
+        {/* frontispiece: on phones the cover drops to a thumbnail beside the
+            title (globals.css), so the text starts in the first screen —
+            most readers land here straight from search. */}
+        <div className="margin-cols rail-first frontispiece py-6 lg:py-20">
           {/* Book cover — sits in the left margin rail, aligned with the
               author rail in the reading container below */}
           <div className="margin-rail flex justify-center lg:justify-start">
-            <div className="w-[200px]">
+            <div className="w-[84px] lg:w-[200px]">
               <BookCover
                 title={text.title}
                 authorName={author?.name ?? null}
@@ -288,7 +360,7 @@ export default async function TextPage({ params }: Props) {
           </div>
 
           {/* Title block — aligned with the main reading column below */}
-          <div className="margin-body flex flex-col items-center gap-6 text-center lg:items-start lg:gap-8 lg:text-left">
+          <div className="margin-body flex flex-col items-start gap-3 text-left lg:gap-8">
             {heroKicker && (
               <p
                 className="font-mono uppercase"
@@ -299,11 +371,11 @@ export default async function TextPage({ params }: Props) {
             )}
 
             {/* Title + summary — grouped tightly */}
-            <div className="flex flex-col items-center gap-4 lg:items-start">
+            <div className="flex flex-col items-start gap-4">
               <h1
                 style={{
                   fontFamily: 'var(--serif-display)',
-                  fontSize: 'var(--text-hero)',
+                  fontSize: 'var(--frontispiece-title-size)',
                   lineHeight: 1.05,
                   letterSpacing: '-0.01em',
                   color: '#FAF6EC',
@@ -313,7 +385,9 @@ export default async function TextPage({ params }: Props) {
               </h1>
               {summary && (
                 <p
-                  className="font-serif"
+                  // On phones the introduction follows at once and says more,
+                  // so the summary yields its space unless there is none.
+                  className={`font-serif ${editorialIntro ? 'hidden lg:block' : ''}`}
                   style={{
                     fontSize: 'var(--text-base)',
                     lineHeight: 1.5,
@@ -334,7 +408,7 @@ export default async function TextPage({ params }: Props) {
             </p>
 
             {themes.length > 0 && (
-              <div className="flex flex-wrap justify-center gap-2 lg:justify-start">
+              <div className="hidden lg:flex flex-wrap gap-2">
                 {themes.map(theme => (
                   <ThemeChip key={theme.slug} href={`/themes/${theme.slug}`} name={theme.name} source="text-page" tone="dark" />
                 ))}
@@ -383,13 +457,47 @@ export default async function TextPage({ params }: Props) {
               {/* Provenance — sourced metadata. The accession number is no longer
                   repeated here: it now leads the frontispiece as the hero kicker. */}
               {(text.source_attribution || text.provenance_notes || text.translation_notes || license) && (
+                // break-words: a bare source URL (archive.org/stream/…) is one unbreakable
+                // token, and at phone width it pushed the page 150px wide, so the reader
+                // panned sideways and the fixed header's menu button sat off screen.
                 <section
-                  className="flex flex-col gap-3 text-xs"
-                  style={{ color: 'var(--ink-mute)' }}
+                  className="flex flex-col gap-3 break-words"
+                  style={{ fontSize: 'var(--text-sm)', lineHeight: 1.5, color: 'var(--ink-mute)' }}
                 >
-                  {text.source_attribution && <p>Source: {text.source_attribution}</p>}
-                  {text.provenance_notes && <p>{text.provenance_notes}</p>}
+                  <h2 className="kicker">About this edition</h2>
+                  {text.source_attribution && (
+                    isBareUrl(text.source_attribution) ? (
+                      <p>
+                        Source:{' '}
+                        <a
+                          href={text.source_attribution}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="underline underline-offset-2 hover:opacity-70 transition-opacity"
+                        >
+                          {hostLabel(text.source_attribution)} ↗
+                        </a>
+                      </p>
+                    ) : (
+                      <p>{text.source_attribution}</p>
+                    )
+                  )}
                   {text.translation_notes && <p>Translation: {text.translation_notes}</p>}
+                  {/* Long provenance notes are an editor's working account — worth
+                      keeping, but not worth a rail of small type before the
+                      reader has started. Short ones stay in view. */}
+                  {text.provenance_notes && (
+                    text.provenance_notes.length > PROVENANCE_INLINE_MAX ? (
+                      <details>
+                        <summary className="cursor-pointer" style={{ color: 'var(--ink-soft)' }}>
+                          Notes on this edition
+                        </summary>
+                        <p className="mt-2">{text.provenance_notes}</p>
+                      </details>
+                    ) : (
+                      <p>{text.provenance_notes}</p>
+                    )
+                  )}
                   {license && (
                     <p>
                       License:{' '}
@@ -418,6 +526,10 @@ export default async function TextPage({ params }: Props) {
 
           {/* Main reading column */}
           <main id="reader-main" className="margin-body">
+            {/* Skip-link target. The root layout's skip link points at #main-content, but this
+                element keeps id="reader-main" because ReaderSettings and globals.css depend on it,
+                so the target sits as the main column's first child. tabIndex -1 lets it take focus. */}
+            <span id="main-content" tabIndex={-1} className="outline-none" />
             {/* Mobile TOC disclosure — visible below xl where the fixed TOC is hidden */}
             {hasToc && (
               <div className="xl:hidden mb-8">
@@ -455,6 +567,16 @@ export default async function TextPage({ params }: Props) {
                 <div className="prose-body" style={{ color: 'var(--ink-soft)' }}>
                   <MarkdownBody content={editorialIntro} numbered={false} />
                 </div>
+              </div>
+            )}
+
+            {/* Phones: the theme chips moved out of the frontispiece land here,
+                after the introduction, where they no longer push the text down. */}
+            {themes.length > 0 && (
+              <div className="flex flex-wrap gap-2 mb-10 lg:hidden">
+                {themes.map(theme => (
+                  <ThemeChip key={theme.slug} href={`/themes/${theme.slug}`} name={theme.name} source="text-page" />
+                ))}
               </div>
             )}
 
@@ -528,12 +650,16 @@ export default async function TextPage({ params }: Props) {
                 ) : <span />}
               </nav>
             )}
+            <ContinueExploring picks={readNext} />
           </main>
       </div>
 
-      {/* Footer — aligned to the reading column measure */}
+      {/* Footer — shares the body's edges at every width: same .margin-cols grid,
+          an empty rail to hold the body's left edge, and the reader's measure. */}
+      <div className="margin-cols">
+      <div className="margin-rail hidden lg:block" aria-hidden="true" />
       <footer
-        className="measure-shell mt-4 border-t pt-6 pb-12 text-xs"
+        className="margin-body reader-measure mt-4 border-t pt-6 pb-12 text-xs"
         style={{ borderColor: 'var(--rule)', color: 'var(--ink-mute)' }}
       >
           <p>
@@ -561,6 +687,7 @@ export default async function TextPage({ params }: Props) {
             />
           </p>
       </footer>
+      </div>
 
       {/* Desktop TOC — fixed in right viewport margin, hover to expand.
           Renders outside the reading container so it doesn't affect column width.
