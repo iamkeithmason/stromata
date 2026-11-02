@@ -1,6 +1,6 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { selectSample, chunkSections, evidenceInPassage, labelKey, normaliseConcepts, analyse, uniqueLabels, resolveGroups, groupOfFrom } from './concept-pilot.mjs'
+import { selectSample, chunkSections, evidenceInPassage, labelKey, normaliseConcepts, analyse, uniqueLabels, resolveGroups, groupOfFrom, labelsFingerprint } from './concept-pilot.mjs'
 
 const row = (slug, author, era, tradition, genre, word_count = 3000) => ({ slug, author, era, tradition, genre, word_count })
 
@@ -114,4 +114,17 @@ test('resolveGroups rejects a bad grouping instead of half-applying it', () => {
   assert.throws(() => resolveGroups({ groups: [{ name: 'x', ids: [0, 1] }, { name: 'y', ids: [1, 2] }] }, labels), /in both/)
   assert.throws(() => resolveGroups({ groups: [{ name: '', ids: [0] }] }, labels), /no name/)
   assert.throws(() => resolveGroups({ groups: [{ name: 'x', ids: [0] }, { name: 'X', ids: [1] }] }, labels), /share a name/)
+})
+
+test('resolveGroups: a group may not be named like a concept it does not contain', () => {
+  const labels = uniqueLabels([ex('t1', 'creation from nothing', 'ex nihilo', 'divine will')])
+  const id = l => labels.find(x => x.label === l).id
+  assert.throws(() => resolveGroups({ groups: [{ name: 'creation from nothing', ids: [id('ex nihilo'), id('divine will')] }] }, labels), /named like the separate concept/)
+  assert.doesNotThrow(() => resolveGroups({ groups: [{ name: 'creation from nothing', ids: [id('creation from nothing'), id('ex nihilo')] }] }, labels))
+})
+
+test('labelsFingerprint changes when the concept set changes, not when only wording order does', () => {
+  const a = uniqueLabels([ex('t1', 'alpha idea', 'beta idea')])
+  assert.equal(labelsFingerprint(a), labelsFingerprint(uniqueLabels([ex('t9', 'beta idea', 'alpha idea')])))
+  assert.notEqual(labelsFingerprint(a), labelsFingerprint(uniqueLabels([ex('t1', 'alpha idea', 'gamma idea')])))
 })

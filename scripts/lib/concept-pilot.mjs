@@ -186,7 +186,7 @@ export function uniqueLabels(extractions) {
     byKey.get(k).texts.add(t.slug)
   }
   return [...byKey.values()]
-    .sort((a, b) => a.key.localeCompare(b.key))
+    .sort((a, b) => (a.key < b.key ? -1 : a.key > b.key ? 1 : 0)) // not localeCompare: ids must not depend on the machine's locale
     .map((e, id) => ({ id, key: e.key, label: e.label, gloss: e.gloss, texts: [...e.texts] }))
 }
 
@@ -215,6 +215,9 @@ export function resolveGroups(raw, labels) {
     if (name && keys.length) groups.push({ name, keys })
   })
   if (new Set(groups.map(g => g.name)).size !== groups.length) problems.push('two groups share a name')
+  // analyse merges by key, so a group named exactly like a concept outside it would absorb that concept.
+  const taken = new Map(labels.map(l => [l.key, l.label]))
+  for (const g of groups) if (taken.has(g.name) && !g.keys.includes(g.name)) problems.push(`group "${g.name}" is named like the separate concept "${taken.get(g.name)}"; rename it`)
   if (problems.length) throw new Error(`grouping rejected:\n  ${problems.slice(0, 20).join('\n  ')}${problems.length > 20 ? `\n  …and ${problems.length - 20} more` : ''}`)
   return { groups }
 }
@@ -224,4 +227,12 @@ export function groupOfFrom(resolved) {
   const m = new Map()
   for (const g of resolved?.groups ?? []) for (const k of g.keys) m.set(k, g.name)
   return label => m.get(labelKey(label)) ?? labelKey(label)
+}
+
+/** Short fingerprint of the distinct-concept set, so a stored grouping can tell it was built for different data. */
+export function labelsFingerprint(labels) {
+  let h = 2166136261
+  const str = labels.map(l => l.key).join('\n')
+  for (let i = 0; i < str.length; i++) { h ^= str.charCodeAt(i); h = Math.imul(h, 16777619) }
+  return `${labels.length}:${(h >>> 0).toString(16)}`
 }

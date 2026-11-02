@@ -18,6 +18,8 @@
  * Usage:
  *   node scripts/concept-pilot.mjs select [--n=20]            # print the sample, write sample.json
  *   node scripts/concept-pilot.mjs extract [--slug=a,b] [--force]   # needs ANTHROPIC_API_KEY
+ *   node scripts/concept-pilot.mjs ingest --from-dir=<dir> [--model=<name>]   # no API key: take per-text results written by
+ *                                                             # subagents ({slug,sections:[{id,concepts}]}), re-check every quote, store
  *   node scripts/concept-pilot.mjs labels                     # labels.json: the distinct concepts, with ids, for grouping
  *   node scripts/concept-pilot.mjs group --from=<file>        # validate + save a grouping of those ids (groups.json)
  *   node scripts/concept-pilot.mjs report [--no-groups]       # analysis.json + REPORT.md from extractions
@@ -37,7 +39,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { createClient } from '@supabase/supabase-js'
-import { selectSample, chunkSections, normaliseConcepts, analyse, uniqueLabels, resolveGroups, groupOfFrom } from './lib/concept-pilot.mjs'
+import { selectSample, chunkSections, normaliseConcepts, analyse, uniqueLabels, resolveGroups, groupOfFrom, labelsFingerprint } from './lib/concept-pilot.mjs'
 
 const root = path.join(path.dirname(fileURLToPath(import.meta.url)), '..')
 dotenv.config({ path: path.join(root, '.env.local'), override: false })
@@ -141,12 +143,42 @@ function labelsCmd() {
   console.log(`${rows.length} distinct concepts from ${ex.length} texts → data/concept-pilot/labels.json (ids 0–${rows.length - 1})`)
 }
 
+async function ingestCmd() {
+  const from = flag('from-dir', '')
+  if (!from) throw new Error('usage: ingest --from-dir=<dir> (one <slug>.json per sample text: {"slug":"…","sections":[{"id":"s01","concepts":[{"label","gloss","evidence"}]}]})')
+  const sample = read('sample.json')
+  if (!sample) throw new Error('No sample.json — run `select` first.')
+  const model = flag('model', 'claude-code-subagents')
+  const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY)
+  const bySlug = new Map((read('extractions.json') ?? []).map(e => [e.slug, e]))
+  for (const s of sample) {
+    const f = path.join(from, `${s.slug}.json`)
+    if (!fs.existsSync(f)) { console.error(`skip  ${s.slug} (no ${f})`); continue }
+    const res = JSON.parse(fs.readFileSync(f, 'utf8'))
+    const { data, error } = await supabase.from('texts').select('body').eq('id', s.id).single()
+    if (error || !data?.body) { console.error(`FAIL  ${s.slug}: ${error?.message ?? 'empty body'}`); continue }
+    // Sections are re-cut from the body exactly as `extract` cuts them, and every quotation is re-checked
+    // against its section here, whatever the producer claims to have checked.
+    const sections = chunkSections(data.body).map(sec => {
+      const raw = res.sections?.find(x => x.id === sec.id)
+      const { kept, dropped } = normaliseConcepts(raw ? { concepts: raw.concepts } : null, sec.text)
+      return { id: sec.id, words: sec.words, parsed: !!raw, concepts: kept, dropped }
+    })
+    bySlug.set(s.slug, { slug: s.slug, title: s.title, author: s.author, themes: s.themes, model, sections })
+    write('extractions.json', [...bySlug.values()])
+    console.log(`done  ${s.slug}: ${sections.length} sections, ${sections.reduce((n, x) => n + x.concepts.length, 0)} concepts (${sections.reduce((n, x) => n + x.dropped.length, 0)} dropped, ${sections.filter(x => !x.parsed).length} sections missing from the file)`)
+  }
+}
+
 function groupCmd() {
   const from = flag('from', '')
   if (!from) throw new Error('usage: group --from=<grouping.json> ({"groups":[{"name":"…","ids":[…]}]}; ids come from labels.json)')
   const labels = read('labels.json')
   if (!labels) throw new Error('No labels.json — run `labels` first.')
+  const current = labelsFingerprint(uniqueLabels(readExtractions()))
+  if (labelsFingerprint(labels) !== current) throw new Error('labels.json is out of date with extractions.json (ids would point at the wrong concepts). Re-run `labels`, and regroup from the new file.')
   const resolved = resolveGroups(JSON.parse(fs.readFileSync(from, 'utf8')), labels)
+  resolved.fingerprint = current
   const grouped = resolved.groups.reduce((n, g) => n + g.keys.length, 0)
   write('groups.json', resolved)
   console.log(`${resolved.groups.length} groups covering ${grouped} of ${labels.length} concepts (the rest stay as they are) → data/concept-pilot/groups.json`)
@@ -163,6 +195,7 @@ function reportCmd() {
   const ex = readExtractions()
   const themes = [...new Set(ex.flatMap(e => e.themes))]
   const groups = has('no-groups') ? null : read('groups.json')
+  if (groups && groups.fingerprint !== labelsFingerprint(uniqueLabels(ex))) throw new Error('groups.json was built for different extractions. Re-run `labels` and `group`, or pass --no-groups.')
   const a = analyse(ex, themes, groups ? { groupOf: groupOfFrom(groups) } : {})
   const how = groups ? `grouped by meaning (${groups.groups.length} groups, largest holds ${a.largestGroup} labels)` : 'counted on exact labels only (no grouping applied)'
   write('analysis.json', a)
@@ -198,8 +231,9 @@ function reportCmd() {
 try {
   if (cmd === 'select') await selectCmd()
   else if (cmd === 'extract') await extractCmd()
+  else if (cmd === 'ingest') await ingestCmd()
   else if (cmd === 'labels') labelsCmd()
   else if (cmd === 'group') groupCmd()
   else if (cmd === 'report') reportCmd()
-  else throw new Error(`unknown command "${cmd}" (select | extract | labels | group | report)`)
+  else throw new Error(`unknown command "${cmd}" (select | extract | ingest | labels | group | report)`)
 } catch (e) { console.error(e.message); process.exit(1) }

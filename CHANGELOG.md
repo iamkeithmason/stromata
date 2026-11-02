@@ -15,12 +15,12 @@ to the database. `scripts/concept-pilot.mjs`: `select` picks 20 published texts 
 tradition and genre, one per author (10 eras, 10 traditions, 13 genres, 20 authors); `extract` cuts each body
 into stable ~1,500-word sections and asks Claude for granular concepts with a verbatim quotation; `labels` and
 `group --from=` store a grouping of those concepts by meaning; `report` rolls it up (recurrence, singleton
-tail, Theme overlap, unverifiable-quote rate). Pure logic in `scripts/lib/concept-pilot.mjs`, 11 tests.
+tail, Theme overlap, unverifiable-quote rate); `ingest --from-dir=` takes per-text results written by subagents and re-checks every quotation against the re-cut section. `group` and `report` refuse a `labels.json`/`groups.json` built for different extractions. Pure logic in `scripts/lib/concept-pilot.mjs`, 13 tests.
 Output is in `data/concept-pilot/` (gitignored).
 
 **First run, 2 Nov, without an API key.** The build session had no `ANTHROPIC_API_KEY`, so `extract` (the API
 route) has still never run. The 20 texts were instead read by ten Claude Code subagents, two texts each, with
-the same instructions; their output went through the harness's own quotation check (614 concepts kept, 0
+the same instructions; their output went through `ingest`'s quotation check (614 concepts kept, 0
 dropped) and was recorded under the model name `claude-code-subagents`. The API route is untested against a
 live key.
 
