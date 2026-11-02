@@ -6501,6 +6501,25 @@
       "translator_death_year": null,
       "license": null,
       "stage_1_notes": "Notion ID 271 (UNVERIFIED agent proposal) points at a CCEL edition that is NOT the 19th-century translation the row assumed. Header: Print Basis Milwaukee: Bruce Publishing Company, 1949, c1940, \"translated from the Latin into modern English\" — a 1940 copyrighted modern translation."
+    },
+    {
+      "id": "manual-of-prayers-winchester-ken",
+      "status": "stage-1-done",
+      "added": "2026-11-02",
+      "author": "Thomas Ken",
+      "death_year": 1711,
+      "tradition": "anglican",
+      "era": "post-reformation",
+      "title": "A Manual of Prayers for the Use of the Scholars of Winchester College",
+      "genre": "Prayer",
+      "source_type": "archive_online",
+      "source_url": "https://anglicanhistory.org/ken/manual.html",
+      "collection_slug": "manual-of-prayers-winchester-ken",
+      "translation_copyright_clear": true,
+      "translator": null,
+      "translator_death_year": null,
+      "license": null,
+      "stage_1_notes": "Notion ID 119 (Reference URL used; no Cleared edition URL). Ken d. 1711; original English composition, no translation. URL returns 200 and page title reads \"A Manual of Prayers for the Use of the Scholars of Winchester College\" (Project Canterbury). Stage 2 not run: no ANTHROPIC_API_KEY/node_modules in this container, so no inline note_draft."
     }
   ]
 }
