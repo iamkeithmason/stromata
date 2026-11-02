@@ -187,7 +187,13 @@ rather than the site: pass `--bypass-token=<automation bypass secret>` (Vercel �
 Deployment Protection → Protection Bypass for Automation), or set
 `VERCEL_AUTOMATION_BYPASS_SECRET`. Behind a TLS-inspecting proxy, where Chromium rejects the
 re-signed certificate, `--via-node` routes each request through Playwright's Node-side stack
-instead — certificates are still verified, just by Node. The assertion half lives in
+instead — certificates are still verified, just by Node. **Production sweeps run from Keith's
+laptop, not a cloud session** (Keith, 2 Nov 2026): Vercel's bot checkpoint answers a cloud browser
+in place of the site, and that is not to be bypassed. A cloud session verifies against a local
+build instead (`next dev` with the throwaway `.env.local` described under "Screens reference",
+then `--url=http://localhost:3000`). On 2 Nov a cloud `--prod --via-node` run reported a reader
+control "not found" that was really this, so the sweep now stops on the checkpoint page, and a
+control every text page renders fails rather than skips when absent. The assertion half lives in
 `scripts/lib/wire-check.mjs` and is unit-tested, so the sweep cannot go green by looking in the
 wrong place. Two things it deliberately does not do: block the tracker script (that would leave
 `window.umami` undefined and every check would "pass" by firing nothing) and treat a page that

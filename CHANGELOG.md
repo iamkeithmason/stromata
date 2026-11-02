@@ -23,8 +23,13 @@ Vercel's bot checkpoint rather than the site; before this, the message blamed De
 the reader-settings and "Cite this text" rows, both controls every text page renders, now **fail** rather
 than skip when absent, with the path, HTTP status and page title in the detail. A skip stays for surfaces
 that depend on content (downloads, collection nav, a themed text). `describeMissing` and
-`isVercelCheckpoint` live in `scripts/lib/wire-check.mjs` with tests. No site code changed; the selector
-was right.
+`isVercelCheckpoint` live in `scripts/lib/wire-check.mjs` with tests. The selector was right.
+
+Two follow-ups Keith approved the same day. `ReaderSettings` called `umami.track` inside its `setPrefs`
+updater; React may run an updater twice (dev Strict Mode always does), so in dev each click sent two
+beacons. The call now sits after the updater, and the local sweep sees exactly one per click. Production
+sends one either way, so no data changed. And CLAUDE.md now says production sweeps run from Keith's
+laptop, with cloud sessions verifying against a local build.
 
 ---
 
