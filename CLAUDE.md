@@ -633,6 +633,16 @@ in a run-log is invisible.
 If you ship a code change by hand (not via a routine), you own the same two acts: a CHANGELOG
 entry in the PR, and flipping the backlog card to `Built` once it is on `main`.
 
+**Before building any backlog card — by hand or by routine — check it is not already in flight, then
+claim it.** A card's `Status` cannot tell you: `Planned` reads the same whether a build exists or not.
+On 2 Nov 2026 two sessions built "Mid-text navigation on phones" on the same day (#184, closed; #187,
+merged), and the duplication showed only at the end, as clashing Events Register rows. So: search open
+PRs by the card's title (any branch name, not just `claude/*`), read the card body for a recent
+`Building: …` line, then append your own `Building: <session URL> · <date> · branch <name>` to the card
+body before writing code, and the PR link as soon as it exists. If you answer a card's open question
+while a build is open, put the decision on that PR too. `/next-agent-card` steps 2 and 2a spell out
+the commands; `docs/research/2026-11-02-claim-the-work-before-you-build.md` has the reasoning.
+
 ---
 
 ## Research bank — capturing what we learn about working with AI
