@@ -18,7 +18,16 @@
  * Usage:
  *   node scripts/concept-pilot.mjs select [--n=20]            # print the sample, write sample.json
  *   node scripts/concept-pilot.mjs extract [--slug=a,b] [--force]   # needs ANTHROPIC_API_KEY
- *   node scripts/concept-pilot.mjs report                     # analysis.json + REPORT.md from extractions
+ *   node scripts/concept-pilot.mjs labels                     # labels.json: the distinct concepts, with ids, for grouping
+ *   node scripts/concept-pilot.mjs group --from=<file>        # validate + save a grouping of those ids (groups.json)
+ *   node scripts/concept-pilot.mjs report [--no-groups]       # analysis.json + REPORT.md from extractions
+ *
+ * Why `labels` + `group`: free-text labels from separate passes almost never match word for word,
+ * so counting recurrence on exact labels reads ~0 whatever the texts share (2 Nov 2026 run: 0 of
+ * 614). Grouping by MEANING is a judgement, so it is done by a Claude pass (a subagent, or one
+ * chat) over labels.json, written as {"groups":[{"name":"…","ids":[3,41]}]}. `group` only checks
+ * and stores it; it makes no API call and reads no database. Cost of the pass: ~600 labels with
+ * glosses, one read of ~25k tokens. `report` then counts recurrence per group and says so.
  *
  * Files live in data/concept-pilot/ (gitignored). Re-runs skip texts already
  * extracted unless --force.
@@ -28,7 +37,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { createClient } from '@supabase/supabase-js'
-import { selectSample, chunkSections, normaliseConcepts, analyse } from './lib/concept-pilot.mjs'
+import { selectSample, chunkSections, normaliseConcepts, analyse, uniqueLabels, resolveGroups, groupOfFrom } from './lib/concept-pilot.mjs'
 
 const root = path.join(path.dirname(fileURLToPath(import.meta.url)), '..')
 dotenv.config({ path: path.join(root, '.env.local'), override: false })
@@ -125,12 +134,37 @@ async function extractCmd() {
   }
 }
 
-function reportCmd() {
+function labelsCmd() {
+  const ex = readExtractions()
+  const rows = uniqueLabels(ex)
+  write('labels.json', rows)
+  console.log(`${rows.length} distinct concepts from ${ex.length} texts → data/concept-pilot/labels.json (ids 0–${rows.length - 1})`)
+}
+
+function groupCmd() {
+  const from = flag('from', '')
+  if (!from) throw new Error('usage: group --from=<grouping.json> ({"groups":[{"name":"…","ids":[…]}]}; ids come from labels.json)')
+  const labels = read('labels.json')
+  if (!labels) throw new Error('No labels.json — run `labels` first.')
+  const resolved = resolveGroups(JSON.parse(fs.readFileSync(from, 'utf8')), labels)
+  const grouped = resolved.groups.reduce((n, g) => n + g.keys.length, 0)
+  write('groups.json', resolved)
+  console.log(`${resolved.groups.length} groups covering ${grouped} of ${labels.length} concepts (the rest stay as they are) → data/concept-pilot/groups.json`)
+}
+
+function readExtractions() {
   const slugs = new Set((read('sample.json') ?? []).map(s => s.slug))
   const ex = (read('extractions.json') ?? []).filter(e => slugs.has(e.slug))
   if (!ex.length) throw new Error('No extractions.json — run `extract` first.')
+  return ex
+}
+
+function reportCmd() {
+  const ex = readExtractions()
   const themes = [...new Set(ex.flatMap(e => e.themes))]
-  const a = analyse(ex, themes)
+  const groups = has('no-groups') ? null : read('groups.json')
+  const a = analyse(ex, themes, groups ? { groupOf: groupOfFrom(groups) } : {})
+  const how = groups ? `grouped by meaning (${groups.groups.length} groups, largest holds ${a.largestGroup} labels)` : 'counted on exact labels only (no grouping applied)'
   write('analysis.json', a)
   const sections = ex.flatMap(e => e.sections)
   const kept = sections.reduce((n, s) => n + s.concepts.length, 0)
@@ -143,14 +177,14 @@ function reportCmd() {
   }
   const lines = [
     '# Concept extraction pilot — report', '',
-    `${ex.length} texts, ${sections.length} sections, model(s) ${[...new Set(ex.map(e => `\`${e.model}\``))].join(', ')}.`, '',
+    `${ex.length} texts, ${sections.length} sections, model(s) ${[...new Set(ex.map(e => `\`${e.model}\``))].join(', ')}. Recurrence is ${how}.`, '',
     '## Numbers to judge by', '',
     `- Concepts kept: ${kept}; dropped for unverifiable evidence or incompleteness: ${dropped} (${pct(dropped, kept + dropped)}); sections whose reply did not parse: ${unparsed}`,
-    `- Distinct concepts: ${a.totalConcepts}; recurring across ≥2 texts: ${a.recurring} (${pct(a.recurring, a.totalConcepts)}); singletons: ${a.singleton} (${pct(a.singleton, a.totalConcepts)})`,
+    `- Distinct concepts: ${a.totalConcepts}; recurring across ≥2 texts: ${a.recurring} (${pct(a.recurring, a.totalConcepts)}), of which not covered by any Theme: ${a.recurringNovel}; singletons: ${a.singleton} (${pct(a.singleton, a.totalConcepts)})`,
     `- Overlap with the curated Themes (label contains a theme's words): ${a.themeOverlap}; not covered by any Theme: ${a.novel}`,
     `- Near-duplicate label pairs (same idea, two names): ${a.duplicatePairs}`, '',
     '## Recurring concepts (the discovery routes, if any)', '',
-    ...a.concepts.filter(c => c.textCount >= 2).map(c => `- **${c.labels[0]}** — ${c.textCount} texts (${c.texts.join(', ')})${c.themeOverlap ? ` · ≈ Theme \`${c.themeOverlap}\`` : ' · no Theme'}\n  - ${evidenceFor(c.key)}`),
+    ...a.concepts.filter(c => c.textCount >= 2).map(c => `- **${groups ? c.key : c.labels[0]}**${groups ? ` (${c.labels.slice(0, 5).join(' / ')}${c.labels.length > 5 ? ' …' : ''})` : ''} — ${c.textCount} texts (${c.texts.join(', ')})${c.themeOverlap ? ` · ≈ Theme \`${c.themeOverlap}\`` : ' · no Theme'}\n  - ${evidenceFor(c.key)}`),
     '', '## Near-duplicates', '',
     ...(a.duplicates.length ? a.duplicates.map(d => `- ${d.a} ≈ ${d.b} (${d.sim})`) : ['- none']),
     '', '## How to read this', '',
@@ -164,6 +198,8 @@ function reportCmd() {
 try {
   if (cmd === 'select') await selectCmd()
   else if (cmd === 'extract') await extractCmd()
+  else if (cmd === 'labels') labelsCmd()
+  else if (cmd === 'group') groupCmd()
   else if (cmd === 'report') reportCmd()
-  else throw new Error(`unknown command "${cmd}" (select | extract | report)`)
+  else throw new Error(`unknown command "${cmd}" (select | extract | labels | group | report)`)
 } catch (e) { console.error(e.message); process.exit(1) }

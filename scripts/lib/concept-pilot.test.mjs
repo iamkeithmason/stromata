@@ -1,6 +1,6 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { selectSample, chunkSections, evidenceInPassage, labelKey, normaliseConcepts, analyse } from './concept-pilot.mjs'
+import { selectSample, chunkSections, evidenceInPassage, labelKey, normaliseConcepts, analyse, uniqueLabels, resolveGroups, groupOfFrom } from './concept-pilot.mjs'
 
 const row = (slug, author, era, tradition, genre, word_count = 3000) => ({ slug, author, era, tradition, genre, word_count })
 
@@ -82,4 +82,36 @@ test('analyse: recurrence, theme overlap, near-duplicates', () => {
   assert.equal(out.concepts[0].key, 'spiritual warfare')
   assert.equal(out.concepts[0].themeOverlap, 'spiritual-warfare')
   assert.equal(out.duplicatePairs, 1)
+})
+
+const ex = (slug, ...labels) => ({ slug, sections: [{ id: 's01', concepts: labels.map(label => ({ label, gloss: 'g ' + label, evidence: 'e e e e e e' })) }] })
+
+test('uniqueLabels: one row per key, stable order, ids are positions', () => {
+  const rows = uniqueLabels([ex('t1', 'Tears of compunction', 'the two ways'), ex('t2', 'tears of compunction')])
+  assert.deepEqual(rows.map(r => [r.id, r.key]), [[0, 'tear of compunction'], [1, 'the two ways']])
+  assert.deepEqual(rows[0].texts, ['t1', 't2'])
+})
+
+test('grouping makes meaning, not wording, decide recurrence', () => {
+  const data = [ex('t1', 'tears of compunction', 'the two ways'), ex('t2', 'weeping for sin', 'a lone idea')]
+  assert.equal(analyse(data).recurring, 0)
+  const labels = uniqueLabels(data)
+  const id = l => labels.find(x => x.label === l).id
+  const resolved = resolveGroups({ groups: [{ name: 'Compunction', ids: [id('tears of compunction'), id('weeping for sin')] }] }, labels)
+  const out = analyse(data, [], { groupOf: groupOfFrom(resolved) })
+  assert.equal(out.recurring, 1)
+  assert.equal(out.recurringNovel, 1)
+  assert.equal(out.concepts[0].key, 'compunction')
+  assert.equal(out.concepts[0].labels.length, 2)
+  assert.equal(out.largestGroup, 2)
+  assert.equal(out.totalConcepts, 3) // the group plus the two ungrouped labels
+})
+
+test('resolveGroups rejects a bad grouping instead of half-applying it', () => {
+  const labels = uniqueLabels([ex('t1', 'alpha idea', 'beta idea', 'gamma idea')])
+  assert.throws(() => resolveGroups({}, labels), /must look like/)
+  assert.throws(() => resolveGroups({ groups: [{ name: 'x', ids: [0, 9] }] }, labels), /not a label/)
+  assert.throws(() => resolveGroups({ groups: [{ name: 'x', ids: [0, 1] }, { name: 'y', ids: [1, 2] }] }, labels), /in both/)
+  assert.throws(() => resolveGroups({ groups: [{ name: '', ids: [0] }] }, labels), /no name/)
+  assert.throws(() => resolveGroups({ groups: [{ name: 'x', ids: [0] }, { name: 'X', ids: [1] }] }, labels), /share a name/)
 })

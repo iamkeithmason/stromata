@@ -123,13 +123,15 @@ export function normaliseConcepts(raw, passage) {
  * Roll per-section concepts up into the numbers an editor judges by.
  * `extractions`: [{ slug, sections: [{ id, concepts: [{label,gloss,evidence}] }] }]
  * `themes`: curated theme slugs (e.g. 'spiritual-warfare').
+ * `groupOf(label)`: optional; maps a label to the idea-group it belongs to, so recurrence is
+ * counted on meaning rather than on word-for-word labels (see `groupOfFrom`).
  */
-export function analyse(extractions, themes = [], { dupThreshold = 0.6 } = {}) {
+export function analyse(extractions, themes = [], { dupThreshold = 0.6, groupOf = null } = {}) {
   const byKey = new Map()
   for (const t of extractions) {
     for (const s of t.sections) {
       for (const c of s.concepts) {
-        const k = labelKey(c.label)
+        const k = groupOf ? groupOf(c.label) : labelKey(c.label)
         if (!byKey.has(k)) byKey.set(k, { key: k, labels: new Set(), texts: new Set(), sections: 0 })
         const e = byKey.get(k)
         e.labels.add(c.label); e.texts.add(t.slug); e.sections += 1
@@ -161,10 +163,65 @@ export function analyse(extractions, themes = [], { dupThreshold = 0.6 } = {}) {
   return {
     totalConcepts: total,
     recurring: concepts.filter(c => c.textCount >= 2).length,
+    recurringNovel: concepts.filter(c => c.textCount >= 2 && !c.themeOverlap).length,
+    largestGroup: concepts.reduce((m, c) => Math.max(m, c.labels.length), 0),
     singleton: concepts.filter(c => c.textCount === 1).length,
     themeOverlap: concepts.filter(c => c.themeOverlap).length,
     novel: concepts.filter(c => !c.themeOverlap).length,
     duplicatePairs: duplicates.length,
     concepts, duplicates,
   }
+}
+
+/**
+ * The distinct concepts, one row per labelKey, in a stable order. The `id` is the position in this
+ * list, which is what a grouping file refers to, so the list must be regenerated from the same
+ * extractions (the CLI writes it to labels.json and `group` reads that file back).
+ */
+export function uniqueLabels(extractions) {
+  const byKey = new Map()
+  for (const t of extractions) for (const s of t.sections) for (const c of s.concepts) {
+    const k = labelKey(c.label)
+    if (!byKey.has(k)) byKey.set(k, { key: k, label: c.label, gloss: c.gloss, texts: new Set() })
+    byKey.get(k).texts.add(t.slug)
+  }
+  return [...byKey.values()]
+    .sort((a, b) => a.key.localeCompare(b.key))
+    .map((e, id) => ({ id, key: e.key, label: e.label, gloss: e.gloss, texts: [...e.texts] }))
+}
+
+/**
+ * Check a grouping someone (or some model) proposed: { groups: [{ name, ids: [..] }] } against the
+ * label list. Throws listing every problem, because a half-applied grouping would quietly skew the
+ * recurrence numbers. Returns { groups: [{ name, keys }] }, keyed by labelKey so it survives a re-export.
+ */
+export function resolveGroups(raw, labels) {
+  const problems = []
+  const list = Array.isArray(raw?.groups) ? raw.groups : null
+  if (!list) throw new Error('grouping file must look like {"groups":[{"name":"…","ids":[0,1]}]}')
+  const owner = new Map(), groups = []
+  list.forEach((g, i) => {
+    const name = String(g?.name ?? '').trim().toLowerCase()
+    const ids = Array.isArray(g?.ids) ? g.ids : []
+    if (!name) problems.push(`group #${i} has no name`)
+    if (!ids.length) problems.push(`group "${name || i}" has no ids`)
+    const keys = []
+    for (const id of ids) {
+      if (!Number.isInteger(id) || id < 0 || id >= labels.length) { problems.push(`group "${name}": id ${JSON.stringify(id)} is not a label`); continue }
+      if (owner.has(id)) { problems.push(`id ${id} (${labels[id].label}) is in both "${owner.get(id)}" and "${name}"`); continue }
+      owner.set(id, name)
+      keys.push(labels[id].key)
+    }
+    if (name && keys.length) groups.push({ name, keys })
+  })
+  if (new Set(groups.map(g => g.name)).size !== groups.length) problems.push('two groups share a name')
+  if (problems.length) throw new Error(`grouping rejected:\n  ${problems.slice(0, 20).join('\n  ')}${problems.length > 20 ? `\n  …and ${problems.length - 20} more` : ''}`)
+  return { groups }
+}
+
+/** label → group name for `analyse`. A label in no group stays its own idea (its labelKey). */
+export function groupOfFrom(resolved) {
+  const m = new Map()
+  for (const g of resolved?.groups ?? []) for (const k of g.keys) m.set(k, g.name)
+  return label => m.get(labelKey(label)) ?? labelKey(label)
 }
