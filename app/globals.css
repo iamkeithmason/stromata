@@ -633,6 +633,13 @@ body {
   max-width: calc(var(--text-prose) * var(--reader-measure, 30));
 }
 
+/* A jump target (a heading, or the paragraph an editorial section starts at)
+   lands below the 64px header rather than under it, with or without JavaScript. */
+#reader-main [data-section],
+#reader-main h1[id], #reader-main h2[id], #reader-main h3[id] {
+  scroll-margin-top: 5rem;
+}
+
 
 /* =============================================================
    Book cover — responsive container scaling

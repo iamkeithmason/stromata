@@ -23,6 +23,9 @@ import { resolveLicense } from '@/lib/licenses'
 import { PROVENANCE_INLINE_MAX, hostLabel, isBareUrl } from '@/lib/edition'
 import { ContinueExploring } from '@/app/components/ContinueExploring'
 import { pickReadNext, type ReadNextCandidate } from '@/lib/read-next'
+import { ReaderNav, ReaderNavTrigger } from '@/app/components/ReaderNav'
+import { buildOutline, readSections, showsRunningHead, type SectionsDoc } from '@/lib/reader/outline'
+import { locateSections } from '@/lib/markdown/section-anchors'
 
 // Incremental Static Regeneration: cache the rendered page and revalidate
 // weekly (hourly until 2026-09-29, daily until 2026-10-04 — Vercel Hobby CPU). Safe given the manual
@@ -99,7 +102,7 @@ export default async function TextPage({ params }: Props) {
         accession_number, author_id, body, collection_id, collection_order,
         created_at, editorial_introduction, featured, featured_from, featured_note,
         genre_id, id, license, ocr_quality, provenance_notes, published, published_at,
-        read_next_note, read_next_text_id, slug, source_attribution, source_url, summary, title, translation_notes,
+        read_next_note, read_next_text_id, sections, slug, source_attribution, source_url, summary, title, translation_notes,
         updated_at, word_count,
         author:authors(name, slug, bio, birth_year, death_year, image_url, image_focus_x, image_focus_y, image_zoom, loc:locations(name, slug), tradition:traditions(slug, name), era:eras(label, slug)),
         genre:genres(name),
@@ -163,6 +166,14 @@ export default async function TextPage({ params }: Props) {
   // short letters and prayers are flowing prose with no meaningful structure to navigate.
   const headings = extractHeadings(body)
   const hasToc = headings.length >= 3
+
+  // The phone reader's contents: the author's headings when there are enough,
+  // else the editor's approved sections (migration 034), located in the body
+  // by the same matcher the review page uses. See lib/reader/outline.ts.
+  const sectionList = hasToc ? [] : readSections(text.sections as SectionsDoc)
+  const locatedSections = locateSections(body, sectionList)
+  const outline = buildOutline(headings, locatedSections, locatedSections.map((_, i) => i))
+  const minutes = readingTime(body)
 
   // If this text belongs to a collection, fetch siblings for prev/next navigation
   // and for the frontispiece's "Part N of M" position marker.
@@ -400,11 +411,43 @@ export default async function TextPage({ params }: Props) {
               )}
             </div>
 
+            {/* Who wrote it, and the way into the text's contents or its collection:
+                the same sheet the reading header opens mid-text. */}
+            {author && (
+              <p className="font-serif" style={{ fontSize: 'var(--text-base)', color: 'var(--on-dark-soft)' }}>
+                {author.slug ? (
+                  <Link
+                    href={`/authors/${author.slug}`}
+                    className="hover:opacity-70 transition-opacity"
+                    style={{ color: 'var(--on-dark-body)' }}
+                    data-umami-event="author-open"
+                    data-umami-event-from="text-page"
+                    data-umami-event-author={author.name}
+                  >
+                    {author.name}
+                  </Link>
+                ) : author.name}
+                {lifespan(author.birth_year, author.death_year)}
+              </p>
+            )}
+
             <p
-              className="font-serif italic"
-              style={{ fontSize: 'var(--text-base)', color: 'rgba(250,246,236,0.6)' }}
+              className="font-serif italic flex flex-wrap items-center gap-x-2"
+              style={{ fontSize: 'var(--text-base)', color: 'var(--on-dark-mute)' }}
             >
-              Approx. {readingTime(body)} min read
+              {(outline.entries.length > 1 || (collection && collectionPart && collectionTotal)) ? (
+                <>
+                  <span>Approx. {minutes} min</span>
+                  <span aria-hidden>·</span>
+                  <ReaderNavTrigger slug={slug}>
+                    {outline.entries.length > 1
+                      ? `${outline.kind === 'sections' ? 'Sections' : 'Contents'} (${outline.entries.length}) ▾`
+                      : `Part ${collectionPart} of ${collectionTotal} ▾`}
+                  </ReaderNavTrigger>
+                </>
+              ) : (
+                <span>Approx. {minutes} min read</span>
+              )}
             </p>
 
             {themes.length > 0 && (
@@ -424,7 +467,7 @@ export default async function TextPage({ params }: Props) {
                 data-umami-event-from="text-page"
                 data-umami-event-collection={collection.slug}
               >
-                {collection.title} (Part {collectionPart} of {collectionTotal}) →
+                {collection.title} →
               </Link>
             )}
           </div>
@@ -530,13 +573,9 @@ export default async function TextPage({ params }: Props) {
                 element keeps id="reader-main" because ReaderSettings and globals.css depend on it,
                 so the target sits as the main column's first child. tabIndex -1 lets it take focus. */}
             <span id="main-content" tabIndex={-1} className="outline-none" />
-            {/* Mobile TOC disclosure — visible below xl where the fixed TOC is hidden */}
-            {hasToc && (
-              <div className="xl:hidden mb-8">
-                <TableOfContents headings={headings} mobile />
-              </div>
-            )}
-
+            {/* Below xl the contents live in the reading header's sheet (ReaderNav),
+                opened from the frontispiece and mid-text; the old "Jump to section"
+                box that scrolled away with screen 1 is gone. */}
             {/* OCR quality notice */}
             {text.ocr_quality === 'low' && (
               <p
@@ -582,7 +621,7 @@ export default async function TextPage({ params }: Props) {
 
             {/* Body */}
             <article className="prose-body mb-16">
-              <MarkdownBody content={body} />
+              <MarkdownBody content={body} sections={locatedSections} />
             </article>
 
             {/* Prev / next within collection */}
@@ -696,6 +735,23 @@ export default async function TextPage({ params }: Props) {
 
       <ReaderSettings />
 
+      <ReaderNav
+        slug={slug}
+        title={text.title}
+        minutes={minutes}
+        runningHead={showsRunningHead(minutes)}
+        outline={outline}
+        collection={collection && collectionPart && collectionTotal ? {
+          title: collection.title,
+          slug: collection.slug,
+          part: collectionPart,
+          total: collectionTotal,
+          prev: prevText ? { slug: prevText.slug, title: prevText.title, authorName: prevText.author?.name ?? null } : null,
+          next: nextText ? { slug: nextText.slug, title: nextText.title, authorName: nextText.author?.name ?? null } : null,
+        } : null}
+        readNext={readNext.map(p => ({ slug: p.slug, title: p.title, authorName: p.authorName, kind: p.kind }))}
+      />
+
       <RecordVisit
         slug={slug}
         title={text.title}
@@ -703,7 +759,7 @@ export default async function TextPage({ params }: Props) {
         deathYear={author?.death_year ?? null}
         accessionNumber={text.accession_number ?? null}
         traditionSlug={author?.tradition?.slug ?? null}
-        readingMinutes={readingTime(text.body)}
+        readingMinutes={minutes}
       />
       <TrackTextSessionDepth slug={slug} />
       <TrackPageEvent
@@ -717,4 +773,11 @@ export default async function TextPage({ params }: Props) {
       />
     </div>
   )
+}
+
+/** ", 347–407" after an author's name on the frontispiece; whichever years are known. */
+function lifespan(birth: number | null, death: number | null): string {
+  if (birth && death) return `, ${birth}–${death}`
+  if (death) return `, d. ${death}`
+  return ''
 }

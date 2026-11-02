@@ -61,6 +61,7 @@ export const PUBLIC_TEXT_COLUMNS = [
   'published_at',
   'read_next_note',
   'read_next_text_id',
+  'sections',
   'slug',
   'source_attribution',
   'source_url',

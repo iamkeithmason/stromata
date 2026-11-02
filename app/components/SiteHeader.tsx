@@ -5,6 +5,7 @@ import { MobileNav } from './MobileNav'
 export function SiteHeader({ breadcrumb }: { breadcrumb?: React.ReactNode }) {
   return (
     <header
+      id="site-header"
       style={{
         position: 'fixed', top: 0, left: 0, right: 0, zIndex: 50,
         background: 'var(--paper)',
