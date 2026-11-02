@@ -720,6 +720,79 @@ async function checkDownloads(context, site) {
 
 // ───────────────────────────── main ─────────────────────────────
 
+/**
+ * The phone reading header and its sheet (app/components/ReaderNav.tsx). Run at
+ * 390px, because the running head only exists below the `xl` breakpoint, and on
+ * a text with contents, because that is where every control appears. The sheet's
+ * links are hidden until it opens, so they cannot ride on navSurfaces().
+ */
+async function checkReaderNav(context, site) {
+  const trigger = '[data-umami-event="text-sheet-open"][data-umami-event-from="text-hero-contents"]';
+  const found = await findPageWith(context, site.texts, trigger, { limit: 20 });
+  if (!found) {
+    row('text-sheet-open', 'from=text-hero-contents', 'fail', 'no text page carries the frontispiece trigger');
+    return;
+  }
+  const page = found.page;
+  const slug = found.path.replace('/texts/', '');
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.waitForLoadState('networkidle', { timeout: 10000 }).catch(() => {});
+
+  await expectEvent({
+    event: 'text-sheet-open',
+    case: 'from=text-hero-contents',
+    expect: { from: 'text-hero-contents', text: slug },
+    action: () => page.locator(trigger).first().click(),
+  });
+
+  const jump = '[role="dialog"] [data-umami-event="text-jump"]';
+  if (await page.locator(jump).count()) {
+    await expectEvent({
+      event: 'text-jump',
+      case: 'from=text-sheet-contents',
+      expect: { from: 'text-sheet-contents', text: slug, state: true },
+      action: () => page.locator(jump).last().click(),
+    });
+  } else {
+    await failMissing(page, 'text-jump', 'from=text-sheet-contents', 'contents entry in the sheet');
+  }
+
+  // After the jump the page has scrolled down past the frontispiece, so the site
+  // header is away and the slim pill is showing.
+  await page.mouse.wheel(0, 1200);
+  await page.waitForTimeout(800);
+  const pill = '[data-umami-event="text-sheet-open"][data-umami-event-state="pill"]';
+  if (await page.locator(pill).count()) {
+    await expectEvent({
+      event: 'text-sheet-open',
+      case: 'from=text-running-head (pill)',
+      expect: { from: 'text-running-head', text: slug, state: 'pill' },
+      action: () => page.locator(pill).first().click(),
+    });
+  } else {
+    await failMissing(page, 'text-sheet-open', 'from=text-running-head (pill)', 'slim pill');
+  }
+
+  for (const from of ['text-sheet-next', 'text-sheet-read-next']) {
+    const sel = `[role="dialog"] [data-umami-event="text-open"][data-umami-event-from="${from}"]`;
+    if (!(await page.locator(sel).count())) {
+      row('text-open', `from=${from}`, 'skip', `no ${from} link on ${found.path}`);
+      continue;
+    }
+    if (!(await page.locator('[role="dialog"][aria-hidden="false"]').count())) {
+      await page.locator(pill).first().click().catch(() => {});
+      await page.waitForTimeout(600);
+    }
+    await expectEvent({
+      event: 'text-open',
+      case: `from=${from}`,
+      expect: { from, text: SLUG },
+      action: () => clickFirst(page, sel),
+    });
+  }
+  await page.close();
+}
+
 async function main() {
   console.log(`\nAnalytics wire sweep → ${BASE}`);
   console.log('Umami beacons are intercepted and aborted; nothing reaches the dataset.\n');
@@ -768,6 +841,7 @@ async function main() {
     ['reader settings', ['reader-setting-change'], checkReaderSettings],
     ['downloads', ['text-download', 'collection-download'], checkDownloads],
     ['text page load', ['text-open'], checkNoTextOpenOnLoad],
+    ['reader nav', ['text-sheet-open', 'text-jump', 'text-open'], checkReaderNav],
     ['navigation links', ['text-open', 'author-open', 'collection-open'], checkNavEvents],
   ];
 

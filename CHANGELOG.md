@@ -7,6 +7,63 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-11-02 — Mid-text navigation on phones: a reading header and a sheet
+
+Backlog card "Mid-text navigation on phones: position in the header, contents and next reads in a drawer".
+On a phone a long text runs 70–95 screens and every way off it sat on screen 1 or after the last line; the
+Vainglory page (the top search landing) had 115 visitors and no second text. Built from the closed prototype
+(PR #170) and Keith's decisions of 29 Oct and 2 Nov, recorded on the card.
+
+What a reader sees, below the `xl` breakpoint: past the frontispiece the site header slides away on
+scroll-down and a slim pill stays at the top (position + ▾, filled with progress through the current
+section; the existing gold hairline still shows the whole text). Scrolling up brings back a reading header
+in the site header's place: "22 of 44 · 47 min left" over the chapter's name, a visible "Contents ▾"
+(or "Next part ▾" / "Read next ▾", naming whatever leads the sheet), and the site menu. Either opens a sheet
+from the top: where you are, the contents (windowed past nine entries: first, fold, current ±2, fold), a
+collection's next part (always leading, then Read next), the collection block, and Home / Library. A jump
+from the contents leaves "← Back to ¶17" for seven seconds. Screen 1 gains an author line ("Tertullian,
+155–240" → the author page) and "Approx. 85 min · Contents (44) ▾" / "Part 24 of 24 ▾", which open the
+same sheet; the "Jump to section" box that scrolled away with screen 1 is gone. At `xl` and wider the
+header stays put and the desktop contents rail is unchanged; the sheet still opens from the frontispiece.
+
+Keith's two open questions, settled 2 Nov: editorial sections and the author's chapters number
+differently, sections as lower-case roman with a section mark ("§ ii of viii") and chapters in arabic
+("22 of 44"), so the editor's apparatus is never mistaken for the author's; and short texts (five minutes
+or less) get no running head, only the screen-1 trigger.
+
+Editorial sections (`texts.sections`, migration 034, already in production with the anon grant) are read
+by the reader for the first time. `lib/markdown/section-anchors.ts` places them with the very
+`bodyBlocks` + `resolveAnchor` the review page uses, then tags the rendered paragraph (or list item:
+Chrysostom's addresses are numbered lists) by source offset, so smart quotes and scripture links cannot
+throw the match. A stale anchor drops out rather than pointing somewhere wrong. No text has approved
+sections yet (checked 2 Nov), so long unheaded texts show the fallback ("About halfway through · 36 min
+left") until Keith approves some in /admin/review/sections. `sections` joins `PUBLIC_TEXT_COLUMNS`.
+
+Analytics: `text-sheet-open` (from `text-hero-contents`, or `text-running-head` with `state`
+header|pill), `text-jump` (from `text-sheet-contents`, `state` headings|sections), `text-open` from
+`text-sheet-next`, `text-sheet-read-next` (with `pick`) and `text-sheet-prev`, and `collection-open` from
+`text-sheet`. All are declarative attributes on buttons and links, `text` is the slug throughout. The
+frontispiece author line fires `author-open` from `text-page`. `verify-analytics.mjs` has a new "reader
+nav" suite that runs at 390px; against a local build all five of its cases passed on the wire. The
+end-of-text `collection-nav` links are unchanged, for data continuity, so the card's proposed
+`text-end-next-part` value was not added.
+
+Decisions in the code worth knowing: the decisions about WHAT shows live in `lib/reader/outline.ts`,
+pure and unit-tested; `ReaderNav.tsx` only measures and renders. The frontispiece trigger is a button,
+not a fragment link, because Umami intercepts tracked links to navigate after the beacon. Everything is
+client-side state, so the week-long page cache is untouched. Collection neighbours were already
+revalidated on publish (`revalidateTextPages` in `publish-text.ts`), so "Next in collection" cannot go
+stale. Motion is off under `prefers-reduced-motion`. Not yet seen on a real iPhone: Safari's collapsing
+toolbar against a fixed top pill is the one thing a desktop browser at 390px cannot show.
+
+A second build of the same card (PR #184, from another session the same morning, before Keith's 2 Nov
+decisions) was closed unmerged in favour of this one, at Keith's call; its two Events Register rows were
+deleted and the `text-open` / `collection-open` / `author-open` rows now carry this PR's values. Lesson for
+the next builder: check the card's Notes and the open PRs before starting, and write the PR number onto the
+card as soon as it exists, so a parallel session can see the work is taken.
+
+---
+
 ## 2026-11-02 — Concept extraction pilot: harness, first run, and what it can and cannot say
 
 Backlog card "Concept extraction pilot: 20 diverse texts". The question is whether bottom-up concept
