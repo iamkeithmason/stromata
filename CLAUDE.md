@@ -35,8 +35,14 @@ and get page ids in the same query you read fields with, so you don't pay twice 
 When the budget is gone, **`notion-search` and `notion-fetch` still work and are not metered** —
 slower and page-at-a-time, but enough to finish a job you have already planned.
 
-**Still gated:** `notion-query-database-view` / view mode. `notion-search` + `notion-fetch` remain
-the right tool for *finding* a page by keyword and for reading one page's full properties and body.
+**View mode works and is not metered — verified 2026-10-27.** `notion-query-data-sources` with
+`mode: "view"` and a `view://…` URL ran the Feature Backlog's *Agent queue, approved* view
+(`view://3d2d9194-805d-8188-9ddb-000c4cbc0eba`) with its saved filter and sort, and the tool states
+view mode has no plan quota. This file called it gated until that date. Prefer a saved view over SQL
+whenever one already answers the question; `/next-agent-card` step 1 now does. Formula columns come
+back as `formulaResult://…` references rather than values, and rows arrive whole, so keep
+`page_size` small. `notion-search` + `notion-fetch` remain the right tools for *finding* a page by
+keyword and for reading one page's full properties and body.
 
 Two footguns when reading this database with SQL:
 

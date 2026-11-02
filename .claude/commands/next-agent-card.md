@@ -54,20 +54,27 @@ to promote — never promote a card to `Agent-ready` yourself.
    Then continue to the new card below. This sweep is what keeps `Built` and the CHANGELOG
    current between runs without any merge-time webhook into Notion.
 
-1. **Pull the queue.** Query the Feature Backlog data source
-   (`collection://00686889-855b-424e-8af1-1fe31062648e`), Agent-ready cards first:
+1. **Pull the queue.** Read the Feature Backlog's saved **Agent queue, approved** view
+   with `notion-query-data-sources` in **view mode**, not SQL:
 
-   ```sql
-   SELECT url, Feature, Impact, Confidence, Ease, (Impact*Confidence*Ease) AS ICE,
-          "Recommended Phase", Status, "Stack Context"
-   FROM "collection://00686889-855b-424e-8af1-1fe31062648e"
-   WHERE "Agent" = 'Agent-ready' AND Status IN ('Idea','Under Consideration','Planned')
-   ORDER BY ICE DESC
+   ```json
+   {"data": {"mode": "view", "view_url": "view://3d2d9194-805d-8188-9ddb-000c4cbc0eba", "page_size": 10}}
    ```
 
-   If SQL is plan-gated (400 "requires a Business plan"), fall back to `notion-search`
-   scoped to the data source, then `notion-fetch` each — same pattern as the
-   `backlog-triage` skill and CLAUDE.md's Notion note.
+   The view carries the filter (`Agent = 'Agent-ready'`, not yet `Built`) and the sort
+   (ICE, highest first), so the rows come back already ranked. View mode has no plan
+   quota, so it does not spend the shared SQL budget that the Prospect List sync and
+   `backlog-triage` draw on (CLAUDE.md's Notion note). Two things to know when reading it:
+
+   - **`ICE Score` comes back as a `formulaResult://…` reference, not a number.** Trust
+     the view's order; if you need the figure, compute `Impact × Confidence × Ease`.
+   - **Rows arrive whole**, long `Notes` and `Outcome / Done when` included, so keep
+     `page_size` small. The top few cards are all step 2 needs; follow `next_cursor`
+     only if every one of them is already in flight.
+
+   If view mode refuses, fall back to SQL against the data source
+   (`collection://00686889-855b-424e-8af1-1fe31062648e`) with the same filter and
+   `ORDER BY Impact*Confidence*Ease DESC`, and say in the run report that the view failed.
 
 2. **Choose one card.** Take the highest-ICE card that does **not** already have an open
    PR or a `claude/*` branch for it (check `mcp__github__list_pull_requests` and
