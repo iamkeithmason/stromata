@@ -7,6 +7,23 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-11-02 — Concept extraction pilot: the harness (no results yet)
+
+Backlog card "Concept extraction pilot: 20 diverse texts". The question is whether bottom-up concept
+extraction finds recurring ideas the curated Themes don't, so this adds only the means to test it, with no
+public UI, no schema change and nothing written to the database. `scripts/concept-pilot.mjs` has three
+steps: `select` picks 20 published texts by greedy diversity over era, tradition and genre with one per
+author (measured against the live corpus: 10 eras, 10 traditions, 13 genres, 20 authors); `extract` cuts each
+body into stable ~1,500-word sections and asks Claude for granular concepts, each with a verbatim quotation;
+`report` rolls the results up into recurrence, singleton tail, overlap with Theme slugs, near-duplicate labels
+and the rate of quotations that are not actually in the passage (those concepts are dropped and counted).
+The pure logic is in `scripts/lib/concept-pilot.mjs` with 7 tests. Output goes to `data/concept-pilot/`
+(gitignored). **Not done: `extract` has not been run** — the build session had no `ANTHROPIC_API_KEY`, so
+Keith runs `extract` then `report` (about 80 calls, ~150k input tokens; one read of the 20 bodies, ~0.5-1 MB
+of Supabase egress) and reads `REPORT.md` to decide whether to continue.
+
+---
+
 ## 2026-10-29 — The mobile menu's close X no longer looks cropped
 
 Keith spotted on his phone that the menu's X looked clipped at the top right. The three menu lines sit 7px
