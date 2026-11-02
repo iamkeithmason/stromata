@@ -56,6 +56,12 @@ revalidated on publish (`revalidateTextPages` in `publish-text.ts`), so "Next in
 stale. Motion is off under `prefers-reduced-motion`. Not yet seen on a real iPhone: Safari's collapsing
 toolbar against a fixed top pill is the one thing a desktop browser at 390px cannot show.
 
+A second build of the same card (PR #184, from another session the same morning, before Keith's 2 Nov
+decisions) was closed unmerged in favour of this one, at Keith's call; its two Events Register rows were
+deleted and the `text-open` / `collection-open` / `author-open` rows now carry this PR's values. Lesson for
+the next builder: check the card's Notes and the open PRs before starting, and write the PR number onto the
+card as soon as it exists, so a parallel session can see the work is taken.
+
 ---
 
 ## 2026-11-02 — Concept extraction pilot: harness, first run, and what it can and cannot say
