@@ -122,7 +122,6 @@ const legacyRawColour = [
   'app/components/MarkdownEditor.tsx',
   'app/components/ReaderSettings.tsx',
   'app/components/TableOfContents.tsx',
-  'app/components/TextsBrowser.tsx',
   'app/eras/\\[slug\\]/page.tsx',
   'app/locations/\\[country-slug\\]/page.tsx',
   'app/locations/page.tsx',

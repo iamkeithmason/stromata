@@ -31,9 +31,11 @@ export function MobileNav() {
         onClick={() => setOpen(o => !o)}
         className="flex flex-col justify-center items-end gap-1.5 p-2 -mr-2"
       >
-        <span style={{ width: 20, height: 1, background: 'var(--ink-mute)', transition: 'transform 150ms ease', transform: open ? 'translateY(3.5px) rotate(45deg)' : 'none' }} />
+        {/* The lines sit 7px apart (gap-1.5 + 1px), so the outer two move 7px to meet the
+            middle before rotating; at 3.5px the strokes crossed off-centre and the X looked cropped. */}
+        <span style={{ width: 20, height: 1, background: 'var(--ink-mute)', transition: 'transform 150ms ease', transform: open ? 'translateY(7px) rotate(45deg)' : 'none' }} />
         <span style={{ width: 20, height: 1, background: 'var(--ink-mute)', opacity: open ? 0 : 1, transition: 'opacity 150ms ease' }} />
-        <span style={{ width: 20, height: 1, background: 'var(--ink-mute)', transition: 'transform 150ms ease', transform: open ? 'translateY(-3.5px) rotate(-45deg)' : 'none' }} />
+        <span style={{ width: 20, height: 1, background: 'var(--ink-mute)', transition: 'transform 150ms ease', transform: open ? 'translateY(-7px) rotate(-45deg)' : 'none' }} />
       </button>
 
       {open && (

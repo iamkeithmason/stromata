@@ -22,6 +22,10 @@ export default async function EditTextPage({ params }: Props) {
 
   if (!text) notFound()
 
+  const { data: readNext } = text.read_next_text_id
+    ? await supabase.from('texts').select('slug').eq('id', text.read_next_text_id).maybeSingle()
+    : { data: null }
+
   const themeSlugs = (text.text_themes ?? [])
     .map((tt: { theme: { slug: string } | null }) => tt.theme?.slug)
     .filter(Boolean) as string[]
@@ -69,6 +73,8 @@ export default async function EditTextPage({ params }: Props) {
           initialFeatured={text.featured ?? false}
           initialFeaturedFrom={text.featured_from ?? ''}
           initialFeaturedNote={text.featured_note ?? ''}
+          initialReadNextSlug={(readNext as { slug: string } | null)?.slug ?? ''}
+          initialReadNextNote={text.read_next_note ?? ''}
         />
       </div>
     </main>

@@ -224,6 +224,7 @@ Two traps worth knowing:
 | `author` | which author | display name (matches `authors.name`) |
 | `country` | which location | display name |
 | `depth` | how many distinct texts this session has reached | integer, `1` or `2` only (`text-session-depth`) |
+| `pick` | which rule chose a `read-next` pick, or the editor | `editorial` \| `author` \| `theme` \| `genre` (on `text-open` from `read-next` only) |
 | `state`, `direction` | qualifiers | short enum-ish string |
 
 Rules:
@@ -381,6 +382,53 @@ example (a NOINDEX exploration, not linked in nav).
 
 ---
 
+## Screens reference — look at the site before changing it
+
+**`docs/screens/stromata-screens.pdf`** holds the key public pages as they currently look, at phone (390px) and
+desktop (1440px): home, the reader (top landing text, its end-of-text module, dark theme, a short text), the
+library, authors and an author page, a collection, a theme, an era, a tradition, Scripture, search and the 404.
+The cover says when it was rendered and from which code. **Any session doing UI work reads it first**, so
+changes start from how the site actually looks rather than from the code alone. A copy sits in the claude.ai
+project "3 - Stromata", so ordinary chats can review the interface too (the practice Paideia uses).
+
+- **Regenerate it after each release:** `npm run screens`. The pages come from `scripts/screens/manifest.json`,
+  where you can add a page or an extra shot further down one. The PDF commit is docs-only (`docs/screens/` is on
+  `SITE_IRRELEVANT`), so it goes straight to `main` and deploys nothing. Then replace the copy in the claude.ai
+  project.
+- **From a cloud session, render the code, not the live site.** Vercel's bot checkpoint stops a cloud browser on
+  thestromata.com and on previews, and that protection is not to be bypassed. Check out the code, write a
+  throwaway `.env.local` with the public anon key (Supabase MCP `get_publishable_keys`) plus dummy `ADMIN_*`
+  values, run `next dev`, then `npm run screens -- --url=http://localhost:3000`. Delete `.env.local` afterwards.
+  From Keith's laptop, plain `npm run screens` renders production.
+- **Meters:** one run is about 30 shots against the live database, a few MB of Supabase egress (and, against
+  production, a little Fluid CPU). Once per release; don't re-run it for polish.
+- `--png` also writes each shot to `docs/screens/png/` (gitignored); `--only=<name>` renders a subset.
+
+---
+
+## Mobile-first — design at 390px, then add width
+
+Adopted by Keith on 27 Oct 2026. The site was built desktop-first and adapted for phones afterwards, and
+every phone fix since has been found by accident or a one-off audit. About a third of readers are on
+phones, and most arrive from search straight onto a text, so **new public UI starts at 390px** and widens
+from there.
+
+- **Write the phone layout first.** Unprefixed Tailwind classes and base CSS are the phone; `md:`/`lg:` and
+  `min-width` media queries add the wider tiers. A `max-width` override to rescue a desktop layout on
+  phones (as `.frontispiece` had to do in PR #167) is a sign the work started at the wrong end.
+- **The checklist every public change meets at 390px:** the first screen shows what the reader came for
+  (on a text, the text); tap targets are at least 44px; nothing scrolls sideways (long URLs and slugs
+  wrap); furniture collapses before content does; text reads without zoom; nothing fixed covers content.
+- **Look at it before calling it done.** Render the changed pages at 390px as well as 1440px, from a local
+  build against the live data (`npm run screens -- --url=http://localhost:3000 --only=<page>`, see
+  "Screens reference" above), and put the phone shot in the PR. A new page added to
+  `scripts/screens/manifest.json` gets both widths.
+- **Existing pages** are being brought up to this standard by the backlog card "Mobile-first audit: bring
+  every public page up to phone-first standard". Until a page has been through it, don't assume its phone
+  layout was designed; check it.
+
+---
+
 ## Vercel usage — previews are opt-in, and batch small changes
 
 Stromata is on Vercel's **Hobby (free) tier**, and in Sept 2026 it went over the Fluid Active CPU
@@ -413,10 +461,10 @@ changes still get separate PRs — this is about not splitting one piece of work
 
 **Standing rule — one release a week, through a `release` branch (agreed with Keith 2026-10-10).** Production
 deploys from `main` only, and every deploy empties the page cache, so site-changing work is collected on a
-long-lived **`release`** branch and shipped to `main` once a week. In force until the Usage page's 30-day Fluid
-Active CPU total is back under the 4h Hobby allowance (expected between about 28 Oct and 5 Nov — the 21–26 Sep
-peak and the busy first days of October are still in that window); Keith decides whether to keep the branch
-after that.
+long-lived **`release`** branch and shipped to `main` once a week. **Permanent** (Keith, 2026-10-26): the
+weekly release stays after the Usage page's 30-day Fluid Active CPU total is back under the 4h Hobby allowance
+(expected between about 28 Oct and 5 Nov). The Monday release task reports every week, even when there is
+nothing to ship.
 
 - **Site-changing PRs open with base `release`, not `main`** — `/next-agent-card` PRs included. A merge into
   `release` deploys nothing (it is a preview branch, and previews are off unless asked), so those merges are

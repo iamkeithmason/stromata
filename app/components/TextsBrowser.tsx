@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
 import { FilterPill } from './FilterPill'
 import { useUrlFilters } from '@/lib/use-url-filters'
@@ -88,6 +88,12 @@ export function TextsBrowser({
   }
 
   const hasFilter = Boolean(filters.tradition || filters.era || filters.genre)
+  const activeCount = [filters.tradition, filters.era, filters.genre].filter(Boolean).length
+  const [filtersOpen, setFiltersOpen] = useState(hasFilter)
+  // A filter applied from a shared link arrives after the first render.
+  useEffect(() => {
+    if (hasFilter) setFiltersOpen(true)
+  }, [hasFilter])
 
   const filtered = useMemo(() => {
     const list = items.filter(
@@ -109,19 +115,36 @@ export function TextsBrowser({
     <>
       <div className="mb-6">
         <div className="flex items-baseline justify-between mb-3">
-          <h1 className="font-serif italic text-xl" style={{ color: '#1b1b1b' }}>
+          <h1 className="font-serif italic text-xl" style={{ color: 'var(--ink)' }}>
             Library
           </h1>
-          <span className="smallcaps" style={{ color: '#6f6a60' }}>
+          <span className="smallcaps" style={{ color: 'var(--ink-faint)' }}>
             {hasFilter
               ? `${filtered.length} of ${items.length}`
               : `${items.length} text${items.length === 1 ? '' : 's'}`}
           </span>
         </div>
-        <hr style={{ borderColor: '#1b1b1b', borderTopWidth: '1px' }} />
+        <hr style={{ borderColor: 'var(--ink)', borderTopWidth: '1px' }} />
       </div>
 
       <div className="mb-8 space-y-3">
+        {/* Thirty-odd facet pills used to fill the first screen before any
+            title. They now sit behind one line, open whenever a filter is set
+            so a shared filtered link still shows what it is filtering on. */}
+        <details
+          open={filtersOpen}
+          onToggle={e => setFiltersOpen((e.currentTarget as HTMLDetailsElement).open)}
+        >
+          <summary
+            className="smallcaps cursor-pointer select-none"
+            style={{ color: 'var(--ink-mute)', width: 'fit-content' }}
+          >
+            Filter by tradition, era or genre
+            {activeCount > 0 && (
+              <span style={{ color: 'var(--gold-ink)' }}> · {activeCount} active</span>
+            )}
+          </summary>
+          <div className="space-y-3 pt-3">
         <FilterRow
           label="Tradition"
           options={facets.traditions}
@@ -140,8 +163,10 @@ export function TextsBrowser({
           selected={filters.genre}
           onToggle={slug => set('genre', slug)}
         />
+          </div>
+        </details>
         <div className="flex items-center gap-3 flex-wrap pt-1">
-          <span className="smallcaps" style={{ color: '#9c9589' }}>
+          <span className="smallcaps" style={{ color: 'var(--ink-mute)' }}>
             Sort
           </span>
           {SORTS.map(s => (
@@ -166,7 +191,7 @@ export function TextsBrowser({
       </div>
 
       {filtered.length > 0 ? (
-        <ul className="divide-y" style={{ borderColor: '#e5e0d8' }}>
+        <ul className="divide-y" style={{ borderColor: 'var(--rule-soft)' }}>
           {filtered.map(t => (
             <li key={t.id}>
               <Link data-umami-event="text-open" data-umami-event-from="texts-index" data-umami-event-text={t.slug} href={`/texts/${t.slug}`} className="flex items-start justify-between py-4 group">
@@ -174,26 +199,26 @@ export function TextsBrowser({
                   <div>
                     <span
                       className="font-serif group-hover:opacity-70 transition-opacity"
-                      style={{ color: '#1b1b1b' }}
+                      style={{ color: 'var(--ink)' }}
                     >
                       {t.title}
                     </span>
                     {t.author && (
-                      <span className="text-sm ml-3" style={{ color: '#6f6a60' }}>
+                      <span className="text-sm ml-3" style={{ fontFamily: 'var(--ui-face)', color: 'var(--ink-faint)' }}>
                         {t.author.name}
                       </span>
                     )}
                     {t.themes.length > 0 && (
-                      <span className="text-xs ml-3" style={{ color: '#6f6a60' }}>
+                      <span className="text-xs ml-3" style={{ fontFamily: 'var(--ui-face)', color: 'var(--ink-faint)' }}>
                         {t.themes.join(' · ')}
                       </span>
                     )}
                   </div>
-                  <div className="text-xs mt-0.5" style={{ color: '#9c9589' }}>
+                  <div className="text-xs mt-0.5" style={{ fontFamily: 'var(--ui-face)', color: 'var(--ink-mute)' }}>
                     approx. {t.minutes} min read
                   </div>
                 </div>
-                <span className="text-xs ml-4 shrink-0 mt-0.5" style={{ color: '#6f6a60' }}>
+                <span className="text-xs ml-4 shrink-0 mt-0.5" style={{ fontFamily: 'var(--ui-face)', color: 'var(--ink-faint)' }}>
                   {t.genre?.name}
                 </span>
               </Link>
@@ -201,7 +226,7 @@ export function TextsBrowser({
           ))}
         </ul>
       ) : (
-        <p className="text-sm" style={{ color: '#6f6a60' }}>
+        <p className="text-sm" style={{ color: 'var(--ink-faint)' }}>
           No texts match these filters.
         </p>
       )}
@@ -226,7 +251,7 @@ function FilterRow({
     <div className="flex items-baseline gap-3 flex-wrap">
       <span
         className="smallcaps shrink-0"
-        style={{ color: '#9c9589', width: '5rem' }}
+        style={{ color: 'var(--ink-mute)', width: '5rem' }}
       >
         {label}
       </span>
@@ -260,6 +285,7 @@ function SortButton({
       aria-pressed={active}
       className="text-xs hover:opacity-70 transition-opacity"
       style={{
+        fontFamily: 'var(--ui-face)',
         color: active ? 'var(--ink)' : 'var(--ink-mute)',
         borderBottom: `1px solid ${active ? 'var(--gold)' : 'transparent'}`,
         paddingBottom: '1px',
