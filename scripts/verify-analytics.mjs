@@ -51,6 +51,8 @@ import {
   summarise,
   SLUG,
   READ_NEXT_PICK,
+  isVercelCheckpoint,
+  describeMissing,
 } from './lib/wire-check.mjs';
 
 // ───────────────────────────── arguments ─────────────────────────────
@@ -186,12 +188,39 @@ async function gotoOnce(page, url) {
   }
 }
 
+/** HTTP status of each page's main document, for describing an absence. */
+const docStatus = new WeakMap();
+
 /** Open a URL in a FRESH TAB — a fresh tab is a fresh sessionStorage. */
 async function open(context, path) {
   const page = await context.newPage();
-  await gotoOnce(page, BASE + path);
+  const res = await gotoOnce(page, BASE + path);
+  docStatus.set(page, res ? res.status() : null);
+  // Before the tracker check, whose message would otherwise blame Deployment
+  // Protection for what is really Vercel's bot checkpoint.
+  if (isVercelCheckpoint(await page.title().catch(() => ''))) {
+    throw new Error(
+      `${path} served Vercel's bot checkpoint, not the site. Not to be bypassed ` +
+        '(CLAUDE.md): run from a home connection, or against a local build with --url.'
+    );
+  }
   await ensureTracker(page);
   return page;
+}
+
+/**
+ * A control that every text page renders, absent from this one. That is a
+ * regression or a page that never arrived, never "not applicable here", so it
+ * FAILS with what the browser was looking at. A skip here is how the reader
+ * settings row sat unexamined (2 Nov 2026).
+ */
+async function failMissing(page, event, label, what) {
+  const detail = describeMissing(what, {
+    path: new URL(page.url()).pathname,
+    status: docStatus.get(page) ?? null,
+    title: await page.title().catch(() => ''),
+  });
+  row(event, label, 'fail', detail);
 }
 
 /**
@@ -586,7 +615,7 @@ async function checkCitationCopy(context, site) {
   const page = await open(context, site.texts[0]);
   const button = page.getByRole('button', { name: /cite this text/i }).first();
   if (!(await button.count())) {
-    row('citation-copy', 'text footer', 'skip', 'no "Cite this text" button on the page');
+    await failMissing(page, 'citation-copy', 'text footer', '"Cite this text" button');
     await page.close();
     return;
   }
@@ -603,7 +632,7 @@ async function checkReaderSettings(context, site) {
   const page = await open(context, site.texts[0]);
   const opener = page.getByRole('button', { name: 'Reading settings' }).first();
   if (!(await opener.count())) {
-    row('reader-setting-change', 'panel', 'skip', 'reader settings control not found');
+    await failMissing(page, 'reader-setting-change', 'panel', 'reader settings control');
     await page.close();
     return;
   }
@@ -626,7 +655,7 @@ async function checkReaderSettings(context, site) {
     const group = panel.locator(':scope > div').nth(i);
     const target = group.locator('button').last();
     if (!(await target.count())) {
-      row('reader-setting-change', `setting=${setting}`, 'skip', `no ${groupLabel} buttons`);
+      await failMissing(page, 'reader-setting-change', `setting=${setting}`, `${groupLabel} buttons`);
       continue;
     }
     await expectEvent({

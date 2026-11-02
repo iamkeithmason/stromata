@@ -7,6 +7,27 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-11-02 — The wire sweep fails, and says why, when a reader control is missing
+
+On 2 Nov `verify-analytics.mjs` reported `reader-setting-change · panel · reader settings control not found`
+as a skip, and the guess was that PR #167's phone reader rework had broken the selector. It had not. The
+control is still `<button aria-label="Reading settings">`, mounted on every text page, and the check passes
+3/3 on the wire (theme, font-size, measure, all carrying `from: text-reader`) against a local build and
+against production in the default mode. Only `--via-node` against production skips, and that run
+intercepted zero beacons, not even a pageview, so the browser was not looking at a working text page.
+Production then began answering this cloud session with Vercel's Security Checkpoint, which is not to be
+bypassed, so the exact page it saw on 2 Nov is unconfirmed.
+
+Two changes so the next occurrence explains itself. `open()` now stops with a plain message when a page is
+Vercel's bot checkpoint rather than the site; before this, the message blamed Deployment Protection. And
+the reader-settings and "Cite this text" rows, both controls every text page renders, now **fail** rather
+than skip when absent, with the path, HTTP status and page title in the detail. A skip stays for surfaces
+that depend on content (downloads, collection nav, a themed text). `describeMissing` and
+`isVercelCheckpoint` live in `scripts/lib/wire-check.mjs` with tests. No site code changed; the selector
+was right.
+
+---
+
 ## 2026-11-02 — `text-open` means a click again; the wire sweep stops failing on its own races
 
 **The page-load `text-open` is gone** (`app/texts/[slug]/page.tsx`). Every text page sent a

@@ -9,7 +9,17 @@
 
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { isUmamiCollect, parseBeacon, checkProps, pickEvent, SLUG, READ_NEXT_PICK, summarise } from './wire-check.mjs';
+import {
+  isUmamiCollect,
+  parseBeacon,
+  checkProps,
+  pickEvent,
+  SLUG,
+  READ_NEXT_PICK,
+  summarise,
+  isVercelCheckpoint,
+  describeMissing,
+} from './wire-check.mjs';
 
 test('the collection endpoint is matched, the tracker script is not', () => {
   assert.equal(isUmamiCollect('https://cloud.umami.is/api/send'), true);
@@ -136,4 +146,25 @@ test('pickEvent ignores events sent from another page', () => {
 test('pickEvent keeps an event with no url rather than guessing where it came from', () => {
   const { ok } = pickEvent([{ name: 'text-open', url: '', data: { from: 'era-page' } }], 'text-open', { from: 'era-page' }, { onPath: '/eras/ante-nicene' });
   assert.equal(ok, true);
+});
+
+test('the bot checkpoint is told apart from the site', () => {
+  assert.equal(isVercelCheckpoint('Vercel Security Checkpoint'), true);
+  assert.equal(isVercelCheckpoint('Conference 9 · The Stromata'), false);
+  assert.equal(isVercelCheckpoint(undefined), false);
+});
+
+test('a missing control says what the browser was looking at', () => {
+  assert.match(
+    describeMissing('reader settings control', { path: '/texts/a', status: 200, title: 'Vercel Security Checkpoint' }),
+    /bot checkpoint/
+  );
+  const d = describeMissing('reader settings control', { path: '/texts/a', status: 404, title: 'Not found' });
+  assert.match(d, /\/texts\/a/);
+  assert.match(d, /HTTP 404/);
+  assert.match(d, /Not found/);
+  assert.match(
+    describeMissing('x', { path: '/texts/a', status: null, title: '' }),
+    /no response/
+  );
 });
