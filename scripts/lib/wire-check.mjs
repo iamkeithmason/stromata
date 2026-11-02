@@ -148,3 +148,26 @@ export function summarise(rows) {
   for (const r of rows) t[r.status] = (t[r.status] ?? 0) + 1;
   return t;
 }
+
+/**
+ * Vercel's bot checkpoint answers a cloud browser in place of the site. The
+ * page is a real 200 with its own scripts, so without this test a run against
+ * it reads as "control not found" — a finding about the site that is really a
+ * finding about the network. CLAUDE.md: that protection is not to be bypassed.
+ */
+export function isVercelCheckpoint(title) {
+  return /vercel security checkpoint/i.test(String(title ?? ''));
+}
+
+/**
+ * The detail for a control that every text page renders but this one did not.
+ * Says what the browser was actually looking at, because "not found" alone is
+ * ambiguous between a regression, a wrong page and a page that never arrived.
+ */
+export function describeMissing(what, { path, status, title }) {
+  if (isVercelCheckpoint(title)) {
+    return `${what} absent: ${path} served Vercel's bot checkpoint, not the site`;
+  }
+  const code = status == null ? 'no response' : `HTTP ${status}`;
+  return `${what} absent on ${path} (${code}, title "${String(title ?? '').slice(0, 60)}")`;
+}
