@@ -82,12 +82,12 @@ const squash = s => s.toLowerCase().replace(/[‘’]/g, "'").replace(/[“”]/
 /** True when the quoted evidence occurs in the passage (case/punctuation-insensitive). */
 export function evidenceInPassage(quote, passage) {
   const q = squash(quote || '')
-  return q.split(' ').length >= 4 && squash(passage).includes(q)
+  return q.split(' ').length >= 6 && squash(passage).includes(q)
 }
 
 /** Lower-cased, singularised-ish label key for grouping. */
 export function labelKey(label) {
-  return squash(label).split(' ').map(w => (w.length > 4 ? w.replace(/ies$/, 'y').replace(/([^s])s$/, '$1') : w)).join(' ')
+  return squash(label.replace(/['\u2019]s\b/gi, '')).split(' ').map(w => (w.length > 4 ? w.replace(/ies$/, 'y').replace(/([^s])s$/, '$1') : w)).join(' ')
 }
 
 function tokens(label) {
@@ -140,10 +140,10 @@ export function analyse(extractions, themes = [], { dupThreshold = 0.6 } = {}) {
     key: e.key, labels: [...e.labels], texts: [...e.texts], textCount: e.texts.size, sections: e.sections,
   })).sort((a, b) => b.textCount - a.textCount || b.sections - a.sections || a.key.localeCompare(b.key))
 
-  const themeTokens = themes.map(s => ({ slug: s, tok: new Set(s.split('-').filter(w => w.length > 2)) }))
+  const themeTokens = themes.map(s => ({ slug: s, tok: [...tokens(s.replace(/-/g, ' '))] }))
   for (const c of concepts) {
     const tok = tokens(c.key)
-    const hit = themeTokens.find(t => t.tok.size && [...t.tok].every(w => tok.has(w) || [...tok].some(x => x.startsWith(w.slice(0, 5)))))
+    const hit = themeTokens.find(t => t.tok.length && t.tok.every(w => tok.has(w)))
     c.themeOverlap = hit ? hit.slug : null
   }
 

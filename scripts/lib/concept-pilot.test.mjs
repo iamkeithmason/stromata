@@ -42,11 +42,19 @@ test('evidenceInPassage: tolerant of case/punctuation, rejects invented or too-s
   assert.ok(evidenceInPassage('in humility, put off the OLD man', p))
   assert.ok(!evidenceInPassage('put on the new man entirely', p))
   assert.ok(!evidenceInPassage('old man', p))
+  assert.ok(!evidenceInPassage('the old man', p))
 })
 
 test('labelKey merges simple plural/case variants', () => {
   assert.equal(labelKey('Spiritual Warfares'), labelKey('spiritual warfare'))
+  assert.equal(labelKey("Christ's obedience"), labelKey('christ obedience'))
   assert.equal(labelKey('Works of mercy'), labelKey('work of mercies'))
+})
+
+test('analyse: theme overlap needs whole words, not prefixes', () => {
+  const c = l => ({ label: l, gloss: 'g', evidence: 'e e e e e e' })
+  const out = analyse([{ slug: 't', sections: [{ id: 's01', concepts: [c('restitution of all things'), c('justification by faith')] }] }], ['rest', 'justice'])
+  assert.equal(out.themeOverlap, 0)
 })
 
 test('normaliseConcepts keeps verified, counts dropped by reason', () => {
@@ -66,7 +74,7 @@ test('analyse: recurrence, theme overlap, near-duplicates', () => {
   const out = analyse([
     { slug: 't1', sections: [{ id: 's01', concepts: [c('Spiritual warfare'), c('Holy fear of God')] }] },
     { slug: 't2', sections: [{ id: 's01', concepts: [c('spiritual warfare'), c('Fear of God'), c('Tears of compunction')] }] },
-  ], ['spiritual-warfare', 'prayer'])
+  ], ['spiritual-warfare', 'prayer', 'rest', 'justice'])
   assert.equal(out.totalConcepts, 4)
   assert.equal(out.recurring, 1)
   assert.equal(out.themeOverlap, 1)

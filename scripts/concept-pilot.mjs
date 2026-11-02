@@ -94,20 +94,31 @@ async function extractCmd() {
     if (bySlug.has(s.slug) && !has('force')) { console.log(`skip  ${s.slug} (already extracted)`); continue }
     const { data, error } = await supabase.from('texts').select('body').eq('id', s.id).single()
     if (error) { console.error(`FAIL  ${s.slug}: ${error.message}`); continue }
+    if (!data?.body) { console.error(`FAIL  ${s.slug}: empty body`); continue }
     const sections = []
-    let droppedTotal = 0
+    let droppedTotal = 0, failed = false
     for (const sec of chunkSections(data.body)) {
-      const msg = await anthropic.messages.create({
-        model: MODEL, max_tokens: 1500, system: SYSTEM,
-        messages: [{ role: 'user', content: `Text: ${s.title} — ${s.author}\nSection ${sec.id}:\n\n${sec.text}` }],
-      })
+      let msg = null
+      for (let attempt = 1; attempt <= 3 && !msg; attempt++) {
+        try {
+          msg = await anthropic.messages.create({
+            model: MODEL, max_tokens: 3000, system: SYSTEM,
+            messages: [{ role: 'user', content: `Text: ${s.title} — ${s.author}\nSection ${sec.id}:\n\n${sec.text}` }],
+          })
+        } catch (e) {
+          console.error(`retry ${s.slug}/${sec.id} (${attempt}/3): ${e.message}`)
+          await new Promise(r => setTimeout(r, 2000 * attempt))
+        }
+      }
+      if (!msg) { failed = true; break }
       const out = msg.content.filter(b => b.type === 'text').map(b => b.text).join('')
-      let raw = null
+      let raw = null // a reply cut off at max_tokens fails to parse and is counted in 'did not parse'
       try { raw = JSON.parse(out.slice(out.indexOf('{'), out.lastIndexOf('}') + 1)) } catch { /* counted as zero concepts below */ }
       const { kept, dropped } = normaliseConcepts(raw, sec.text)
       droppedTotal += dropped.length
       sections.push({ id: sec.id, words: sec.words, parsed: raw !== null, concepts: kept, dropped })
     }
+    if (failed) { console.error(`FAIL  ${s.slug}: API errors; not recorded, re-run to retry`); continue }
     bySlug.set(s.slug, { slug: s.slug, title: s.title, author: s.author, themes: s.themes, model: MODEL, sections })
     write('extractions.json', [...bySlug.values()])
     console.log(`done  ${s.slug}: ${sections.length} sections, ${sections.reduce((n, x) => n + x.concepts.length, 0)} concepts (${droppedTotal} dropped)`)
@@ -115,8 +126,9 @@ async function extractCmd() {
 }
 
 function reportCmd() {
-  const ex = read('extractions.json')
-  if (!ex?.length) throw new Error('No extractions.json — run `extract` first.')
+  const slugs = new Set((read('sample.json') ?? []).map(s => s.slug))
+  const ex = (read('extractions.json') ?? []).filter(e => slugs.has(e.slug))
+  if (!ex.length) throw new Error('No extractions.json — run `extract` first.')
   const themes = [...new Set(ex.flatMap(e => e.themes))]
   const a = analyse(ex, themes)
   write('analysis.json', a)
@@ -126,12 +138,12 @@ function reportCmd() {
   const unparsed = sections.filter(s => !s.parsed).length
   const pct = (x, y) => (y ? `${Math.round((100 * x) / y)}%` : '–')
   const evidenceFor = key => {
-    for (const t of ex) for (const s of t.sections) for (const c of s.concepts) if (c.label && key === a.concepts.find(x => x.labels.includes(c.label))?.key) return `${t.slug}/${s.id}: “${c.evidence}”`
+    for (const t of ex) for (const s of t.sections) for (const c of s.concepts) if (c.label && key === a.concepts.find(x => x.labels.includes(c.label))?.key) return `${t.slug}/${s.id}: “${c.evidence.replace(/\s+/g, ' ')}”`
     return ''
   }
   const lines = [
     '# Concept extraction pilot — report', '',
-    `${ex.length} texts, ${sections.length} sections, model \`${ex[0].model}\`.`, '',
+    `${ex.length} texts, ${sections.length} sections, model(s) ${[...new Set(ex.map(e => `\`${e.model}\``))].join(', ')}.`, '',
     '## Numbers to judge by', '',
     `- Concepts kept: ${kept}; dropped for unverifiable evidence or incompleteness: ${dropped} (${pct(dropped, kept + dropped)}); sections whose reply did not parse: ${unparsed}`,
     `- Distinct concepts: ${a.totalConcepts}; recurring across ≥2 texts: ${a.recurring} (${pct(a.recurring, a.totalConcepts)}); singletons: ${a.singleton} (${pct(a.singleton, a.totalConcepts)})`,
