@@ -7,20 +7,36 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
-## 2026-11-02 — Concept extraction pilot: the harness (no results yet)
+## 2026-11-02 — Concept extraction pilot: harness, first run, and what it can and cannot say
 
 Backlog card "Concept extraction pilot: 20 diverse texts". The question is whether bottom-up concept
-extraction finds recurring ideas the curated Themes don't, so this adds only the means to test it, with no
-public UI, no schema change and nothing written to the database. `scripts/concept-pilot.mjs` has three
-steps: `select` picks 20 published texts by greedy diversity over era, tradition and genre with one per
-author (measured against the live corpus: 10 eras, 10 traditions, 13 genres, 20 authors); `extract` cuts each
-body into stable ~1,500-word sections and asks Claude for granular concepts, each with a verbatim quotation;
-`report` rolls the results up into recurrence, singleton tail, overlap with Theme slugs, near-duplicate labels
-and the rate of quotations that are not actually in the passage (those concepts are dropped and counted).
-The pure logic is in `scripts/lib/concept-pilot.mjs` with 7 tests. Output goes to `data/concept-pilot/`
-(gitignored). **Not done: `extract` has not been run** — the build session had no `ANTHROPIC_API_KEY`, so
-Keith runs `extract` then `report` (about 80 calls, ~150k input tokens; one read of the 20 bodies, ~0.5-1 MB
-of Supabase egress) and reads `REPORT.md` to decide whether to continue.
+extraction finds recurring ideas the curated Themes don't. No public UI, no schema change, nothing written
+to the database. `scripts/concept-pilot.mjs`: `select` picks 20 published texts by greedy diversity over era,
+tradition and genre, one per author (10 eras, 10 traditions, 13 genres, 20 authors); `extract` cuts each body
+into stable ~1,500-word sections and asks Claude for granular concepts with a verbatim quotation; `labels` and
+`group --from=` store a grouping of those concepts by meaning; `report` rolls it up (recurrence, singleton
+tail, Theme overlap, unverifiable-quote rate). Pure logic in `scripts/lib/concept-pilot.mjs`, 11 tests.
+Output is in `data/concept-pilot/` (gitignored).
+
+**First run, 2 Nov, without an API key.** The build session had no `ANTHROPIC_API_KEY`, so `extract` (the API
+route) has still never run. The 20 texts were instead read by ten Claude Code subagents, two texts each, with
+the same instructions; their output went through the harness's own quotation check (614 concepts kept, 0
+dropped) and was recorded under the model name `claude-code-subagents`. The API route is untested against a
+live key.
+
+**Result: counting exact labels read 0 recurring of 614, which was the metric's fault.** Independent passes
+never word a concept the same way, so literal matching cannot see recurrence. Grouping the labels by meaning
+(one subagent over all 614 labels with glosses; 118 groups covering 353 labels, 261 left alone on purpose)
+gives **16 ideas recurring across two or more texts, 15 of which match no curated Theme**. Singletons: 363 of
+379 (96%), expected on a sample this small. Real-looking routes: tears of compunction, blind leading the blind,
+almsgiving atones for sin, docetic denial of Christ's flesh, clergy entangled in secular affairs. Weaker:
+creation from nothing (sits on the `creation` Theme), athletic training for the crown, honest self-examination.
+
+**What this does not show.** One model family did both the extracting and the grouping; the grouper flagged
+eight of its own groups as loose; 20 texts is too few to estimate how many routes a full corpus would give; and
+whether a route is *useful to a reader* is an editor's call from `REPORT.md`, not a number. Decision for Keith:
+continue (grow the sample, re-run extraction through the API) or stop.
+
 
 ---
 
