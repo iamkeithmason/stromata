@@ -90,6 +90,15 @@ queue reopens at the first pending card), then "Publish N approved". Every publi
 `lib/publishing/publish-text.ts` — the one publish path, which the admin edit form now shares; never
 add a second one.
 
+**Sections** (`/admin/review/sections`, linked from the queue) are reviewed separately, because their texts
+are mostly already published. A long text with no contents list (9,000+ words and fewer than three
+headings, `needsSections` in `scripts/lib/sections.mjs`; 33 texts on 2 Nov 2026) gets an editor's division
+into labelled sections. `npm run generate:review-drafts -- --sections` (`--slug=`, `--dry-run`, `--force`)
+drafts them into `texts.sections_draft`; Keith edits and approves each, which copies it to `texts.sections`
+and refreshes the page. Sections are editorial, **not part of the original text**, and are stored as
+`{source: "editorial", sections: [{label, starts_with}]}` so the reader can mark them as the editor's.
+`starts_with` is derived from the body, never typed; keep every caller on the shared functions.
+
 ## Pipeline GUI — `/admin/pipeline` (local operator UI, for Keith not Claude)
 
 There is a browser GUI for the whole pipeline, living inside the existing admin app at
@@ -168,7 +177,7 @@ weeks of unusable data. Adding an attribute and reasoning that it "should" fire 
 failure mode.
 
 **The sweep is a command now: `node scripts/verify-analytics.mjs --url=<preview>`.** (Previews are
-opt-in — ask Keith before tagging a commit `[preview]`; see "Vercel usage" below.) It drives a
+opt-in — ask Keith before pushing a `preview/` branch; see "Vercel usage" below.) It drives a
 real browser over a real deployment, intercepts every request to Umami's collection endpoint,
 records the payload and then **aborts** it — so a verification run never lands a synthetic event in
 the dataset. It prints a pass/fail table and exits non-zero on any failure. `--only=a,b` narrows it;
@@ -178,7 +187,13 @@ rather than the site: pass `--bypass-token=<automation bypass secret>` (Vercel �
 Deployment Protection → Protection Bypass for Automation), or set
 `VERCEL_AUTOMATION_BYPASS_SECRET`. Behind a TLS-inspecting proxy, where Chromium rejects the
 re-signed certificate, `--via-node` routes each request through Playwright's Node-side stack
-instead — certificates are still verified, just by Node. The assertion half lives in
+instead — certificates are still verified, just by Node. **Production sweeps run from Keith's
+laptop, not a cloud session** (Keith, 2 Nov 2026): Vercel's bot checkpoint answers a cloud browser
+in place of the site, and that is not to be bypassed. A cloud session verifies against a local
+build instead (`next dev` with the throwaway `.env.local` described under "Screens reference",
+then `--url=http://localhost:3000`). On 2 Nov a cloud `--prod --via-node` run reported a reader
+control "not found" that was really this, so the sweep now stops on the checkpoint page, and a
+control every text page renders fails rather than skips when absent. The assertion half lives in
 `scripts/lib/wire-check.mjs` and is unit-tested, so the sweep cannot go green by looking in the
 wrong place. Two things it deliberately does not do: block the tracker script (that would leave
 `window.umami` undefined and every check would "pass" by firing nothing) and treat a page that
@@ -218,13 +233,13 @@ Two traps worth knowing:
 
 | Property | Meaning | Value form |
 |---|---|---|
-| `from` | the surface the click originated on | kebab-case surface name. Homepage: `seasonal-panel`, `featured-lead`, `homepage-grid`, `featured-band`, `reading-history`. Reader: `text-reader`, `text-page`, `related-figures`, `read-next`. Browse and index: `texts-index`, `authors-index`, `locations-index`, `search-results`, `search-chip`. Entity pages: `author-page`, `collection-page`, `theme-page`, `era-page`, `tradition-page`, `scripture-page`, `location-page`. **The list is the vocabulary — a new surface gets a new value here, in the Events Register, and nowhere else.** |
+| `from` | the surface the click originated on | kebab-case surface name. Homepage: `seasonal-panel`, `featured-lead`, `homepage-grid`, `featured-band`, `reading-history`. Reader: `text-reader`, `text-page`, `related-figures`, `read-next`; the phone reading header and its sheet (PR #187): `text-hero-contents`, `text-running-head`, `text-sheet-contents`, `text-sheet-next`, `text-sheet-read-next`, `text-sheet-prev`, `text-sheet`. Browse and index: `texts-index`, `authors-index`, `locations-index`, `search-results`, `search-chip`. Entity pages: `author-page`, `collection-page`, `theme-page`, `era-page`, `tradition-page`, `scripture-page`, `location-page`. **The list is the vocabulary — a new surface gets a new value here, in the Events Register, and nowhere else.** |
 | `text` | which text was opened | **slug**, never the title |
 | `collection` | which collection was opened | **slug** |
 | `author` | which author | display name (matches `authors.name`) |
 | `country` | which location | display name |
 | `depth` | how many distinct texts this session has reached | integer, `1` or `2` only (`text-session-depth`) |
-| `pick` | which rule chose a `read-next` pick, or the editor | `editorial` \| `author` \| `theme` \| `genre` (on `text-open` from `read-next` only) |
+| `pick` | which rule chose a `read-next` pick, or the editor | `editorial` \| `author` \| `theme` \| `genre` (on `text-open` from `read-next` and `text-sheet-read-next` only) |
 | `state`, `direction` | qualifiers | short enum-ish string |
 
 Rules:
@@ -281,6 +296,13 @@ cleared from the admin header), so the founder's own browsing never inflates the
   this date `text-read` values are titles and don't join to Supabase; after, they're slugs — the two
   spans aren't directly comparable. Surfaced by the `stromata-analytics` digest's Events Register
   reconciliation on its first run.
+- From the **release after 2 Nov 2026** (the first one carrying this change), `text-open` counts
+  **clicks only**. Until then every text page also sent a `text-open` on load, with no `from`, beside
+  `text-view` carrying the same data, so `text-open` mixed page views into its click count and left a
+  large unattributed bucket in any `from` breakdown. Keith ruled to remove it on 2 Nov; `text-view`
+  still counts page views. Before the release, total `text-open` ≈ clicks + text-page views; after,
+  clicks alone. Compare `from`-attributed counts across the date, never totals. The sweep's
+  "none on page load" row guards it.
 
 ---
 
@@ -435,22 +457,28 @@ Stromata is on Vercel's **Hobby (free) tier**, and in Sept 2026 it went over the
 allowance (see CHANGELOG 2026-09-29 and 2026-10-04). A few habits keep it under, and all apply to
 every session:
 
-**1. Previews only build when asked.** `vercel.json` → `scripts/vercel-ignore-build.sh` skips every
-preview build unless the pushed head commit's message contains **`[preview]`**. Production (merges
-to `main`) always builds. So by default a pushed branch gets **no preview URL** — don't tell Keith to
-"check the preview" unless one was requested.
+**1. Previews only build when asked, and an unasked push creates no deployment at all.** Since
+2026-11-04 `vercel.json` sets `git.deploymentEnabled` to `main` and `preview/**` only. A push to any
+other branch (`claude/*`, `release`, …) makes **no Vercel deployment**, not even a cancelled one.
+That matters because the 2 Nov 2026 measurement showed cancelled deployments counting towards
+Hobby's 100-a-day cap, which Stromata shares with Paideia (2 Nov: 137 deployments across the two
+projects, only about 38 of them real builds). Production (merges to `main`)
+always builds. By default a pushed branch gets **no preview URL** — don't tell Keith to "check the
+preview" unless one was requested.
 
-- **When a preview would genuinely help, ask Keith first — don't add `[preview]` on your own.**
-  Good reasons: a visual or layout change he should eyeball, or an analytics change that the
+- **When a preview would genuinely help, ask Keith first — don't create a `preview/` branch on your
+  own.** Good reasons: a visual or layout change he should eyeball, or an analytics change that the
   verification rule says must be observed on the wire (`verify-analytics.mjs` needs a deployment).
   Say why in one line and prompt him to ask for it explicitly, e.g. *"This changes the reader
   header — want a preview to check it on your phone? If so, say 'build a preview'."*
-- **When he says yes,** put `[preview]` in the message of the next commit you push (a real change,
-  or the commit that carries his requested tweak). Only the head commit of a push counts, so a later
-  push without the tag builds nothing — tag again if he wants the preview refreshed.
-- **The tag matches anywhere in the head commit's message, body included** — a commit that merely
-  *mentions* it builds a preview (this happened on #136). When you are not asking for a preview, don't
-  write the literal string in a commit message; say "the preview tag" instead.
+- **When he says yes,** push the same commit to a branch named `preview/<short-name>`:
+  `git push origin HEAD:refs/heads/preview/<short-name>`. That push builds a preview; each further
+  push to that branch builds again, and every one spends a cap slot, so push to it deliberately.
+  Delete the branch when he is done (`git push origin --delete preview/<short-name>`). The working
+  branch and its PR are unchanged, and there is no commit-message tag any more.
+- **The ignore step is the second gate.** `scripts/vercel-ignore-build.sh` skips any non-production
+  build whose branch does not start with `preview/`, so a misconfigured `deploymentEnabled` degrades
+  to the old cancelled-deployment behaviour rather than to building every push.
 
 **2. Group small, related changes into one PR.** Every merge to `main` is a production deploy, and
 every deploy starts with an empty page cache, so crawlers re-render the site after each one — merge
@@ -520,7 +548,7 @@ sourcer screens read the queue, staged output and run logs from the filesystem, 
 show data as of the last *real* deploy — they are local operator tools, and Keith agreed to this on 2026-10-04.
 Don't add anything else the admin side reads without asking. Every doubt builds (no parent commit, empty diff,
 git error, a path not listed). To force a build of a docs-only commit, put the force-deploy tag in its
-message — the literal string is `[deploy]`, and like the preview tag it matches anywhere in the message, so
+message — the literal string is `[deploy]`, and like the old preview tag it matches anywhere in the message, so
 don't write it unless you mean it. A known blind spot: a push of several commits at once relies on Vercel
 supplying `VERCEL_GIT_PREVIOUS_SHA` to catch an earlier site change behind a final skippable commit (PR
 merges and the digest are single commits, so this does not arise today). Tests:
@@ -620,6 +648,16 @@ in a run-log is invisible.
 
 If you ship a code change by hand (not via a routine), you own the same two acts: a CHANGELOG
 entry in the PR, and flipping the backlog card to `Built` once it is on `main`.
+
+**Before building any backlog card — by hand or by routine — check it is not already in flight, then
+claim it.** A card's `Status` cannot tell you: `Planned` reads the same whether a build exists or not.
+On 2 Nov 2026 two sessions built "Mid-text navigation on phones" on the same day (#184, closed; #187,
+merged), and the duplication showed only at the end, as clashing Events Register rows. So: search open
+PRs by the card's title (any branch name, not just `claude/*`), read the card body for a recent
+`Building: …` line, then append your own `Building: <session URL> · <date> · branch <name>` to the card
+body before writing code, and the PR link as soon as it exists. If you answer a card's open question
+while a build is open, put the decision on that PR too. `/next-agent-card` steps 2 and 2a spell out
+the commands; `docs/research/2026-11-02-claim-the-work-before-you-build.md` has the reasoning.
 
 ---
 

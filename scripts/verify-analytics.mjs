@@ -46,10 +46,13 @@ import {
   isUmamiCollect,
   parseBeacon,
   checkProps,
+  pickEvent,
   formatTable,
   summarise,
   SLUG,
   READ_NEXT_PICK,
+  isVercelCheckpoint,
+  describeMissing,
 } from './lib/wire-check.mjs';
 
 // ───────────────────────────── arguments ─────────────────────────────
@@ -147,13 +150,20 @@ function reset() {
   captured.length = 0;
 }
 
-/** Poll the recorder for a named event. Returns the event or null. */
-async function waitForEvent(name, { timeout = TIMEOUT } = {}) {
+/**
+ * Poll the recorder for a named event. Returns the event or null.
+ *
+ * With `expected`, keep polling until an event of the name passes it, and only
+ * at the deadline settle for the first of the name (see pickEvent): a
+ * navigating click can record the landing page's own event of the same name
+ * first.
+ */
+async function waitForEvent(name, { timeout = TIMEOUT, expected, onPath } = {}) {
   const deadline = Date.now() + timeout;
   for (;;) {
-    const hit = captured.find((e) => e.name === name);
-    if (hit) return hit;
-    if (Date.now() > deadline) return null;
+    const { event, ok } = pickEvent(captured, name, expected, { onPath });
+    if (event && (ok || !expected)) return event;
+    if (Date.now() > deadline) return event;
     await new Promise((r) => setTimeout(r, 100));
   }
 }
@@ -178,12 +188,39 @@ async function gotoOnce(page, url) {
   }
 }
 
+/** HTTP status of each page's main document, for describing an absence. */
+const docStatus = new WeakMap();
+
 /** Open a URL in a FRESH TAB — a fresh tab is a fresh sessionStorage. */
 async function open(context, path) {
   const page = await context.newPage();
-  await gotoOnce(page, BASE + path);
+  const res = await gotoOnce(page, BASE + path);
+  docStatus.set(page, res ? res.status() : null);
+  // Before the tracker check, whose message would otherwise blame Deployment
+  // Protection for what is really Vercel's bot checkpoint.
+  if (isVercelCheckpoint(await page.title().catch(() => ''))) {
+    throw new Error(
+      `${path} served Vercel's bot checkpoint, not the site. Not to be bypassed ` +
+        '(CLAUDE.md): run from a home connection, or against a local build with --url.'
+    );
+  }
   await ensureTracker(page);
   return page;
+}
+
+/**
+ * A control that every text page renders, absent from this one. That is a
+ * regression or a page that never arrived, never "not applicable here", so it
+ * FAILS with what the browser was looking at. A skip here is how the reader
+ * settings row sat unexamined (2 Nov 2026).
+ */
+async function failMissing(page, event, label, what) {
+  const detail = describeMissing(what, {
+    path: new URL(page.url()).pathname,
+    status: docStatus.get(page) ?? null,
+    title: await page.title().catch(() => ''),
+  });
+  row(event, label, 'fail', detail);
 }
 
 /**
@@ -226,7 +263,7 @@ const row = (event, name, status, detail) => rows.push({ event, case: name, stat
  * that fails intermittently because of the harness teaches readers to ignore
  * red. Only the last outcome is recorded.
  */
-async function expectEvent({ event, case: label, expect, action, actions }) {
+async function expectEvent({ event, case: label, expect, action, actions, onPath }) {
   const wanted = normaliseExpect(expect);
   const attempts = actions ?? [action];
   let outcome;
@@ -239,7 +276,7 @@ async function expectEvent({ event, case: label, expect, action, actions }) {
       outcome = ['fail', `action failed: ${String(err.message || err).slice(0, 90)}`];
       continue;
     }
-    const hit = await waitForEvent(event);
+    const hit = await waitForEvent(event, { expected: wanted, onPath });
     const { ok, problems } = checkProps(hit, wanted);
     if (ok) {
       outcome = ['pass', JSON.stringify(hit.data) + (i > 0 ? ' (on retry)' : '')];
@@ -340,6 +377,11 @@ async function clickFirst(page, selector, { nav = false } = {}) {
   const el = page.locator(selector).first();
   await el.scrollIntoViewIfNeeded();
   if (!nav) {
+    // Let hydration finish first. Swapped in before React hydrates, the clone
+    // can be thrown away and the real <Link> put back, and the click then
+    // navigates and loses its beacon: on production the first attempt often
+    // failed this way and only the navigating retry passed.
+    await page.waitForLoadState('networkidle', { timeout: 10000 }).catch(() => {});
     await page
       .$eval(selector, (node) => {
         if (node.tagName !== 'A' || !node.getAttribute('href')) return;
@@ -422,6 +464,8 @@ async function checkNavEvents(context, site) {
       event,
       case: label,
       expect,
+      // Only the page the link sits on can send the click's beacon.
+      onPath: found.path,
       actions: [
         () => clickFirst(found.page, selector),
         // Second try: let the click navigate for real. Slower and racier, but
@@ -435,6 +479,29 @@ async function checkNavEvents(context, site) {
     });
     await found.page.close();
   }
+}
+
+/**
+ * A text page must not send `text-open` by itself. Until 2 Nov 2026 every text
+ * page did, on load and without a `from`, which counted page views as clicks
+ * and broke the one-event-per-action rule. `text-view` arriving first proves
+ * the page-load events had their chance to fire, so silence here means
+ * absent, not merely late.
+ */
+async function checkNoTextOpenOnLoad(context, site) {
+  const [a] = site.texts;
+  if (!a) {
+    row('text-open', 'none on page load', 'skip', 'no published text');
+    return;
+  }
+  reset();
+  const page = await open(context, a);
+  const view = await waitForEvent('text-view');
+  const stray = captured.find((e) => e.name === 'text-open');
+  if (!view) row('text-open', 'none on page load', 'fail', 'text-view never arrived, so page load cannot be judged');
+  else if (stray) row('text-open', 'none on page load', 'fail', `fired on load with ${JSON.stringify(stray.data)}`);
+  else row('text-open', 'none on page load', 'pass', 'silent on load; text-view arrived');
+  await page.close();
 }
 
 async function checkSessionDepth(context, site) {
@@ -548,7 +615,7 @@ async function checkCitationCopy(context, site) {
   const page = await open(context, site.texts[0]);
   const button = page.getByRole('button', { name: /cite this text/i }).first();
   if (!(await button.count())) {
-    row('citation-copy', 'text footer', 'skip', 'no "Cite this text" button on the page');
+    await failMissing(page, 'citation-copy', 'text footer', '"Cite this text" button');
     await page.close();
     return;
   }
@@ -565,7 +632,7 @@ async function checkReaderSettings(context, site) {
   const page = await open(context, site.texts[0]);
   const opener = page.getByRole('button', { name: 'Reading settings' }).first();
   if (!(await opener.count())) {
-    row('reader-setting-change', 'panel', 'skip', 'reader settings control not found');
+    await failMissing(page, 'reader-setting-change', 'panel', 'reader settings control');
     await page.close();
     return;
   }
@@ -588,7 +655,7 @@ async function checkReaderSettings(context, site) {
     const group = panel.locator(':scope > div').nth(i);
     const target = group.locator('button').last();
     if (!(await target.count())) {
-      row('reader-setting-change', `setting=${setting}`, 'skip', `no ${groupLabel} buttons`);
+      await failMissing(page, 'reader-setting-change', `setting=${setting}`, `${groupLabel} buttons`);
       continue;
     }
     await expectEvent({
@@ -653,6 +720,79 @@ async function checkDownloads(context, site) {
 
 // ───────────────────────────── main ─────────────────────────────
 
+/**
+ * The phone reading header and its sheet (app/components/ReaderNav.tsx). Run at
+ * 390px, because the running head only exists below the `xl` breakpoint, and on
+ * a text with contents, because that is where every control appears. The sheet's
+ * links are hidden until it opens, so they cannot ride on navSurfaces().
+ */
+async function checkReaderNav(context, site) {
+  const trigger = '[data-umami-event="text-sheet-open"][data-umami-event-from="text-hero-contents"]';
+  const found = await findPageWith(context, site.texts, trigger, { limit: 20 });
+  if (!found) {
+    row('text-sheet-open', 'from=text-hero-contents', 'fail', 'no text page carries the frontispiece trigger');
+    return;
+  }
+  const page = found.page;
+  const slug = found.path.replace('/texts/', '');
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.waitForLoadState('networkidle', { timeout: 10000 }).catch(() => {});
+
+  await expectEvent({
+    event: 'text-sheet-open',
+    case: 'from=text-hero-contents',
+    expect: { from: 'text-hero-contents', text: slug },
+    action: () => page.locator(trigger).first().click(),
+  });
+
+  const jump = '[role="dialog"] [data-umami-event="text-jump"]';
+  if (await page.locator(jump).count()) {
+    await expectEvent({
+      event: 'text-jump',
+      case: 'from=text-sheet-contents',
+      expect: { from: 'text-sheet-contents', text: slug, state: true },
+      action: () => page.locator(jump).last().click(),
+    });
+  } else {
+    await failMissing(page, 'text-jump', 'from=text-sheet-contents', 'contents entry in the sheet');
+  }
+
+  // After the jump the page has scrolled down past the frontispiece, so the site
+  // header is away and the slim pill is showing.
+  await page.mouse.wheel(0, 1200);
+  await page.waitForTimeout(800);
+  const pill = '[data-umami-event="text-sheet-open"][data-umami-event-state="pill"]';
+  if (await page.locator(pill).count()) {
+    await expectEvent({
+      event: 'text-sheet-open',
+      case: 'from=text-running-head (pill)',
+      expect: { from: 'text-running-head', text: slug, state: 'pill' },
+      action: () => page.locator(pill).first().click(),
+    });
+  } else {
+    await failMissing(page, 'text-sheet-open', 'from=text-running-head (pill)', 'slim pill');
+  }
+
+  for (const from of ['text-sheet-next', 'text-sheet-read-next']) {
+    const sel = `[role="dialog"] [data-umami-event="text-open"][data-umami-event-from="${from}"]`;
+    if (!(await page.locator(sel).count())) {
+      row('text-open', `from=${from}`, 'skip', `no ${from} link on ${found.path}`);
+      continue;
+    }
+    if (!(await page.locator('[role="dialog"][aria-hidden="false"]').count())) {
+      await page.locator(pill).first().click().catch(() => {});
+      await page.waitForTimeout(600);
+    }
+    await expectEvent({
+      event: 'text-open',
+      case: `from=${from}`,
+      expect: { from, text: SLUG },
+      action: () => clickFirst(page, sel),
+    });
+  }
+  await page.close();
+}
+
 async function main() {
   console.log(`\nAnalytics wire sweep → ${BASE}`);
   console.log('Umami beacons are intercepted and aborted; nothing reaches the dataset.\n');
@@ -700,6 +840,8 @@ async function main() {
     ['citation', ['citation-copy'], checkCitationCopy],
     ['reader settings', ['reader-setting-change'], checkReaderSettings],
     ['downloads', ['text-download', 'collection-download'], checkDownloads],
+    ['text page load', ['text-open'], checkNoTextOpenOnLoad],
+    ['reader nav', ['text-sheet-open', 'text-jump', 'text-open'], checkReaderNav],
     ['navigation links', ['text-open', 'author-open', 'collection-open'], checkNavEvents],
   ];
 
