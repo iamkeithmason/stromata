@@ -7,6 +7,15 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-11-04 — Research write-up: invalidate what changed, not what might have
+
+Added `docs/research/2026-11-04-invalidate-what-changed-not-what-might-have.md`, from PR #193. A
+route-wide refresh was treated as cheap because it is lazy, but crawlers visit every page, so it cost a
+deploy per chapter edit. The 6 Oct "every writer must invalidate" rule had missed two writers, which the
+new source-scan guard found on its first run. Also records a mistake: a cost stated to Keith before its
+code path was traced. Docs only, but `docs/research/` is not on `SITE_IRRELEVANT`, so it rides the
+weekly release rather than going straight to `main`.
+
 ## 2026-11-04 — Revalidation names the pages that changed; scripts can refresh the site
 
 Backlog card "On-demand cache revalidation: refetch from Supabase only when content changes", narrowed
