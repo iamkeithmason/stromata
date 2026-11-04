@@ -504,7 +504,9 @@ nothing to ship.
   `main`, because automation and docs PRs land on `main` in between), then open **one** PR with base `main` and
   head `release`, titled "Release YYYY-MM-DD", listing the PRs it carries and any Supabase migration that must
   be applied before it ships (never assume one has run). Merge it with a **merge commit**, not a squash. That
-  merge is the week's single production deploy.
+  merge is the week's single production deploy. **GitHub then deletes `release`** (the repo deletes a
+  PR's head branch on merge), so recreate it from `main` straight after:
+  `git push origin origin/main:refs/heads/release`. That push makes no deployment. Found 2026-11-04.
   **Release day is Monday morning** (Keith, 2026-10-10): a weekly routine opens the draft release PR then, only
   if `release` is ahead of `main` with site-changing commits; Keith merges it.
 - **Never merge the release PR yourself** — leave it open, say what it carries, and let Keith merge it. When a
@@ -579,6 +581,23 @@ comes from saves calling `revalidatePath`:
   Until 2026-11-04 the text, author, collection and Scripture pages were all like that: `/texts/[slug]`
   alone was most of the Hobby CPU. An empty `return []` is enough (● in `next build`);
   `lib/cache/public-pages-are-cached.test.ts` fails CI on a new cached `[param]` page without it.
+- **Keep public routes cacheable; this is what decides the Hobby CPU bill.** Since 2026-11-04 traffic, not
+  deploys or edits, is most of the cost, so a route that renders per request is paid for on every crawler
+  hit. When building a public feature:
+  1. A `[param]` page with a `revalidate` window exports `generateStaticParams` (see above).
+  2. Public pages and the code they import never read `cookies()`, `headers()`, `draftMode()`,
+     `connection()` or `searchParams`, and never opt out with `noStore`, `dynamic = 'force-dynamic'`,
+     `revalidate = 0` or the public client's `{ live: true }`. Anything per visitor (reading progress,
+     "continue reading", the season) stays in the browser, as it does today.
+  3. No browser fetch to an `/api` route from public code: it is billed on every page view even when the
+     page is cached. Render the data into the cached page instead.
+  4. A route that truly must be dynamic (search, feeds, downloads) sets a CDN `Cache-Control` with
+     `s-maxage`, and goes on `DYNAMIC_ALLOWED` with its reason.
+  `lib/cache/public-routes-stay-cached.test.ts` enforces 2–4 by source scan and
+  `lib/cache/public-pages-are-cached.test.ts` enforces 1. A scan cannot follow every import, so **for a PR
+  that adds or changes a public route, also read the `next build` route table and confirm the route shows
+  ● or ○, not ƒ**, and say so in the PR. To see where CPU goes, Vercel → Observability → Vercel Functions,
+  sorted by Active CPU (Hobby shows 12 hours); the budget is ~8 min a day.
 - **`/scripture/[ref]` is the exception: daily, on purpose** (`revalidate: 86400`, passed to the client
   too), because publishing does not fan out to its ~4,000 leaves.
 - **A CLI script that edits published content calls `revalidateSite()`** from `scripts/lib/revalidate.mjs`

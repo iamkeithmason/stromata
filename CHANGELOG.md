@@ -7,6 +7,23 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-11-04 — Guard: public routes stay cacheable; rules for usage-aware features
+
+Follow-up to the same day's caching fix. Since traffic, not deploys, is now most of the Vercel Hobby
+CPU, a public route that renders per request is the expensive mistake to prevent.
+
+- `lib/cache/public-routes-stay-cached.test.ts` scans public code (`app/` and `lib/`, not the admin app
+  or its API) and fails on anything that makes a route render per request: `next/headers`, `cookies()`,
+  `headers()`, `draftMode()`, `connection()`, `noStore`, `dynamic = 'force-dynamic'`, `revalidate = 0`,
+  `searchParams`, the public client's `{ live: true }`, and browser fetches to `/api` routes. Eight
+  files are allowed to be dynamic, each with its reason (search, the three feeds, four downloads), every
+  allowed route handler must set a CDN `s-maxage`, and an entry that is no longer dynamic fails, so the
+  list can only shrink. Checked by planting `cookies()` in the reader page: it fails, naming the file.
+- CLAUDE.md "Vercel usage" item 3 gains the four rules for building public features, the `next build`
+  route-table check for any PR touching a public route, and where to see per-route CPU on Hobby.
+- CLAUDE.md release steps: GitHub deletes `release` when the release PR merges, so it is recreated from
+  `main` afterwards (done today after the 4 Nov release).
+
 ## 2026-11-04 — Text, author, collection and Scripture pages are now cached (they rendered on every request)
 
 Vercel's per-route view (12 hours to 4 Nov, the most Hobby shows) put `/texts/[slug]` far ahead of
