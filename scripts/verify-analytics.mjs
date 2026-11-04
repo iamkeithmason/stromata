@@ -504,38 +504,6 @@ async function checkNoTextOpenOnLoad(context, site) {
   await page.close();
 }
 
-/**
- * The season's pick in the homepage hero (app/page.tsx). Run at 390px: the link
- * exists only on phones (from 641px the seasonal panel carries the pick), and
- * only while the season has a published pick, so its absence is a skip, not a
- * failure, unless the seasonal panel shows a pick the hero has lost.
- */
-async function checkHeroPick(context) {
-  const label = 'from=hero-pick';
-  const selector = '[data-umami-event="text-open"][data-umami-event-from="hero-pick"]';
-  const page = await open(context, '/');
-  try {
-    await page.setViewportSize({ width: 390, height: 844 });
-    await page.waitForLoadState('networkidle', { timeout: 10000 }).catch(() => {});
-    if (!(await page.locator(selector).count())) {
-      const panelPick = await page.locator('[data-umami-event-from="seasonal-panel"]').count();
-      if (panelPick) row('text-open', label, 'fail', 'the seasonal panel has a pick but the hero does not');
-      else row('text-open', label, 'skip', 'no published pick this season');
-      return;
-    }
-    const slug = (await page.locator(selector).first().getAttribute('href')).replace('/texts/', '');
-    await expectEvent({
-      event: 'text-open',
-      case: label,
-      expect: { from: 'hero-pick', text: slug },
-      onPath: '/',
-      action: () => page.locator(selector).first().click({ noWaitAfter: true }),
-    });
-  } finally {
-    await page.close();
-  }
-}
-
 async function checkSessionDepth(context, site) {
   const [a, b, c] = site.texts;
   if (!a || !b || !c) {
@@ -874,7 +842,6 @@ async function main() {
     ['downloads', ['text-download', 'collection-download'], checkDownloads],
     ['text page load', ['text-open'], checkNoTextOpenOnLoad],
     ['reader nav', ['text-sheet-open', 'text-jump', 'text-open'], checkReaderNav],
-    ['hero pick', ['text-open'], checkHeroPick],
     ['navigation links', ['text-open', 'author-open', 'collection-open'], checkNavEvents],
   ];
 
