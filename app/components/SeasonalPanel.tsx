@@ -237,9 +237,13 @@ export async function SeasonalPanel({ season = resolveSeason().season }: Props =
                 extra wrapper it needed collapsed the portrait variant to zero
                 height (see LancetArch's note). The portrait is 140px on phones,
                 the width FeaturedAuthors draws every author at, so the season's
-                author is not the smallest face on the page. */}
+                author is not the smallest face on the page.
+                On phones the row is pulled up (-mt-10) and its bottom margin
+                trimmed: LancetArch draws the arch from 18% down its 200:380 box
+                to 8% short of the bottom, so at 140px wide there was ~49px of
+                empty frame above the portrait and ~21px below (Keith, 4 Nov). */}
             {s.pick ? (
-              <div className="mb-6 flex items-center gap-4 sm:col-start-2 sm:row-span-2 sm:row-start-1 sm:mb-0 sm:block sm:self-start">
+              <div className="-mt-10 mb-2 flex items-center gap-4 sm:col-start-2 sm:row-span-2 sm:row-start-1 sm:mt-0 sm:mb-0 sm:block sm:self-start">
                 <div className="w-[140px] shrink-0 sm:w-[clamp(140px,18vw,150px)]">
                   <div className="opacity-90" style={{ aspectRatio: '200 / 380' }}>
                     <LancetArch

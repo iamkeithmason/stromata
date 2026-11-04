@@ -21,6 +21,9 @@ option B of three mock-ups ("a text in the sky"), keeping the starry hero:
 - **The seasonal panel is unchanged.** A first version took the title out of the panel on phones so the
   pick was named once; on the preview Keith found it left the panel empty and weaker, so the panel keeps
   its title, and the pick is named in the sky and again in the panel.
+- **The panel is tighter on phones.** `LancetArch` draws the arch from 18% down its 200:380 box to 8% short
+  of the bottom, so at 140px wide there was about 49px of empty frame above the portrait and 21px below.
+  On phones the portrait row is pulled up 40px and its bottom margin trimmed; desktop is unchanged.
 - **The pick is looked up once.** `SEASON_PICKS` and the published-check query moved from `SeasonalPanel`
   to `lib/liturgical/season-pick.ts` (`getLiveSeasonPick`, wrapped in React's `cache`), shared by the hero
   and the panel, so the homepage still asks Supabase once.
@@ -33,8 +36,10 @@ option B of three mock-ups ("a text in the sky"), keeping the starry hero:
 an image per text. Three studies, all from data every record already has. *The cosmos as a map* plots
 every published author as a star on nine era rings, earliest at the centre. *An ornament per genre* puts a
 mark on each cover for its kind of writing: round 1 varied one star by its points, which Keith found could
-not be told apart, so round 2 gives each genre its own traditional motif (a seal for letters, a voice for
-sermons, a key for exegesis), with related genres in one family. *One plate per era* frames the nine public-domain images still to
+not be told apart, and round 2's abstract motifs read as modern and left the two "voices" too alike, so round 3 follows
+the chapter ornaments of an illuminated bible: each genre is an object chosen for its meaning (a fish for
+sermons, a quill for letters, a beehive for rules), cut like a woodcut. Hand-drawn sketches of the
+direction, not finished art. *One plate per era* frames the nine public-domain images still to
 source. Metadata only, no `body`. Backlog card: "Make the library visual at scale".
 
 **The design brief is in the repo** (`docs/design/homepage-brief.md`), corrected: the first draft said the

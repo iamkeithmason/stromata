@@ -79,79 +79,130 @@ function starPath(cx: number, cy: number, r: number, points: number, pinch = 0.4
 }
 
 /**
- * The genre's ornament, round 2. Round 1 varied one star by its number of points,
- * and at cover size four, five and six points read as the same mark (Keith,
- * 4 Nov). Here each genre has its own traditional motif, drawn on one 24-unit
- * grid with one stroke weight, so they read as a set and apart from each other.
- * Related genres share a family: Sermon and Homily are both "voice" arcs; Hymn
- * and Poem are both Gothic foils; Treatise and Essay are both lozenges.
+ * The genre's ornament, round 3: things, not signs.
+ *
+ * Round 1 varied one star by its points (indistinguishable at cover size);
+ * round 2 gave each genre an abstract motif (distinct, but read as modern
+ * icons, and Sermon/Homily still too alike). Keith pointed to the chapter
+ * ornaments of an illuminated bible (a drop, a fish, a feather, a sprig, a
+ * flower): corporeal objects, cut like woodcuts. So each genre is now an
+ * object chosen for its meaning, drawn as a solid gold silhouette with cream
+ * "cut" lines on a 48-unit grid. These are hand-coded sketches of the
+ * direction; finished ornaments would want an illustrator or a set of
+ * public-domain printer's ornaments.
  */
-const S = { fill: 'none', stroke: 'var(--gold-ink)', strokeWidth: 1.6, strokeLinecap: 'round', strokeLinejoin: 'round' } as const
-const F = { fill: 'var(--gold-ink)' } as const
+const G = { fill: 'var(--gold-ink)' } as const
+const CUT = { fill: 'none', stroke: 'var(--cover-mid)', strokeWidth: 1.5, strokeLinecap: 'round', strokeLinejoin: 'round' } as const
+const LINE = { fill: 'none', stroke: 'var(--gold-ink)', strokeWidth: 2.2, strokeLinecap: 'round', strokeLinejoin: 'round' } as const
 
-/** A Gothic foil: n lobes round a centre (trefoil, quatrefoil). */
-function foil(n: number, r = 4.6, d = 4.4) {
-  return Array.from({ length: n }, (_, k) => {
-    const a = (2 * Math.PI * k) / n - Math.PI / 2
-    return <circle key={k} cx={12 + d * Math.cos(a)} cy={12 + d * Math.sin(a)} r={r} {...S} />
-  })
+/** Leaves along a curved stem: an ellipse every `step` from t0 to t1, alternating sides. */
+function leaves(points: [number, number, number][], rx: number, ry: number) {
+  return points.map(([x, y, angle], k) => (
+    <ellipse key={k} cx={x} cy={y} rx={rx} ry={ry} transform={`rotate(${angle} ${x} ${y})`} {...G} />
+  ))
 }
 
 const MOTIFS: Record<string, { name: string; draw: () => React.ReactNode }> = {
-  Sermon: { name: 'a voice: three arcs from a point', draw: () => (<>
-    <circle cx={5} cy={12} r={1.6} {...F} />
-    <path d="M9 7.5a6.5 6.5 0 0 1 0 9" {...S} /><path d="M12.5 5a10 10 0 0 1 0 14" {...S} /><path d="M16 2.5a13.5 13.5 0 0 1 0 19" {...S} />
+  Sermon: { name: 'a fish: "fishers of men"', draw: () => (<>
+    <path d="M5 24c8-11 24-11 32 0-8 11-24 11-32 0z" {...G} />
+    <path d="M36 24l9-8-2 8 2 8z" {...G} />
+    <circle cx={11.5} cy={22.5} r={1.4} fill="var(--cover-mid)" />
+    <path d="M17 18.5c2 3.5 2 7.5 0 11M22 17.5c2.2 4 2.2 9 0 13M27 18c2 3.8 2 8.2 0 12M31.5 19.5c1.6 3 1.6 6 0 9" {...CUT} />
   </>) },
-  Homily: { name: 'a quieter voice: two arcs', draw: () => (<>
-    <circle cx={7} cy={12} r={1.6} {...F} />
-    <path d="M11 7.5a6.5 6.5 0 0 1 0 9" {...S} /><path d="M14.5 5a10 10 0 0 1 0 14" {...S} />
+  Homily: { name: 'a loaf: bread broken for the household', draw: () => (<>
+    <path d="M6 30c0-9 8-15 18-15s18 6 18 15c0 3-2 5-5 5H11c-3 0-5-2-5-5z" {...G} />
+    <path d="M14 22l4 6M21 19l4 7M28 19l4 7M35 22l3 5" {...CUT} />
   </>) },
-  Letter: { name: 'a wax seal', draw: () => (<>
-    <circle cx={12} cy={12} r={9} {...S} /><circle cx={12} cy={12} r={6} {...S} />
-    <path d="M12 8.5v7M8.5 12h7" {...S} />
+  Letter: { name: 'a quill', draw: () => (<>
+    <path d="M12 38C15 25 26 12 42 5c-3 13-14 26-28 34z" {...G} />
+    <path d="M12 38L40 7M20 30l-5-1M25 24l-5-1M30 18l-5-1M35 12l-4-1" {...CUT} />
+    <path d="M12 38l-6 6" {...LINE} />
   </>) },
-  Treatise: { name: 'a lozenge within a square', draw: () => (<>
-    <rect x={4} y={4} width={16} height={16} {...S} /><path d="M12 6l6 6-6 6-6-6z" {...S} />
+  Treatise: { name: 'a column: "the pillar and ground of the truth"', draw: () => (<>
+    <path d="M10 8h28v4c-3 0-4 2-4 4H14c0-2-1-4-4-4z" {...G} />
+    <rect x={16} y={17} width={16} height={20} {...G} />
+    <path d="M12 38h24v4H12z" {...G} />
+    <path d="M20 19v16M24 19v16M28 19v16" {...CUT} />
   </>) },
-  Essay: { name: 'a single lozenge', draw: () => (<path d="M12 3l8 9-8 9-8-9z" {...S} />) },
-  Meditation: { name: 'a point within circles', draw: () => (<>
-    <circle cx={12} cy={12} r={9} {...S} /><circle cx={12} cy={12} r={5} {...S} /><circle cx={12} cy={12} r={1.6} {...F} />
+  Essay: { name: 'an olive sprig', draw: () => (<>
+    <path d="M10 40C18 30 26 18 38 8" {...LINE} />
+    {leaves([[17,31,-60],[16,25,-20],[24,23,-70],[22,17,-20],[30,15,-70],[29,10,-25],[37,8,-55]], 5.2, 2.2)}
   </>) },
-  Rule: { name: 'ruled lines', draw: () => (<>
-    <path d="M4 6h16M4 12h16M4 18h16" {...S} /><path d="M7 3v18" {...S} />
+  Meditation: { name: 'a lily: "consider the lilies"', draw: () => (<>
+    <path d="M24 44V24" {...LINE} />
+    <path d="M24 26c-4-6-4-14 0-20 4 6 4 14 0 20z" {...G} />
+    <path d="M23 26c-6-1-12-6-14-13 6 0 11 4 14 13z" {...G} />
+    <path d="M25 26c6-1 12-6 14-13-6 0-11 4-14 13z" {...G} />
+    <path d="M24 37c-4-1-8-3-10-7 4 0 8 2 10 7z" {...G} />
+    <path d="M24 9v12" {...CUT} />
   </>) },
-  Prayer: { name: 'a candle flame', draw: () => (<>
-    <path d="M12 3c3 4 5 7 5 10a5 5 0 0 1-10 0c0-3 2-6 5-10z" {...S} /><path d="M12 11c1 1.4 1.8 2.6 1.8 3.6a1.8 1.8 0 0 1-3.6 0c0-1 .8-2.2 1.8-3.6z" {...F} />
+  Rule: { name: 'a beehive: an ordered life in common', draw: () => (<>
+    <path d="M10 38c0-16 6-28 14-28s14 12 14 28z" {...G} />
+    <path d="M8 38h32v4H8z" {...G} />
+    <path d="M15.5 18h17M12.5 24h23M11 30h26" {...CUT} />
+    <path d="M21 38v-4a3 3 0 0 1 6 0v4z" fill="var(--cover-mid)" />
   </>) },
-  Catechesis: { name: 'steps', draw: () => (<path d="M4 20h5v-5h5v-5h5V4" {...S} />) },
-  Commentary: { name: 'a text with its margin', draw: () => (<>
-    <rect x={3} y={4} width={18} height={16} {...S} /><path d="M15 4v16" {...S} /><path d="M6 9h6M6 12h6M6 15h6" {...S} /><circle cx={18} cy={9} r={1.2} {...F} />
+  Prayer: { name: 'a candle', draw: () => (<>
+    <path d="M24 3c3 4 5 7 5 9.5a5 5 0 0 1-10 0C19 10 21 7 24 3z" {...G} />
+    <rect x={19} y={19} width={10} height={19} {...G} />
+    <path d="M14 38h20v3H14zM18 41h12l-2 3h-8z" {...G} />
+    <path d="M22 22v13" {...CUT} />
   </>) },
-  Exegesis: { name: 'a key', draw: () => (<>
-    <circle cx={7.5} cy={12} r={4} {...S} /><path d="M11.5 12H21M17 12v3.5M20 12v2.5" {...S} />
+  Catechesis: { name: 'an ear of wheat: seed sown', draw: () => (<>
+    <path d="M24 46V12" {...LINE} />
+    {leaves([[20.5,34,-35],[27.5,34,35],[20.5,27,-35],[27.5,27,35],[20.5,20,-35],[27.5,20,35],[24,12,0]], 3.2, 5.2)}
+    <path d="M24 7L24 2M20 11l-3-5M28 11l3-5" {...LINE} strokeWidth={1.4} />
   </>) },
-  Dialogue: { name: 'two circles meeting (vesica)', draw: () => (<>
-    <circle cx={9} cy={12} r={6.5} {...S} /><circle cx={15} cy={12} r={6.5} {...S} />
+  Commentary: { name: 'a vine with grapes: "I am the vine"', draw: () => (<>
+    <path d="M24 6c-4 2-6 6-4 9" {...LINE} />
+    <path d="M24 9c6-6 16-4 18 4-6 2-14 2-18-4z" {...G} />
+    {[[18,18],[25,18],[32,18],[21.5,24],[28.5,24],[18,30],[25,30],[21.5,36],[25,42]].map(([x,y],k)=>(<circle key={k} cx={x} cy={y} r={3.6} {...G} />))}
+    <path d="M28 11l9 1" {...CUT} />
   </>) },
-  Hymn: { name: 'a quatrefoil', draw: () => (<>{foil(4, 4.4, 4.6)}</>) },
-  Poem: { name: 'a trefoil', draw: () => (<>{foil(3, 4.6, 4.4)}</>) },
-  Confession: { name: 'a cross pattée', draw: () => (
-    <path d="M10 3h4l-1 6.5L19.5 8.5 21 12l-1.5 3.5L13 14.5l1 6.5h-4l1-6.5L4.5 15.5 3 12l1.5-3.5L11 9.5z" {...S} />
-  ) },
-  Hagiography: { name: 'a halo', draw: () => (<>
-    <circle cx={12} cy={12} r={4.5} {...S} />
-    {Array.from({ length: 12 }, (_, k) => { const a = (Math.PI * k) / 6; return <path key={k} d={`M${12 + 6.5 * Math.cos(a)} ${12 + 6.5 * Math.sin(a)}L${12 + 9.5 * Math.cos(a)} ${12 + 9.5 * Math.sin(a)}`} {...S} /> })}
+  Exegesis: { name: 'a key: what opens the text', draw: () => (<>
+    <circle cx={14} cy={24} r={9} {...G} />
+    <circle cx={14} cy={24} r={3.5} fill="var(--cover-mid)" />
+    <path d="M22 21.5h22v5H22z" {...G} />
+    <path d="M33 26.5h4v6h-4zM39 26.5h3v4h-3z" {...G} />
   </>) },
-  Apology: { name: 'a shield', draw: () => (<>
-    <path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z" {...S} /><path d="M12 7v10" {...S} />
+  Dialogue: { name: 'a pomegranate: many seeds, one fruit', draw: () => (<>
+    <circle cx={24} cy={27} r={15} {...G} />
+    <path d="M19 13l1-6 4 4 4-4 1 6z" {...G} />
+    <path d="M24 16v22M17 22c-3 4-3 10 0 14M31 22c3 4 3 10 0 14" {...CUT} />
+  </>) },
+  Hymn: { name: 'a harp: the psalmist’s instrument', draw: () => (<>
+    <path d="M12 42L10 8c10 0 22 8 28 18l4 16z" {...G} />
+    <path d="M15 12l2 26M20 13l2 25M25 15l2 23M30 18l2 20M35 23l2 15" {...CUT} />
+  </>) },
+  Poem: { name: 'a rose', draw: () => (<>
+    <path d="M12 38c4-2 8-2 12 2-4 2-8 2-12-2zM36 38c-4-2-8-2-12 2 4 2 8 2 12-2z" {...G} />
+    <circle cx={24} cy={22} r={14} {...G} />
+    <path d="M24 22c3 0 4-3 2-5s-7-1-7 4 5 8 10 6 6-9 2-13M17 13c-4 4-5 11-1 15" {...CUT} />
+  </>) },
+  Confession: { name: 'a heart: "our heart is restless"', draw: () => (<>
+    <path d="M24 42C10 32 4 24 9 15c4-7 12-6 15 0 3-6 11-7 15 0 5 9-1 17-15 27z" {...G} />
+    <path d="M24 3c2 3 3 5 2 7-1-1-2-1-2 1-1-2-2-4 0-8z" {...G} />
+    <path d="M13 17c1-3 4-4 6-3" {...CUT} />
+  </>) },
+  Hagiography: { name: 'a palm: the martyr’s branch', draw: () => (<>
+    <path d="M14 45C18 32 24 18 36 4" {...LINE} />
+    {[[19,34],[22,28],[25,22],[29,16],[33,10]].flatMap(([x,y],k)=>[
+      <path key={`l${k}`} d={`M${x} ${y}q-7 0-11-5`} {...LINE} strokeWidth={2.6} />,
+      <path key={`r${k}`} d={`M${x} ${y}q6 3 11 1`} {...LINE} strokeWidth={2.6} />,
+    ])}
+  </>) },
+  Apology: { name: 'a tower: "a strong tower"', draw: () => (<>
+    <path d="M13 44V14h4v-5h4v5h6v-5h4v5h4v30z" {...G} />
+    <path d="M20 44v-8a4 4 0 0 1 8 0v8z" fill="var(--cover-mid)" />
+    <path d="M24 20v6" {...CUT} strokeWidth={2.2} />
   </>) },
 }
 
-function GenreOrnament({ genre, size = 22 }: { genre: string; size?: number }) {
+function GenreOrnament({ genre, size = 26 }: { genre: string; size?: number }) {
   const m = MOTIFS[genre]
   if (!m) return null
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden="true" style={{ display: 'block' }}>
+    <svg width={size} height={size} viewBox="0 0 48 48" aria-hidden="true" style={{ display: 'block' }}>
       {m.draw()}
     </svg>
   )
@@ -260,11 +311,12 @@ export default async function VisualExploration() {
         {/* ── II ── */}
         <SectionHeader title="II. An ornament per genre" aside={`${shelf.length} of ${GENRES.length} genres`} />
         <p className="font-serif mb-6" style={{ color: 'var(--ink-soft)', maxWidth: '60ch', lineHeight: 1.6 }}>
-          A mark on each cover for its kind of writing, in place of the plain hairline under the title, so
-          a shelf of covers shows sermons, letters and prayers at a glance. Round 2: the first round varied
-          one star by its number of points, and at this size the marks could not be told apart. Now each
-          genre has its own traditional motif, on one grid and one stroke weight, with related genres sharing
-          a family. One recent text per genre:
+          A mark on each cover for its kind of writing, in place of the plain hairline under the title.
+          Round 3: things, not signs. Round 1 varied one star (too alike); round 2 used abstract motifs
+          (distinct, but modern, and the two &ldquo;voices&rdquo; too close). Following the chapter ornaments
+          of an illuminated bible, each genre is now an object chosen for its meaning (a fish for sermons, a
+          quill for letters, a beehive for rules), cut like a woodcut. These are hand-drawn sketches of the
+          direction, not finished art. One recent text per genre:
         </p>
         <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-4 mb-6">
           {shelf.map(t => (
@@ -274,7 +326,7 @@ export default async function VisualExploration() {
                   <p className="font-serif italic" style={{ color: 'var(--ink)', fontSize: t.title.length > 60 ? '0.72rem' : 'var(--text-sm)', lineHeight: 1.2, display: '-webkit-box', WebkitLineClamp: 4, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
                     {t.title}
                   </p>
-                  <GenreOrnament genre={t.genre?.name ?? ''} />
+                  <GenreOrnament genre={t.genre?.name ?? ''} size={36} />
                   <p className="smallcaps" style={{ color: 'var(--ink-mute)', fontSize: 'var(--text-sm)' }}>
                     {t.author?.name}
                   </p>
@@ -287,7 +339,7 @@ export default async function VisualExploration() {
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-4 mb-16">
           {GENRES.map(g => (
             <div key={g} className="flex items-center gap-3">
-              <GenreOrnament genre={g} size={32} />
+              <GenreOrnament genre={g} size={40} />
               <span>
                 <span className="block font-serif" style={{ color: 'var(--ink)' }}>{g}</span>
                 <span className="block caption" style={{ color: 'var(--ink-faint)' }}>{MOTIFS[g]?.name}</span>
