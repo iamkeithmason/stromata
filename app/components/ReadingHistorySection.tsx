@@ -4,20 +4,7 @@ import Link from 'next/link'
 import { getHistory, type ReadingHistoryEntry } from '@/lib/reading-history'
 import { PROGRESS_NOT_STARTED, PROGRESS_FINISHED } from './ReadingProgressBar'
 import { BookCover } from './BookCover'
-
-function SectionHeader({ title, aside }: { title: string; aside?: string }) {
-  return (
-    <div className="mb-8">
-      <div className="flex items-baseline justify-between mb-3">
-        <h2 className="font-serif italic text-xl" style={{ color: 'var(--ink)' }}>
-          {title}
-        </h2>
-        {aside && <span className="kicker">{aside}</span>}
-      </div>
-      <hr className="rule-gold" />
-    </div>
-  )
-}
+import { SectionHeader } from './SectionHeader'
 
 function progressLabel(entry: ReadingHistoryEntry): string | null {
   const p = entry.progress ?? 0

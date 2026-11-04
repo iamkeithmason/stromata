@@ -7,6 +7,34 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-11-04 — Design-system cleanup: /authors palette, one SectionHeader, homepage footer on tokens
+
+A design-system audit of the homepage and shared components (the design plugin's `design-system` skill) found
+three things worth fixing together:
+
+- **`/authors` was in the retired palette.** `AuthorsBrowser` still used near-black `#1b1b1b` and greys that
+  exist nowhere in `globals.css`, so the authors index read black where every other page reads navy. It now
+  uses the same tokens as its twin `TextsBrowser` (`--ink`, `--ink-mute`, `--ink-faint`, `--rule-soft`).
+  `#9c9589` on parchment also failed AA contrast; `--ink-faint` passes.
+- **`SectionHeader` is one component** (`app/components/SectionHeader.tsx`). The italic heading over a rule
+  was copied into the homepage, `ReadingHistorySection`, `FeaturedAuthors`, `TextsBrowser` and
+  `AuthorsBrowser`, the same drift risk the theme chip had. `level="section"` is the h2 over a gold rule;
+  `level="page"` is the browse pages' h1 over an ink rule. Featured authors now sits 8px closer to its grid,
+  matching the other sections. The locations pages keep their own header for now: the rest of those pages
+  is still in the retired palette, and a navy header over a black page would look worse than either.
+- **The homepage footer is on tokens,** and its six navigation links are 44px tap targets (they were about
+  26px). The near-identical hand-typed colours became `--gold-border`, `--on-dark-soft`, `--on-dark-mute` and
+  `--gold`; the collection-stack shadows got two new tokens, `--cover-stack-back` and `--cover-stack-mid`
+  (on `/design`). The Ko-fi link reads slightly brighter (full `--gold` instead of 85%).
+
+`app/page.tsx` and `AuthorsBrowser.tsx` came off the `legacyRawColour` list. `FilterPill`'s comment, which
+said it mirrored `ThemeChip`, is corrected. Analytics unchanged. Checked locally at 390px and 1440px.
+
+The audit's fourth finding, that Tailwind's `text-*` sizes and the `--text-*` tokens share names but not
+values (`text-xl` is 1.25rem, `--text-xl` 1.5rem), went to the Feature Backlog as its own card.
+
+---
+
 ## 2026-11-04 — Research write-up: invalidate what changed, not what might have
 
 Added `docs/research/2026-11-04-invalidate-what-changed-not-what-might-have.md`, from PR #193. A

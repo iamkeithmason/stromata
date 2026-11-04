@@ -13,6 +13,7 @@ import { ChurchYearRow } from './components/ChurchYearRow'
 import { resolveSeason } from '@/lib/liturgical/year'
 import { readingMinutes } from '@/lib/reading-time'
 import { ThemeChip } from './components/ThemeChip'
+import { SectionHeader } from './components/SectionHeader'
 
 // Incremental Static Regeneration: cache the rendered home page and revalidate
 // hourly. Safe given the manual publish cadence — newly published texts appear
@@ -90,36 +91,6 @@ export const metadata = {
 
 
 // ── Section header ─────────────────────────────────────────────────────────
-function SectionHeader({
-  title,
-  aside,
-  asideHref,
-}: {
-  title: string
-  aside?: string
-  asideHref?: string
-}) {
-  return (
-    <div className="mb-8">
-      <div className="flex items-baseline justify-between mb-3">
-        <h2 className="font-serif italic text-xl" style={{ color: 'var(--ink)' }}>
-          {title}
-        </h2>
-        {aside && (
-          asideHref ? (
-            <Link href={asideHref} className="kicker transition-opacity hover:opacity-70" style={{ textDecoration: 'none' }}>
-              {aside}
-            </Link>
-          ) : (
-            <span className="kicker">{aside}</span>
-          )
-        )}
-      </div>
-      <hr className="rule-gold" />
-    </div>
-  )
-}
-
 export default async function Home() {
   const supabase = createPublicClient()
 
@@ -348,7 +319,7 @@ export default async function Home() {
               marginBottom: '3rem',
             }}
           >
-            <span style={{ flex: 1, height: 1, background: 'rgba(201,148,58,0.3)' }} />
+            <span style={{ flex: 1, height: 1, background: 'var(--gold-border)' }} />
             <span
               style={{
                 fontFamily: 'var(--serif-display)',
@@ -360,7 +331,7 @@ export default async function Home() {
             >
               §
             </span>
-            <span style={{ flex: 1, height: 1, background: 'rgba(201,148,58,0.3)' }} />
+            <span style={{ flex: 1, height: 1, background: 'var(--gold-border)' }} />
           </div>
 
           <div
@@ -373,7 +344,7 @@ export default async function Home() {
               </div>
               {[{ label: 'About', href: '/about' }, { label: 'Colophon', href: '/colophon' }, { label: 'Authors', href: '/authors' }, { label: 'RSS feed', href: '/rss' }].map(({ label, href }) => (
                 <div key={label}>
-                  <Link href={href} className="transition-opacity hover:opacity-70" style={{ color: 'rgba(245,240,230,0.65)', textDecoration: 'none' }}>{label}</Link>
+                  <Link href={href} className="inline-flex items-center min-h-[44px] transition-opacity hover:opacity-70" style={{ color: 'var(--on-dark-soft)', textDecoration: 'none' }}>{label}</Link>
                 </div>
               ))}
             </div>
@@ -383,13 +354,13 @@ export default async function Home() {
               </div>
               {[{ label: 'Library', href: '/texts' }, { label: 'Search', href: '/search' }].map(({ label, href }) => (
                 <div key={label}>
-                  <Link href={href} className="transition-opacity hover:opacity-70" style={{ color: 'rgba(245,240,230,0.65)', textDecoration: 'none' }}>{label}</Link>
+                  <Link href={href} className="inline-flex items-center min-h-[44px] transition-opacity hover:opacity-70" style={{ color: 'var(--on-dark-soft)', textDecoration: 'none' }}>{label}</Link>
                 </div>
               ))}
             </div>
-            <div style={{ fontStyle: 'italic', color: 'rgba(245,240,230,0.5)', maxWidth: '44ch', lineHeight: 1.65, fontSize: 'var(--text-label)' }}>
+            <div style={{ fontStyle: 'italic', color: 'var(--on-dark-mute)', maxWidth: '44ch', lineHeight: 1.65, fontSize: 'var(--text-label)' }}>
               Public-domain texts, edited for legibility. Stromata has no investors and no advertising. If the texts here have been useful to you,{' '}
-              <a href="https://ko-fi.com/stromata" target="_blank" rel="noopener noreferrer" className="transition-opacity hover:opacity-70" style={{ color: 'rgba(201,148,58,0.85)', textDecoration: 'none' }} data-umami-event="ko-fi-click" data-umami-event-source="homepage">
+              <a href="https://ko-fi.com/stromata" target="_blank" rel="noopener noreferrer" className="transition-opacity hover:opacity-70" style={{ color: 'var(--gold)', textDecoration: 'none' }} data-umami-event="ko-fi-click" data-umami-event-source="homepage">
                 a small contribution helps keep the lights on →
               </a>
             </div>
@@ -640,7 +611,7 @@ function StackedCover({ children }: { children: React.ReactNode }) {
           height: '100%',
           top: 5,
           left: 8,
-          background: 'rgba(10, 8, 5, 0.50)',
+          background: 'var(--cover-stack-back)',
         }}
       />
       {/* Spine layer 1 — middle (z-index:auto = 0) */}
@@ -652,7 +623,7 @@ function StackedCover({ children }: { children: React.ReactNode }) {
           height: '100%',
           top: 2.5,
           left: 4,
-          background: 'rgba(10, 8, 5, 0.28)',
+          background: 'var(--cover-stack-mid)',
         }}
       />
       {/* Cover — z-index:1 lifts it above the auto spine layers */}
