@@ -7,6 +7,48 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-11-04 — Revalidation names the pages that changed; scripts can refresh the site
+
+Backlog card "On-demand cache revalidation: refetch from Supabase only when content changes", narrowed
+with Keith. Most of the card shipped on 4 Oct (the week-long cache, and every admin save calling
+`revalidatePath`). This closes what was left.
+
+- **No more library-wide purges.** Saving any chapter of a collection in the text edit form,
+  publishing one from there, saving a collection, or editing a location called
+  `revalidatePath('/texts/[slug]', 'page')` (and, for a location, `/authors/[slug]` too). That marks
+  every text page stale. Marking is lazy, but crawlers visit every page, so each such save re-rendered
+  all ~770 text pages and re-read their bodies from Supabase: the bill of a production deploy, from
+  one edit. The saves now name the pages that really change: a collection's published chapters
+  (`collectionTextPaths`) and a location's authors and their texts (`locationPaths`), slug columns only.
+- **The review queue had the opposite bug.** Its batch publish skipped the fan-out altogether, so when
+  a batch added chapters to a live collection, or published the collection row, chapters already live
+  kept stale prev/next and collection nav for up to a week. `publishText` and `publishCollection` now
+  return the sibling paths with the rest, and the batch's single sweep covers them.
+- **Two admin writes refreshed nothing:** the "generate summary" button (the summary is the meta
+  description and the listing card) and approving a description for a collection that is already
+  live. Both now revalidate.
+- **`POST /api/revalidate`** for CLI scripts, authorised by an `x-revalidate-secret` header against
+  `REVALIDATE_SECRET`. It accepts concrete paths and text slugs only: no route patterns, no
+  purge-everything switch. With no secret configured it answers 503. `scripts/lib/revalidate.mjs`
+  (`revalidateSite`) calls it and is never fatal. Wired into the six scripts that edit published
+  texts or summaries (listed in CLAUDE.md, "Vercel usage" item 3).
+- **CI guard** `lib/cache/no-route-wide-revalidation.test.ts`: fails on a route-wide or layout
+  `revalidatePath` anywhere in `app/` or `lib/`, and on an admin route that writes to Supabase without
+  importing a revalidation helper (`NO_PUBLIC_WRITE` lists the one exception, the note-draft
+  generator). Checked against the old `revalidate-entities.ts`, which it rejects.
+
+Not done, on purpose: moving public queries to `unstable_cache` with `text:{slug}` / `library` tags.
+`revalidatePath` on named pages does the same job, and the weekly data cache already exists.
+
+Verified: `npm test` (635 pass), `tsc --noEmit`, `npm run lint`, `check:tests-in-ci`. Against
+`next dev`, the endpoint answered 401 with no or a wrong secret, 400 for `/texts/[slug]` and 200
+for slugs, and `revalidateSite` reached it. **Not verified here:** that a chapter edit leaves
+unrelated text pages cached on production, which needs a live deployment. **Keith, before scripts
+can use the endpoint:** set `REVALIDATE_SECRET` in Vercel (Production) and `.env.local`. Bot
+Protection is set to Challenge, so a script's POST may get a 429; the helper says so, and the fix is
+a firewall rule that bypasses bot protection for `/api/revalidate`. No new public UI, so no Umami
+events.
+
 ## 2026-11-04 — Only `main` and `preview/` branches create Vercel deployments
 
 Backlog card "Vercel deployment cap: stop branch pushes counting towards the 100-a-day Hobby limit".

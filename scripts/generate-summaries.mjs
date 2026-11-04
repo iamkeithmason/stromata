@@ -18,6 +18,7 @@ import path from 'path';
 import { createClient } from '@supabase/supabase-js';
 import Anthropic from '@anthropic-ai/sdk';
 import { generateSummary } from './lib/summary-prompt.mjs';
+import { revalidateSite } from './lib/revalidate.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 dotenv.config({ path: path.join(__dirname, '..', '.env.local'), override: true });
@@ -34,7 +35,7 @@ const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 async function main() {
   const { data: texts, error: fetchError } = await supabase
     .from('texts')
-    .select('id, title, body, author:authors(name)')
+    .select('id, slug, title, body, author:authors(name)')
     .eq('published', true)
     .is('summary', null)
     .order('title');
@@ -62,6 +63,7 @@ async function main() {
   console.log(`Generating summaries for ${total} text${total === 1 ? '' : 's'}…\n`);
 
   let generated = 0;
+  const livePages = [];
 
   for (let i = 0; i < texts.length; i++) {
     const text = texts[i];
@@ -90,9 +92,13 @@ async function main() {
 
     console.log(`✓ (${summary.length} chars)`);
     generated++;
+    livePages.push(text.slug);
   }
 
   console.log(`\nDone. ${generated}/${total} summaries generated.`);
+  // A summary is the reader's meta description and the text's listing card.
+  // Cards on author/theme/era pages pick it up within the week.
+  if (livePages.length) await revalidateSite({ texts: livePages, paths: ['/', '/texts'] });
 }
 
 main().catch((err) => {

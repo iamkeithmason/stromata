@@ -40,6 +40,7 @@ import path from 'path';
 import { createClient } from '@supabase/supabase-js';
 import fs from 'fs';
 import { dewittenbergBlockquote } from './lib/dewittenberg-blockquote.mjs';
+import { revalidateSite } from './lib/revalidate.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 dotenv.config({ path: path.join(__dirname, '..', '.env.local'), override: true });
@@ -114,6 +115,7 @@ async function main() {
 
   let dirty = 0;
   let written = 0;
+  const livePages = [];
 
   for (const text of texts) {
     const output = dewittenbergBlockquote(text.body || '');
@@ -134,6 +136,7 @@ async function main() {
       } else {
         written++;
         console.log('  ✓ written');
+        if (text.published) livePages.push(text.slug);
       }
     }
   }
@@ -153,6 +156,7 @@ async function main() {
   } else if (dirty > 0) {
     console.log('Dry run — re-run with --write to apply.');
   }
+  await revalidateSite({ texts: livePages });
 }
 
 main().catch(err => {

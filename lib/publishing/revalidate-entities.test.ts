@@ -8,12 +8,11 @@
  */
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { entitySurfaces } from './revalidate-entities'
+import { entitySurfaces, slugPaths } from './revalidate-entities'
 
 test('an era, tradition or theme refreshes only its own page', () => {
   assert.deepEqual(entitySurfaces('era', ['nicene-post-nicene']), {
     paths: ['/eras/nicene-post-nicene'],
-    patterns: [],
   })
   assert.deepEqual(entitySurfaces('tradition', ['imperial']).paths, ['/traditions/imperial'])
   assert.deepEqual(entitySurfaces('theme', ['prayer']).paths, ['/themes/prayer'])
@@ -25,16 +24,15 @@ test('a rename refreshes the old path as well as the new one', () => {
   assert.ok(paths.includes('/locations/tuerkiye'))
 })
 
-test('a location also refreshes the author and text pages that print its name', () => {
-  const { paths, patterns } = entitySurfaces('location', ['turkey'])
-  assert.ok(paths.includes('/locations'))
-  assert.deepEqual(patterns.sort(), ['/authors/[slug]', '/texts/[slug]'])
+test('a location refreshes its own pages; the author and text pages come from the caller', () => {
+  // Those used to be the whole /authors/[slug] and /texts/[slug] routes, which
+  // re-rendered the library on crawlers' next pass. locationPaths lists them.
+  assert.deepEqual(entitySurfaces('location', ['turkey']).paths, ['/locations', '/locations/turkey'])
 })
 
-test('a collection refreshes the home page, the index, itself and its members', () => {
-  const { paths, patterns } = entitySurfaces('collection', ['on-the-priesthood-chrysostom'])
+test('a collection refreshes the home page, the index and itself, never every text page', () => {
+  const { paths } = entitySurfaces('collection', ['on-the-priesthood-chrysostom'])
   assert.deepEqual(paths, ['/', '/texts', '/collections/on-the-priesthood-chrysostom'])
-  assert.deepEqual(patterns, ['/texts/[slug]'])
 })
 
 test('drops nullish and duplicate slugs rather than emitting /eras/undefined', () => {
@@ -42,12 +40,17 @@ test('drops nullish and duplicate slugs rather than emitting /eras/undefined', (
   assert.deepEqual(paths, ['/eras/modern'])
 })
 
-test('patterns are dynamic-route patterns, never concrete paths', () => {
-  // revalidatePath('/texts/[slug]') without the 'page' type is a no-op that
-  // only logs a warning, so a pattern must never end up in `paths`.
+test('no surface is a dynamic-route pattern', () => {
   for (const entity of ['era', 'tradition', 'theme', 'location', 'collection'] as const) {
-    const { paths, patterns } = entitySurfaces(entity, ['x'])
-    assert.ok(paths.every(p => !p.includes('[')), `${entity}: a pattern leaked into paths`)
-    assert.ok(patterns.every(p => p.includes('[')), `${entity}: a concrete path is in patterns`)
+    const { paths } = entitySurfaces(entity, ['x'])
+    assert.ok(paths.every(p => !p.includes('[')), `${entity}: a route pattern leaked into paths`)
   }
+})
+
+test('slugPaths turns slug rows into concrete paths, dropping blanks and repeats', () => {
+  assert.deepEqual(
+    slugPaths('/texts', [{ slug: 'a' }, { slug: null }, { slug: '' }, { slug: 'a' }, { slug: 'b' }]),
+    ['/texts/a', '/texts/b']
+  )
+  assert.deepEqual(slugPaths('/authors', []), [])
 })

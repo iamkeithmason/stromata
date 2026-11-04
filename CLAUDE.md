@@ -554,13 +554,25 @@ comes from saves calling `revalidatePath`:
 - Text publish/edit → `lib/publishing/publish-text.ts`; author saves → `lib/authors/revalidate.ts`;
   era/tradition/theme/location/collection saves → `revalidateEntity` in
   `lib/publishing/revalidate-entities.ts`.
-- **Any new admin route or script that changes something the public site renders must call one of
-  these** (or add an entity to `entitySurfaces`, with a test). A route that doesn't looks fine for an
-  hour under the old window and silently stale for a week under this one.
+- **Any new admin route that changes something the public site renders must call one of these** (or
+  add an entity to `entitySurfaces`, with a test). A route that doesn't looks fine for an hour under
+  the old window and silently stale for a week under this one. `lib/cache/no-route-wide-revalidation.test.ts`
+  fails CI on an admin route that writes to Supabase without importing a helper; a route whose write
+  no public page reads goes on its `NO_PUBLIC_WRITE` list with the reason.
+- **Name the pages that changed; never purge a whole route.** `revalidatePath('/texts/[slug]', 'page')`
+  (or a `'layout'` purge) marks every page of that route stale, and because crawlers visit every page,
+  it costs a production deploy's worth of CPU and Supabase reads. Until 2026-11-04 every chapter edit
+  did exactly that. Pages that render a row *inside* them come from `collectionTextPaths` /
+  `locationPaths`; the same test refuses the pattern form.
 - **`/scripture/[ref]` is the exception: daily, on purpose** (`revalidate: 86400`, passed to the client
   too), because publishing does not fan out to its ~4,000 leaves.
-- An edit made straight to the database from a CLI script calls no `revalidatePath` and so takes up to
-  a week to show. If that matters, refresh the affected page by saving it once in the admin app.
+- **A CLI script that edits published content calls `revalidateSite()`** from `scripts/lib/revalidate.mjs`
+  after its writes, passing only the slugs it changed. That POSTs to `/api/revalidate` with
+  `REVALIDATE_SECRET` (set in Vercel and in `.env.local`). It is never fatal: without the secret, or if
+  the request is refused, it warns and the pages update within the week. Wired into
+  `rejoin-text-paragraphs`, `strip-source-chrome`, `dewittenberg-blockquotes`, `reformat-text-body`,
+  `repair-summaries` and `generate-summaries`; a new script that edits published rows gets the same
+  call. Pipeline imports write drafts only and need none.
 
 ---
 

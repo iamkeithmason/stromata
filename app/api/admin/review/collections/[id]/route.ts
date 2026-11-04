@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createServerClient } from '@/lib/supabase/server'
+import { revalidateEntity } from '@/lib/publishing/revalidate-entities'
 
 type Params = { params: Promise<{ id: string }> }
 
@@ -36,12 +37,14 @@ export async function PATCH(request: NextRequest, { params }: Params) {
 
   const { data: existing } = await supabase
     .from('collections')
-    .select('id, description, description_draft, provenance_verified_at')
+    .select('id, slug, published, description, description_draft, provenance_verified_at')
     .eq('id', id)
     .maybeSingle()
 
   if (!existing) return NextResponse.json({ error: 'Not found.' }, { status: 404 })
   const collection = existing as {
+    slug: string
+    published: boolean
     description: string | null
     description_draft: string | null
     provenance_verified_at: string | null
@@ -87,6 +90,11 @@ export async function PATCH(request: NextRequest, { params }: Params) {
 
   const { error } = await supabase.from('collections').update(update).eq('id', id)
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+
+  // Approving a description writes the public `description`. On a collection
+  // that is already live (new chapters arriving through the queue) the new
+  // wording would otherwise wait a week to show.
+  if ('description' in update && collection.published) revalidateEntity('collection', [collection.slug])
 
   return NextResponse.json({
     ok: true,

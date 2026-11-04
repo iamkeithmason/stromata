@@ -29,6 +29,7 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { createClient } from '@supabase/supabase-js';
+import { revalidateSite } from './lib/revalidate.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 dotenv.config({ path: path.join(__dirname, '..', '.env.local') });
@@ -70,6 +71,7 @@ async function main() {
   console.log(apply ? 'APPLY mode — will write body changes\n' : 'DRY RUN — no writes (pass --apply to write)\n');
   let changed = 0;
   let failed = 0;
+  const livePages = [];
 
   for (const file of files) {
     if (!fs.existsSync(file)) {
@@ -126,6 +128,7 @@ async function main() {
         continue;
       }
       console.log('    ✓ body updated (published unchanged)');
+      if (row.published) livePages.push(slug);
     }
     changed++;
   }
@@ -136,6 +139,7 @@ async function main() {
       (apply ? '' : '. Re-run with --apply to write.')
   );
   console.log('Publishing remains manual: review each in /admin/drafts and publish there.');
+  await revalidateSite({ texts: livePages });
   if (failed) process.exit(1);
 }
 

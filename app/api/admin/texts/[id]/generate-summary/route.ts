@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import Anthropic from '@anthropic-ai/sdk'
 import { createServerClient } from '@/lib/supabase/server'
+import { revalidateText } from '@/lib/publishing/publish-text'
 import { generateSummary } from '@/scripts/lib/summary-prompt.mjs'
 
 type Params = { params: Promise<{ id: string }> }
@@ -53,6 +54,10 @@ export async function POST(_request: NextRequest, { params }: Params) {
     .eq('id', id)
 
   if (writeError) return NextResponse.json({ error: writeError.message }, { status: 500 })
+
+  // `summary` is public: the reader's meta description and every listing card.
+  // On a published text the new one would otherwise wait a week to show.
+  await revalidateText(supabase, id)
 
   return NextResponse.json({ summary })
 }

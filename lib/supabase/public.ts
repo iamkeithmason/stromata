@@ -41,8 +41,9 @@ import { createClient } from '@supabase/supabase-js'
 // through `lib/publishing/publish-text.ts` — drops these entries along with the
 // rendered page, so publishing still shows up immediately rather than a week
 // later. So does every admin editor (lib/publishing/revalidate-entities.ts).
-// Edits made straight to the database from a CLI script (no revalidatePath)
-// now take up to a week to show.
+// CLI scripts that edit published texts ask the site to refresh through
+// POST /api/revalidate (scripts/lib/revalidate.mjs); without that call their
+// edits take up to a week to show.
 //
 // This is deliberately on the PUBLIC client only. The admin surfaces read
 // through `createServerClient()`, which stays uncached: a back-office form must
