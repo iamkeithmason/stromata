@@ -8,8 +8,8 @@
  *
  * Every default below was checked on 4 Nov 2026 against its holder's own
  * statement (the Met API's isPublicDomain flag; Yale's IIIF manifest rights;
- * the Rijksmuseum object page's Public Domain mark). An era with no default yet
- * (null) shows a text-only header until a plate is chosen.
+ * the Rijksmuseum object page's Public Domain mark). All nine eras have one; an
+ * era set to null would show a text-only header until a plate is chosen.
  * Sourcing notes and rejected candidates: the backlog card "Make the library
  * visual at scale".
  */
@@ -25,14 +25,24 @@ export type EraPlate = {
 }
 
 export const DEFAULT_ERA_PLATES: Record<string, EraPlate | null> = {
-  apostolic: null,
+  apostolic: {
+    src: '/plates/eras/apostolic.jpg',
+    credit: 'Six Apostles (John, Peter, Paul, Andrew shown), tempera and gold on wood, Spanish (Oña) Painter, c. 1500. The Metropolitan Museum of Art. Public domain (CC0).',
+    sourceUrl: 'https://www.metmuseum.org/art/collection/search/437741',
+    focusY: 40,
+  },
   'ante-nicene': {
     src: '/plates/eras/ante-nicene.jpg',
     credit: 'Procession of women, baptistery of the Christian house at Dura-Europos, c. 232–45. Yale University Art Gallery. Public domain (CC0).',
     sourceUrl: 'https://artgallery.yale.edu/collections/objects/34496',
     focusY: 40,
   },
-  'nicene-post-nicene': null,
+  'nicene-post-nicene': {
+    src: '/plates/eras/nicene-post-nicene.jpg',
+    credit: 'Emperor Justinian and Bishop Maximian with their retinue, mosaic in San Vitale, Ravenna, c. 547; albumen print by Fratelli Alinari, c. 1875–1900. Rijksmuseum, Amsterdam. Public domain.',
+    sourceUrl: 'https://www.rijksmuseum.nl/en/collection/RP-F-00-8320',
+    focusY: 35,
+  },
   'early-medieval': {
     src: '/plates/eras/early-medieval.jpg',
     credit: 'Plaque with scenes at Emmaus, ivory, Carolingian, c. 850–900. The Metropolitan Museum of Art, The Cloisters. Public domain (CC0).',

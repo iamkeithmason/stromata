@@ -11,11 +11,13 @@ Backlog, not here; this is what actually happened and why.
 
 **Era plates.** Each era page now opens with a full-bleed band showing a public-domain image of its world: the
 era's name and dates over the foot of the image, and a credit line beneath. The band is 16:9 on phones (about
-220px) and 3:1 from 640px, capped at 420px. Keith asked for people where possible, to humanise the eras. Seven
-eras have a default plate, committed at `public/plates/eras/` (2000×1000 crops, 280–590 KB) and listed with
+220px) and 3:1 from 640px, capped at 420px. Keith asked for people where possible, to humanise the eras. All
+nine eras have a default plate, committed at `public/plates/eras/` (2000×1000 crops, 280–590 KB) and listed with
 credits in `lib/eras/plates.ts`:
 
+- **Apostolic:** *Six Apostles*, a Spanish retable panel c. 1500, Peter and Paul at the centre (Met, CC0)
 - **Ante-Nicene:** the Dura-Europos procession of women (Yale, CC0)
+- **Nicene & Post-Nicene:** Justinian and Bishop Maximian at San Vitale, Ravenna, c. 547, in an Alinari print (Rijksmuseum, PD)
 - **Early Medieval:** a Carolingian ivory of Emmaus (Met, CC0)
 - **High Medieval:** a Royal Psalter Last Supper, cropped to keep Christ's head whole (Met, CC0)
 - **Late Medieval:** a detail of Campin's Merode Altarpiece (Met, CC0)
@@ -24,14 +26,14 @@ credits in `lib/eras/plates.ts`:
 - **Modern:** the Christ Church library, Oxford, 1814 (Rijksmuseum, PD)
 
 Each licence was checked at the holder's own source (the Met API's `isPublicDomain`, Yale's IIIF manifest, the
-Rijksmuseum page's Public Domain mark). Apostolic and Nicene & Post-Nicene keep a text-only header for now:
-their best candidates are on Wikimedia Commons, which this cloud session cannot reach.
+Rijksmuseum page's Public Domain mark). The Apostolic and Nicene plates replace first picks on Wikimedia
+Commons, which this cloud session cannot reach.
 
 **Changing a plate without a deploy.** Migration `035_era_plates.sql` adds `eras.plate_url`, `plate_credit`
 and `plate_focus_y`, and a public `plates` bucket. The admin era form gains a plate section. You can upload a
 replacement, which `/api/admin/eras/plate` stores at 2000px wide, add its credit line (required), set the crop
-focus with a slider, or go back to the default. Saving revalidates the era page as before. **The migration
-must be applied before the admin section appears.** The public page reads the plate columns in a separate,
+focus with a slider, or go back to the default. Saving revalidates the era page as before. The migration was
+applied to production on 4 Nov, so nothing needs running before the release. The public page reads the plate columns in a separate,
 fault-tolerant query, so era pages render with their defaults whether or not it has run (checked locally
 against the live database without it).
 
