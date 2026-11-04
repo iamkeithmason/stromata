@@ -93,6 +93,8 @@
   --on-dark-gold-soft: rgba(224, 200, 134, 0.55);  /* faint reversed gold (underlines) */
 
   --cover-mid:  #F5F0E6;   /* book-cover inner panel — a stable cream, NOT theme-flipped */
+  --cover-stack-back: rgba(10, 8, 5, 0.50);   /* collection stack: rearmost spine behind a cover */
+  --cover-stack-mid:  rgba(10, 8, 5, 0.28);   /* collection stack: middle spine */
 
   /* ---------------------------------------------------------------
      Liturgical season grounds. One is active at a time, selected by
@@ -631,6 +633,13 @@ body {
 #reader-main {
   --text-prose: calc(1.25rem * var(--reader-font-scale, 1));
   max-width: calc(var(--text-prose) * var(--reader-measure, 30));
+}
+
+/* A jump target (a heading, or the paragraph an editorial section starts at)
+   lands below the 64px header rather than under it, with or without JavaScript. */
+#reader-main [data-section],
+#reader-main h1[id], #reader-main h2[id], #reader-main h3[id] {
+  scroll-margin-top: 5rem;
 }
 
 

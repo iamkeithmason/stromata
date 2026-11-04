@@ -40,6 +40,7 @@ import { createClient } from '@supabase/supabase-js';
 import fs from 'fs';
 import { stripChrome } from './lib/source-chrome.mjs';
 import { leadingH1Verdict } from './lib/leading-h1.mjs';
+import { revalidateSite } from './lib/revalidate.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 dotenv.config({ path: path.join(__dirname, '..', '.env.local'), override: true });
@@ -160,6 +161,7 @@ async function main() {
   let advised = 0;
   let filesTouched = 0;
   let headingsKept = 0;
+  const livePages = [];
 
   for (const text of texts) {
     // The leading-H1 decision is per text, not per run: it needs the title to
@@ -194,6 +196,7 @@ async function main() {
         } else {
           written++;
           console.log('  ✓ written');
+          if (text.published) livePages.push(text.slug);
         }
       }
       console.log('');
@@ -235,6 +238,7 @@ async function main() {
   } else if (dirty > 0) {
     console.log('Dry run — re-run with --write to apply.');
   }
+  await revalidateSite({ texts: livePages });
   if (advised > 0 && !dropLeadingHeading) {
     console.log('Advisories are never written. --drop-leading-h1 opts into removing duplicated title headings.');
   }

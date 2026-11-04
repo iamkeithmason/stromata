@@ -20,10 +20,25 @@
  *                                 first below — the summary depends on them.
  *   collections.description_draft — the collection blurb, ~800 characters,
  *                                 written from the collection's note_drafts.
+ *   texts.sections_draft        — editor's sections for long texts with no
+ *                                 headings (scripts/lib/sections.mjs has the
+ *                                 definition). Unlike the three above, these
+ *                                 targets are mostly PUBLISHED texts, so this
+ *                                 step selects its own rows; they are reviewed
+ *                                 at /admin/review/sections, not in the publish
+ *                                 queue. A new import that meets the definition
+ *                                 is picked up by the next run, with no flag.
  *
  * Nothing here publishes, and nothing here writes a live field: every write
  * goes to a *_draft column, which is what makes the script safe to re-run and
  * safe to run ahead of review.
+ *
+ * Meters (CLAUDE.md, "Supabase limits"): the sections step reads `body` only
+ * for texts that need sections and have no draft, filtered on the server
+ * first. The first backfill reads 33 bodies, about 3.4 MB of egress (under
+ * 0.1% of the 5 GB cycle); later runs read only new imports. Anthropic tokens:
+ * each text sends its paragraphs cut to 50 words, roughly 8–15k input tokens,
+ * so the backfill is about $2 on Opus; the script prints the exact figure.
  *
  * Usage:
  *   node scripts/generate-review-drafts.mjs                          # everything missing
@@ -32,6 +47,8 @@
  *   node scripts/generate-review-drafts.mjs --dry-run                # print the plan, call nothing
  *   node scripts/generate-review-drafts.mjs --force                  # regenerate drafts that exist
  *   node scripts/generate-review-drafts.mjs --limit=10               # cap the work
+ *   node scripts/generate-review-drafts.mjs --sections               # only the sections step
+ *   node scripts/generate-review-drafts.mjs --sections --slug=<slug> # sections for one text
  */
 
 import dotenv from 'dotenv';
@@ -53,6 +70,19 @@ import {
   selectSummaryTargets,
   summarySourceFor,
 } from './lib/review-drafts.mjs';
+import {
+  HAS_CONTENTS_PATTERN,
+  LONG_TEXT_WORDS,
+  SECTIONS_PROMPT,
+  bodyBlocks,
+  buildSectionsDoc,
+  parseDraftReply,
+  promptDigest,
+  selectSectionTargets,
+  validatePicks,
+} from './lib/sections.mjs';
+
+const SECTIONS_MODEL = process.env.SECTIONS_MODEL || NOTE_MODEL;
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 dotenv.config({ path: path.join(__dirname, '..', '.env.local'), override: true });
@@ -73,6 +103,8 @@ const MODE = {
   dryRun: hasFlag('--dry-run'),
   force: hasFlag('--force'),
   limit: flagValue('--limit') ? parseInt(flagValue('--limit'), 10) : null,
+  sections: hasFlag('--sections'),
+  slug: flagValue('--slug'),
 };
 
 // ── Cost accounting ──────────────────────────────────────────────────────────
@@ -423,9 +455,131 @@ async function fillCollectionDescriptions(texts) {
   return done;
 }
 
+// ── Step 4: texts.sections_draft ─────────────────────────────────────────────
+
+async function fillSectionDrafts() {
+  // Metadata first, with the "already has contents" test run on the server, so
+  // no body is downloaded for a text that does not need sections.
+  let query = supabase
+    .from('texts')
+    .select('id, title, slug, word_count, note_draft, editorial_introduction, sections_draft, author:authors(name)')
+    .gte('word_count', LONG_TEXT_WORDS)
+    .not('body', 'match', HAS_CONTENTS_PATTERN)
+    .order('title');
+  if (!MODE.force) query = query.is('sections_draft', null);
+  if (MODE.slug) query = query.eq('slug', MODE.slug);
+
+  const { data: candidates, error } = await query;
+  if (error) {
+    console.error('Failed to load section candidates:', error.message);
+    return 0;
+  }
+  if (!candidates?.length) {
+    console.log(`Sections: nothing to draft${MODE.slug ? ` for "${MODE.slug}"` : ''}.\n`);
+    return 0;
+  }
+
+  const slice = MODE.limit ? candidates.slice(0, MODE.limit) : candidates;
+  console.log(`Sections: ${slice.length} candidate(s) (model: ${SECTIONS_MODEL}).`);
+
+  let done = 0;
+  for (let i = 0; i < slice.length; i++) {
+    const text = slice[i];
+    const tag = `  [${i + 1}/${slice.length}] ${text.title}`;
+
+    // One body at a time, and only for a candidate.
+    const { data: row, error: bodyError } = await supabase
+      .from('texts')
+      .select('body')
+      .eq('id', text.id)
+      .single();
+    if (bodyError || !row?.body) {
+      console.error(`${tag} — ✗ could not read the body`);
+      continue;
+    }
+    // The server filter is a prefilter; the shared definition decides.
+    const [target] = selectSectionTargets([{ ...text, body: row.body }], { force: MODE.force });
+    if (!target) {
+      console.log(`${tag} — has contents already; skipped`);
+      continue;
+    }
+
+    const blocks = bodyBlocks(row.body);
+    if (MODE.dryRun) {
+      console.log(`${tag} — ${blocks.length} paragraphs`);
+      done++;
+      continue;
+    }
+
+    const userMessage = [
+      `Title: ${text.title}`,
+      `Author: ${[text.author].flat()[0]?.name ?? 'Unknown'}`,
+      '',
+      `Editor's introduction: ${text.editorial_introduction ?? text.note_draft ?? '(none)'}`,
+      '',
+      `The text, ${blocks.length} paragraphs:`,
+      promptDigest(blocks),
+    ].join('\n');
+
+    let picks;
+    try {
+      const message = await anthropic.messages.create({
+        model: SECTIONS_MODEL,
+        max_tokens: 1000,
+        system: SECTIONS_PROMPT,
+        messages: [{ role: 'user', content: userMessage }],
+      });
+      record(SECTIONS_MODEL, {
+        inputTokens: message.usage?.input_tokens ?? 0,
+        outputTokens: message.usage?.output_tokens ?? 0,
+      });
+      picks = parseDraftReply(message.content?.[0]?.text);
+    } catch (err) {
+      console.error(`${tag} — ✗ ${err.message}`);
+      continue;
+    }
+
+    // The prompt asks for the first section at paragraph 1; hold it to that
+    // rather than leave the opening paragraphs outside every section.
+    if (picks.length) picks[0].paragraph = 0;
+    const problems = validatePicks(picks, blocks.length);
+    if (problems.length) {
+      console.error(`${tag} — ✗ unusable draft: ${problems.join(' ')}`);
+      continue;
+    }
+
+    const { error: writeError } = await supabase
+      .from('texts')
+      .update({ sections_draft: buildSectionsDoc(blocks, picks) })
+      .eq('id', text.id);
+    if (writeError) {
+      console.error(`${tag} — ✗ write error: ${writeError.message}`);
+      continue;
+    }
+    console.log(`${tag} — ✓ ${picks.map((p) => p.label).join(' · ')}`);
+    done++;
+  }
+  console.log('');
+  return done;
+}
+
 // ── Main ─────────────────────────────────────────────────────────────────────
 
 async function main() {
+  if (MODE.sections) {
+    console.log(
+      `Drafting sections${MODE.slug ? ` for "${MODE.slug}"` : ''}` +
+      `${MODE.dryRun ? ' (dry run — no API calls, no writes)' : ''}` +
+      `${MODE.force ? ' (force — redrafting existing drafts)' : ''}\n`
+    );
+    const sections = await fillSectionDrafts();
+    console.log(`── Summary ─────────────────────────────────────────────────`);
+    console.log(`  Sections ${MODE.dryRun ? 'would draft' : 'drafted'}: ${sections}`);
+    reportSpend();
+    if (!MODE.dryRun && sections > 0) console.log('\nReview them at /admin/review/sections.');
+    return;
+  }
+
   const scope = MODE.collection
     ? `collection "${MODE.collection}"`
     : MODE.standalone
@@ -439,7 +593,15 @@ async function main() {
 
   const texts = await loadDraftTexts();
   console.log(`${texts.length} unpublished text(s) in scope.\n`);
-  if (texts.length === 0) return;
+  // Sections are drafted for published texts too, so an empty draft queue does
+  // not end the run; only a run scoped to a collection skips them.
+  const sections = MODE.collection || MODE.standalone ? 0 : await fillSectionDrafts();
+  if (texts.length === 0) {
+    console.log(`── Summary ─────────────────────────────────────────────────`);
+    console.log(`  Sections ${MODE.dryRun ? 'would draft' : 'drafted'}: ${sections}`);
+    reportSpend();
+    return;
+  }
 
   // Sibling notes per author, so the critic loop can steer a new note away from
   // the cluster it belongs to. Built from the whole corpus, not just this scope.
@@ -464,6 +626,7 @@ async function main() {
   console.log(`  Introductions ${verb}: ${notes}`);
   console.log(`  Summaries ${verb}: ${summaries}`);
   console.log(`  Collection descriptions ${verb}: ${descriptions}`);
+  console.log(`  Sections ${verb}: ${sections}`);
   reportSpend();
   if (!MODE.dryRun) console.log('\nReview them at /admin/review.');
 }

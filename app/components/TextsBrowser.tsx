@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { FilterPill } from './FilterPill'
 import { useUrlFilters } from '@/lib/use-url-filters'
 import { pickFacet } from '@/lib/facets'
+import { SectionHeader } from './SectionHeader'
 
 declare global {
   interface Window {
@@ -113,19 +114,11 @@ export function TextsBrowser({
 
   return (
     <>
-      <div className="mb-6">
-        <div className="flex items-baseline justify-between mb-3">
-          <h1 className="font-serif italic text-xl" style={{ color: 'var(--ink)' }}>
-            Library
-          </h1>
-          <span className="smallcaps" style={{ color: 'var(--ink-faint)' }}>
-            {hasFilter
-              ? `${filtered.length} of ${items.length}`
-              : `${items.length} text${items.length === 1 ? '' : 's'}`}
-          </span>
-        </div>
-        <hr style={{ borderColor: 'var(--ink)', borderTopWidth: '1px' }} />
-      </div>
+      <SectionHeader
+        level="page"
+        title="Library"
+        aside={hasFilter ? `${filtered.length} of ${items.length}` : `${items.length} text${items.length === 1 ? '' : 's'}`}
+      />
 
       <div className="mb-8 space-y-3">
         {/* Thirty-odd facet pills used to fill the first screen before any

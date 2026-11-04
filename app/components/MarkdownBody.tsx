@@ -5,6 +5,7 @@ import { rehypeScripture } from '@/lib/scripture/rehype-scripture'
 import { isPlateParagraphMdast, plateFromHast } from '@/lib/markdown/plate'
 import { remarkSmartPunctuation } from '@/lib/markdown/smart-punctuation'
 import ScriptureRef from '@/app/components/ScriptureRef'
+import { remarkSectionAnchors, type LocatedSection } from '@/lib/markdown/section-anchors'
 
 // Extracts plain text from a React node tree so we can slugify heading children.
 // Must produce the same string that extractHeadings() produces from raw markdown.
@@ -59,10 +60,17 @@ function remarkNumberParagraphs() {
   }
 }
 
-export default function MarkdownBody({ content, numbered = true, size = 'default' }: { content: string; numbered?: boolean; size?: 'default' | 'large' | 'small' }) {
-  const remarkPlugins = numbered
+export default function MarkdownBody({ content, numbered = true, size = 'default', sections }: {
+  content: string
+  numbered?: boolean
+  size?: 'default' | 'large' | 'small'
+  /** Editorial sections located in `content` (lib/markdown/section-anchors.ts); their paragraphs get ids. */
+  sections?: LocatedSection[]
+}) {
+  const remarkPlugins: NonNullable<React.ComponentProps<typeof ReactMarkdown>['remarkPlugins']> = numbered
     ? [remarkGfm, remarkSmartPunctuation, remarkNumberParagraphs]
     : [remarkGfm, remarkSmartPunctuation]
+  if (sections?.length) remarkPlugins.push([remarkSectionAnchors, sections])
   const proseSize = size === 'large' ? 'var(--text-xl)' : size === 'small' ? 'var(--text-label)' : 'var(--text-prose)'
 
   return (
@@ -115,8 +123,16 @@ export default function MarkdownBody({ content, numbered = true, size = 'default
             : typeof rawNum === 'string' && rawNum
               ? Number(rawNum)
               : undefined
+          // A section start carries its id (and data-section) on the wrapper, so the
+          // reading header's contents can jump to it; data-pnum lets "Back to ¶17" name it.
+          const sectionStart = typeof node?.properties?.id === 'string' ? node.properties.id : undefined
           return (
-            <div className="relative">
+            <div
+              className="relative"
+              id={sectionStart}
+              data-section={sectionStart ? 'editorial' : undefined}
+              data-pnum={num}
+            >
               {num !== undefined && (
                 <span
                   className="absolute select-none pointer-events-none hidden sm:block"
@@ -165,8 +181,9 @@ export default function MarkdownBody({ content, numbered = true, size = 'default
           <h6 className="smallcaps mt-5 mb-2" style={{ color: 'var(--reader-text)' }}>{children}</h6>
         ),
         // Blockquote — useful for scripture references
-        blockquote: ({ children }) => (
+        blockquote: ({ node, children }) => (
           <blockquote
+            id={typeof node?.properties?.id === 'string' ? node.properties.id : undefined}
             className="border-l-2 pl-5 my-6 font-serif italic"
             style={{ borderColor: 'var(--reader-quote-rule)', color: 'var(--reader-quote)' }}
           >

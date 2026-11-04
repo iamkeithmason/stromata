@@ -70,12 +70,27 @@ function baseRepo() {
 
 // ── previews ────────────────────────────────────────────────────────────────
 
-test('a preview is skipped unless the commit asks for one', () => {
+test('a preview builds only on a preview/ branch', () => {
   const dir = baseRepo()
-  assert.equal(run(dir, { VERCEL_ENV: 'preview', VERCEL_GIT_COMMIT_MESSAGE: 'Fix a thing' }).code, 0)
-  assert.equal(run(dir, { VERCEL_ENV: 'preview', VERCEL_GIT_COMMIT_MESSAGE: 'Try header [preview]' }).code, 1)
-  assert.equal(run(dir, { VERCEL_ENV: 'development', VERCEL_GIT_COMMIT_MESSAGE: 'x' }).code, 0)
+  const pre = (ref, message = 'Fix a thing') => ({ VERCEL_ENV: 'preview', VERCEL_GIT_COMMIT_REF: ref, VERCEL_GIT_COMMIT_MESSAGE: message })
+  assert.equal(run(dir, pre('claude/some-work')).code, 0)
+  assert.equal(run(dir, pre('release')).code, 0)
+  assert.equal(run(dir, pre('preview/reader-nav')).code, 1)
+  assert.equal(run(dir, { VERCEL_ENV: 'preview', VERCEL_GIT_COMMIT_MESSAGE: 'x' }).code, 0)
   rmSync(dir, { recursive: true, force: true })
+})
+
+test('the old commit-message tag no longer builds a preview on an ordinary branch', () => {
+  const dir = baseRepo()
+  const tag = '[' + 'preview' + ']'
+  assert.equal(run(dir, { VERCEL_ENV: 'preview', VERCEL_GIT_COMMIT_REF: 'claude/x', VERCEL_GIT_COMMIT_MESSAGE: `Try header ${tag}` }).code, 0)
+  rmSync(dir, { recursive: true, force: true })
+})
+
+test('vercel.json lets only main and preview/** create deployments', async () => {
+  const { readFileSync } = await import('node:fs')
+  const cfg = JSON.parse(readFileSync(join(dirname(SCRIPT), '..', 'vercel.json'), 'utf8'))
+  assert.deepEqual(cfg.git.deploymentEnabled, { '**': false, main: true, 'preview/**': true })
 })
 
 // ── production: what may be skipped ─────────────────────────────────────────

@@ -126,9 +126,11 @@ export function ReaderSettings() {
       } catch {
         /* private mode / storage blocked — settings still apply for this session */
       }
-      window.umami?.track('reader-setting-change', { from: 'text-reader', setting, value })
       return next
     })
+    // Outside the updater: React may run an updater twice (always in dev Strict Mode),
+    // and the applying + storing above are idempotent but a beacon is not.
+    window.umami?.track('reader-setting-change', { from: 'text-reader', setting, value })
   }, [])
 
   const panelBg = 'var(--vellum)'

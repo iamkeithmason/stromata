@@ -7,6 +7,348 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-11-04 — Text, author, collection and Scripture pages are now cached (they rendered on every request)
+
+Vercel's per-route view (12 hours to 4 Nov, the most Hobby shows) put `/texts/[slug]` far ahead of
+everything else: 1,100 renders and ~4 min of Active CPU, about 8 min a day against an 8-min daily
+budget (4h per 30 days). The 30-day total was 3h41m of 4h with only two production deploys and no
+publishes since 30 Sep, so the cost was crawler visits, not deploys or edits.
+
+The cause: `next build` listed `/texts/[slug]`, `/authors/[slug]`, `/collections/[slug]` and
+`/scripture/[ref]` as **ƒ (Dynamic)**. A route with a `[param]` and no `generateStaticParams` is
+rendered on every request in Next 15, so their `revalidate` windows cached the Supabase reads (the
+2026-09-29 data-cache work) but never the page. Each crawler hit re-rendered the whole reader page.
+The eras, themes, traditions and locations pages were never affected: they list their params.
+
+- Each of the four now exports `generateStaticParams() { return [] }`. Nothing is prebuilt, so
+  builds stay as cheap as before; each page renders on its first visit and is then served from the
+  cache until its window runs out or a save revalidates it. `next build` now shows all four as ●.
+- Verified on a local production build (`next start`): a text page answered `x-nextjs-cache: MISS`
+  then `HIT`, with `Cache-Control: s-maxage=604800`; a Scripture page the same.
+- Guard: `lib/cache/public-pages-are-cached.test.ts` fails on any public `[param]` page with a
+  `revalidate` window and no `generateStaticParams`. It flagged all four before the fix.
+- Not verified here: the effect on the live CPU bars, which needs the next release and a few days.
+  Expect `/texts/[slug]` invocations to fall from ~2,200 a day to roughly one per page per week, plus
+  one round of renders after each deploy. Watch ISR reads and writes on the Usage page too: the cache
+  now lives there.
+
+This was in the original "On-demand cache revalidation" card ("generateStaticParams returns [] for
+heavy dynamic routes"); PR #193 narrowed it out as unnecessary, which was wrong.
+
+## 2026-11-04 — Design-system cleanup: /authors palette, one SectionHeader, homepage footer on tokens
+
+A design-system audit of the homepage and shared components (the design plugin's `design-system` skill) found
+three things worth fixing together:
+
+- **`/authors` was in the retired palette.** `AuthorsBrowser` still used near-black `#1b1b1b` and greys that
+  exist nowhere in `globals.css`, so the authors index read black where every other page reads navy. It now
+  uses the same tokens as its twin `TextsBrowser` (`--ink`, `--ink-mute`, `--ink-faint`, `--rule-soft`).
+  `#9c9589` on parchment also failed AA contrast; `--ink-faint` passes.
+- **`SectionHeader` is one component** (`app/components/SectionHeader.tsx`). The italic heading over a rule
+  was copied into the homepage, `ReadingHistorySection`, `FeaturedAuthors`, `TextsBrowser` and
+  `AuthorsBrowser`, the same drift risk the theme chip had. `level="section"` is the h2 over a gold rule;
+  `level="page"` is the browse pages' h1 over an ink rule. Featured authors now sits 8px closer to its grid,
+  matching the other sections. The locations pages keep their own header for now: the rest of those pages
+  is still in the retired palette, and a navy header over a black page would look worse than either.
+- **The homepage footer is on tokens,** and its six navigation links are 44px tap targets (they were about
+  26px). The near-identical hand-typed colours became `--gold-border`, `--on-dark-soft`, `--on-dark-mute` and
+  `--gold`; the collection-stack shadows got two new tokens, `--cover-stack-back` and `--cover-stack-mid`
+  (on `/design`). The Ko-fi link reads slightly brighter (full `--gold` instead of 85%).
+
+`app/page.tsx` and `AuthorsBrowser.tsx` came off the `legacyRawColour` list. `FilterPill`'s comment, which
+said it mirrored `ThemeChip`, is corrected. Analytics unchanged. Checked locally at 390px and 1440px.
+
+The audit's fourth finding, that Tailwind's `text-*` sizes and the `--text-*` tokens share names but not
+values (`text-xl` is 1.25rem, `--text-xl` 1.5rem), went to the Feature Backlog as its own card.
+
+---
+
+## 2026-11-04 — Research write-up: invalidate what changed, not what might have
+
+Added `docs/research/2026-11-04-invalidate-what-changed-not-what-might-have.md`, from PR #193. A
+route-wide refresh was treated as cheap because it is lazy, but crawlers visit every page, so it cost a
+deploy per chapter edit. The 6 Oct "every writer must invalidate" rule had missed two writers, which the
+new source-scan guard found on its first run. Also records a mistake: a cost stated to Keith before its
+code path was traced. Docs only, but `docs/research/` is not on `SITE_IRRELEVANT`, so it rides the
+weekly release rather than going straight to `main`.
+
+## 2026-11-04 — Revalidation names the pages that changed; scripts can refresh the site
+
+Backlog card "On-demand cache revalidation: refetch from Supabase only when content changes", narrowed
+with Keith. Most of the card shipped on 4 Oct (the week-long cache, and every admin save calling
+`revalidatePath`). This closes what was left.
+
+- **No more library-wide purges.** Saving any chapter of a collection in the text edit form,
+  publishing one from there, saving a collection, or editing a location called
+  `revalidatePath('/texts/[slug]', 'page')` (and, for a location, `/authors/[slug]` too). That marks
+  every text page stale. Marking is lazy, but crawlers visit every page, so each such save re-rendered
+  all ~770 text pages and re-read their bodies from Supabase: the bill of a production deploy, from
+  one edit. The saves now name the pages that really change: a collection's published chapters
+  (`collectionTextPaths`) and a location's authors and their texts (`locationPaths`), slug columns only.
+- **The review queue had the opposite bug.** Its batch publish skipped the fan-out altogether, so when
+  a batch added chapters to a live collection, or published the collection row, chapters already live
+  kept stale prev/next and collection nav for up to a week. `publishText` and `publishCollection` now
+  return the sibling paths with the rest, and the batch's single sweep covers them.
+- **Two admin writes refreshed nothing:** the "generate summary" button (the summary is the meta
+  description and the listing card) and approving a description for a collection that is already
+  live. Both now revalidate.
+- **`POST /api/revalidate`** for CLI scripts, authorised by an `x-revalidate-secret` header against
+  `REVALIDATE_SECRET`. It accepts concrete paths and text slugs only: no route patterns, no
+  purge-everything switch. With no secret configured it answers 503. `scripts/lib/revalidate.mjs`
+  (`revalidateSite`) calls it and is never fatal. Wired into the six scripts that edit published
+  texts or summaries (listed in CLAUDE.md, "Vercel usage" item 3).
+- **CI guard** `lib/cache/no-route-wide-revalidation.test.ts`: fails on a route-wide or layout
+  `revalidatePath` anywhere in `app/` or `lib/`, and on an admin route that writes to Supabase without
+  importing a revalidation helper (`NO_PUBLIC_WRITE` lists the one exception, the note-draft
+  generator). Checked against the old `revalidate-entities.ts`, which it rejects.
+
+Not done, on purpose: moving public queries to `unstable_cache` with `text:{slug}` / `library` tags.
+`revalidatePath` on named pages does the same job, and the weekly data cache already exists.
+
+Verified: `npm test` (635 pass), `tsc --noEmit`, `npm run lint`, `check:tests-in-ci`. Against
+`next dev`, the endpoint answered 401 with no or a wrong secret, 400 for `/texts/[slug]` and 200
+for slugs, and `revalidateSite` reached it. **Not verified here:** that a chapter edit leaves
+unrelated text pages cached on production, which needs a live deployment. **Keith, before scripts
+can use the endpoint:** set `REVALIDATE_SECRET` in Vercel (Production) and `.env.local`. Bot
+Protection is set to Challenge, so a script's POST may get a 429; the helper says so, and the fix is
+a firewall rule that bypasses bot protection for `/api/revalidate`. No new public UI, so no Umami
+events.
+
+## 2026-11-04 — Homepage theme tags now match the reader's
+
+Keith noticed that the homepage's "Browse by theme" grid drew its tags differently from the text page:
+outlined boxes in Junicode small caps, where the reader, the featured lead and the feed cards all use the
+filled, cut-corner `ThemeChip` chosen on 27 Oct. The grid was the last hand-rolled copy. It now renders
+`ThemeChip` too, so every public theme tag shares one component and one look. Analytics are unchanged:
+`theme-click` still sends `theme` (display name) and `source="homepage"`. Checked locally at 390px and 1440px.
+
+In the same PR, every theme chip now has a 44px tap target (the mobile-first checklist's minimum; they were
+about 28px). The chip looks the same: the link is the 44px target and the chip is drawn on a span inside it,
+because `.chip-tag`'s clip-path would clip any hit area added to the element carrying it. The rows of chips
+dropped their vertical gaps, since the taller links now space the rows themselves. Measured on
+`/texts/a-short-rule-of-life` at 390px: all six chips are 44px tall.
+
+---
+
+## 2026-11-04 — Only `main` and `preview/` branches create Vercel deployments
+
+Backlog card "Vercel deployment cap: stop branch pushes counting towards the 100-a-day Hobby limit".
+
+**Measured first.** Vercel MCP `list_deployments`, 2 Nov 2026 (UTC): Stromata 31 deployments (2 READY, 29
+CANCELED, 0 ERROR); Paideia 106 (about 36 READY or ERROR, the rest CANCELED). Together 137, of which about 38
+were real builds. Vercel refused a push on #186 with `api-deployments-free-per-day` after roughly 100
+deployments had been created across the two projects by 11:32 UTC, when only about 35 of those had built. The
+cap can only have been reached by counting cancelled deployments. Vercel's documentation, as the MCP search
+returned it, does not state this either way, so the conclusion rests on those numbers (strong, not a quote).
+
+**Changed.** `vercel.json` now sets `git.deploymentEnabled` to `main` and `preview/**` only, so a push to
+`claude/*` or `release` creates no deployment at all. Previews are requested by pushing a commit to a
+`preview/<name>` branch (replacing the commit-message tag, which can no longer work: the deployment it would
+tag is never created). `scripts/vercel-ignore-build.sh` keeps a second gate that skips any non-production build
+off a `preview/` branch; tests and CLAUDE.md "Vercel usage" updated. Production builds from `main` and the
+docs-only skip are untouched.
+
+**Not yet observed.** Done-when needs a day's list showing branch pushes no longer adding deployments and a
+`preview/` push still building; neither can happen before this reaches the branch Vercel reads config from.
+Check after the next release.
+
+---
+
+## 2026-11-02 — Mid-text navigation on phones: a reading header and a sheet
+
+Backlog card "Mid-text navigation on phones: position in the header, contents and next reads in a drawer".
+On a phone a long text runs 70–95 screens and every way off it sat on screen 1 or after the last line; the
+Vainglory page (the top search landing) had 115 visitors and no second text. Built from the closed prototype
+(PR #170) and Keith's decisions of 29 Oct and 2 Nov, recorded on the card.
+
+What a reader sees, below the `xl` breakpoint: past the frontispiece the site header slides away on
+scroll-down and a slim pill stays at the top (position + ▾, filled with progress through the current
+section; the existing gold hairline still shows the whole text). Scrolling up brings back a reading header
+in the site header's place: "22 of 44 · 47 min left" over the chapter's name, a visible "Contents ▾"
+(or "Next part ▾" / "Read next ▾", naming whatever leads the sheet), and the site menu. Either opens a sheet
+from the top: where you are, the contents (windowed past nine entries: first, fold, current ±2, fold), a
+collection's next part (always leading, then Read next), the collection block, and Home / Library. A jump
+from the contents leaves "← Back to ¶17" for seven seconds. Screen 1 gains an author line ("Tertullian,
+155–240" → the author page) and "Approx. 85 min · Contents (44) ▾" / "Part 24 of 24 ▾", which open the
+same sheet; the "Jump to section" box that scrolled away with screen 1 is gone. At `xl` and wider the
+header stays put and the desktop contents rail is unchanged; the sheet still opens from the frontispiece.
+
+Keith's two open questions, settled 2 Nov: editorial sections and the author's chapters number
+differently, sections as lower-case roman with a section mark ("§ ii of viii") and chapters in arabic
+("22 of 44"), so the editor's apparatus is never mistaken for the author's; and short texts (five minutes
+or less) get no running head, only the screen-1 trigger.
+
+Editorial sections (`texts.sections`, migration 034, already in production with the anon grant) are read
+by the reader for the first time. `lib/markdown/section-anchors.ts` places them with the very
+`bodyBlocks` + `resolveAnchor` the review page uses, then tags the rendered paragraph (or list item:
+Chrysostom's addresses are numbered lists) by source offset, so smart quotes and scripture links cannot
+throw the match. A stale anchor drops out rather than pointing somewhere wrong. No text has approved
+sections yet (checked 2 Nov), so long unheaded texts show the fallback ("About halfway through · 36 min
+left") until Keith approves some in /admin/review/sections. `sections` joins `PUBLIC_TEXT_COLUMNS`.
+
+Analytics: `text-sheet-open` (from `text-hero-contents`, or `text-running-head` with `state`
+header|pill), `text-jump` (from `text-sheet-contents`, `state` headings|sections), `text-open` from
+`text-sheet-next`, `text-sheet-read-next` (with `pick`) and `text-sheet-prev`, and `collection-open` from
+`text-sheet`. All are declarative attributes on buttons and links, `text` is the slug throughout. The
+frontispiece author line fires `author-open` from `text-page`. `verify-analytics.mjs` has a new "reader
+nav" suite that runs at 390px; against a local build all five of its cases passed on the wire. The
+end-of-text `collection-nav` links are unchanged, for data continuity, so the card's proposed
+`text-end-next-part` value was not added.
+
+Decisions in the code worth knowing: the decisions about WHAT shows live in `lib/reader/outline.ts`,
+pure and unit-tested; `ReaderNav.tsx` only measures and renders. The frontispiece trigger is a button,
+not a fragment link, because Umami intercepts tracked links to navigate after the beacon. Everything is
+client-side state, so the week-long page cache is untouched. Collection neighbours were already
+revalidated on publish (`revalidateTextPages` in `publish-text.ts`), so "Next in collection" cannot go
+stale. Motion is off under `prefers-reduced-motion`. Not yet seen on a real iPhone: Safari's collapsing
+toolbar against a fixed top pill is the one thing a desktop browser at 390px cannot show.
+
+A second build of the same card (PR #184, from another session the same morning, before Keith's 2 Nov
+decisions) was closed unmerged in favour of this one, at Keith's call; its two Events Register rows were
+deleted and the `text-open` / `collection-open` / `author-open` rows now carry this PR's values. Lesson for
+the next builder: check the card's Notes and the open PRs before starting, and write the PR number onto the
+card as soon as it exists, so a parallel session can see the work is taken.
+
+---
+
+## 2026-11-02 — Concept extraction pilot: harness, first run, and what it can and cannot say
+
+Backlog card "Concept extraction pilot: 20 diverse texts". The question is whether bottom-up concept
+extraction finds recurring ideas the curated Themes don't. No public UI, no schema change, nothing written
+to the database. `scripts/concept-pilot.mjs`: `select` picks 20 published texts by greedy diversity over era,
+tradition and genre, one per author (10 eras, 10 traditions, 13 genres, 20 authors); `extract` cuts each body
+into stable ~1,500-word sections and asks Claude for granular concepts with a verbatim quotation; `labels` and
+`group --from=` store a grouping of those concepts by meaning; `report` rolls it up (recurrence, singleton
+tail, Theme overlap, unverifiable-quote rate); `ingest --from-dir=` takes per-text results written by subagents and re-checks every quotation against the re-cut section. `group` and `report` refuse a `labels.json`/`groups.json` built for different extractions. Pure logic in `scripts/lib/concept-pilot.mjs`, 13 tests.
+Output is in `data/concept-pilot/` (gitignored).
+
+**First run, 2 Nov, without an API key.** The build session had no `ANTHROPIC_API_KEY`, so `extract` (the API
+route) has still never run. The 20 texts were instead read by ten Claude Code subagents, two texts each, with
+the same instructions; their output went through `ingest`'s quotation check (614 concepts kept, 0
+dropped) and was recorded under the model name `claude-code-subagents`. The API route is untested against a
+live key.
+
+**Result: counting exact labels read 0 recurring of 614, which was the metric's fault.** Independent passes
+never word a concept the same way, so literal matching cannot see recurrence. Grouping the labels by meaning
+(one subagent over all 614 labels with glosses; 118 groups covering 353 labels, 261 left alone on purpose)
+gives **16 ideas recurring across two or more texts, 15 of which match no curated Theme**. Singletons: 363 of
+379 (96%), expected on a sample this small. Real-looking routes: tears of compunction, blind leading the blind,
+almsgiving atones for sin, docetic denial of Christ's flesh, clergy entangled in secular affairs. Weaker:
+creation from nothing (sits on the `creation` Theme), athletic training for the crown, honest self-examination.
+
+**What this does not show.** One model family did both the extracting and the grouping; the grouper flagged
+eight of its own groups as loose; 20 texts is too few to estimate how many routes a full corpus would give; and
+whether a route is *useful to a reader* is an editor's call from `REPORT.md`, not a number. Decision for Keith:
+continue (grow the sample, re-run extraction through the API) or stop.
+
+
+---
+
+## 2026-11-02 — The wire sweep fails, and says why, when a reader control is missing
+
+On 2 Nov `verify-analytics.mjs` reported `reader-setting-change · panel · reader settings control not found`
+as a skip, and the guess was that PR #167's phone reader rework had broken the selector. It had not. The
+control is still `<button aria-label="Reading settings">`, mounted on every text page, and the check passes
+3/3 on the wire (theme, font-size, measure, all carrying `from: text-reader`) against a local build and
+against production in the default mode. Only `--via-node` against production skips, and that run
+intercepted zero beacons, not even a pageview, so the browser was not looking at a working text page.
+Production then began answering this cloud session with Vercel's Security Checkpoint, which is not to be
+bypassed, so the exact page it saw on 2 Nov is unconfirmed.
+
+Two changes so the next occurrence explains itself. `open()` now stops with a plain message when a page is
+Vercel's bot checkpoint rather than the site; before this, the message blamed Deployment Protection. And
+the reader-settings and "Cite this text" rows, both controls every text page renders, now **fail** rather
+than skip when absent, with the path, HTTP status and page title in the detail. A skip stays for surfaces
+that depend on content (downloads, collection nav, a themed text). `describeMissing` and
+`isVercelCheckpoint` live in `scripts/lib/wire-check.mjs` with tests. The selector was right.
+
+Two follow-ups Keith approved the same day. `ReaderSettings` called `umami.track` inside its `setPrefs`
+updater; React may run an updater twice (dev Strict Mode always does), so in dev each click sent two
+beacons. The call now sits after the updater, and the local sweep sees exactly one per click. Production
+sends one either way, so no data changed. And CLAUDE.md now says production sweeps run from Keith's
+laptop, with cloud sessions verifying against a local build.
+
+---
+
+## 2026-11-02 — `text-open` means a click again; the wire sweep stops failing on its own races
+
+**The page-load `text-open` is gone** (`app/texts/[slug]/page.tsx`). Every text page sent a
+`text-open` on load, with no `from`, next to a `text-view` carrying the same data. It broke two
+analytics rules (one event per user action; `from` on every navigational event), counted page
+views as clicks, and put an unattributed bucket in every `from` breakdown. `text-view` still
+counts page views. Keith ruled to remove it on 2 Nov; CLAUDE.md's legacy-exceptions list dates the
+break, so `text-open` totals before and after the release that carries this aren't compared.
+
+**The sweep (`scripts/verify-analytics.mjs`)** reported correct links as broken. The 2 Nov
+production run failed the tradition and location pages with "from missing". The links were right:
+the first, non-navigating click lost its beacon, the retry navigated, and the landing page's own
+from-less `text-open` was judged instead. Three fixes:
+
+- A check now judges only beacons sent from the page the click happened on, preferring one that
+  passes (`pickEvent` in `scripts/lib/wire-check.mjs`, five new tests). A lost beacon now reads
+  "no beacon captured" instead of a misleading "from missing".
+- The click helper waits for the page to settle before swapping in its non-navigating copy of the
+  link, so hydration can't put the real link back. On production, every click case now passes on
+  the first attempt (two runs); before, three or four a run needed the retry.
+- A new row, `text-open · none on page load`, fails if a text page sends `text-open` without a
+  click. It waits for `text-view` first, so silence means absent rather than late.
+
+Verified on the wire. Against a local build of this branch reading the live database, all 10
+`text-open` rows pass, the new one included. Against production, which still has the old code,
+the new row fails with the exact page-load payload, and the full sweep otherwise passes 30 of 30
+(one pre-existing skip: the reader-settings control is not found, which happens on the unchanged
+sweep too).
+
+## 2026-11-02 — Editor's sections for long texts without headings: drafts, review, import hook
+
+Backlog card "Sections for long texts without headings" (agent scope: data, scripts, admin; no public UI).
+A long text with headings gets a contents list on the reader page; one without gets nothing, so a phone
+reader cannot find the part they came for. Keith agreed on 29 Oct to review Claude-drafted sections.
+
+- **The definition** (`needsSections` in `scripts/lib/sections.mjs`): 9,000+ words, as Keith confirmed,
+  and fewer than three headings. The card said "no `##` headings" (57 texts). The rule now mirrors the
+  reader page instead: `hasToc` needs three headings of any level, so a text with two `#` headings has no
+  contents either. That gives **33 texts**, all published; the other 24 the card counted already show
+  contents. A test runs the module's heading count and the reader's `extractHeadings` over the same
+  bodies and requires the same answer, since the script runs under plain node and cannot import the
+  TypeScript.
+- **Migration 034** (`034_text_sections.sql`, **not yet applied**): `texts.sections_draft` and
+  `texts.sections`, both `{source: "editorial", sections: [{label, starts_with}]}`, with shape checks.
+  `source: editorial` carries Keith's rule that sections are not part of the original text. `sections` is
+  granted to anon ahead of the reader code that will read it (`texts` fails closed since 026).
+- **Anchors, not numbers.** A section stores the opening words of its paragraph (`starts_with`), derived
+  from the body by `anchorFor` and lengthened until unique. People and the model handle paragraph
+  indexes; the server converts them, so nothing stored can point at text the body lacks, and a body edit
+  shows up as a named missing section rather than a silently wrong division.
+- **Drafting**: `generate-review-drafts.mjs` gains a sections step (`--sections`, `--slug=`). It selects
+  its own rows, because the targets are published. The "already has contents" test runs on the server as
+  a Postgres regex, so no body is downloaded for a text that does not need sections; checked: the
+  prefilter returns the same 33. The model sees each paragraph cut to 50 words and returns
+  `[{label, paragraph}]`; replies are parsed and validated before anything is written. Meters: about
+  3.4 MB of egress and roughly $2 of Opus tokens for the 33-text backfill.
+- **Review**: `/admin/review/sections` lists drafts (metadata only); each text has its own page that reads
+  only that body. On a phone: rename a section, nudge its start a paragraph at a time with the opening
+  words in view, add or remove one, Save or Approve. Approve copies the draft to `sections` and calls
+  `revalidateText`. The queue page links to it with a count.
+- **Import hook**: `pipeline-import.mjs` prints a line when an imported text meets the definition. No flag
+  is stored, since the drafting step selects by the same rule (derived, not stored).
+
+Not verified in a browser: `/admin` needs Keith's login. Verified with `tsc`, lint, the unit tests (12 new; 577 in all) and a
+read-only production query of the prefilter.
+
+---
+
+## 2026-11-02 — Screens manifest finds the reader's "Read next" module again
+
+PR #167 renamed the reader's end-of-text module, so its `nav` now carries `aria-label="Read next"`
+rather than "Continue exploring". `scripts/screens/manifest.json` still asked for the old label, and
+the post-release `npm run screens` on 2 Nov reported both end-of-text shots missing. The selector and
+shot label now use the new name. The PDF committed that day (#179) was rendered with this fix applied
+locally, so it already shows the module. Without it, the next refresh would drop those two shots
+again.
+
+---
+
 ## 2026-10-29 — The mobile menu's close X no longer looks cropped
 
 Keith spotted on his phone that the menu's X looked clipped at the top right. The three menu lines sit 7px

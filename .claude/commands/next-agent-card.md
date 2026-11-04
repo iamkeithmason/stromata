@@ -76,10 +76,29 @@ to promote — never promote a card to `Agent-ready` yourself.
    (`collection://00686889-855b-424e-8af1-1fe31062648e`) with the same filter and
    `ORDER BY Impact*Confidence*Ease DESC`, and say in the run report that the view failed.
 
-2. **Choose one card.** Take the highest-ICE card that does **not** already have an open
-   PR or a `claude/*` branch for it (check `mcp__github__list_pull_requests` and
-   `git branch -r`). Skip anything already in flight. If nothing qualifies, report that
-   and stop.
+2. **Choose one card, and make sure nobody else is building it.** Take the highest-ICE
+   card that is not already in flight. "In flight" is decided by evidence, not by the card's
+   `Status` — `Planned` reads the same whether a build exists or not, and on 2 Nov 2026 two
+   sessions built the same card because of it (#184 and #187;
+   `docs/research/2026-11-02-claim-the-work-before-you-build.md`). For each candidate, all three:
+   - **Search open PRs by the card's title**, not by branch prefix (hand-started sessions use
+     `ccr-*` branches, not `claude/*`):
+     `gh api -X GET search/issues -f q='repo:iamkeithmason/stromata is:pr is:open in:title,body "<two or three distinctive words from the card title>"'`
+     and skim `mcp__github__list_pull_requests` (state open, sorted by updated) for the same
+     words.
+   - **Read the card body for a claim line** (`Building: …`, below) dated within the last
+     three days, and the `Notes` property for a PR link.
+   - **`git branch -r --sort=-committerdate | head -20`** for a branch pushed in the last
+     few days whose latest commit message names the card.
+   Any hit means skip the card and say which PR or claim you found. If nothing qualifies,
+   report that and stop.
+
+2a. **Claim the card before writing any code.** Append one line to the card *body* with
+   `notion-update-page` → `insert_content`:
+   `Building: <this session's URL> · <YYYY-MM-DD> · branch <branch name>`. Do this
+   even though the PR, and the `Planned` status (step 11), come later: the claim is what a
+   parallel session reads in step 2. If the run stops without a PR, replace the line with
+   `Abandoned: <reason>` so the card is free again.
 
 3. **Read it fully.** `notion-fetch` the card page and read `Summary`,
    `Implementation Suggestion`, `Stack Context`, and `Notes`. If, on reading, the card
@@ -138,7 +157,7 @@ to promote — never promote a card to `Agent-ready` yourself.
 
 11. **Update the card.** Add a note to the card *body* (never overwrite the `Notes`
     property) linking the PR and stating what was verified (including the review-gate
-    outcome). Set `Status` → `Planned`. Do **not** set `Built` here — that happens in
+    outcome), next to the step 2a claim line so the two read together. Set `Status` → `Planned`. Do **not** set `Built` here — that happens in
     step 0 of the next run, once Keith has merged (or is set by whoever merges, per
     CLAUDE.md). Leave `Agent` = `Agent-ready`.
 
@@ -149,5 +168,6 @@ to promote — never promote a card to `Agent-ready` yourself.
 
 - Merge, mark a draft PR ready, or set `published: true` / `authors.draft: false`.
 - Widen a card's scope, or batch several cards into one PR.
+- Start building a card you have not searched for (step 2) and claimed (step 2a).
 - Skip, disable, or quarantine a test to get CI green.
 - Build a card that needs taste, auth design, or editing a third-party site.
