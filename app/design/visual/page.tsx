@@ -24,6 +24,7 @@ import Link from 'next/link'
 import { createPublicClient } from '@/lib/supabase/public'
 import { traditionColor } from '@/lib/tradition-colors'
 import { SectionHeader } from '@/app/components/SectionHeader'
+import { HERBAL_ORNAMENTS } from './herbal-ornaments'
 
 export const metadata: Metadata = {
   title: 'Making the library visual (exploration) — The Stromata',
@@ -198,7 +199,16 @@ const MOTIFS: Record<string, { name: string; draw: () => React.ReactNode }> = {
   </>) },
 }
 
+/** The traced herbal ornament where one exists (round 4), else the round-3 sketch. */
 function GenreOrnament({ genre, size = 26 }: { genre: string; size?: number }) {
+  const herbal = HERBAL_ORNAMENTS[genre]
+  if (herbal) {
+    return (
+      <svg width={size} height={size} viewBox="0 0 100 100" aria-hidden="true" style={{ display: 'block' }}>
+        <path d={herbal.d} fillRule="evenodd" fill="var(--gold-ink)" />
+      </svg>
+    )
+  }
   const m = MOTIFS[genre]
   if (!m) return null
   return (
@@ -315,8 +325,9 @@ export default async function VisualExploration() {
           Round 3: things, not signs. Round 1 varied one star (too alike); round 2 used abstract motifs
           (distinct, but modern, and the two &ldquo;voices&rdquo; too close). Following the chapter ornaments
           of an illuminated bible, each genre is now an object chosen for its meaning (a fish for sermons, a
-          quill for letters, a beehive for rules), cut like a woodcut. These are hand-drawn sketches of the
-          direction, not finished art. One recent text per genre:
+          quill for letters, a beehive for rules), cut like a woodcut. Round 4 replaces the sketches with
+          ornaments traced from a real woodcut herbal, <em>Ortus sanitatis</em> (Strasbourg, 1499): the fish,
+          lily, rose and wheat are done; the other thirteen are still round-3 sketches. One recent text per genre:
         </p>
         <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-4 mb-6">
           {shelf.map(t => (
@@ -342,7 +353,9 @@ export default async function VisualExploration() {
               <GenreOrnament genre={g} size={40} />
               <span>
                 <span className="block font-serif" style={{ color: 'var(--ink)' }}>{g}</span>
-                <span className="block caption" style={{ color: 'var(--ink-faint)' }}>{MOTIFS[g]?.name}</span>
+                <span className="block caption" style={{ color: 'var(--ink-faint)' }}>
+                  {HERBAL_ORNAMENTS[g] ? `${HERBAL_ORNAMENTS[g].name} · traced, 1499` : `${MOTIFS[g]?.name} · sketch`}
+                </span>
               </span>
             </div>
           ))}

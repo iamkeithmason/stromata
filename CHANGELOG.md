@@ -37,6 +37,14 @@ applied to production on 4 Nov, so nothing needs running before the release. The
 fault-tolerant query, so era pages render with their defaults whether or not it has run (checked locally
 against the live database without it).
 
+**First traced genre ornaments.** `/design/visual` (noindex, not linked) now shows four genre ornaments traced
+from a 1499 woodcut herbal, *Ortus sanitatis* (Internet Archive, Public Domain Mark): a fish for Sermon, a lily
+for Meditation, a rose for Poem and an ear of spelt for Catechesis. They are cut rather than drawn: lines swell
+and thin, end blunt or chiselled, with a few hatch cuts. Keith turned down solid silhouettes (lumpy) and
+even-weight line art (read as modern UI icons) before accepting these. The path data lives in
+`app/design/visual/herbal-ornaments.ts`; the other thirteen genres still show the round-3 sketches. Nothing
+outside the exploration page uses them yet.
+
 The era page also moves onto tokens (`--ink`, `--ink-mute`, `--ink-faint`, `--rule-soft`) and comes off the
 `legacyRawColour` list. A new token, `--plate-scrim`, darkens the foot of the band.
 
