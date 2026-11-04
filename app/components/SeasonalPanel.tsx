@@ -310,11 +310,10 @@ export async function SeasonalPanel({ season = resolveSeason().season }: Props =
                       zoom={pickZoom}
                     />
                   </div>
+                  {/* The author only: the title is the CTA beside it, so naming
+                      it here too said it twice (4 Nov critique). */}
                   <div className="mt-2 hidden text-center sm:block">
-                    <p style={{ fontFamily: 'var(--serif)', fontStyle: 'italic', fontSize: 'var(--text-sm)', color: R.title, lineHeight: 1.3 }}>
-                      {s.pick.title}
-                    </p>
-                    <p style={{ fontFamily: 'var(--serif)', fontSize: 'var(--text-sm)', color: R.dim, marginTop: '0.2rem' }}>
+                    <p style={{ fontFamily: 'var(--serif)', fontSize: 'var(--text-sm)', color: R.dim }}>
                       {s.pick.author}
                     </p>
                   </div>
@@ -339,7 +338,7 @@ export async function SeasonalPanel({ season = resolveSeason().season }: Props =
                       textDecorationColor: R.goldFaint,
                     }}
                   >
-                    {s.pick.title} →
+                    {s.pick.title}{'\u00a0'}→
                   </span>
                   <p style={{ fontFamily: 'var(--serif)', fontSize: 'var(--text-base)', color: R.dim, marginTop: '0.4rem' }}>
                     {s.pick.author}
@@ -396,7 +395,7 @@ export async function SeasonalPanel({ season = resolveSeason().season }: Props =
                       textDecorationColor: R.goldFaint,
                     }}
                   >
-                    {s.pick.title} →
+                    {s.pick.title}{'\u00a0'}→
                   </span>
                 ) : (
                   <span

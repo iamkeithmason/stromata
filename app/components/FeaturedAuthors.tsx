@@ -128,7 +128,11 @@ export async function FeaturedAuthors() {
                       letterSpacing: '0.04em',
                     }}
                   >
-                    {[dates, era].filter(Boolean).join(' · ')}
+                    {dates}
+                    {/* The era on its own line, unbroken: run together with the
+                        dates, "Nicene & Post-Nicene" broke at its hyphen and the
+                        separator dot was left hanging at the end of a line. */}
+                    {era && <span className="block" style={{ whiteSpace: 'nowrap' }}>{era}</span>}
                   </p>
                 )}
                 {tradition && (

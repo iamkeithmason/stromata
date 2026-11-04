@@ -553,12 +553,27 @@
    the fourth was cut through the middle. The inline clamp is 4, hence !important.
    The inline bottom padding becomes margin so the clip edge sits at the end of the
    third line and no sliver of the hidden fourth shows through. */
+/* Title size, by length (BookCover's lengthClass). A long title steps down a
+   size on every cover; a medium one only on a small cover, below. */
+.book-cover-title { font-size: min(1rem, 8cqi); }
+.book-cover-title[data-length="long"] { font-size: min(0.875rem, 7cqi); }
+.book-cover-title-short { display: none; }
+
 @container (max-width: 200px) {
   .book-cover-title {
     -webkit-line-clamp: 3 !important;
     padding-bottom: 0 !important;
     margin-bottom: 0.2em !important;
   }
+  .book-cover-title[data-length="medium"] { font-size: min(0.875rem, 7cqi); }
+  /* A small cover shows the title shortened at a word boundary (BookCover's
+     shortenAtWord), so the clamp never cuts mid-word. Screen readers read the
+     full title, which stays in the DOM. */
+  .book-cover-title-full {
+    position: absolute; width: 1px; height: 1px; overflow: hidden;
+    clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap;
+  }
+  .book-cover-title-short { display: inline; }
 }
 
 /* Offset anchor-link scroll targets to clear the fixed site header (4rem)
