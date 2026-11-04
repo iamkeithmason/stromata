@@ -1,7 +1,8 @@
 'use client'
 
 // Toggle pill used by the /texts and /authors index filter bars.
-// Resting state mirrors ThemeChip; active state swaps the rule for gold + ink text.
+// An outlined toggle (unlike the filled ThemeChip): the outline turns gold and
+// the text darkens to ink when active.
 export function FilterPill({
   label,
   active,

@@ -15,6 +15,7 @@
 import Link from 'next/link'
 import { createPublicClient } from '@/lib/supabase/public'
 import { LancetArch } from './LancetArch'
+import { SectionHeader } from './SectionHeader'
 
 // ── Curated author slugs — edit here to change which authors appear ──────────
 // Four authors = one clean row on desktop; two columns on mobile.
@@ -76,25 +77,7 @@ export async function FeaturedAuthors() {
 
   return (
     <section className="content-shell pb-20">
-      {/* Section header */}
-      <div className="mb-10">
-        <div className="flex items-baseline justify-between mb-3">
-          <h2
-            className="font-serif italic text-xl"
-            style={{ color: 'var(--ink)' }}
-          >
-            Featured authors
-          </h2>
-          <Link
-            href="/authors"
-            className="kicker transition-opacity hover:opacity-70"
-            style={{ textDecoration: 'none' }}
-          >
-            All authors →
-          </Link>
-        </div>
-        <hr className="rule-gold" />
-      </div>
+      <SectionHeader title="Featured authors" aside="All authors →" asideHref="/authors" />
 
       {/* Arch grid — 4 cols on sm+, 2 on mobile */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-6">

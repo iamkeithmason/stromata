@@ -6,6 +6,7 @@ import { FilterPill } from './FilterPill'
 import { useUrlFilters } from '@/lib/use-url-filters'
 import { pickFacet } from '@/lib/facets'
 import { LancetArch } from './LancetArch'
+import { SectionHeader } from './SectionHeader'
 
 declare global {
   interface Window {
@@ -103,17 +104,11 @@ export function AuthorsBrowser({
 
   return (
     <>
-      <div className="mb-6">
-        <div className="flex items-baseline justify-between mb-3">
-          <h1 className="font-serif italic text-xl" style={{ color: '#1b1b1b' }}>
-            Authors
-          </h1>
-          <span className="smallcaps" style={{ color: '#6f6a60' }}>
-            {hasFilter ? `${filtered.length} of ${items.length}` : `${items.length} in the library`}
-          </span>
-        </div>
-        <hr style={{ borderColor: '#1b1b1b', borderTopWidth: '1px' }} />
-      </div>
+      <SectionHeader
+        level="page"
+        title="Authors"
+        aside={hasFilter ? `${filtered.length} of ${items.length}` : `${items.length} in the library`}
+      />
 
       <div className="mb-8 space-y-3">
         <FilterRow
@@ -129,7 +124,7 @@ export function AuthorsBrowser({
           onToggle={slug => set('era', slug)}
         />
         <div className="flex items-center gap-3 flex-wrap pt-1">
-          <span className="smallcaps" style={{ color: '#9c9589' }}>
+          <span className="smallcaps" style={{ color: 'var(--ink-faint)' }}>
             Sort
           </span>
           {SORTS.map(s => (
@@ -154,7 +149,7 @@ export function AuthorsBrowser({
       </div>
 
       {filtered.length > 0 ? (
-        <ul className="divide-y" style={{ borderColor: '#e5e0d8' }}>
+        <ul className="divide-y" style={{ borderColor: 'var(--rule-soft)' }}>
           {filtered.map(a => (
             <li key={a.id}>
               {/* Stretched-link pattern: author row is the base, tradition link sits above */}
@@ -168,11 +163,11 @@ export function AuthorsBrowser({
                   <div>
                     <span
                       className="font-serif group-hover:opacity-70 transition-opacity"
-                      style={{ color: '#1b1b1b' }}
+                      style={{ color: 'var(--ink)' }}
                     >
                       {a.name}
                     </span>
-                    <span className="text-sm ml-3" style={{ color: '#6f6a60' }}>
+                    <span className="text-sm ml-3" style={{ color: 'var(--ink-mute)' }}>
                       {a.birth_year && a.death_year
                         ? `${a.birth_year}–${a.death_year}`
                         : a.death_year
@@ -186,16 +181,16 @@ export function AuthorsBrowser({
                     <Link
                       href={`/traditions/${a.tradition.slug}`}
                       className="text-xs relative hover:opacity-70 transition-opacity"
-                      style={{ color: '#6f6a60', zIndex: 2 }}
+                      style={{ color: 'var(--ink-mute)', zIndex: 2 }}
                     >
                       {a.tradition.name}
                     </Link>
                   ) : (
-                    <span className="text-xs" style={{ color: '#6f6a60' }}>
+                    <span className="text-xs" style={{ color: 'var(--ink-mute)' }}>
                       {a.tradition?.name}
                     </span>
                   )}
-                  <div className="text-xs mt-0.5" style={{ color: '#9c9589' }}>
+                  <div className="text-xs mt-0.5" style={{ color: 'var(--ink-faint)' }}>
                     {a.textCount} text{a.textCount === 1 ? '' : 's'}
                   </div>
                 </div>
@@ -211,7 +206,7 @@ export function AuthorsBrowser({
           ))}
         </ul>
       ) : (
-        <p className="text-sm" style={{ color: '#6f6a60' }}>
+        <p className="text-sm" style={{ color: 'var(--ink-mute)' }}>
           No authors match these filters.
         </p>
       )}
@@ -235,7 +230,7 @@ function FilterRow({
     <div className="flex items-baseline gap-3 flex-wrap">
       <span
         className="smallcaps shrink-0"
-        style={{ color: '#9c9589', width: '5rem' }}
+        style={{ color: 'var(--ink-faint)', width: '5rem' }}
       >
         {label}
       </span>
