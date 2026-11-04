@@ -1,5 +1,5 @@
 import { revalidatePath } from 'next/cache'
-import { revalidateTextPages } from '@/lib/publishing/revalidate-entities'
+import { collectionTextPaths } from '@/lib/publishing/revalidate-entities'
 import type { SupabaseClient } from '@supabase/supabase-js'
 import { fetchCollectionAuthors, type CollectionAuthorRef } from '@/lib/collections/author'
 
@@ -216,14 +216,14 @@ export async function publishText(
     return { ok: false, id, title, reason: 'write_failed', detail: writeError.message }
   }
 
-  const paths = surfacePathsFor(text)
+  // A chapter's siblings link to it (prev/next), so for a text in a collection
+  // the other published chapters change too. Named one by one, never as the
+  // whole /texts/[slug] route: see revalidate-entities.ts.
+  const paths = [
+    ...new Set([...surfacePathsFor(text), ...(await collectionTextPaths(supabase, collection?.id))]),
+  ]
 
-  if (!skipRevalidation) {
-    revalidatePaths(paths)
-    // A chapter's siblings link to it (prev/next), so for a text in a collection
-    // the other pages in that collection change too. See revalidate-entities.ts.
-    if (collection) revalidateTextPages()
-  }
+  if (!skipRevalidation) revalidatePaths(paths)
 
   return { ok: true, id, title, slug: text.slug, paths }
 }
@@ -292,11 +292,10 @@ export async function publishCollection(
     if (author.slug) paths.push(`/authors/${author.slug}`)
   }
 
-  if (!options.skipRevalidation) {
-    revalidatePaths(paths)
-    // Publishing a collection changes whether its texts show collection nav.
-    revalidateTextPages()
-  }
+  // Publishing a collection changes whether its texts show collection nav.
+  paths.push(...(await collectionTextPaths(supabase, id)))
+
+  if (!options.skipRevalidation) revalidatePaths([...new Set(paths)])
 
   return { ok: true, id, title, slug: collection.slug, paths }
 }
@@ -329,8 +328,8 @@ export async function revalidateText(
     const row = data as unknown as TextRow
     const paths = surfacePathsFor(row)
     for (const s of alsoTextSlugs) if (s) paths.push(`/texts/${s}`)
+    paths.push(...(await collectionTextPaths(supabase, one(row.collection)?.id)))
     revalidatePaths([...new Set(paths)])
-    if (one(row.collection)) revalidateTextPages()
   } catch {
     // Swallowed on purpose — see above.
   }

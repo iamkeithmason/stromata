@@ -24,6 +24,7 @@ import { fileURLToPath } from 'url';
 import path from 'path';
 import { createClient } from '@supabase/supabase-js';
 import { rejoinSpuriousBreaks } from './normalise-markdown.mjs';
+import { revalidateSite } from './lib/revalidate.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 dotenv.config({ path: path.join(__dirname, '..', '.env.local'), override: true });
@@ -58,7 +59,7 @@ function joinPreviews(before, after) {
 }
 
 async function main() {
-  let query = supabase.from('texts').select('id, slug, title, body');
+  let query = supabase.from('texts').select('id, slug, title, published, body');
   if (idArg) query = query.eq('id', idArg);
   else if (slugArg) query = query.eq('slug', slugArg);
 
@@ -75,6 +76,7 @@ async function main() {
 
   let changed = 0;
   let totalJoins = 0;
+  const livePages = [];
 
   for (const text of texts) {
     if (!text.body) continue;
@@ -95,6 +97,7 @@ async function main() {
         continue;
       }
       console.log('  ↩ written');
+      if (text.published) livePages.push(text.slug);
     }
   }
 
@@ -102,6 +105,7 @@ async function main() {
     `\nTOTALS: ${changed}/${texts.length} text(s) ${write ? 'updated' : 'would change'}  ·  ${totalJoins} split(s) rejoined.`
   );
   if (!write && changed > 0) console.log('Re-run with --write to apply.');
+  await revalidateSite({ texts: livePages });
 }
 
 main().catch(err => {
