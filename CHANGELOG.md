@@ -7,6 +7,33 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-11-04 — Homepage polish from the design critique, and texts before authors
+
+A fresh-context design critique of the homepage (the design plugin's `design-critique` skill, run by a
+separate agent from 390px and 1440px screenshots against a written brief) scored it 6.5/10. Keith agreed the
+smaller fixes and one reordering; the first-screen question is still open and is not in this change.
+
+- **Texts before authors.** Featured authors moves below Recently added. The homepage's job is the next
+  text, so the texts come first and the authors become one more way to browse.
+- **One section gap.** Every homepage section now ends 80px before the next (Recently added was 96px, and
+  Featured authors had 24px more above it; the seasons row ended at 40px).
+- **Long titles on book covers no longer cut mid-word.** A clamp cut "…Power and Efficacy o.." on the phone
+  grid. A title over 60 characters now sets a size smaller on every cover, one over 40 does on a small
+  cover, and a small cover shows a copy shortened at a word boundary to 56 characters (screen readers get
+  the full title). Measured on the 37 published titles over 55 characters (longest 101): every one fits a
+  full-size cover whole, and every shortened one fits three lines on a 360px phone; the first to fail was
+  at 68. Checked on 29 covers at 360, 390 and 1440px: none cut.
+- **Era labels under featured authors** sit on their own line and never break: "Nicene & Post-Nicene" broke
+  at its hyphen, and the separator dot was left at a line end.
+- **The seasons row** drops its separator dots on phones, where wrapping left them hanging at line ends.
+- **The seasonal panel** keeps its arrow on the same line as the title (a non-breaking space), and on
+  desktop names the pick once: the caption under the portrait is now the author only, because the title is
+  the link beside it.
+
+Checked locally at 390px and 1440px. Analytics unchanged.
+
+---
+
 ## 2026-11-04 — Guard: public routes stay cacheable; rules for usage-aware features
 
 Follow-up to the same day's caching fix. Since traffic, not deploys, is now most of the Vercel Hobby

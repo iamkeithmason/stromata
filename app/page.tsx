@@ -252,17 +252,12 @@ export default async function Home() {
         <ChurchYearRow currentSeason={season} />
       </div>
 
-      {/* ── Featured authors ─────────────────────────────────────────────── */}
-      <div className="pt-6">
-        <FeaturedAuthors />
-      </div>
-
       {/* ── Reading history ──────────────────────────────────────────────── */}
       <ReadingHistorySection />
 
       {/* ── Recently added ───────────────────────────────────────────────── */}
       {feed.length > 0 && (
-        <section className="content-shell pb-24">
+        <section className="content-shell pb-20">
           <SectionHeader
             title="Recently added"
             aside="All texts →"
@@ -284,6 +279,11 @@ export default async function Home() {
           )}
         </section>
       )}
+
+      {/* ── Featured authors ─────────────────────────────────────────────── */}
+      {/* After the texts, not before (4 Nov critique): the homepage's job is the
+          next text, and authors are a way to browse, not the first thing to find. */}
+      <FeaturedAuthors />
 
       {/* ── Browse by theme ──────────────────────────────────────────────── */}
       <section className="content-shell pb-20">

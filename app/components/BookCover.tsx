@@ -1,5 +1,30 @@
 import { traditionColor } from '@/lib/tradition-colors'
 
+/**
+ * Long titles on small covers. A cover's title panel holds four lines (three on a
+ * small cover, see the @container rule in globals.css), and a clamp cuts wherever
+ * the last line ends, mid-word ("…Power and Efficacy o.."). So a long title steps
+ * down a size, and a small cover gets a copy shortened at a word boundary.
+ * Measured 4 Nov 2026 on the 37 published titles over 55 characters (longest 101):
+ * at the smaller size every title fits a full-size cover whole, and on a 360px
+ * phone's two-up grid (148px covers) every title shortened to 56 fits three lines;
+ * the first to fail was at 68.
+ */
+const SMALL_COVER_CHARS = 56
+
+function lengthClass(title: string): 'long' | 'medium' | 'short' {
+  if (title.length > 60) return 'long'     // smaller size on every cover
+  if (title.length > 40) return 'medium'   // smaller size on small covers only
+  return 'short'
+}
+
+function shortenAtWord(title: string, max: number): string {
+  if (title.length <= max) return title
+  const cut = title.slice(0, max)
+  const space = cut.lastIndexOf(' ')
+  return (space > 0 ? cut.slice(0, space) : cut).replace(/[\s,:;(/–-]+$/, '') + '…'
+}
+
 export function BookCover({
   title,
   authorName,
@@ -26,6 +51,7 @@ export function BookCover({
   accessionDisplay?: string | null
 }) {
   const ground = traditionColor(traditionSlug)
+  const shortTitle = shortenAtWord(title, SMALL_COVER_CHARS)
   const num = String(accessionNumber ?? index + 1).padStart(2, '0')
   const bandAccession = accessionDisplay !== undefined
     ? accessionDisplay   // null → hidden below; string → shown as-is
@@ -104,9 +130,9 @@ export function BookCover({
       >
         <p
           className="book-cover-title"
+          data-length={lengthClass(title)}
           style={{
             fontFamily: 'var(--serif)',
-            fontSize: 'min(1rem, 8cqi)',
             fontStyle: 'italic',
             fontWeight: 500,
             lineHeight: 1.15,
@@ -119,7 +145,14 @@ export function BookCover({
             paddingBottom: '0.2em',
           }}
         >
-          {title}
+          {shortTitle === title ? (
+            title
+          ) : (
+            <>
+              <span className="book-cover-title-full">{title}</span>
+              <span className="book-cover-title-short" aria-hidden="true">{shortTitle}</span>
+            </>
+          )}
         </p>
         <div
           style={{
