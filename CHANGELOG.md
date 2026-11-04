@@ -7,6 +7,30 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-11-04 — Only `main` and `preview/` branches create Vercel deployments
+
+Backlog card "Vercel deployment cap: stop branch pushes counting towards the 100-a-day Hobby limit".
+
+**Measured first.** Vercel MCP `list_deployments`, 2 Nov 2026 (UTC): Stromata 31 deployments (2 READY, 29
+CANCELED, 0 ERROR); Paideia 106 (about 36 READY or ERROR, the rest CANCELED). Together 137, of which about 38
+were real builds. Vercel refused a push on #186 with `api-deployments-free-per-day` after roughly 100
+deployments had been created across the two projects by 11:32 UTC, when only about 35 of those had built. The
+cap can only have been reached by counting cancelled deployments. Vercel's documentation, as the MCP search
+returned it, does not state this either way, so the conclusion rests on those numbers (strong, not a quote).
+
+**Changed.** `vercel.json` now sets `git.deploymentEnabled` to `main` and `preview/**` only, so a push to
+`claude/*` or `release` creates no deployment at all. Previews are requested by pushing a commit to a
+`preview/<name>` branch (replacing the commit-message tag, which can no longer work: the deployment it would
+tag is never created). `scripts/vercel-ignore-build.sh` keeps a second gate that skips any non-production build
+off a `preview/` branch; tests and CLAUDE.md "Vercel usage" updated. Production builds from `main` and the
+docs-only skip are untouched.
+
+**Not yet observed.** Done-when needs a day's list showing branch pushes no longer adding deployments and a
+`preview/` push still building; neither can happen before this reaches the branch Vercel reads config from.
+Check after the next release.
+
+---
+
 ## 2026-11-02 — Mid-text navigation on phones: a reading header and a sheet
 
 Backlog card "Mid-text navigation on phones: position in the header, contents and next reads in a drawer".

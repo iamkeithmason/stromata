@@ -7,10 +7,17 @@
 # starts with an empty page cache, so crawlers re-render the whole site after
 # each one. See CHANGELOG.md 2026-09-29 and 2026-10-04.
 #
-# PREVIEWS ARE OPT-IN
-#   A preview (any non-production deployment) builds only when the pushed head
-#   commit's message contains the preview tag — the explicit "yes, I want to look
-#   at this" signal. See "Vercel usage" in CLAUDE.md for the tag and the rules.
+# PREVIEWS ARE OPT-IN, AND AN UNASKED PUSH MAKES NO DEPLOYMENT AT ALL
+#   vercel.json → git.deploymentEnabled lets only `main` and `preview/**` create
+#   deployments. That is the real gate: this script can only CANCEL a deployment
+#   that already exists, and on 2 Nov 2026 cancelled deployments still counted
+#   towards Hobby's 100-a-day cap (shared with Paideia: 137 deployments across
+#   the two projects, about 38 of them real builds), which then refused a push.
+#   A preview is requested by pushing the commit to a `preview/<name>` branch;
+#   see "Vercel usage" in CLAUDE.md. This script is the second gate: a
+#   non-production build on any other branch is skipped, so a misconfigured
+#   deploymentEnabled falls back to cancelled deployments, not to building
+#   every push. The old commit-message tag no longer does anything.
 #
 # PRODUCTION BUILDS UNLESS THE CHANGE CANNOT AFFECT THE SITE
 #   A production commit whose changed files are ALL on the allowlist below
@@ -116,12 +123,12 @@ if [ "$VERCEL_ENV" = "production" ]; then
   exit 0
 fi
 
-case "$VERCEL_GIT_COMMIT_MESSAGE" in
-  *"[preview]"*)
-    echo "Commit asks for a preview (the preview tag is in the message): building."
+case "${VERCEL_GIT_COMMIT_REF:-}" in
+  preview/*)
+    echo "Branch ${VERCEL_GIT_COMMIT_REF} is a preview branch: building."
     exit 1
     ;;
 esac
 
-echo "Preview skipped: no preview tag in the head commit message (previews are opt-in — see CLAUDE.md)."
+echo "Preview skipped: only preview/* branches build previews (see CLAUDE.md)."
 exit 0
