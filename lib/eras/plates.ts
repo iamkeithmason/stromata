@@ -33,7 +33,12 @@ export const DEFAULT_ERA_PLATES: Record<string, EraPlate | null> = {
     focusY: 40,
   },
   'nicene-post-nicene': null,
-  'early-medieval': null,
+  'early-medieval': {
+    src: '/plates/eras/early-medieval.jpg',
+    credit: 'Plaque with scenes at Emmaus, ivory, Carolingian, c. 850–900. The Metropolitan Museum of Art, The Cloisters. Public domain (CC0).',
+    sourceUrl: 'https://www.metmuseum.org/art/collection/search/471970',
+    focusY: 50,
+  },
   'high-medieval': {
     src: '/plates/eras/high-medieval.jpg',
     credit: 'The Last Supper and the Washing of the Feet, leaf from a psalter, England, c. 1250–70. The Metropolitan Museum of Art. Public domain (CC0).',
@@ -46,7 +51,12 @@ export const DEFAULT_ERA_PLATES: Record<string, EraPlate | null> = {
     sourceUrl: 'https://www.metmuseum.org/art/collection/search/470304',
     focusY: 45,
   },
-  reformation: null,
+  reformation: {
+    src: '/plates/eras/reformation.jpg',
+    credit: 'Book printing (Impressio librorum), from Nova Reperta, workshop of Philips Galle after Jan van der Straet, c. 1589–93. Rijksmuseum, Amsterdam. Public domain.',
+    sourceUrl: 'https://www.rijksmuseum.nl/en/collection/RP-P-1904-1031',
+    focusY: 50,
+  },
   'post-reformation': {
     src: '/plates/eras/post-reformation.jpg',
     credit: 'The Library of Leiden University, engraving by Willem van Swanenburg after Jan Cornelisz. van ’t Woudt, 1610. Rijksmuseum, Amsterdam. Public domain.',

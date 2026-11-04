@@ -7,6 +7,44 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-11-04 — Era plates: a picture of each era's world, with an admin override; the season's pick in the panel only
+
+**Era plates.** Each era page now opens with a full-bleed band showing a public-domain image of its world: the
+era's name and dates over the foot of the image, and a credit line beneath. The band is 16:9 on phones (about
+220px) and 3:1 from 640px, capped at 420px. Keith asked for people where possible, to humanise the eras. Seven
+eras have a default plate, committed at `public/plates/eras/` (2000×1000 crops, 280–590 KB) and listed with
+credits in `lib/eras/plates.ts`:
+
+- **Ante-Nicene:** the Dura-Europos procession of women (Yale, CC0)
+- **Early Medieval:** a Carolingian ivory of Emmaus (Met, CC0)
+- **High Medieval:** a Royal Psalter Last Supper, cropped to keep Christ's head whole (Met, CC0)
+- **Late Medieval:** a detail of Campin's Merode Altarpiece (Met, CC0)
+- **Reformation:** *Impressio librorum*, a printing house c. 1590 (Rijksmuseum, PD)
+- **Post-Reformation:** the Leiden University Library, 1610 (Rijksmuseum, PD)
+- **Modern:** the Christ Church library, Oxford, 1814 (Rijksmuseum, PD)
+
+Each licence was checked at the holder's own source (the Met API's `isPublicDomain`, Yale's IIIF manifest, the
+Rijksmuseum page's Public Domain mark). Apostolic and Nicene & Post-Nicene keep a text-only header for now:
+their best candidates are on Wikimedia Commons, which this cloud session cannot reach.
+
+**Changing a plate without a deploy.** Migration `035_era_plates.sql` adds `eras.plate_url`, `plate_credit`
+and `plate_focus_y`, and a public `plates` bucket. The admin era form gains a plate section. You can upload a
+replacement, which `/api/admin/eras/plate` stores at 2000px wide, add its credit line (required), set the crop
+focus with a slider, or go back to the default. Saving revalidates the era page as before. **The migration
+must be applied before the admin section appears.** The public page reads the plate columns in a separate,
+fault-tolerant query, so era pages render with their defaults whether or not it has run (checked locally
+against the live database without it).
+
+The era page also moves onto tokens (`--ink`, `--ink-mute`, `--ink-faint`, `--rule-soft`) and comes off the
+`legacyRawColour` list. A new token, `--plate-scrim`, darkens the foot of the band.
+
+**The season's pick: panel only.** On phones the hero no longer repeats the season's pick, and "Start with"
+returns. Keith preferred the pick to be named once, in the panel. The hero stays tight. The `hero-pick`
+analytics surface added by PR #201 is withdrawn before it ever shipped: it is gone from CLAUDE.md's vocabulary
+and from `verify-analytics.mjs`, and the Events Register records the withdrawal.
+
+---
+
 ## 2026-11-04 — The first phone screen names a text; making the library visual (exploration)
 
 **The first phone screen.** The homepage critique's main finding: on a 390px phone, the first screen
