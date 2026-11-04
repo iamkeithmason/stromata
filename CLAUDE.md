@@ -177,7 +177,7 @@ weeks of unusable data. Adding an attribute and reasoning that it "should" fire 
 failure mode.
 
 **The sweep is a command now: `node scripts/verify-analytics.mjs --url=<preview>`.** (Previews are
-opt-in — ask Keith before tagging a commit `[preview]`; see "Vercel usage" below.) It drives a
+opt-in — ask Keith before pushing a `preview/` branch; see "Vercel usage" below.) It drives a
 real browser over a real deployment, intercepts every request to Umami's collection endpoint,
 records the payload and then **aborts** it — so a verification run never lands a synthetic event in
 the dataset. It prints a pass/fail table and exits non-zero on any failure. `--only=a,b` narrows it;
@@ -457,22 +457,28 @@ Stromata is on Vercel's **Hobby (free) tier**, and in Sept 2026 it went over the
 allowance (see CHANGELOG 2026-09-29 and 2026-10-04). A few habits keep it under, and all apply to
 every session:
 
-**1. Previews only build when asked.** `vercel.json` → `scripts/vercel-ignore-build.sh` skips every
-preview build unless the pushed head commit's message contains **`[preview]`**. Production (merges
-to `main`) always builds. So by default a pushed branch gets **no preview URL** — don't tell Keith to
-"check the preview" unless one was requested.
+**1. Previews only build when asked, and an unasked push creates no deployment at all.** Since
+2026-11-04 `vercel.json` sets `git.deploymentEnabled` to `main` and `preview/**` only. A push to any
+other branch (`claude/*`, `release`, …) makes **no Vercel deployment**, not even a cancelled one.
+That matters because the 2 Nov 2026 measurement showed cancelled deployments counting towards
+Hobby's 100-a-day cap, which Stromata shares with Paideia (2 Nov: 137 deployments across the two
+projects, only about 38 of them real builds). Production (merges to `main`)
+always builds. By default a pushed branch gets **no preview URL** — don't tell Keith to "check the
+preview" unless one was requested.
 
-- **When a preview would genuinely help, ask Keith first — don't add `[preview]` on your own.**
-  Good reasons: a visual or layout change he should eyeball, or an analytics change that the
+- **When a preview would genuinely help, ask Keith first — don't create a `preview/` branch on your
+  own.** Good reasons: a visual or layout change he should eyeball, or an analytics change that the
   verification rule says must be observed on the wire (`verify-analytics.mjs` needs a deployment).
   Say why in one line and prompt him to ask for it explicitly, e.g. *"This changes the reader
   header — want a preview to check it on your phone? If so, say 'build a preview'."*
-- **When he says yes,** put `[preview]` in the message of the next commit you push (a real change,
-  or the commit that carries his requested tweak). Only the head commit of a push counts, so a later
-  push without the tag builds nothing — tag again if he wants the preview refreshed.
-- **The tag matches anywhere in the head commit's message, body included** — a commit that merely
-  *mentions* it builds a preview (this happened on #136). When you are not asking for a preview, don't
-  write the literal string in a commit message; say "the preview tag" instead.
+- **When he says yes,** push the same commit to a branch named `preview/<short-name>`:
+  `git push origin HEAD:refs/heads/preview/<short-name>`. That push builds a preview; each further
+  push to that branch builds again, and every one spends a cap slot, so push to it deliberately.
+  Delete the branch when he is done (`git push origin --delete preview/<short-name>`). The working
+  branch and its PR are unchanged, and there is no commit-message tag any more.
+- **The ignore step is the second gate.** `scripts/vercel-ignore-build.sh` skips any non-production
+  build whose branch does not start with `preview/`, so a misconfigured `deploymentEnabled` degrades
+  to the old cancelled-deployment behaviour rather than to building every push.
 
 **2. Group small, related changes into one PR.** Every merge to `main` is a production deploy, and
 every deploy starts with an empty page cache, so crawlers re-render the site after each one — merge
@@ -532,7 +538,7 @@ sourcer screens read the queue, staged output and run logs from the filesystem, 
 show data as of the last *real* deploy — they are local operator tools, and Keith agreed to this on 2026-10-04.
 Don't add anything else the admin side reads without asking. Every doubt builds (no parent commit, empty diff,
 git error, a path not listed). To force a build of a docs-only commit, put the force-deploy tag in its
-message — the literal string is `[deploy]`, and like the preview tag it matches anywhere in the message, so
+message — the literal string is `[deploy]`, and like the old preview tag it matches anywhere in the message, so
 don't write it unless you mean it. A known blind spot: a push of several commits at once relies on Vercel
 supplying `VERCEL_GIT_PREVIOUS_SHA` to catch an earlier site change behind a final skippable commit (PR
 merges and the digest are single commits, so this does not arise today). Tests:
