@@ -14,7 +14,7 @@
  * The season comes from `resolveSeason()` (lib/liturgical/year.ts), so the
  * panel turns over on its own — Advent arrives without an edit and a deploy.
  * What stays hand-set is the *pick*: one text per season, chosen by Keith, in
- * SEASON_PICKS below. A season with no pick yet renders the designed no-pick
+ * SEASON_PICKS (lib/liturgical/season-pick.ts). A season with no pick yet renders the designed no-pick
  * state (§ emblem, "Browse the library"), so the panel is always honest.
  * Out of scope: curated seasonal collections, feast days.
  *
@@ -27,25 +27,9 @@
  */
 
 import Link from 'next/link'
-import { createPublicClient } from '@/lib/supabase/public'
 import { resolveSeason, type Season } from '@/lib/liturgical/year'
+import { getLiveSeasonPick } from '@/lib/liturgical/season-pick'
 import { LancetArch } from './LancetArch'
-
-type SeasonPick = {
-  title: string
-  author: string
-  href: string
-  /** Optional author portrait for the arch; falls back to the initial when unset. */
-  imageUrl?: string | null
-}
-
-/** The author columns the arch needs — portrait plus its stored framing. */
-type AuthorPortrait = {
-  image_url: string | null
-  image_focus_x: number | null
-  image_focus_y: number | null
-  image_zoom: number | null
-}
 
 type SeasonConfig = {
   name: string
@@ -102,20 +86,8 @@ const SEASON_COPY: Record<Season, SeasonConfig> = {
   },
 }
 
-// ── The picks — one text per season, chosen by hand ──────────────────────────
-//   This is the editorial layer and it stays human: the corpus carries almost
-//   no season-marked texts (a title scan over 207 published texts returns
-//   essentially nothing), so season-fit is a curator's judgement, not a query.
-//   Set an entry as its text is chosen; `null` is a designed state, not a gap.
-// ────────────────────────────────────────────────────────────────────────────
-const SEASON_PICKS: Record<Season, SeasonPick | null> = {
-  advent: null,
-  christmas: { title: 'Sermon 21 (On the Feast of the Nativity)', author: 'Leo the Great', href: '/texts/sermon-21-on-the-feast-of-the-nativity' },
-  epiphany: null,
-  lent: null,
-  eastertide: null,
-  trinitytide: { title: 'A Short Rule of Life', author: 'John Wycliffe', href: '/texts/a-short-rule-of-life' },
-}
+// The picks (one text per season, chosen by hand) live in
+// lib/liturgical/season-pick.ts, shared with the homepage hero.
 
 // ────────────────────────────────────────────────────────────────────────────
 
@@ -150,45 +122,14 @@ type Props = {
 
 export async function SeasonalPanel({ season = resolveSeason().season }: Props = {}) {
   const copy = SEASON_COPY[season]
-  const configuredPick = SEASON_PICKS[season]
+  const live = await getLiveSeasonPick(season)
+  const pickSlug = live?.slug
+  const pickImageUrl = live?.imageUrl ?? null
+  const pickFocusX = live?.focusX ?? null
+  const pickFocusY = live?.focusY ?? null
+  const pickZoom = live?.zoom ?? null
 
-  // Slug for analytics — derived from the href rather than hardcoded, so it
-  // stays correct if a pick's href ever changes.
-  const pickSlug = configuredPick ? configuredPick.href.split('/').filter(Boolean).pop() : undefined
-
-  // One query does two jobs: it confirms the pick's text is actually published,
-  // and it brings back the author's portrait and stored framing (focal point +
-  // zoom, migration 017) so the panel crops the same way the author band does.
-  //
-  // The published check matters because a pick can be set for a season months
-  // ahead of the text leaving /admin/drafts — as this Christmastide pick was.
-  // Rather than link the homepage at a page that isn't there, an unpublished or
-  // missing pick falls back to the panel's designed no-pick state.
-  let pickImageUrl: string | null = configuredPick?.imageUrl ?? null
-  let pickFocusX: number | null = null
-  let pickFocusY: number | null = null
-  let pickZoom: number | null = null
-  let pickIsLive = false
-
-  if (configuredPick && pickSlug) {
-    const supabase = createPublicClient()
-    const { data } = await supabase
-      .from('texts')
-      .select('id, author:authors(image_url, image_focus_x, image_focus_y, image_zoom)')
-      .eq('slug', pickSlug)
-      .eq('published', true)
-      .maybeSingle()
-    pickIsLive = Boolean(data?.id)
-    if (pickIsLive) {
-      const author = data?.author as unknown as AuthorPortrait | null
-      pickImageUrl = pickImageUrl ?? author?.image_url ?? null
-      pickFocusX = author?.image_focus_x ?? null
-      pickFocusY = author?.image_focus_y ?? null
-      pickZoom = author?.image_zoom ?? null
-    }
-  }
-
-  const s = { ...copy, pick: pickIsLive ? configuredPick : null }
+  const s = { ...copy, pick: live }
 
   const panelHref = s.pick ? s.pick.href : '/texts'
   const panelUmamiProps = s.pick
@@ -296,9 +237,13 @@ export async function SeasonalPanel({ season = resolveSeason().season }: Props =
                 extra wrapper it needed collapsed the portrait variant to zero
                 height (see LancetArch's note). The portrait is 140px on phones,
                 the width FeaturedAuthors draws every author at, so the season's
-                author is not the smallest face on the page. */}
+                author is not the smallest face on the page.
+                On phones the row is pulled up (-mt-10) and its bottom margin
+                trimmed: LancetArch draws the arch from 18% down its 200:380 box
+                to 8% short of the bottom, so at 140px wide there was ~49px of
+                empty frame above the portrait and ~21px below (Keith, 4 Nov). */}
             {s.pick ? (
-              <div className="mb-6 flex items-center gap-4 sm:col-start-2 sm:row-span-2 sm:row-start-1 sm:mb-0 sm:block sm:self-start">
+              <div className="-mt-10 mb-2 flex items-center gap-4 sm:col-start-2 sm:row-span-2 sm:row-start-1 sm:mt-0 sm:mb-0 sm:block sm:self-start">
                 <div className="w-[140px] shrink-0 sm:w-[clamp(140px,18vw,150px)]">
                   <div className="opacity-90" style={{ aspectRatio: '200 / 380' }}>
                     <LancetArch
