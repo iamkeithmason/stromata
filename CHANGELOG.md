@@ -7,6 +7,34 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-11-04 — Text, author, collection and Scripture pages are now cached (they rendered on every request)
+
+Vercel's per-route view (12 hours to 4 Nov, the most Hobby shows) put `/texts/[slug]` far ahead of
+everything else: 1,100 renders and ~4 min of Active CPU, about 8 min a day against an 8-min daily
+budget (4h per 30 days). The 30-day total was 3h41m of 4h with only two production deploys and no
+publishes since 30 Sep, so the cost was crawler visits, not deploys or edits.
+
+The cause: `next build` listed `/texts/[slug]`, `/authors/[slug]`, `/collections/[slug]` and
+`/scripture/[ref]` as **ƒ (Dynamic)**. A route with a `[param]` and no `generateStaticParams` is
+rendered on every request in Next 15, so their `revalidate` windows cached the Supabase reads (the
+2026-09-29 data-cache work) but never the page. Each crawler hit re-rendered the whole reader page.
+The eras, themes, traditions and locations pages were never affected: they list their params.
+
+- Each of the four now exports `generateStaticParams() { return [] }`. Nothing is prebuilt, so
+  builds stay as cheap as before; each page renders on its first visit and is then served from the
+  cache until its window runs out or a save revalidates it. `next build` now shows all four as ●.
+- Verified on a local production build (`next start`): a text page answered `x-nextjs-cache: MISS`
+  then `HIT`, with `Cache-Control: s-maxage=604800`; a Scripture page the same.
+- Guard: `lib/cache/public-pages-are-cached.test.ts` fails on any public `[param]` page with a
+  `revalidate` window and no `generateStaticParams`. It flagged all four before the fix.
+- Not verified here: the effect on the live CPU bars, which needs the next release and a few days.
+  Expect `/texts/[slug]` invocations to fall from ~2,200 a day to roughly one per page per week, plus
+  one round of renders after each deploy. Watch ISR reads and writes on the Usage page too: the cache
+  now lives there.
+
+This was in the original "On-demand cache revalidation" card ("generateStaticParams returns [] for
+heavy dynamic routes"); PR #193 narrowed it out as unnecessary, which was wrong.
+
 ## 2026-11-04 — Design-system cleanup: /authors palette, one SectionHeader, homepage footer on tokens
 
 A design-system audit of the homepage and shared components (the design plugin's `design-system` skill) found

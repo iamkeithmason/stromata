@@ -19,14 +19,17 @@ import { createClient } from '@supabase/supabase-js'
 //
 // Next 15 sends `fetch` with `cache: 'no-store'` unless told otherwise, so each
 // of these queries ran again on every request — including every crawler hit.
-// The pages that carry `generateStaticParams` escape that by being prerendered,
-// but the ones without it (`/texts/[slug]`, `/authors/[slug]`,
-// `/collections/[slug]`, `/scripture/[ref]` — 4,268 reference routes alone) are
-// rendered on demand, and `export const revalidate` does not help them: it
-// governs the route cache, which a route Next has classed as dynamic never
-// enters. Measured on a production build before this change, three requests for
-// the same scripture reference cost three round trips, and the reader page
-// re-downloaded the text's whole body each time.
+// The pages that carry `generateStaticParams` escape that by being prerendered.
+// Until 2026-11-04 `/texts/[slug]`, `/authors/[slug]`, `/collections/[slug]` and
+// `/scripture/[ref]` had none, so Next classed them as dynamic and rendered them
+// on every request; `export const revalidate` governs the route cache, which a
+// dynamic route never enters. Measured on a production build before this
+// change, three requests for the same scripture reference cost three round
+// trips, and the reader page re-downloaded the text's whole body each time.
+// They now export an empty `generateStaticParams`, which makes them ISR (the
+// route cache holds each page after its first visit; see
+// lib/cache/public-pages-are-cached.test.ts). This data cache still matters:
+// it serves the first render after a deploy or a revalidation.
 //
 // Tagging the fetch moves those reads into Next's Data Cache, so a repeated
 // query is answered locally and Supabase sees it at most once a week however
