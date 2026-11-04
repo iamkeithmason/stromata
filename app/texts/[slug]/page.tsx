@@ -451,7 +451,7 @@ export default async function TextPage({ params }: Props) {
             </p>
 
             {themes.length > 0 && (
-              <div className="hidden lg:flex flex-wrap gap-2">
+              <div className="hidden lg:flex flex-wrap gap-x-2">
                 {themes.map(theme => (
                   <ThemeChip key={theme.slug} href={`/themes/${theme.slug}`} name={theme.name} source="text-page" tone="dark" />
                 ))}
@@ -612,7 +612,7 @@ export default async function TextPage({ params }: Props) {
             {/* Phones: the theme chips moved out of the frontispiece land here,
                 after the introduction, where they no longer push the text down. */}
             {themes.length > 0 && (
-              <div className="flex flex-wrap gap-2 mb-10 lg:hidden">
+              <div className="flex flex-wrap gap-x-2 mb-10 lg:hidden">
                 {themes.map(theme => (
                   <ThemeChip key={theme.slug} href={`/themes/${theme.slug}`} name={theme.name} source="text-page" />
                 ))}

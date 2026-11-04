@@ -510,6 +510,16 @@ nothing to ship.
 - **Never merge the release PR yourself** — leave it open, say what it carries, and let Keith merge it. When a
   site-changing PR is ready, merge it into `release` only if Keith has said to; otherwise leave it open and
   tell him which PRs are queued.
+- **The 100-deployments-a-day cap is shared with Paideia — check the release actually built.** Vercel's
+  Hobby plan allows 100 deployments per day per *account*, and Stromata and Paideia share the account. Every
+  push counts, **including the ones `vercel-ignore-build.sh` cancels**: skipping a build saves build minutes,
+  not cap slots. On 2 Nov 2026 the cap was spent between 09:05 and 12:36 UTC, 86 of the 100 by Paideia
+  (about ten Claude branches plus `main`, the morning GitHub Actions minutes reset), and a Stromata push then
+  got `Resource is limited - try again in 24 hours (api-deployments-free-per-day)`. A release merge in that
+  window would not deploy. So after the release PR merges, confirm a production deployment for its merge
+  commit reached `READY` (Vercel MCP `list_deployments` with `target: production`, or the dashboard). If it
+  was refused, wait for the window to roll over and redeploy that commit from the Vercel dashboard rather
+  than pushing again, since another push only spends another slot.
 - **A broken site or a security fix is the exception:** it goes straight to `main` (tell Keith), and `main` is
   then merged into `release` so the branches don't diverge.
 - Publishing texts is fine in a batch (about 4 min of CPU once per sitting; batch it, don't trickle it).
