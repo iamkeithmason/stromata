@@ -18,8 +18,9 @@ option B of three mock-ups ("a text in the sky"), keeping the starry hero:
   *A Short Rule of Life* → · John Wycliffe". It replaces "Start with" and its five authors on phones only.
   From 641px the hero is unchanged and the seasonal panel carries the pick as before. The CSS for these
   properties is now written phone first (base) with the tall sky added at `min-width: 641px`.
-- **The seasonal panel on phones** shows the author's name beside the portrait, not the title, so the pick
-  is named once. The whole panel still links to the text.
+- **The seasonal panel is unchanged.** A first version took the title out of the panel on phones so the
+  pick was named once; on the preview Keith found it left the panel empty and weaker, so the panel keeps
+  its title, and the pick is named in the sky and again in the panel.
 - **The pick is looked up once.** `SEASON_PICKS` and the published-check query moved from `SeasonalPanel`
   to `lib/liturgical/season-pick.ts` (`getLiveSeasonPick`, wrapped in React's `cache`), shared by the hero
   and the panel, so the homepage still asks Supabase once.
@@ -31,7 +32,9 @@ option B of three mock-ups ("a text in the sky"), keeping the starry hero:
 **`/design/visual`, an exploration** (noindex, not linked): how to make a library of texts visual without
 an image per text. Three studies, all from data every record already has. *The cosmos as a map* plots
 every published author as a star on nine era rings, earliest at the centre. *An ornament per genre* puts a
-generated star or rosette on each cover. *One plate per era* frames the nine public-domain images still to
+mark on each cover for its kind of writing: round 1 varied one star by its points, which Keith found could
+not be told apart, so round 2 gives each genre its own traditional motif (a seal for letters, a voice for
+sermons, a key for exegesis), with related genres in one family. *One plate per era* frames the nine public-domain images still to
 source. Metadata only, no `body`. Backlog card: "Make the library visual at scale".
 
 **The design brief is in the repo** (`docs/design/homepage-brief.md`), corrected: the first draft said the

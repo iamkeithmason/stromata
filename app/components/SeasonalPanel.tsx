@@ -260,12 +260,28 @@ export async function SeasonalPanel({ season = resolveSeason().season }: Props =
                   </div>
                 </div>
 
-                {/* Phone only: the author's name as a caption beside the portrait.
-                    The title itself sits in the hero above on phones (app/page.tsx),
-                    so naming it here too would say it twice; the whole panel still
-                    links to the text. From sm up the CTA sits under the note. */}
+                {/* Phone only: the CTA beside the portrait. From sm up it
+                    sits under the note instead (hidden there on phones). */}
                 <div className="min-w-0 sm:hidden">
-                  <p style={{ fontFamily: 'var(--serif)', fontSize: 'var(--text-base)', color: R.dim }}>
+                  {/* Shortened from "Read for the season" so it holds one
+                      line beside a 140px portrait. */}
+                  <p style={{ ...LABEL_STYLE, marginBottom: '0.4rem' }}>
+                    For the season
+                  </p>
+                  <span
+                    style={{
+                      fontFamily: 'var(--serif)',
+                      fontSize: 'var(--text-prose)',
+                      lineHeight: 1.3,
+                      color: R.cta,
+                      textDecoration: 'underline',
+                      textUnderlineOffset: '3px',
+                      textDecorationColor: R.goldFaint,
+                    }}
+                  >
+                    {s.pick.title}{'\u00a0'}→
+                  </span>
+                  <p style={{ fontFamily: 'var(--serif)', fontSize: 'var(--text-base)', color: R.dim, marginTop: '0.4rem' }}>
                     {s.pick.author}
                   </p>
                 </div>

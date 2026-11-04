@@ -78,38 +78,81 @@ function starPath(cx: number, cy: number, r: number, points: number, pinch = 0.4
   return d + 'Z'
 }
 
-/** The genre's ornament: the first nine genres are stars of 4–12 points, the
- *  rest rosettes of 4–11 petals. One rule, drawn once, used on every cover. */
+/**
+ * The genre's ornament, round 2. Round 1 varied one star by its number of points,
+ * and at cover size four, five and six points read as the same mark (Keith,
+ * 4 Nov). Here each genre has its own traditional motif, drawn on one 24-unit
+ * grid with one stroke weight, so they read as a set and apart from each other.
+ * Related genres share a family: Sermon and Homily are both "voice" arcs; Hymn
+ * and Poem are both Gothic foils; Treatise and Essay are both lozenges.
+ */
+const S = { fill: 'none', stroke: 'var(--gold-ink)', strokeWidth: 1.6, strokeLinecap: 'round', strokeLinejoin: 'round' } as const
+const F = { fill: 'var(--gold-ink)' } as const
+
+/** A Gothic foil: n lobes round a centre (trefoil, quatrefoil). */
+function foil(n: number, r = 4.6, d = 4.4) {
+  return Array.from({ length: n }, (_, k) => {
+    const a = (2 * Math.PI * k) / n - Math.PI / 2
+    return <circle key={k} cx={12 + d * Math.cos(a)} cy={12 + d * Math.sin(a)} r={r} {...S} />
+  })
+}
+
+const MOTIFS: Record<string, { name: string; draw: () => React.ReactNode }> = {
+  Sermon: { name: 'a voice: three arcs from a point', draw: () => (<>
+    <circle cx={5} cy={12} r={1.6} {...F} />
+    <path d="M9 7.5a6.5 6.5 0 0 1 0 9" {...S} /><path d="M12.5 5a10 10 0 0 1 0 14" {...S} /><path d="M16 2.5a13.5 13.5 0 0 1 0 19" {...S} />
+  </>) },
+  Homily: { name: 'a quieter voice: two arcs', draw: () => (<>
+    <circle cx={7} cy={12} r={1.6} {...F} />
+    <path d="M11 7.5a6.5 6.5 0 0 1 0 9" {...S} /><path d="M14.5 5a10 10 0 0 1 0 14" {...S} />
+  </>) },
+  Letter: { name: 'a wax seal', draw: () => (<>
+    <circle cx={12} cy={12} r={9} {...S} /><circle cx={12} cy={12} r={6} {...S} />
+    <path d="M12 8.5v7M8.5 12h7" {...S} />
+  </>) },
+  Treatise: { name: 'a lozenge within a square', draw: () => (<>
+    <rect x={4} y={4} width={16} height={16} {...S} /><path d="M12 6l6 6-6 6-6-6z" {...S} />
+  </>) },
+  Essay: { name: 'a single lozenge', draw: () => (<path d="M12 3l8 9-8 9-8-9z" {...S} />) },
+  Meditation: { name: 'a point within circles', draw: () => (<>
+    <circle cx={12} cy={12} r={9} {...S} /><circle cx={12} cy={12} r={5} {...S} /><circle cx={12} cy={12} r={1.6} {...F} />
+  </>) },
+  Rule: { name: 'ruled lines', draw: () => (<>
+    <path d="M4 6h16M4 12h16M4 18h16" {...S} /><path d="M7 3v18" {...S} />
+  </>) },
+  Prayer: { name: 'a candle flame', draw: () => (<>
+    <path d="M12 3c3 4 5 7 5 10a5 5 0 0 1-10 0c0-3 2-6 5-10z" {...S} /><path d="M12 11c1 1.4 1.8 2.6 1.8 3.6a1.8 1.8 0 0 1-3.6 0c0-1 .8-2.2 1.8-3.6z" {...F} />
+  </>) },
+  Catechesis: { name: 'steps', draw: () => (<path d="M4 20h5v-5h5v-5h5V4" {...S} />) },
+  Commentary: { name: 'a text with its margin', draw: () => (<>
+    <rect x={3} y={4} width={18} height={16} {...S} /><path d="M15 4v16" {...S} /><path d="M6 9h6M6 12h6M6 15h6" {...S} /><circle cx={18} cy={9} r={1.2} {...F} />
+  </>) },
+  Exegesis: { name: 'a key', draw: () => (<>
+    <circle cx={7.5} cy={12} r={4} {...S} /><path d="M11.5 12H21M17 12v3.5M20 12v2.5" {...S} />
+  </>) },
+  Dialogue: { name: 'two circles meeting (vesica)', draw: () => (<>
+    <circle cx={9} cy={12} r={6.5} {...S} /><circle cx={15} cy={12} r={6.5} {...S} />
+  </>) },
+  Hymn: { name: 'a quatrefoil', draw: () => (<>{foil(4, 4.4, 4.6)}</>) },
+  Poem: { name: 'a trefoil', draw: () => (<>{foil(3, 4.6, 4.4)}</>) },
+  Confession: { name: 'a cross pattée', draw: () => (
+    <path d="M10 3h4l-1 6.5L19.5 8.5 21 12l-1.5 3.5L13 14.5l1 6.5h-4l1-6.5L4.5 15.5 3 12l1.5-3.5L11 9.5z" {...S} />
+  ) },
+  Hagiography: { name: 'a halo', draw: () => (<>
+    <circle cx={12} cy={12} r={4.5} {...S} />
+    {Array.from({ length: 12 }, (_, k) => { const a = (Math.PI * k) / 6; return <path key={k} d={`M${12 + 6.5 * Math.cos(a)} ${12 + 6.5 * Math.sin(a)}L${12 + 9.5 * Math.cos(a)} ${12 + 9.5 * Math.sin(a)}`} {...S} /> })}
+  </>) },
+  Apology: { name: 'a shield', draw: () => (<>
+    <path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z" {...S} /><path d="M12 7v10" {...S} />
+  </>) },
+}
+
 function GenreOrnament({ genre, size = 22 }: { genre: string; size?: number }) {
-  const i = Math.max(0, GENRES.indexOf(genre))
-  const c = size / 2
-  if (i < 9) {
-    return (
-      <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} aria-hidden="true">
-        <path d={starPath(c, c, c * 0.95, 4 + i, i % 2 ? 0.5 : 0.36)} fill="var(--gold-ink)" />
-      </svg>
-    )
-  }
-  const petals = 4 + (i - 9)
+  const m = MOTIFS[genre]
+  if (!m) return null
   return (
-    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} aria-hidden="true">
-      {Array.from({ length: petals }, (_, k) => {
-        const a = (2 * Math.PI * k) / petals - Math.PI / 2
-        return (
-          <ellipse
-            key={k}
-            cx={c + c * 0.45 * Math.cos(a)}
-            cy={c + c * 0.45 * Math.sin(a)}
-            rx={c * 0.42}
-            ry={c * 0.18}
-            transform={`rotate(${(a * 180) / Math.PI} ${c + c * 0.45 * Math.cos(a)} ${c + c * 0.45 * Math.sin(a)})`}
-            fill="none"
-            stroke="var(--gold-ink)"
-            strokeWidth={1}
-          />
-        )
-      })}
-      <circle cx={c} cy={c} r={c * 0.12} fill="var(--gold-ink)" />
+    <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden="true" style={{ display: 'block' }}>
+      {m.draw()}
     </svg>
   )
 }
@@ -217,10 +260,11 @@ export default async function VisualExploration() {
         {/* ── II ── */}
         <SectionHeader title="II. An ornament per genre" aside={`${shelf.length} of ${GENRES.length} genres`} />
         <p className="font-serif mb-6" style={{ color: 'var(--ink-soft)', maxWidth: '60ch', lineHeight: 1.6 }}>
-          A printer&rsquo;s flower on each cover, generated from the genre: stars of four to twelve points
-          for the first nine genres, rosettes for the rest. It replaces the plain hairline under the title,
-          so a shelf of covers shows the kinds of writing at a glance: the sky&rsquo;s stars, brought down
-          to the books. One recent text per genre:
+          A mark on each cover for its kind of writing, in place of the plain hairline under the title, so
+          a shelf of covers shows sermons, letters and prayers at a glance. Round 2: the first round varied
+          one star by its number of points, and at this size the marks could not be told apart. Now each
+          genre has its own traditional motif, on one grid and one stroke weight, with related genres sharing
+          a family. One recent text per genre:
         </p>
         <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-4 mb-6">
           {shelf.map(t => (
@@ -240,11 +284,15 @@ export default async function VisualExploration() {
             </Link>
           ))}
         </div>
-        <div className="flex flex-wrap gap-x-5 gap-y-3 mb-16 items-center">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-4 mb-16">
           {GENRES.map(g => (
-            <span key={g} className="inline-flex items-center gap-2 caption" style={{ color: 'var(--ink-faint)' }}>
-              <GenreOrnament genre={g} size={16} /> {g}
-            </span>
+            <div key={g} className="flex items-center gap-3">
+              <GenreOrnament genre={g} size={32} />
+              <span>
+                <span className="block font-serif" style={{ color: 'var(--ink)' }}>{g}</span>
+                <span className="block caption" style={{ color: 'var(--ink-faint)' }}>{MOTIFS[g]?.name}</span>
+              </span>
+            </div>
           ))}
         </div>
 
