@@ -7,6 +7,22 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-11-04 — Homepage theme tags now match the reader's
+
+Keith noticed that the homepage's "Browse by theme" grid drew its tags differently from the text page:
+outlined boxes in Junicode small caps, where the reader, the featured lead and the feed cards all use the
+filled, cut-corner `ThemeChip` chosen on 27 Oct. The grid was the last hand-rolled copy. It now renders
+`ThemeChip` too, so every public theme tag shares one component and one look. Analytics are unchanged:
+`theme-click` still sends `theme` (display name) and `source="homepage"`. Checked locally at 390px and 1440px.
+
+In the same PR, every theme chip now has a 44px tap target (the mobile-first checklist's minimum; they were
+about 28px). The chip looks the same: the link is the 44px target and the chip is drawn on a span inside it,
+because `.chip-tag`'s clip-path would clip any hit area added to the element carrying it. The rows of chips
+dropped their vertical gaps, since the taller links now space the rows themselves. Measured on
+`/texts/a-short-rule-of-life` at 390px: all six chips are 44px tall.
+
+---
+
 ## 2026-11-04 — Only `main` and `preview/` branches create Vercel deployments
 
 Backlog card "Vercel deployment cap: stop branch pushes counting towards the 100-a-day Hobby limit".

@@ -326,29 +326,9 @@ export default async function Home() {
               >
                 {cluster.cluster}
               </p>
-              <div className="flex flex-col gap-1.5 items-start">
+              <div className="flex flex-col items-start">
                 {cluster.themes.map(theme => (
-                  <Link
-                    key={theme.slug}
-                    href={`/themes/${theme.slug}`}
-                    className="inline-flex items-center transition-opacity hover:opacity-70"
-                    style={{
-                      color: 'var(--ink-mute)',
-                      border: '1px solid var(--rule)',
-                      background: 'transparent',
-                      fontFamily: 'var(--serif-smallcaps)',
-      fontFeatureSettings: '"smcp" 1',
-                      fontSize: 'var(--text-sm)',
-                      letterSpacing: '0.08em',
-                      padding: '3px 10px',
-                      textDecoration: 'none',
-                    }}
-                    data-umami-event="theme-click"
-                    data-umami-event-theme={theme.name}
-                    data-umami-event-source="homepage"
-                  >
-                    {theme.name}
-                  </Link>
+                  <ThemeChip key={theme.slug} href={`/themes/${theme.slug}`} name={theme.name} source="homepage" />
                 ))}
               </div>
             </div>
@@ -467,7 +447,7 @@ function TextLead({ text }: { text: TextRow }) {
           </span>
         </div>
         {themes.length > 0 && (
-          <div className="flex flex-wrap gap-1.5 mt-4">
+          <div className="flex flex-wrap gap-x-1.5 mt-4">
             {themes.map(t => (
               <ThemeChip key={t.slug} href={`/themes/${t.slug}`} name={t.name} source="featured-lead" />
             ))}
@@ -626,7 +606,7 @@ function FeedGridCard({ entry, index }: { entry: FeedEntry; index: number }) {
         <p className="caption mb-2">~ {readingMinutes(text.word_count)} min</p>
         {/* Chips are hidden in the two-up phone grid: at half width they stacked one per line. */}
         {themes.length > 0 && (
-          <div className="hidden sm:flex flex-wrap gap-1">
+          <div className="hidden sm:flex flex-wrap gap-x-1">
             {themes.map(t => (
               <ThemeChip key={t.slug} href={`/themes/${t.slug}`} name={t.name} source="homepage" />
             ))}
