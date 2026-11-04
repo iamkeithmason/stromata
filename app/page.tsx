@@ -326,7 +326,7 @@ export default async function Home() {
               >
                 {cluster.cluster}
               </p>
-              <div className="flex flex-col gap-1.5 items-start">
+              <div className="flex flex-col items-start">
                 {cluster.themes.map(theme => (
                   <ThemeChip key={theme.slug} href={`/themes/${theme.slug}`} name={theme.name} source="homepage" />
                 ))}
@@ -447,7 +447,7 @@ function TextLead({ text }: { text: TextRow }) {
           </span>
         </div>
         {themes.length > 0 && (
-          <div className="flex flex-wrap gap-1.5 mt-4">
+          <div className="flex flex-wrap gap-x-1.5 mt-4">
             {themes.map(t => (
               <ThemeChip key={t.slug} href={`/themes/${t.slug}`} name={t.name} source="featured-lead" />
             ))}
@@ -606,7 +606,7 @@ function FeedGridCard({ entry, index }: { entry: FeedEntry; index: number }) {
         <p className="caption mb-2">~ {readingMinutes(text.word_count)} min</p>
         {/* Chips are hidden in the two-up phone grid: at half width they stacked one per line. */}
         {themes.length > 0 && (
-          <div className="hidden sm:flex flex-wrap gap-1">
+          <div className="hidden sm:flex flex-wrap gap-x-1">
             {themes.map(t => (
               <ThemeChip key={t.slug} href={`/themes/${t.slug}`} name={t.name} source="homepage" />
             ))}
