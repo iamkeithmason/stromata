@@ -574,6 +574,11 @@ comes from saves calling `revalidatePath`:
   it costs a production deploy's worth of CPU and Supabase reads. Until 2026-11-04 every chapter edit
   did exactly that. Pages that render a row *inside* them come from `collectionTextPaths` /
   `locationPaths`; the same test refuses the pattern form.
+- **A `revalidate` window on a `[param]` page only works with `generateStaticParams`.** Without it Next
+  renders the page on every request (ƒ in `next build`) and the window caches nothing but the data.
+  Until 2026-11-04 the text, author, collection and Scripture pages were all like that: `/texts/[slug]`
+  alone was most of the Hobby CPU. An empty `return []` is enough (● in `next build`);
+  `lib/cache/public-pages-are-cached.test.ts` fails CI on a new cached `[param]` page without it.
 - **`/scripture/[ref]` is the exception: daily, on purpose** (`revalidate: 86400`, passed to the client
   too), because publishing does not fan out to its ~4,000 leaves.
 - **A CLI script that edits published content calls `revalidateSite()`** from `scripts/lib/revalidate.mjs`

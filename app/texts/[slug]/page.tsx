@@ -34,6 +34,17 @@ import { locateSections } from '@/lib/markdown/section-anchors'
 // edit made outside the admin app.
 export const revalidate = 604800
 
+// Cache each page on its first visit. Without generateStaticParams, Next 15
+// classes a [param] route as dynamic and renders it on EVERY request, and the
+// `revalidate` above does nothing for the page: in the 12 hours to 4 Nov 2026
+// /texts/[slug] rendered 1,100 times for ~4 min of CPU, most of the Hobby
+// allowance. An empty list prebuilds nothing at deploy (builds stay cheap) but
+// makes the route ISR: `next build` shows it as ● with a cache window, not ƒ.
+// lib/cache/public-pages-are-cached.test.ts keeps it that way.
+export async function generateStaticParams() {
+  return []
+}
+
 type Props = { params: Promise<{ slug: string }> }
 
 export async function generateMetadata({ params }: Props) {
