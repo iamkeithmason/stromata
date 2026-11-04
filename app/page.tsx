@@ -14,6 +14,7 @@ import { resolveSeason } from '@/lib/liturgical/year'
 import { readingMinutes } from '@/lib/reading-time'
 import { ThemeChip } from './components/ThemeChip'
 import { SectionHeader } from './components/SectionHeader'
+import { getLiveSeasonPick } from '@/lib/liturgical/season-pick'
 
 // Incremental Static Regeneration: cache the rendered home page and revalidate
 // hourly. Safe given the manual publish cadence — newly published texts appear
@@ -100,6 +101,7 @@ export default async function Home() {
   // rather than at midnight exactly — acceptable for a season, and the reason
   // this is resolved per render rather than baked at build.
   const season = resolveSeason().season
+  const seasonPick = await getLiveSeasonPick(season)
 
   // ── Author chips — top 5 authors by published text count ─────────────
   const { data: chipTextsRaw } = await supabase
@@ -216,8 +218,28 @@ export default async function Home() {
 
           <SearchBar tone="celestial" />
 
+          {/* Phones only (CSS): the season's pick, so the first screen names a
+              text. From 641px the seasonal panel below carries it instead. */}
+          {seasonPick && (
+            <p className="celestial-pick">
+              <span className="celestial-pick-label">For the season</span>
+              <Link
+                href={seasonPick.href}
+                data-umami-event="text-open"
+                data-umami-event-from="hero-pick"
+                data-umami-event-text={seasonPick.slug}
+              >
+                {seasonPick.title}{'\u00a0'}→
+              </Link>
+              <span className="celestial-pick-author">{seasonPick.author}</span>
+            </p>
+          )}
+
           {authorChips.length > 0 && (
-            <nav className="celestial-authors" aria-label="Recommended authors">
+            <nav
+              className={seasonPick ? 'celestial-authors celestial-authors--after-pick' : 'celestial-authors'}
+              aria-label="Recommended authors"
+            >
               <span className="celestial-authors-label">Start with</span>
               <span className="celestial-authors-rule" aria-hidden="true" />
               <span className="celestial-authors-links">

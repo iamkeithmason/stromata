@@ -7,6 +7,42 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-11-04 — The first phone screen names a text; making the library visual (exploration)
+
+**The first phone screen.** The homepage critique's main finding: on a 390px phone, the first screen
+showed the wordmark twice, a tagline, a descriptor, search and five author names, but no text. Keith chose
+option B of three mock-ups ("a text in the sky"), keeping the starry hero:
+
+- **Below 641px the hero is a band, not a full screen** (about 360px tall instead of 620px). The display
+  title is smaller, the descriptor line is gone, and the season's pick sits in the sky: "For the season ·
+  *A Short Rule of Life* → · John Wycliffe". It replaces "Start with" and its five authors on phones only.
+  From 641px the hero is unchanged and the seasonal panel carries the pick as before. The CSS for these
+  properties is now written phone first (base) with the tall sky added at `min-width: 641px`.
+- **The seasonal panel on phones** shows the author's name beside the portrait, not the title, so the pick
+  is named once. The whole panel still links to the text.
+- **The pick is looked up once.** `SEASON_PICKS` and the published-check query moved from `SeasonalPanel`
+  to `lib/liturgical/season-pick.ts` (`getLiveSeasonPick`, wrapped in React's `cache`), shared by the hero
+  and the panel, so the homepage still asks Supabase once.
+- **Analytics: a new surface, `hero-pick`.** The sky link fires `text-open` with `from: hero-pick` and the
+  slug. It is in the vocabulary in `CLAUDE.md` and the Events Register. `verify-analytics.mjs` has a new
+  phone-width suite for it, and it was observed on the wire against a local build: `{"from":"hero-pick",
+  "text":"a-short-rule-of-life"}`, with all 16 `text-open` checks passing.
+
+**`/design/visual`, an exploration** (noindex, not linked): how to make a library of texts visual without
+an image per text. Three studies, all from data every record already has. *The cosmos as a map* plots
+every published author as a star on nine era rings, earliest at the centre. *An ornament per genre* puts a
+generated star or rosette on each cover. *One plate per era* frames the nine public-domain images still to
+source. Metadata only, no `body`. Backlog card: "Make the library visual at scale".
+
+**The design brief is in the repo** (`docs/design/homepage-brief.md`), corrected: the first draft said the
+page had no imagery beyond book covers, and the critic argued from that error. It now records why the
+starry hero exists and the decisions a critic should not re-argue. A research write-up of the method and
+its lesson is at `docs/research/2026-11-04-the-critic-believes-the-brief.md`.
+
+Checked locally at 360, 390 and 1440px: the pick sits 314px down on a 390px phone, with a 44px tap target.
+
+---
+
 ## 2026-11-04 — Homepage polish from the design critique, and texts before authors
 
 A fresh-context design critique of the homepage (the design plugin's `design-critique` skill, run by a
