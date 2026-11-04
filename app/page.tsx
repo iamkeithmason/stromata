@@ -328,27 +328,7 @@ export default async function Home() {
               </p>
               <div className="flex flex-col gap-1.5 items-start">
                 {cluster.themes.map(theme => (
-                  <Link
-                    key={theme.slug}
-                    href={`/themes/${theme.slug}`}
-                    className="inline-flex items-center transition-opacity hover:opacity-70"
-                    style={{
-                      color: 'var(--ink-mute)',
-                      border: '1px solid var(--rule)',
-                      background: 'transparent',
-                      fontFamily: 'var(--serif-smallcaps)',
-      fontFeatureSettings: '"smcp" 1',
-                      fontSize: 'var(--text-sm)',
-                      letterSpacing: '0.08em',
-                      padding: '3px 10px',
-                      textDecoration: 'none',
-                    }}
-                    data-umami-event="theme-click"
-                    data-umami-event-theme={theme.name}
-                    data-umami-event-source="homepage"
-                  >
-                    {theme.name}
-                  </Link>
+                  <ThemeChip key={theme.slug} href={`/themes/${theme.slug}`} name={theme.name} source="homepage" />
                 ))}
               </div>
             </div>

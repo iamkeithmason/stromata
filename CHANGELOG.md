@@ -7,6 +7,16 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-11-04 — Homepage theme tags now match the reader's
+
+Keith noticed that the homepage's "Browse by theme" grid drew its tags differently from the text page:
+outlined boxes in Junicode small caps, where the reader, the featured lead and the feed cards all use the
+filled, cut-corner `ThemeChip` chosen on 27 Oct. The grid was the last hand-rolled copy. It now renders
+`ThemeChip` too, so every public theme tag shares one component and one look. Analytics are unchanged:
+`theme-click` still sends `theme` (display name) and `source="homepage"`. Checked locally at 390px and 1440px.
+
+---
+
 ## 2026-10-29 — The mobile menu's close X no longer looks cropped
 
 Keith spotted on his phone that the menu's X looked clipped at the top right. The three menu lines sit 7px
