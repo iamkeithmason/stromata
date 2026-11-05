@@ -87,7 +87,7 @@ Each step ships separately and is verifiable without the admin login.
 5. **Decide on exposure later.** A read-only neighbourhoods view for the Scripture pages is a UI
    change and belongs on its own card.
 
-## Open question for Keith
+## Decision (Keith, 2026-11-05)
 
-Whether the chapter-grain rows (8% of citations) should appear at all in neighbourhood counts, or only
-as a separate "cited generally" line. The plan above assumes separate.
+Chapter-grain citations (8% of rows) are kept out of neighbourhood counts and shown only as a separate
+"cited generally" line, as the plan assumed.
