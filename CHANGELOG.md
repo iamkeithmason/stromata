@@ -37,13 +37,16 @@ applied to production on 4 Nov, so nothing needs running before the release. The
 fault-tolerant query, so era pages render with their defaults whether or not it has run (checked locally
 against the live database without it).
 
-**First traced genre ornaments.** `/design/visual` (noindex, not linked) now shows four genre ornaments traced
-from a 1499 woodcut herbal, *Ortus sanitatis* (Internet Archive, Public Domain Mark): a fish for Sermon, a lily
-for Meditation, a rose for Poem and an ear of spelt for Catechesis. They are cut rather than drawn: lines swell
-and thin, end blunt or chiselled, with a few hatch cuts. Keith turned down solid silhouettes (lumpy) and
-even-weight line art (read as modern UI icons) before accepting these. The path data lives in
-`app/design/visual/herbal-ornaments.ts`; the other thirteen genres still show the round-3 sketches. Nothing
-outside the exploration page uses them yet.
+**Traced genre ornaments.** `/design/visual` (noindex, not linked) now shows eleven genre ornaments traced from
+woodcuts and prints made before 1600. Seven come from one herbal, *Ortus sanitatis* (Strasbourg, 1499; Internet
+Archive, Public Domain Mark): fish (Sermon), lily (Meditation), rose (Poem), spelt (Catechesis), olive (Essay),
+vine (Commentary) and pomegranate (Dialogue). Objects the herbal lacks come from Met Open Access prints: a loaf
+from Dürer's *Last Supper* (Homily), a candle after Zündt (Prayer), St Peter's key after Baldung (Exegesis) and a
+harp after Cranach (Hymn). They are cut rather than drawn: lines swell and thin, end blunt or chiselled, with a
+few hatch cuts. Keith turned down solid silhouettes (lumpy) and even-weight line art (read as modern UI icons)
+before accepting these. Each entry in `app/design/visual/herbal-ornaments.ts` records its source and licence.
+The other six (Rule, Apology, Treatise, Confession, Hagiography, Letter) still show the round-3 sketches while
+they are redrawn. Nothing outside the exploration page uses them yet.
 
 The era page also moves onto tokens (`--ink`, `--ink-mute`, `--ink-faint`, `--rule-soft`) and comes off the
 `legacyRawColour` list. A new token, `--plate-scrim`, darkens the foot of the band.

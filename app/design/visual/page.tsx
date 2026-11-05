@@ -326,8 +326,9 @@ export default async function VisualExploration() {
           (distinct, but modern, and the two &ldquo;voices&rdquo; too close). Following the chapter ornaments
           of an illuminated bible, each genre is now an object chosen for its meaning (a fish for sermons, a
           quill for letters, a beehive for rules), cut like a woodcut. Round 4 replaces the sketches with
-          ornaments traced from a real woodcut herbal, <em>Ortus sanitatis</em> (Strasbourg, 1499): the fish,
-          lily, rose and wheat are done; the other thirteen are still round-3 sketches. One recent text per genre:
+          ornaments traced from real woodcuts and prints made before 1600, most from one herbal, <em>Ortus
+          sanitatis</em> (Strasbourg, 1499). Eleven are done; the other six are still round-3 sketches. One
+          recent text per genre:
         </p>
         <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-4 mb-6">
           {shelf.map(t => (
@@ -354,7 +355,7 @@ export default async function VisualExploration() {
               <span>
                 <span className="block font-serif" style={{ color: 'var(--ink)' }}>{g}</span>
                 <span className="block caption" style={{ color: 'var(--ink-faint)' }}>
-                  {HERBAL_ORNAMENTS[g] ? `${HERBAL_ORNAMENTS[g].name} · traced, 1499` : `${MOTIFS[g]?.name} · sketch`}
+                  {HERBAL_ORNAMENTS[g] ? `${HERBAL_ORNAMENTS[g].name} · traced` : `${MOTIFS[g]?.name} · sketch`}
                 </span>
               </span>
             </div>
