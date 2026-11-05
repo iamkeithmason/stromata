@@ -37,7 +37,7 @@ applied to production on 4 Nov, so nothing needs running before the release. The
 fault-tolerant query, so era pages render with their defaults whether or not it has run (checked locally
 against the live database without it).
 
-**Traced genre ornaments.** `/design/visual` (noindex, not linked) now shows sixteen genre ornaments traced from
+**Traced genre ornaments.** `/design/visual` (noindex, not linked) now shows all seventeen genre ornaments, traced from
 woodcuts and prints made before 1600. Seven come from one herbal, *Ortus sanitatis* (Strasbourg, 1499; Internet
 Archive, Public Domain Mark): fish (Sermon), lily (Meditation), rose (Poem), spelt (Catechesis), olive (Essay),
 vine (Commentary) and pomegranate (Dialogue). Objects the herbal lacks come from Met Open Access prints: a loaf
@@ -48,7 +48,7 @@ column that turned to a stick at small sizes), Augustine's arrow-pierced heart a
 quill after Palatino's writing manual, 1548 (Letter). They are cut rather than drawn: lines swell and thin, end blunt or chiselled, with a
 few hatch cuts. Keith turned down solid silhouettes (lumpy) and even-weight line art (read as modern UI icons)
 before accepting these. Each entry in `app/design/visual/herbal-ornaments.ts` records its source and licence.
-Hagiography still shows its round-3 sketch while its palm is redrawn. Nothing outside the exploration page uses them yet.
+The last, a martyr's palm after Schongauer's *Saint Agnes* (Met, public domain), completes all seventeen. Nothing outside the exploration page uses them yet.
 
 The era page also moves onto tokens (`--ink`, `--ink-mute`, `--ink-faint`, `--rule-soft`) and comes off the
 `legacyRawColour` list. A new token, `--plate-scrim`, darkens the foot of the band.

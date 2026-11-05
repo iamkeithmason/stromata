@@ -327,8 +327,7 @@ export default async function VisualExploration() {
           of an illuminated bible, each genre is now an object chosen for its meaning (a fish for sermons, a
           quill for letters, a beehive for rules), cut like a woodcut. Round 4 replaces the sketches with
           ornaments traced from real woodcuts and prints made before 1600, most from one herbal, <em>Ortus
-          sanitatis</em> (Strasbourg, 1499). Sixteen are done; Hagiography is still a round-3 sketch. One
-          recent text per genre:
+          sanitatis</em> (Strasbourg, 1499). All seventeen are done. One recent text per genre:
         </p>
         <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-4 mb-6">
           {shelf.map(t => (
