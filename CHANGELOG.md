@@ -7,6 +7,16 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-11-05 — Scripture citation quality: audited, with a plan (docs only)
+
+Backlog card *Scripture citation clustering & normalization quality*. A read-only audit of 193
+citations of Matthew 6, John 6, 1 Corinthians 11 and Romans 13 in `text_scripture_references`. Verse
+starts were right in every row; the one real loss is that a comma list ("11:20, 21") keeps the correct
+`osis` but a NULL `verse_end` (5 rows, 2.6%), because `parseReferences` fills `verseEnd` only for bcv
+`range` entities. Chapter-only citations are 8% of rows and should never merge verse-level ones. The
+write-up, deterministic clustering rules and a five-step bounded plan are in
+`docs/research/2026-11-05-scripture-citation-quality.md`. No code, schema or data changed.
+
 ## 2026-11-04 — The first phone screen names a text; making the library visual (exploration)
 
 **The first phone screen.** The homepage critique's main finding: on a 390px phone, the first screen
