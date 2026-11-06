@@ -87,10 +87,13 @@ test('the old commit-message tag no longer builds a preview on an ordinary branc
   rmSync(dir, { recursive: true, force: true })
 })
 
-test('vercel.json lets only main and preview/** create deployments', async () => {
+test('vercel.json lets only the production branch, preview/** (and main, until the switch-over ends) create deployments', async () => {
   const { readFileSync } = await import('node:fs')
   const cfg = JSON.parse(readFileSync(join(dirname(SCRIPT), '..', 'vercel.json'), 'utf8'))
-  assert.deepEqual(cfg.git.deploymentEnabled, { '**': false, main: true, 'preview/**': true })
+  // `main` stays during the main -> release switch-over (CLAUDE.md "Switch-over"): removing it before Keith
+  // sets Production Branch to `release` would stop the last old-style release merge from building. Once the
+  // switch-over is finished, drop `main` here and from vercel.json together.
+  assert.deepEqual(cfg.git.deploymentEnabled, { '**': false, main: true, release: true, 'preview/**': true })
 })
 
 // ── production: what may be skipped ─────────────────────────────────────────

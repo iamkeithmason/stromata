@@ -5,6 +5,7 @@
     "deploymentEnabled": {
       "**": false,
       "main": true,
+      "release": true,
       "preview/**": true
     }
   }
