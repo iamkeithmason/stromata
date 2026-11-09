@@ -45,6 +45,35 @@ the `[slug]` pages ○/●). Author-page genre headings get the ornaments later,
 
 ---
 
+## 2026-11-09 — Search matches whole words, ranks body hits, and reads multi-word queries word by word
+
+Two backlog cards in one PR, because both change the same query code in `app/search/page.tsx`:
+"Search: whole-word body matching with relevance ranking (backend)", and the word-by-word step Keith added
+to "Search: word-based full-text, topic words and autocomplete" on 9 Nov. No markup changes, apart from one
+line of copy for a failed search.
+
+- **Body search is by word, ranked (migration 036, not yet applied).** `search_texts_body` uses a stored
+  `tsvector` and a GIN index, matches English words with stemming, ranks with `ts_rank_cd`, and returns a
+  `ts_headline` excerpt. Measured on production inside rolled-back transactions: no false "alms" hits (the
+  substring search had 117 of 200 inside realms and psalms), and 0.39 s for "alms" against 0.37 s for the old
+  ilike. The card proposed an expression index only. That version took 2.8 s, because ranking re-parsed every
+  matching body, so the vector is stored instead: about 11 MB plus a 3.5 MB index (database 34 MB to about
+  49 MB of 500 MB). The function is `SECURITY DEFINER`, unlike `text_excerpts`, so anon never needs a grant
+  on the vector column. `INTERNAL_TEXT_COLUMNS` in `public-columns.ts` and its test keep that column out of the
+  public select.
+- **Until the migration is applied, nothing changes for readers.** `lib/search/body-matches.ts` falls back to
+  the old substring search if the function is missing or errors. It is tested without a database.
+- **Multi-word queries.** Titles and author names also match when they contain every content word.
+  Themes, genres, traditions and eras match on any content word, because a label is only one or two words.
+  "on the providence of god" went from no results to 20, and "herbert george" now finds George Herbert.
+  Single-word queries behave as before. Logic in `lib/search/query.ts`.
+- **Ordering.** Title, theme, genre, tradition, era and author matches still come first, alphabetically.
+  Body matches follow in relevance order, so the 10-result alphabetical cap no longer hides the best ones.
+- **A failed search no longer reads as "No results".** If every query fails, the page says search is
+  unavailable and does not fire `search-no-results`.
+
+---
+
 ## 2026-11-09 — Site canvas: theme, location and search pages join the board
 
 Nine pages now, up from six. The theme page, a location page (England, new to the screens manifest, so the PDF
