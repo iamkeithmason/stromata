@@ -27,7 +27,12 @@ authors shown as a grid like the homepage's featured band.
   pushed the first author below the first screen. Below `sm` they now sit behind a **Filter ▾** toggle
   (`aria-expanded`), which shows how many filters are on (e.g. "1 on") so a filtered list never looks unfiltered.
   Sort and "Clear filters" stay visible. From `sm` up nothing changes: the tags are always shown. The first author
-  now starts about 340px down on a phone instead of about 780px. `/texts` is unchanged.
+  now starts about 340px down on a phone instead of about 780px.
+- **`/texts` uses the same button.** It already hid its filters behind a `<details>` line ("Filter by tradition, era
+  or genre"). That line is now the shared **`FilterToggle`** (`app/components/FilterToggle.tsx`), so both indexes
+  show the same "Filter ▾ · n on" control with a 44px tap target. `/texts` keeps its two existing rules: the button
+  shows at every width (it has three facets, thirty-odd tags), and the panel opens by itself when the page loads
+  already filtered.
 - **Portraits after the first row load lazily.** `LancetArch` takes a `lazy` prop (`loading="lazy"`). The old list
   fetched every portrait on every view, so a reader who never scrolls now costs less Storage egress than before.
   The homepage band and seasonal panel stay eager.

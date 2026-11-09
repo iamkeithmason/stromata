@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from 'react'
 import { FilterPill } from './FilterPill'
+import { FilterToggle } from './FilterToggle'
 import { useUrlFilters } from '@/lib/use-url-filters'
 import { pickFacet } from '@/lib/facets'
 import { AuthorCard } from './AuthorCard'
@@ -117,26 +118,12 @@ export function AuthorsBrowser({
 
       <div className="mb-8 space-y-3">
         <div className="sm:hidden">
-          <button
-            type="button"
-            onClick={() => setFiltersOpen(o => !o)}
-            aria-expanded={filtersOpen}
-            aria-controls="author-filters"
-            className="inline-flex items-center gap-2 hover:opacity-70 transition-opacity"
-            style={{ minHeight: 44, background: 'transparent', cursor: 'pointer' }}
-          >
-            <span className="smallcaps" style={{ color: 'var(--ink-soft)' }}>
-              Filter
-            </span>
-            {activeCount > 0 && (
-              <span className="text-xs" style={{ color: 'var(--gold-ink)' }}>
-                {activeCount} on
-              </span>
-            )}
-            <span aria-hidden="true" style={{ color: 'var(--ink-faint)', fontSize: 'var(--text-sm)' }}>
-              {filtersOpen ? '▴' : '▾'}
-            </span>
-          </button>
+          <FilterToggle
+            open={filtersOpen}
+            onToggle={() => setFiltersOpen(o => !o)}
+            activeCount={activeCount}
+            controls="author-filters"
+          />
         </div>
         <div
           id="author-filters"
