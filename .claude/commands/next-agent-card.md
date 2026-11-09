@@ -39,15 +39,16 @@ to promote — never promote a card to `Agent-ready` yourself.
    make the backlog reflect what actually shipped. List Feature Backlog cards at
    `Status = 'Planned'` that carry a linked PR in their body, and check each PR's state
    via `mcp__github__pull_request_read`:
-   - **Merged, and on `main`** → set the card `Status` → `Built`. (This is the only place a
+   - **Merged, and on `release`** → set the card `Status` → `Built`. (This is the only place a
      routine sets `Built` — it does so *after* the change ships, never at PR time. It
-     reconciles Keith's merge, it does not pre-empt his review.) Under the release-branch
-     flow a PR merged into `release` is **not** `Built` yet: check that the PR's merge
-     commit is reachable from `main` (`gh api repos/{owner}/{repo}/compare/main...{merge_sha}`
-     reports `behind` or `identical` once it is). Confirm the merged PR added a CHANGELOG
+     reconciles Keith's merge, it does not pre-empt his review.) `main` is where work lands
+     and `release` is what is live (CLAUDE.md "Vercel usage"), so a PR merged into `main` is
+     **not** `Built` yet: check that the PR's merge commit is reachable from `release`
+     (`gh api repos/{owner}/{repo}/compare/release...{merge_sha}` reports `behind` or
+     `identical` once it is). Confirm the merged PR added a CHANGELOG
      entry; if for some reason it didn't, add one now describing the shipped change.
-   - **Merged into `release`, not yet on `main`** → leave it `Planned`; it ships in the next
-     weekly release PR (`release` → `main`), which Keith merges.
+   - **Merged into `main`, not yet on `release`** → leave it `Planned`; it ships in the next
+     weekly promotion PR (`main` → `release`), which Keith merges.
    - **Closed unmerged** → leave `Status` as-is and add one line to the card body noting
      the PR was closed without merging.
    - **Still open** → leave it; it's in flight.
@@ -144,15 +145,14 @@ to promote — never promote a card to `Agent-ready` yourself.
    CHANGELOG — see CLAUDE.md "Keeping the record current"), but a `/next-agent-card` PR is
    a code/product change, so it always gets a CHANGELOG entry.
 
-10. **Open a draft PR — with base `release`.** `git push -u origin claude/<card-slug>`, then
-   create a **draft** PR **against the `release` branch, not `main`** (set `base: "release"`
-   explicitly; the repo default is `main`, which deploys the site — see CLAUDE.md "Vercel
-   usage" → the release-branch rule). A card that changes only files on `SITE_IRRELEVANT`
-   (rare for a card) may target `main`. Mirror any PR template, and `subscribe_pr_activity`.
+10. **Open a draft PR — with base `main`.** `git push -u origin claude/<card-slug>`, then
+   create a **draft** PR against `main` (set `base: "main"` explicitly). `main` is where work
+   lands and `release` is what is live, so a merge into `main` deploys nothing — see CLAUDE.md
+   "Vercel usage". Mirror any PR template, and `subscribe_pr_activity`.
    In the PR body, record that the review gate ran and what it surfaced (or "clean"). Never
    mark ready, never merge — Keith does that. Drive its CI to green per the babysit rules.
-   Merged into `release` means reviewed and queued, not `Built` and not live: the card
-   becomes `Built` once it is on `main`, via the weekly release PR (`release` → `main`),
+   Merged into `main` means reviewed and queued, not `Built` and not live: the card
+   becomes `Built` once it is on `release`, via the weekly promotion PR (`main` → `release`),
    which Keith merges.
 
 11. **Update the card.** Add a note to the card *body* (never overwrite the `Notes`
