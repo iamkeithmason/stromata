@@ -7,6 +7,25 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-11-09 — The ornament tracing scripts are in the repo
+
+The seventeen genre ornaments were made in a cloud scratchpad, so the stroke library and tracing scripts would
+have died with the session. They now live in `scripts/design/ornaments/`:
+
+- **`lib.py`** (the stroke builder: swelling lines, shadow-side weight, chiselled ends, wedge hatches, cream
+  cuts) and **`extra.py`** (lens leaves for the herbal plants).
+- **`genres/`**: one script per genre, copied unchanged from the pass that produced the accepted version.
+- **`build.py`** rebuilds every ornament in a scratch directory and checks its path against
+  `lib/genres/ornaments.ts` byte for byte. All seventeen match. A one-number change to the key's shank made it
+  report the key as different and exit 1; restoring the number made it pass again.
+- **`sources/`**: each source crop downscaled to 1200px (2.3 MB in all; the full scans stay out), and every
+  holder's licence record.
+- **`README.md`**: how to rebuild, change or add one, the source and licence table, and what Keith accepted and
+  turned down, so the next ornament is briefed with the rejections as well as the target.
+
+`lib/genres/ornaments.ts` now points to the folder instead of saying the scripts are not in the repo. Nothing the
+site builds reads the folder, so nothing on the site changes.
+
 ## 2026-11-09 — Genre ornaments on the book covers
 
 Every book cover now shows its genre's woodcut ornament (a fish for a sermon, a quill for a letter, a key for
