@@ -24,7 +24,7 @@ import Link from 'next/link'
 import { createPublicClient } from '@/lib/supabase/public'
 import { traditionColor } from '@/lib/tradition-colors'
 import { SectionHeader } from '@/app/components/SectionHeader'
-import { HERBAL_ORNAMENTS } from './herbal-ornaments'
+import { HERBAL_ORNAMENTS } from '@/lib/genres/ornaments'
 
 export const metadata: Metadata = {
   title: 'Making the library visual (exploration) — The Stromata',

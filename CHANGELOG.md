@@ -7,6 +7,44 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-11-09 — Genre ornaments on the book covers
+
+Every book cover now shows its genre's woodcut ornament (a fish for a sermon, a quill for a letter, a key for
+exegesis) in place of the short hairline between title and author. Keith chose the covers as the first live
+surface on 9 Nov; the seventeen ornaments were traced from pre-1600 woodcuts in PR #202 and lived only on
+`/design/visual` until now. A cover whose genre is unknown keeps the rule.
+
+- **Shared module.** The path data moved from `app/design/visual/herbal-ornaments.ts` to
+  `lib/genres/ornaments.ts`, with each ornament's source and licence. `/design/visual` imports it from there.
+- **Not inlined.** All seventeen paths come to about 85 KB, and a grid repeats them. Covers draw
+  `public/ornaments/<genre>.svg` as a CSS mask instead, so each shape is fetched once and cached; a cover adds
+  about 450 bytes of markup. `npm run ornaments:svg` regenerates the files, and `lib/genres/ornaments.test.ts`
+  fails if they drift from the module or a vocabulary genre lacks an ornament.
+- **New token `--cover-ornament`.** It is `--gold-ink`'s value, but kept out of the reader-dark override:
+  `--gold-ink` flips there, and the cover panel stays cream. Swatch on `/design`.
+- **Sized to the panel's slack, measured.** At the first size tried (16cqi plus 8cqi of margin), 53 of the 106
+  published titles over 40 characters lost their descenders, by up to 8px, at every cover width (84, 148 and
+  200px). The title lines were all still there, but the title box was squeezed. At 14cqi plus 4cqi of margin
+  (18cqi against the rule's 16) none do. Re-measure before making it bigger; the note is in `BookCover.tsx`.
+- **Genre threaded to every cover:** homepage (texts, and collections via their representative text), search,
+  the reader frontispiece, the read-next module (the candidate query now selects `genre:genres(name)`) and
+  reading history. Reading history lives in the browser, so it stores the genre from now on; entries saved
+  before this release show the rule until the text is visited again.
+
+**Slimmer, matching bands; every title whole** (Keith's review, same day). Seen beside the alternatives
+(ornament under the author, or in place of the S), the ornament stays between title and author: that is where
+a title-page vignette sat, and the S stays as the house mark. But the S band weighed as much as the title
+panel, so it is slimmer (S at 7cqi, not 10; padding 4.8cqi, not 8), and the top band now matches its height
+(padding 5.2cqi, not 12), so the two frame the panel evenly. The panel takes the height: titles get five lines
+on every cover (were four, and three on small covers). Measured on all 191 published titles over 30 characters
+at 84, 148, 200 and 224px: nothing clipped and **no title shortened** (phone covers shortened 33 before),
+the longest, at 101 characters, included. Word-boundary shortening stays as a guard above 101 characters.
+
+No analytics: the ornament is decorative and not a link. Public routes unchanged in the build table (`/` and
+the `[slug]` pages ○/●). Author-page genre headings get the ornaments later, with author-page Phase A.
+
+---
+
 ## 2026-11-09 — Site canvas: theme, location and search pages join the board
 
 Nine pages now, up from six. The theme page, a location page (England, new to the screens manifest, so the PDF

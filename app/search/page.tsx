@@ -361,6 +361,7 @@ export default async function SearchPage({ searchParams }: Props) {
                             deathYear={author?.death_year ?? null}
                             accessionNumber={t.accession_number}
                             traditionSlug={author?.tradition?.slug ?? null}
+                            genre={t.genre?.name ?? null}
                             index={i}
                           />
                         </div>

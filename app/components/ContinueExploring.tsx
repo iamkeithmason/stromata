@@ -38,6 +38,7 @@ export function ContinueExploring({ picks }: { picks: ReadNextPick[] }) {
             deathYear={lead.deathYear}
             accessionNumber={lead.accessionNumber}
             traditionSlug={lead.traditionSlug}
+            genre={lead.genreName}
             index={0}
           />
         </div>

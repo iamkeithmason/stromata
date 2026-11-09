@@ -93,6 +93,7 @@
   --on-dark-gold-soft: rgba(224, 200, 134, 0.55);  /* faint reversed gold (underlines) */
 
   --cover-mid:  #F5F0E6;   /* book-cover inner panel — a stable cream, NOT theme-flipped */
+  --cover-ornament: #8A5F1E; /* genre ornament on the cover panel. --gold-ink's value, but NOT theme-flipped: covers stay cream in the reader dark theme */
   --cover-stack-back: rgba(10, 8, 5, 0.50);   /* collection stack: rearmost spine behind a cover */
   --cover-stack-mid:  rgba(10, 8, 5, 0.28);   /* collection stack: middle spine */
 
@@ -564,8 +565,9 @@
   }
 }
 
-/* A small cover (the two-up phone grid) has room for three title lines, not four:
-   the fourth was cut through the middle. The inline clamp is 4, hence !important.
+/* A small cover (the two-up phone grid) holds five title lines like a full one since
+   both bands were slimmed (re-measured 9 Nov 2026); the clamp is restated here,
+   hence !important.
    The inline bottom padding becomes margin so the clip edge sits at the end of the
    third line and no sliver of the hidden fourth shows through. */
 /* Title size, by length (BookCover's lengthClass). A long title steps down a
@@ -576,7 +578,7 @@
 
 @container (max-width: 200px) {
   .book-cover-title {
-    -webkit-line-clamp: 3 !important;
+    -webkit-line-clamp: 5 !important;
     padding-bottom: 0 !important;
     margin-bottom: 0.2em !important;
   }

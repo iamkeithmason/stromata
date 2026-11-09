@@ -25,6 +25,7 @@ export type ReadNextCandidate = {
   accessionNumber?: number | null
   deathYear?: number | null
   traditionSlug?: string | null
+  genreName?: string | null
 }
 
 export type ReadNextPick = {
@@ -38,6 +39,7 @@ export type ReadNextPick = {
   accessionNumber: number | null
   deathYear: number | null
   traditionSlug: string | null
+  genreName: string | null
 }
 
 export type ReadNextInput = {
@@ -97,6 +99,7 @@ export function pickReadNext(input: ReadNextInput): ReadNextPick[] {
       accessionNumber: c.accessionNumber ?? null,
       deathYear: c.deathYear ?? null,
       traditionSlug: c.traditionSlug ?? null,
+      genreName: c.genreName ?? null,
     })
   }
 

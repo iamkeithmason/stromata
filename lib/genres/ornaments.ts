@@ -1,17 +1,23 @@
 /**
  * Genre ornaments traced from pre-1600 woodcuts and prints (Nov 2026).
  *
- * All seventeen genres are done; the round-3 sketches in page.tsx remain only
- * as a fallback for a genre added later. Each is cut, not drawn: lines swell and thin, end blunt or
- * chiselled, and carry a few hatch cuts on the shaded side, after Keith turned
- * down solid silhouettes (lumpy) and even-weight line art (read as modern UI
- * icons). Most come from one book, Ortus sanitatis (Strasbourg: Prüss, 1499),
- * Internet Archive `ortussanitatis00prss`; objects the herbal lacks come from
- * Met Open Access prints. `source` records each, with its licence as checked at
- * the holder.
+ * One per genre, shown on book covers in place of the hairline rule between
+ * title and author (Keith, 9 Nov 2026), and first explored on /design/visual
+ * (study II), where the round-3 sketches remain as a fallback for a genre added
+ * later. Each is cut, not drawn: lines swell and thin, end blunt or chiselled,
+ * and carry a few hatch cuts on the shaded side, after Keith turned down solid
+ * silhouettes (lumpy) and even-weight line art (read as modern UI icons). Most
+ * come from one book, Ortus sanitatis (Strasbourg: Prüss, 1499), Internet Archive
+ * `ortussanitatis00prss`; objects the herbal lacks come from Met Open Access and
+ * Rijksmuseum prints. `source` records each, with its licence as checked at the
+ * holder.
  *
- * One evenodd path each on a 0 0 100 100 box, filled with the current colour.
- * The generator scripts are not in the repo; the path data is the source of truth.
+ * One evenodd path each on a 0 0 100 100 box. This module is the source of
+ * truth. Covers do not inline the paths (about 85 KB for all seventeen, repeated
+ * on every cover of a grid): they draw `public/ornaments/<slug>.svg` as a CSS
+ * mask, so the browser fetches each shape once. Regenerate those files with
+ * `npm run ornaments:svg` after changing a path; ornaments.test.ts fails while
+ * the two disagree. The tracing scripts are not in the repo.
  */
 
 export type HerbalOrnament = { name: string; source: string; d: string }
@@ -102,4 +108,31 @@ export const HERBAL_ORNAMENTS: Record<string, HerbalOrnament> = {
     source: 'Martin Schongauer, Saint Agnes, engraving, c. 1470–91. The Met 367023, public domain.',
     d: 'M21.17 45.37L20.98 47.57L21 48.89L21.12 49.90L21.26 50.59L21.58 51.62L21.87 52.29L22.39 53.21L22.77 53.78L23.21 54.30L24.87 55.84L28.28 58.59L24.79 65.61L23.82 65.16L23.76 65.46L23.26 66.17L23.17 66.74L23.38 67.38L23.84 67.65L21.74 72.58L20.02 77.12L18.75 81.18L17.15 87.07L16.85 88.48L19.48 89.39L19.37 89.77L16.71 89.13L16.46 90.32L16.38 94.89L18.50 93.81L19.91 91.02L20.89 86.40L21.40 84.43L22.10 82.18L24.28 75.77L25.28 73L26.39 70.27L27.90 66.75L29.02 64.44L30.46 64.83L31.12 64.88L32.17 64.86L33.27 64.54L33.99 64.19L34.65 63.77L35.21 63.29L35.93 62.55L36.73 61.55L38.19 58.96L40.24 59.11L41.61 58.98L42.64 58.77L43.66 58.46L44.62 58.04L45.51 57.55L46.33 57L47.34 56.21L48.75 54.96L53.38 49.91L53.30 49.81L55.18 48.63L56.91 47.22L58.49 45.71L62.66 41.30L64.06 41.07L65.69 40.65L66.93 40.22L68.38 39.53L72.37 37.12L78.05 32.94L69.82 36.77L67.04 37.75L65.65 38.15L65.57 38.02L68.64 34.79L69.84 34.43L71.05 33.93L72.19 33.33L73.81 32.36L75.37 31.36L80.69 27.22L74.72 30.18L72.55 31.16L71.16 31.66L70.05 31.99L68.94 32.24L67.83 32.40L67.01 32.45L65.90 32.42L63.69 32.06L56.68 30.21L54.91 32.22L59.80 33.98L61 34.35L62.55 34.73L63.83 34.96L65.16 35.06L66.51 35.07L68.16 34.95L68.22 35.10L65.50 37.03L63.37 38.46L62.58 38.45L61.48 38.33L57.02 37.49L55.60 37.13L51.86 36.01L51.61 35.95L49.86 37.95L52.16 38.92L58.64 41.25L57.33 41.74L56.26 42.05L55.17 42.23L54.07 42.30L50.38 42.13L46.55 41.70L44.62 43.90L48.83 44.80L51.66 45.21L52.98 45.25L54.64 45.08L55.99 44.80L57.38 44.39L57.56 44.78L55.40 46.09L53.58 47.04L51.99 47.66L50.37 48.02L48.99 48.11L46.74 48.01L41.44 47.50L39.23 50.01L39.54 50.10L43.41 50.91L45.29 51.19L46.91 51.32L47.92 51.31L49.61 51.08L50.96 50.75L52.33 50.29L52.52 50.66L49.93 52.52L48.67 53.34L47.15 54.28L45.87 54.98L44.82 55.45L43.76 55.82L42.44 56.08L40.82 56.12L38.59 55.95L34.49 55.39L26.98 63.92L26.45 63.45L36.05 52.74L36.16 52.56L38.14 49.69L38.65 49.84L40.80 47.43L39.83 47.34L42.77 43.44L44.09 43.77L45.99 41.64L44.39 41.46L48.09 37.20L49.46 37.78L51.18 35.86L49.69 35.52L51.46 33.83L53.74 31.80L54.55 32.09L56.32 30.11L55.81 29.98L58.35 27.85L62.63 23.07L62.82 23.24L59.60 26.89L62.04 25.11L64.20 26.47L65.57 27.19L67.06 27.80L68.36 28.16L70.12 28.25L71.90 28.04L73.54 27.58L75.32 26.80L76.15 26.36L80.15 23.32L77.60 24.36L74.47 25.45L73.06 25.82L71.66 25.99L70.85 25.93L70.06 25.76L65.77 24.25L64.01 23.80L66.67 22.19L68.99 20.94L71.25 22.88L72.11 23.41L72.75 23.73L73.49 23.91L74.69 23.97L75.49 23.87L76.55 23.54L77.49 23.10L78.33 22.60L82.47 19.16L81.24 19.26L80.34 19.15L79.81 19L79.40 18.74L79.03 18.20L78.07 17.56L83.05 15.91L77.14 17.20L76.49 16.98L77 16.44L77.11 15.71L77.29 15.28L77.79 14.55L79.08 12.24L78.52 12.47L76.90 12.59L75.84 12.77L75.08 13.03L74.31 13.50L73.96 13.81L73.41 14.49L73.25 14.87L73.10 15.60L72.86 18.26L70.78 18.96L68.04 20.12L68.66 18.66L69.44 16.44L69.67 15.05L70.07 13.91L70.47 13.17L71.15 12.19L73.17 8.88L72.23 9.60L69.16 11.09L67.98 11.73L67.09 12.34L66.25 13.13L65.55 14.10L65.05 15.13L64.88 15.83L64.75 16.85L64.71 18.14L64.96 21.13L65.64 21.28L62.37 23.09L59.14 25.10L59.52 21.08L59.80 19.64L60.28 17.80L60.62 15.03L60.97 13.56L61.63 12.03L62.70 10.28L65.60 4.78L64.82 5.68L60.85 8.98L58.73 10.91L57.35 12.41L56.72 13.27L56.34 13.91L55.88 14.91L55.55 15.94L55.35 16.98L55.32 17.67L55.47 19.33L56.07 22.73L56.60 26.82L53.88 28.89L50.93 31.44L50.88 29.73L50.03 22.98L49.87 20.39L49.94 18.71L50.12 17.47L50.50 15.90L51.04 14.28L52.02 11.79L53.84 5.47L52.95 7.04L49.47 11.30L47.82 13.61L47.14 14.72L46.52 15.90L45.99 17.17L45.68 18.18L45.41 19.59L45.30 20.98L45.36 22.69L45.59 24L46.06 25.88L46.63 27.67L48.89 33.34L45.29 36.78L44.81 35.02L42.78 30.61L42.03 28.71L40.67 24.77L40.41 23.74L40.30 22.96L40.29 21.92L40.44 20.61L41.42 15.63L42.07 12.70L42.64 6.16L42.30 7.31L42.04 7.86L38.60 14.72L38.30 14.64L38.07 15.51L37.83 16.06L35.32 21.21L34.31 23.81L33.87 25.33L33.59 26.60L33.34 28.58L33.33 30.29L33.52 31.99L33.88 33.61L34.60 35.42L35.57 37.39L37.57 41.09L39.07 43.45L36.70 46.30L34.21 49.56L33.68 48.24L32.34 45.89L31.70 44.61L30.92 42.58L30.10 40.79L29.73 39.64L29.56 38.63L29.49 37.55L29.55 34.36L29.40 28.20L29.20 29.37L28.93 30.23L27.19 35.09L26.73 36.60L26.30 38.86L26.17 40.94L26.35 42.73L26.82 44.41L27.12 45.02L27.82 46.15L30.35 49.67L30.71 50.15L32.46 51.99L30.63 54.64L29.32 56.72L26.34 53.17L25.14 51.37L24.67 50.51L24.31 49.63L24.02 48.67L23.42 45.66L21.77 40.58L21.82 41.47ZM72.52 19.42L74.86 18.63L75.06 18.72L75.27 18.49L75.66 18.36L76.50 19.64L76.93 20.17L77.53 20.67L78.47 21.02L78.45 21.21L76.44 21.45L75.37 21.39L74.90 21.26L73.81 20.74L72.56 20.26L71.33 19.90L71.33 19.85ZM37.84 28.75L38.87 31.07L41.57 36.51L43.15 38.96L41.23 41.02L40.74 39.54L39.45 36.80L38.53 34.66L37.17 30.82L36.92 29.83L36.77 28.83L36.76 26.63L37.13 26.58ZM34.04 58.20L34.62 58.33L38.04 58.95L36.23 60.54L35.25 61.20L34.25 61.73L33.50 61.97L33 62.03L30.45 61.91L33.03 57.85Z',
   },
+}
+
+/** File-name slug for a genre's ornament: "Sermon" → "sermon". */
+export function ornamentSlug(genre: string): string {
+  return genre.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
+}
+
+/** The genre's ornament, or null when the genre is unknown or has none. */
+export function ornamentFor(genre: string | null | undefined): HerbalOrnament | null {
+  if (!genre) return null
+  return HERBAL_ORNAMENTS[genre] ?? null
+}
+
+/** Public URL of the genre's ornament file, or null when there is none. */
+export function ornamentUrl(genre: string | null | undefined): string | null {
+  return ornamentFor(genre) ? `/ornaments/${ornamentSlug(genre!)}.svg` : null
+}
+
+/**
+ * The standalone SVG file for one ornament. Black fill: covers use it as an
+ * alpha mask and take the colour from the --cover-ornament token.
+ */
+export function ornamentSvg(o: HerbalOrnament): string {
+  return (
+    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">` +
+    `<path fill-rule="evenodd" d="${o.d}"/></svg>\n`
+  )
 }
