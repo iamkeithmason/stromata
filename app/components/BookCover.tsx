@@ -2,18 +2,19 @@ import { traditionColor } from '@/lib/tradition-colors'
 import { ornamentUrl } from '@/lib/genres/ornaments'
 
 /**
- * Long titles on small covers. A cover's title panel holds five lines (four on a
- * small cover, see the @container rule in globals.css), and a clamp cuts wherever
- * the last line ends, mid-word ("…Power and Efficacy o.."). So a long title steps
- * down a size, and a small cover gets a copy shortened at a word boundary.
- * Re-measured 9 Nov 2026, after the bottom band (the S) was made smaller to give
- * the panel the height: on all 191 published titles over 30 characters, at cover
- * widths 84, 148, 200 and 224px, every title fits whole except three of 96+
- * characters on small covers. Shortened to 80 characters, every one fits, and a
- * phone cover shortens 8 titles where it used to shorten 33. (The 4 Nov
- * calibration, three lines and 56 characters, is superseded.)
+ * Long titles on covers. The title panel holds five lines on every cover (the
+ * @container rule in globals.css trims the clip edge on small ones), and a clamp
+ * cuts wherever the last line ends, mid-word ("…Power and Efficacy o.."). So a long
+ * title steps down a size, and a small cover gets a copy shortened at a word
+ * boundary past SMALL_COVER_CHARS.
+ * Re-measured 9 Nov 2026, after both bands were slimmed to the same height (Keith):
+ * on all 191 published titles over 30 characters, at cover widths 84, 148, 200 and
+ * 224px, every title fits whole, the longest (101 characters) included, so nothing
+ * is shortened today. 101 is the longest length measured to fit; it stays as a
+ * guard for a longer title added later. (Supersedes the 4 Nov calibration: three
+ * lines and 56 characters, which shortened 33 titles on phone covers.)
  */
-const SMALL_COVER_CHARS = 80
+const SMALL_COVER_CHARS = 101
 
 function lengthClass(title: string): 'long' | 'medium' | 'short' {
   if (title.length > 60) return 'long'     // smaller size on every cover
@@ -84,13 +85,14 @@ export function BookCover({
         width: '100%',
       }}
     >
-      {/* Top band: Stromata left + № right */}
+      {/* Top band: Stromata left + № right. Same height as the bottom band
+          (9 Nov 2026, Keith), so the two frame the title panel evenly. */}
       <div
         style={{
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
-          padding: 'min(1.5rem, 12cqi) min(1rem, 8cqi)',
+          padding: 'min(0.65rem, 5.2cqi) min(1rem, 8cqi)',
           borderBottom: '1px solid var(--on-dark-rule)',
           flexShrink: 0,
         }}
