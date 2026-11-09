@@ -13,9 +13,17 @@
  *   "links": [{ "to": "<page name>", "event": "text-open", "from": ["surface", …] }]
  *
  * A link says: clicks of `event` carrying any of these `from` values travel from
- * this page to `to`. Each (event, from) pair may appear in one link only, or its
- * clicks would be counted on two edges.
+ * this page to `to`. Each (event, property, value) may appear in one link only,
+ * or its clicks would be counted on two edges.
+ *
+ * `property` (default "from") names the event property the values are read
+ * from. It exists for legacy events that record the same idea under another
+ * name (Stromata's theme-click uses `source`); only "from" values are checked
+ * against the vocabulary, because the legacy values were never part of it.
  */
+
+export const DEFAULT_PROPERTY = 'from'
+const propOf = link => link.property || DEFAULT_PROPERTY
 
 export function slugify(s) {
   return String(s).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
@@ -64,9 +72,10 @@ export function validateCanvas(pages, isSurface = () => true) {
         errors.push(`${where}: needs at least one \`from\` value.`)
         continue
       }
+      const prop = propOf(link)
       for (const f of link.from) {
-        if (!isSurface(f)) errors.push(`${where}: "${f}" is not a recorded \`from\` value.`)
-        const pair = `${link.event} · ${f}`
+        if (prop === DEFAULT_PROPERTY && !isSurface(f)) errors.push(`${where}: "${f}" is not a recorded \`from\` value.`)
+        const pair = prop === DEFAULT_PROPERTY ? `${link.event} · ${f}` : `${link.event} · ${prop}=${f}`
         if (seenPairs.has(pair)) errors.push(`${where}: ${pair} is already counted by ${seenPairs.get(pair)}.`)
         else seenPairs.set(pair, where)
       }
@@ -75,9 +84,21 @@ export function validateCanvas(pages, isSurface = () => true) {
   return errors
 }
 
+/** The (event, property) pairs the links read, so the caller knows what to fetch. */
+export function propertiesToRead(pages) {
+  const seen = new Map()
+  for (const p of canvasPages(pages)) {
+    for (const link of p.links || []) {
+      const key = `${link.event}\u0000${propOf(link)}`
+      if (!seen.has(key)) seen.set(key, { event: link.event, property: propOf(link) })
+    }
+  }
+  return [...seen.values()]
+}
+
 /**
  * Build the graph. `clicks` is null when no counts could be read, or
- *   { range: '30d', events: { [event]: { total: n, byFrom: { [from]: n } } } }
+ *   { range: '30d', events: { [event]: { total: n, by: { [property]: { [value]: n } } } } }
  * A link whose event is missing from `clicks.events` gets count null ("no
  * data"), never 0: a silent zero would read as "nobody clicked".
  */
@@ -98,17 +119,20 @@ export function buildGraph(pages, clicks, isSurface = () => true) {
   const edges = []
   for (const p of onCanvas) {
     for (const link of p.links || []) {
-      const data = clicks?.events?.[link.event]
+      const prop = propOf(link)
+      const values = clicks?.events?.[link.event]?.by?.[prop]
       const parts = link.from.map(from => {
-        linked.add(`${link.event}\u0000${from}`)
-        return { from, count: data ? (data.byFrom[from] ?? 0) : null }
+        linked.add(`${link.event}\u0000${prop}\u0000${from}`)
+        return { from, count: values ? (values[from] ?? 0) : null }
       })
+      const data = values
       const count = data ? parts.reduce((s, x) => s + x.count, 0) : null
       edges.push({
         id: `${idOf[p.name]}--${link.event}--${idOf[link.to]}`,
         source: idOf[p.name],
         target: idOf[link.to],
         event: link.event,
+        property: prop,
         parts,
         count,
       })
@@ -120,17 +144,19 @@ export function buildGraph(pages, clicks, isSurface = () => true) {
   const offCanvas = []
   const unknown = []
   const coverage = []
-  const events = [...new Set(edges.map(e => e.event))]
-  for (const event of events) {
+  const pairs = [...new Map(edges.map(e => [`${e.event}\u0000${e.property}`, e])).values()]
+  for (const { event, property } of pairs) {
     const data = clicks?.events?.[event]
-    if (!data) continue
+    const values = data?.by?.[property]
+    if (!values) continue
     let attributed = 0
-    for (const [from, count] of Object.entries(data.byFrom)) {
+    for (const [from, count] of Object.entries(values)) {
       attributed += count
-      if (linked.has(`${event}\u0000${from}`)) continue
-      ;(isSurface(from) ? offCanvas : unknown).push({ event, from, count })
+      if (linked.has(`${event}\u0000${property}\u0000${from}`)) continue
+      const row = property === DEFAULT_PROPERTY ? { event, from, count } : { event, from: `${property}=${from}`, count }
+      ;(property !== DEFAULT_PROPERTY || isSurface(from) ? offCanvas : unknown).push(row)
     }
-    coverage.push({ event, attributed, total: data.total ?? null })
+    coverage.push({ event: property === DEFAULT_PROPERTY ? event : `${event} (${property})`, attributed, total: data.total ?? null })
   }
   const byCount = (a, b) => b.count - a.count || a.from.localeCompare(b.from)
   offCanvas.sort(byCount)

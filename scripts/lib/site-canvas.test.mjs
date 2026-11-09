@@ -1,6 +1,6 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { validateCanvas, buildGraph } from './site-canvas.mjs'
+import { validateCanvas, buildGraph, propertiesToRead } from './site-canvas.mjs'
 
 const known = new Set(['author-page', 'read-next', 'featured-band', 'theme-page'])
 const isSurface = v => known.has(v)
@@ -48,8 +48,8 @@ test('edges carry per-surface counts, and uncovered clicks are reported, not los
   const clicks = {
     range: '30d',
     events: {
-      'text-open': { total: 120, byFrom: { 'author-page': 40, 'read-next': 3, 'theme-page': 4, 'mystery-surface': 2 } },
-      'author-open': { total: 12, byFrom: { 'featured-band': 12 } },
+      'text-open': { total: 120, by: { from: { 'author-page': 40, 'read-next': 3, 'theme-page': 4, 'mystery-surface': 2 } } },
+      'author-open': { total: 12, by: { from: { 'featured-band': 12 } } },
     },
   }
   const g = buildGraph(pages, clicks, isSurface)
@@ -69,7 +69,7 @@ test('edges carry per-surface counts, and uncovered clicks are reported, not los
 })
 
 test('a linked surface with no clicks counts 0; a missing event counts null, never 0', () => {
-  const g = buildGraph(pages, { range: '7d', events: { 'text-open': { total: 1, byFrom: { 'author-page': 1 } } } }, isSurface)
+  const g = buildGraph(pages, { range: '7d', events: { 'text-open': { total: 1, by: { from: { 'author-page': 1 } } } } }, isSurface)
   const byId = Object.fromEntries(g.edges.map(e => [e.id, e]))
   assert.equal(byId['reader--text-open--reader'].count, 0)
   assert.equal(byId['home--author-open--author-page'].count, null)
@@ -81,4 +81,26 @@ test('with no click data at all, every edge is null and nothing is reported miss
   assert.ok(g.edges.every(e => e.count === null && e.parts.every(p => p.count === null)))
   assert.deepEqual(g.offCanvas, [])
   assert.deepEqual(g.coverage, [])
+})
+
+test('a legacy property is read under its own name and skips the vocabulary check', () => {
+  const legacy = [
+    { name: 'Reader', canvas: { col: 1, row: 0 }, links: [{ to: 'Theme', event: 'theme-click', property: 'source', from: ['text-page'] }] },
+    { name: 'Theme', canvas: { col: 0, row: 0 }, links: [{ to: 'Reader', event: 'text-open', from: ['theme-page'] }] },
+  ]
+  assert.deepEqual(validateCanvas(legacy, isSurface), [], '"text-page" is not in this test vocabulary, and need not be')
+  assert.deepEqual(propertiesToRead(legacy), [
+    { event: 'theme-click', property: 'source' },
+    { event: 'text-open', property: 'from' },
+  ])
+  const g = buildGraph(legacy, { range: '7d', events: {
+    'theme-click': { total: 9, by: { source: { 'text-page': 6, homepage: 3 } } },
+    'text-open': { total: 2, by: { from: { 'theme-page': 2 } } },
+  } }, isSurface)
+  const byId = Object.fromEntries(g.edges.map(e => [e.id, e]))
+  assert.equal(byId['reader--theme-click--theme'].count, 6)
+  assert.equal(byId['reader--theme-click--theme'].property, 'source')
+  assert.deepEqual(g.offCanvas, [{ event: 'theme-click', from: 'source=homepage', count: 3 }])
+  assert.deepEqual(g.unknown, [])
+  assert.deepEqual(g.coverage.find(c => c.event === 'theme-click (source)'), { event: 'theme-click (source)', attributed: 9, total: 9 })
 })

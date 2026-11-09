@@ -18,9 +18,9 @@
  *   --fragment        leave out the <html>/<head> skeleton, for publishing as a
  *                     claude.ai artifact (the Artifact tool adds its own)
  *
- * METERS. Umami only: one events-list call plus one event-data call per event the
- * links use (three today). It reads no Supabase and renders nothing; the images
- * come from the last `npm run screens --png`, so a canvas costs nothing beyond
+ * METERS. Umami only: one events-list call plus one event-data call per (event,
+ * property) pair the links read (six today). It reads no Supabase and renders
+ * nothing; the images come from the last `npm run screens --png`, so a canvas costs nothing beyond
  * the release-day render it reuses. Needs UMAMI_SHARE_URL (as the digest does);
  * without it the canvas still draws, with every line marked "no data".
  *
@@ -31,7 +31,7 @@ import { existsSync, mkdirSync, writeFileSync, readFileSync } from 'node:fs'
 import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import sharp from 'sharp'
-import { validateCanvas, buildGraph, canvasPages, slugify } from '../lib/site-canvas.mjs'
+import { validateCanvas, buildGraph, canvasPages, slugify, propertiesToRead } from '../lib/site-canvas.mjs'
 import { renderCanvasHtml } from '../lib/site-canvas-html.mjs'
 import { isFromSurface } from '../lib/from-surfaces.mjs'
 import { createUmamiClient, rangeToWindow } from '../lib/umami.mjs'
@@ -70,20 +70,22 @@ const PALETTE = {
 // Facts about the data a reader of the canvas needs, and the code cannot infer.
 const NOTES = [
   'Counts are clicks that carried a `from` value, read from Umami. A page type stands for every page of that type: the reader node is any text, the author node any author.',
+  'theme-click predates the `from` rule and records its surface as `source` (homepage, featured-lead, text-page), so the lines into the theme page read that property instead.',
   'Until the first release after 2 Nov 2026, every text page also sent text-open on load, with no `from`. That is why text-open shows far more events than the lines account for in any window that reaches back before it.',
 ]
 
-async function readClicks(events) {
+async function readClicks(pairs) {
   const u = await createUmamiClient()
   const w = rangeToWindow(RANGE)
   const totals = await u.get('websites/{id}/metrics', { ...w, type: 'event' })
   const totalOf = Object.fromEntries((Array.isArray(totals) ? totals : []).map(r => [r.x, r.y]))
   const out = {}
-  for (const event of events) {
-    const rows = await u.get('websites/{id}/event-data/values', { ...w, eventName: event, propertyName: 'from' })
-    const byFrom = {}
-    for (const r of Array.isArray(rows) ? rows : []) byFrom[r.value] = (byFrom[r.value] ?? 0) + Number(r.total ?? r.count ?? 0)
-    out[event] = { total: totalOf[event] ?? 0, byFrom }
+  for (const { event, property } of pairs) {
+    const rows = await u.get('websites/{id}/event-data/values', { ...w, eventName: event, propertyName: property })
+    const values = {}
+    for (const r of Array.isArray(rows) ? rows : []) values[r.value] = (values[r.value] ?? 0) + Number(r.total ?? r.count ?? 0)
+    out[event] ??= { total: totalOf[event] ?? 0, by: {} }
+    out[event].by[property] = values
   }
   return { range: RANGE, events: out }
 }
@@ -110,13 +112,12 @@ async function main() {
     process.exit(1)
   }
   const pages = canvasPages(manifest.pages)
-  const events = [...new Set(pages.flatMap(p => (p.links || []).map(l => l.event)))]
 
   let clicks = null
   let clickError = flags['no-clicks'] ? 'not requested' : null
   if (!flags['no-clicks']) {
     try {
-      clicks = await readClicks(events)
+      clicks = await readClicks(propertiesToRead(manifest.pages))
     } catch (err) {
       clickError = 'Umami could not be read'
       console.warn(`Umami unavailable, drawing routes only: ${String(err.message).split('\n')[0]}`)
