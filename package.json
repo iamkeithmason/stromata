@@ -30,7 +30,8 @@
     "test": "tsx --test \"lib/**/*.test.ts\" \"scripts/**/*.test.ts\" \"scripts/**/*.test.mjs\"",
     "check:tests-in-ci": "node scripts/check-tests-in-ci.mjs",
     "check:prospect-urls": "node scripts/check-prospect-urls.mjs",
-    "screens": "node scripts/screens/render.mjs"
+    "screens": "node scripts/screens/render.mjs",
+    "screens:canvas": "node scripts/screens/canvas.mjs"
   },
   "dependencies": {
     "@react-pdf/renderer": "^4.9.0",

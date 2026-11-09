@@ -7,6 +7,29 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-11-09 — Site canvas trial: key pages on one board, linked by reader clicks
+
+A trial of the backlog card "Site canvas: zoomable map of key pages, linked by real reader clicks". `npm run
+screens:canvas` lays the screens shots of six pages (home, library and authors indexes, an author, a collection,
+the reader) on a pan-and-zoom board and draws a line for each route between them. Each line is weighted by the
+Umami clicks whose `from` value says they took that route. The pages and routes live in
+`scripts/screens/manifest.json` (`canvas`, `links`). The output is one self-contained HTML file (gitignored) that
+also publishes as a claude.ai artifact (`--fragment`). It reads Umami only, and reuses the PNGs from
+`npm run screens -- --png`, so it adds no Supabase reads.
+
+- **The `from` vocabulary is now code as well as prose:** `scripts/lib/from-surfaces.mjs`. Its test fails if the
+  list and the CLAUDE.md row drift apart. The canvas refuses a link whose `from` value is not on it, and refuses
+  a click counted on two lines.
+- **Split for reuse:** `scripts/lib/site-canvas.mjs` (graph and checks, tested) and `site-canvas-html.mjs`
+  (drawing) know nothing about Stromata; `scripts/screens/canvas.mjs` is the adapter (palette, Umami, notes).
+- **What the first run showed (90 days to 9 Nov):** author pages and collection pages send the most readers
+  into texts (40 and 26 clicks); the authors index is the main way into author pages (18). Readers move from a
+  text to its author (16) far more than to a next text through Read next (3). The library index sent 3 clicks to
+  texts. Only 92 of 882 `text-open` events carry a `from`, which is the on-load firing removed after 2 Nov, not
+  missing attribution. In the 30-day window, the homepage sent no `text-open` clicks at all.
+
+---
+
 ## 2026-11-09 — Switch-over finished: `release` is production
 
 The last old-style release (#206, `release` → `main`) merged and built on 9 Nov. `release` was recreated from `main`,
