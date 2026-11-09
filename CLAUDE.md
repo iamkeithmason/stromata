@@ -480,6 +480,11 @@ preview" unless one was requested.
 - **When he says yes,** push the same commit to a branch named `preview/<short-name>`:
   `git push origin HEAD:refs/heads/preview/<short-name>`. That push builds a preview; each further
   push to that branch builds again, and every one spends a cap slot, so push to it deliberately.
+  **Push the preview branch before the working branch, or it may not build.** On 9 Nov 2026 a commit
+  pushed to `claude/cover-ornaments` and then, seconds later, to `preview/cover-ornaments` got no
+  deployment at all, apparently because Vercel had already seen (and skipped) that SHA on the
+  non-deploying branch. An empty commit on the preview branch alone (`git commit --allow-empty`) built
+  at once.
   Delete the branch when he is done (`git push origin --delete preview/<short-name>`). The working
   branch and its PR are unchanged, and there is no commit-message tag any more.
 - **The ignore step is the second gate.** `scripts/vercel-ignore-build.sh` skips any non-production
