@@ -2,16 +2,18 @@ import { traditionColor } from '@/lib/tradition-colors'
 import { ornamentUrl } from '@/lib/genres/ornaments'
 
 /**
- * Long titles on small covers. A cover's title panel holds four lines (three on a
+ * Long titles on small covers. A cover's title panel holds five lines (four on a
  * small cover, see the @container rule in globals.css), and a clamp cuts wherever
  * the last line ends, mid-word ("…Power and Efficacy o.."). So a long title steps
  * down a size, and a small cover gets a copy shortened at a word boundary.
- * Measured 4 Nov 2026 on the 37 published titles over 55 characters (longest 101):
- * at the smaller size every title fits a full-size cover whole, and on a 360px
- * phone's two-up grid (148px covers) every title shortened to 56 fits three lines;
- * the first to fail was at 68.
+ * Re-measured 9 Nov 2026, after the bottom band (the S) was made smaller to give
+ * the panel the height: on all 191 published titles over 30 characters, at cover
+ * widths 84, 148, 200 and 224px, every title fits whole except three of 96+
+ * characters on small covers. Shortened to 80 characters, every one fits, and a
+ * phone cover shortens 8 titles where it used to shorten 33. (The 4 Nov
+ * calibration, three lines and 56 characters, is superseded.)
  */
-const SMALL_COVER_CHARS = 56
+const SMALL_COVER_CHARS = 80
 
 function lengthClass(title: string): 'long' | 'medium' | 'short' {
   if (title.length > 60) return 'long'     // smaller size on every cover
@@ -148,7 +150,7 @@ export function BookCover({
             color: 'var(--ink)',
             margin: 0,
             display: '-webkit-box',
-            WebkitLineClamp: 4,
+            WebkitLineClamp: 5,
             WebkitBoxOrient: 'vertical',
             overflow: 'hidden',
             paddingBottom: '0.2em',
@@ -236,13 +238,14 @@ export function BookCover({
         )}
       </div>
 
-      {/* Bottom band: reading time (optional) + S mark */}
+      {/* Bottom band: reading time (optional) + S mark. Kept slim (9 Nov 2026,
+          Keith): at full height it weighed as much as the title panel. */}
       <div
         style={{
           textAlign: 'center',
           padding: readingMinutes
-            ? 'min(0.6rem, 4.8cqi) min(1rem, 8cqi)'
-            : 'min(1rem, 8cqi) min(1rem, 8cqi)',
+            ? 'min(0.4rem, 3.2cqi) min(1rem, 8cqi)'
+            : 'min(0.6rem, 4.8cqi) min(1rem, 8cqi)',
           borderTop: '1px solid var(--on-dark-rule)',
           display: 'flex',
           flexDirection: 'column',
@@ -255,7 +258,7 @@ export function BookCover({
           className="book-cover-s"
           style={{
             fontFamily: 'var(--serif-display)',
-            fontSize: 'min(1.25rem, 10cqi)',
+            fontSize: 'min(0.875rem, 7cqi)',
             color: 'var(--on-dark-soft)',
             lineHeight: 1,
           }}

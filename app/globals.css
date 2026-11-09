@@ -565,8 +565,9 @@
   }
 }
 
-/* A small cover (the two-up phone grid) has room for three title lines, not four:
-   the fourth was cut through the middle. The inline clamp is 4, hence !important.
+/* A small cover (the two-up phone grid) has room for four title lines, not five
+   (re-measured 9 Nov 2026, after the bottom band was slimmed). The inline clamp is 5,
+   hence !important.
    The inline bottom padding becomes margin so the clip edge sits at the end of the
    third line and no sliver of the hidden fourth shows through. */
 /* Title size, by length (BookCover's lengthClass). A long title steps down a
@@ -577,7 +578,7 @@
 
 @container (max-width: 200px) {
   .book-cover-title {
-    -webkit-line-clamp: 3 !important;
+    -webkit-line-clamp: 4 !important;
     padding-bottom: 0 !important;
     margin-bottom: 0.2em !important;
   }

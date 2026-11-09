@@ -31,6 +31,15 @@ surface on 9 Nov; the seventeen ornaments were traced from pre-1600 woodcuts in 
   reading history. Reading history lives in the browser, so it stores the genre from now on; entries saved
   before this release show the rule until the text is visited again.
 
+**Slimmer bottom band, one more title line** (Keith's review, same day). Seen beside the alternatives (ornament
+under the author, or in place of the S), the ornament stays between title and author: that is where a
+title-page vignette sat, and the S stays as the house mark. But the S band weighed as much as the title
+panel, so it is slimmer (S at 7cqi, not 10; padding 4.8cqi, not 8) and the panel takes the height. That buys
+one title line: five on a full cover, four on a small one, and small covers shorten titles at 80 characters
+instead of 56. Measured on all 191 published titles over 30 characters at 84, 148, 200 and 224px: nothing
+clipped, and a phone cover now shortens 8 titles instead of 33. *Disputation of Doctor Martin Luther on the
+Power and Efficacy of Indulgences* now shows whole.
+
 No analytics: the ornament is decorative and not a link. Public routes unchanged in the build table (`/` and
 the `[slug]` pages ○/●). Author-page genre headings get the ornaments later, with author-page Phase A.
 
