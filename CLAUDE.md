@@ -413,10 +413,13 @@ The cover says when it was rendered and from which code. **Any session doing UI 
 changes start from how the site actually looks rather than from the code alone. A copy sits in the claude.ai
 project "3 - Stromata", so ordinary chats can review the interface too (the practice Paideia uses).
 
-- **Regenerate it after each release:** `npm run screens`. The pages come from `scripts/screens/manifest.json`,
+- **Regenerate it after each release:** `npm run screens -- --png`. The pages come from `scripts/screens/manifest.json`,
   where you can add a page or an extra shot further down one. The PDF commit is docs-only (`docs/screens/` is on
   `SITE_IRRELEVANT`), so it goes straight to `main` and deploys nothing. Then replace the copy in the claude.ai
-  project.
+  project, **and rebuild the site canvas in the same run** (Keith, 9 Nov 2026): `npm run screens:canvas --
+  --range=90d --fragment --out=<scratch>/stromata-canvas.html`, then republish it to its existing artifact,
+  **https://claude.ai/artifact/TgviXk8oitdXmjDgfy5P46** (Artifact tool, pass that `url`; never create a new one, the
+  link is pinned in Keith's sidebar). The canvas reuses this run's PNGs, so it costs only a few Umami calls.
 - **From a cloud session, render the code, not the live site.** Vercel's bot checkpoint stops a cloud browser on
   thestromata.com and on previews, and that protection is not to be bypassed. Check out the code, write a
   throwaway `.env.local` with the public anon key (Supabase MCP `get_publishable_keys`) plus dummy `ADMIN_*`
