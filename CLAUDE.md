@@ -459,8 +459,7 @@ every session:
 
 **1. Previews only build when asked, and an unasked push creates no deployment at all.** Since
 2026-11-04 `vercel.json` sets `git.deploymentEnabled` to the production branch and `preview/**` only
-(`release` and `preview/**`; `main` stays on the list until the switch-over below is finished). A push to
-any other branch (`claude/*`, …) makes **no Vercel deployment**, not even a cancelled one.
+(`release` and `preview/**`, since 9 Nov 2026). A push to any other branch (`main`, `claude/*`, …) makes **no Vercel deployment**, not even a cancelled one.
 That matters because the 2 Nov 2026 measurement showed cancelled deployments counting towards
 Hobby's 100-a-day cap, which Stromata shares with Paideia (2 Nov: 137 deployments across the two
 projects, only about 38 of them real builds). Production (pushes to `release`)
@@ -496,15 +495,8 @@ the Usage page's 30-day Fluid Active CPU total is back under the 4h Hobby allowa
 it is: the margin is about 13 minutes, which is why it stays). The Monday release task reports every week,
 even when there is nothing to ship.
 
-> **Switch-over (one-off; delete this block when step 5 is done).** Until Keith has set Production Branch to
-> `release` in Vercel, `main` is still production and the *old* flow holds: PRs that change the site target
-> `release`, and the Monday release PR is `release` → `main`. This text reaches `main` with that last
-> old-style release. Steps: (1) Keith merges that release PR; (2) recreate `release` from `main`
-> (`git push origin origin/main:refs/heads/release`; GitHub deletes the head branch on merge); (3) Keith sets
-> Vercel → Settings → Git → **Production Branch** to `release`; (4) a follow-up PR removes `main` from
-> `deploymentEnabled` in `vercel.json` and the Monday routine's prompt is flipped to the new direction;
-> (5) delete this block. Do **not** remove `main` from `deploymentEnabled` before step 3, or the last
-> old-style release merge would not build.
+The Production Branch is set in Vercel → Settings → **Environments** → Production → **Branch Tracking**
+(moved there from the Git page; switched to `release` by Keith on 9 Nov 2026).
 
 - **Every PR opens with base `main`** — features, docs, content and `/next-agent-card` alike. `main` is not
   production, so a merge into it deploys nothing and costs none of the weekly slot; merge as often as is

@@ -8,9 +8,8 @@
 # each one. See CHANGELOG.md 2026-09-29 and 2026-10-04.
 #
 # PREVIEWS ARE OPT-IN, AND AN UNASKED PUSH MAKES NO DEPLOYMENT AT ALL
-#   vercel.json → git.deploymentEnabled lets only the production branch (`release`;
-#   `main` too until the switch-over in CLAUDE.md is finished) and `preview/**` create
-#   deployments. That is the real gate: this script can only CANCEL a deployment
+#   vercel.json → git.deploymentEnabled lets only the production branch (`release`)
+#   and `preview/**` create deployments. That is the real gate: this script can only CANCEL a deployment
 #   that already exists, and on 2 Nov 2026 cancelled deployments still counted
 #   towards Hobby's 100-a-day cap (shared with Paideia: 137 deployments across
 #   the two projects, about 38 of them real builds), which then refused a push.

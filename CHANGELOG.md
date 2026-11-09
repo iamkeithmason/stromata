@@ -7,6 +7,16 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-11-09 — Switch-over finished: `release` is production
+
+The last old-style release (#206, `release` → `main`) merged and built on 9 Nov. `release` was recreated from `main`,
+and Keith set Vercel's Production Branch to `release` (the setting now lives under Settings → Environments →
+Production → Branch Tracking, not the Git page). This PR finishes the switch: `main` comes off
+`git.deploymentEnabled` in `vercel.json` (and its test), so a merge into `main` makes no deployment at all, and the
+one-off "Switch-over" block is removed from CLAUDE.md. The Monday release routine now opens `main` → `release`.
+
+---
+
 ## 2026-11-06 — `main` is where work lands, `release` is what is live
 
 **Usage check first.** The Fluid Active CPU 30-day total read **3h 47m** on 6 Nov (4h allowance), down from 4h 19m
