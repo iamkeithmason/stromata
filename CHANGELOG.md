@@ -7,6 +7,115 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-11-06 — `main` is where work lands, `release` is what is live
+
+**Usage check first.** The Fluid Active CPU 30-day total read **3h 47m** on 6 Nov (4h allowance), down from 4h 19m
+on 28 Oct, as the 29 Sep–5 Oct days rolled off. Recent days run about 5–9 min, with spikes near 14 min (29 Oct) and
+10 min (4 Nov). That is under the allowance by about 13 minutes, i.e. thin, so the weekly promotion stays (it was
+made permanent on 26 Oct).
+
+**The branch roles are reversed**, at Keith's request (his portfolio already works this way). Before: `main` was
+production and `release` was the queue, so every site-changing PR had to remember to target `release`. After:
+every PR targets `main`, Vercel's Production Branch is `release`, and the weekly promotion is a PR with base
+`release` and head `main`. It also removes the weekly "GitHub deleted `release`, recreate it" step, because GitHub
+does not delete the default branch when it is a PR's head. This PR rewrites CLAUDE.md "Vercel usage", the
+`/next-agent-card` command (PRs open against `main`; `Built` means reachable from `release`) and the ignore-script
+comments, and adds `release` to `git.deploymentEnabled` in `vercel.json` (keeping `main` for now).
+
+**Switch-over is staged on purpose** (CLAUDE.md "Switch-over" block): `vercel.json` is read from the pushed commit,
+so removing `main` from `deploymentEnabled` before Keith has flipped the Production Branch would stop the last
+old-style release from building. Order: merge the last old-style release, recreate `release` from `main`, Keith sets
+the Production Branch to `release`, a follow-up removes `main` from `deploymentEnabled` and the Monday routine's prompt
+is flipped.
+
+## 2026-11-04 — The first phone screen names a text; making the library visual (exploration)
+
+**The first phone screen.** The homepage critique's main finding: on a 390px phone, the first screen
+showed the wordmark twice, a tagline, a descriptor, search and five author names, but no text. Keith chose
+option B of three mock-ups ("a text in the sky"), keeping the starry hero:
+
+- **Below 641px the hero is a band, not a full screen** (about 360px tall instead of 620px). The display
+  title is smaller, the descriptor line is gone, and the season's pick sits in the sky: "For the season ·
+  *A Short Rule of Life* → · John Wycliffe". It replaces "Start with" and its five authors on phones only.
+  From 641px the hero is unchanged and the seasonal panel carries the pick as before. The CSS for these
+  properties is now written phone first (base) with the tall sky added at `min-width: 641px`.
+- **The seasonal panel is unchanged.** A first version took the title out of the panel on phones so the
+  pick was named once; on the preview Keith found it left the panel empty and weaker, so the panel keeps
+  its title, and the pick is named in the sky and again in the panel.
+- **The panel is tighter on phones.** `LancetArch` draws the arch from 18% down its 200:380 box to 8% short
+  of the bottom, so at 140px wide there was about 49px of empty frame above the portrait and 21px below.
+  On phones the portrait row is pulled up 40px and its bottom margin trimmed; desktop is unchanged.
+- **The pick is looked up once.** `SEASON_PICKS` and the published-check query moved from `SeasonalPanel`
+  to `lib/liturgical/season-pick.ts` (`getLiveSeasonPick`, wrapped in React's `cache`), shared by the hero
+  and the panel, so the homepage still asks Supabase once.
+- **Analytics: a new surface, `hero-pick`.** The sky link fires `text-open` with `from: hero-pick` and the
+  slug. It is in the vocabulary in `CLAUDE.md` and the Events Register. `verify-analytics.mjs` has a new
+  phone-width suite for it, and it was observed on the wire against a local build: `{"from":"hero-pick",
+  "text":"a-short-rule-of-life"}`, with all 16 `text-open` checks passing.
+
+**`/design/visual`, an exploration** (noindex, not linked): how to make a library of texts visual without
+an image per text. Three studies, all from data every record already has. *The cosmos as a map* plots
+every published author as a star on nine era rings, earliest at the centre. *An ornament per genre* puts a
+mark on each cover for its kind of writing: round 1 varied one star by its points, which Keith found could
+not be told apart, and round 2's abstract motifs read as modern and left the two "voices" too alike, so round 3 follows
+the chapter ornaments of an illuminated bible: each genre is an object chosen for its meaning (a fish for
+sermons, a quill for letters, a beehive for rules), cut like a woodcut. Hand-drawn sketches of the
+direction, not finished art. *One plate per era* frames the nine public-domain images still to
+source. Metadata only, no `body`. Backlog card: "Make the library visual at scale".
+
+**The design brief is in the repo** (`docs/design/homepage-brief.md`), corrected: the first draft said the
+page had no imagery beyond book covers, and the critic argued from that error. It now records why the
+starry hero exists and the decisions a critic should not re-argue. A research write-up of the method and
+its lesson is at `docs/research/2026-11-04-the-critic-believes-the-brief.md`.
+
+Checked locally at 360, 390 and 1440px: the pick sits 314px down on a 390px phone, with a 44px tap target.
+
+---
+
+## 2026-11-04 — Homepage polish from the design critique, and texts before authors
+
+A fresh-context design critique of the homepage (the design plugin's `design-critique` skill, run by a
+separate agent from 390px and 1440px screenshots against a written brief) scored it 6.5/10. Keith agreed the
+smaller fixes and one reordering; the first-screen question is still open and is not in this change.
+
+- **Texts before authors.** Featured authors moves below Recently added. The homepage's job is the next
+  text, so the texts come first and the authors become one more way to browse.
+- **One section gap.** Every homepage section now ends 80px before the next (Recently added was 96px, and
+  Featured authors had 24px more above it; the seasons row ended at 40px).
+- **Long titles on book covers no longer cut mid-word.** A clamp cut "…Power and Efficacy o.." on the phone
+  grid. A title over 60 characters now sets a size smaller on every cover, one over 40 does on a small
+  cover, and a small cover shows a copy shortened at a word boundary to 56 characters (screen readers get
+  the full title). Measured on the 37 published titles over 55 characters (longest 101): every one fits a
+  full-size cover whole, and every shortened one fits three lines on a 360px phone; the first to fail was
+  at 68. Checked on 29 covers at 360, 390 and 1440px: none cut.
+- **Era labels under featured authors** sit on their own line and never break: "Nicene & Post-Nicene" broke
+  at its hyphen, and the separator dot was left at a line end.
+- **The seasons row** drops its separator dots on phones, where wrapping left them hanging at line ends.
+- **The seasonal panel** keeps its arrow on the same line as the title (a non-breaking space), and on
+  desktop names the pick once: the caption under the portrait is now the author only, because the title is
+  the link beside it.
+
+Checked locally at 390px and 1440px. Analytics unchanged.
+
+---
+
+## 2026-11-04 — Guard: public routes stay cacheable; rules for usage-aware features
+
+Follow-up to the same day's caching fix. Since traffic, not deploys, is now most of the Vercel Hobby
+CPU, a public route that renders per request is the expensive mistake to prevent.
+
+- `lib/cache/public-routes-stay-cached.test.ts` scans public code (`app/` and `lib/`, not the admin app
+  or its API) and fails on anything that makes a route render per request: `next/headers`, `cookies()`,
+  `headers()`, `draftMode()`, `connection()`, `noStore`, `dynamic = 'force-dynamic'`, `revalidate = 0`,
+  `searchParams`, the public client's `{ live: true }`, and browser fetches to `/api` routes. Eight
+  files are allowed to be dynamic, each with its reason (search, the three feeds, four downloads), every
+  allowed route handler must set a CDN `s-maxage`, and an entry that is no longer dynamic fails, so the
+  list can only shrink. Checked by planting `cookies()` in the reader page: it fails, naming the file.
+- CLAUDE.md "Vercel usage" item 3 gains the four rules for building public features, the `next build`
+  route-table check for any PR touching a public route, and where to see per-route CPU on Hobby.
+- CLAUDE.md release steps: GitHub deletes `release` when the release PR merges, so it is recreated from
+  `main` afterwards (done today after the 4 Nov release).
+
 ## 2026-11-04 — Text, author, collection and Scripture pages are now cached (they rendered on every request)
 
 Vercel's per-route view (12 hours to 4 Nov, the most Hobby shows) put `/texts/[slug]` far ahead of

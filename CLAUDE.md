@@ -233,7 +233,7 @@ Two traps worth knowing:
 
 | Property | Meaning | Value form |
 |---|---|---|
-| `from` | the surface the click originated on | kebab-case surface name. Homepage: `seasonal-panel`, `featured-lead`, `homepage-grid`, `featured-band`, `reading-history`. Reader: `text-reader`, `text-page`, `related-figures`, `read-next`; the phone reading header and its sheet (PR #187): `text-hero-contents`, `text-running-head`, `text-sheet-contents`, `text-sheet-next`, `text-sheet-read-next`, `text-sheet-prev`, `text-sheet`. Browse and index: `texts-index`, `authors-index`, `locations-index`, `search-results`, `search-chip`. Entity pages: `author-page`, `collection-page`, `theme-page`, `era-page`, `tradition-page`, `scripture-page`, `location-page`. **The list is the vocabulary — a new surface gets a new value here, in the Events Register, and nowhere else.** |
+| `from` | the surface the click originated on | kebab-case surface name. Homepage: `seasonal-panel`, `hero-pick` (the season's pick in the hero, phones only), `featured-lead`, `homepage-grid`, `featured-band`, `reading-history`. Reader: `text-reader`, `text-page`, `related-figures`, `read-next`; the phone reading header and its sheet (PR #187): `text-hero-contents`, `text-running-head`, `text-sheet-contents`, `text-sheet-next`, `text-sheet-read-next`, `text-sheet-prev`, `text-sheet`. Browse and index: `texts-index`, `authors-index`, `locations-index`, `search-results`, `search-chip`. Entity pages: `author-page`, `collection-page`, `theme-page`, `era-page`, `tradition-page`, `scripture-page`, `location-page`. **The list is the vocabulary — a new surface gets a new value here, in the Events Register, and nowhere else.** |
 | `text` | which text was opened | **slug**, never the title |
 | `collection` | which collection was opened | **slug** |
 | `author` | which author | display name (matches `authors.name`) |
@@ -458,11 +458,12 @@ allowance (see CHANGELOG 2026-09-29 and 2026-10-04). A few habits keep it under,
 every session:
 
 **1. Previews only build when asked, and an unasked push creates no deployment at all.** Since
-2026-11-04 `vercel.json` sets `git.deploymentEnabled` to `main` and `preview/**` only. A push to any
-other branch (`claude/*`, `release`, …) makes **no Vercel deployment**, not even a cancelled one.
+2026-11-04 `vercel.json` sets `git.deploymentEnabled` to the production branch and `preview/**` only
+(`release` and `preview/**`; `main` stays on the list until the switch-over below is finished). A push to
+any other branch (`claude/*`, …) makes **no Vercel deployment**, not even a cancelled one.
 That matters because the 2 Nov 2026 measurement showed cancelled deployments counting towards
 Hobby's 100-a-day cap, which Stromata shares with Paideia (2 Nov: 137 deployments across the two
-projects, only about 38 of them real builds). Production (merges to `main`)
+projects, only about 38 of them real builds). Production (pushes to `release`)
 always builds. By default a pushed branch gets **no preview URL** — don't tell Keith to "check the
 preview" unless one was requested.
 
@@ -480,67 +481,71 @@ preview" unless one was requested.
   build whose branch does not start with `preview/`, so a misconfigured `deploymentEnabled` degrades
   to the old cancelled-deployment behaviour rather than to building every push.
 
-**2. Group small, related changes into one PR.** Every merge to `main` is a production deploy, and
+**2. Group small, related changes into one PR.** Every push to `release` is a production deploy, and
 every deploy starts with an empty page cache, so crawlers re-render the site after each one — merge
 frequency, not reader traffic, drove the Sept 2026 spike (17 merges in 1–19 Sep, 37 in 20–29 Sep).
 If a session turns up several small related fixes, ship them together in one PR rather than one PR
 each; if Keith asks for a follow-up to a PR that is still open, add it to that PR. (Unrelated
 changes still get separate PRs — this is about not splitting one piece of work into many.)
 
-**Standing rule — one release a week, through a `release` branch (agreed with Keith 2026-10-10).** Production
-deploys from `main` only, and every deploy empties the page cache, so site-changing work is collected on a
-long-lived **`release`** branch and shipped to `main` once a week. **Permanent** (Keith, 2026-10-26): the
-weekly release stays after the Usage page's 30-day Fluid Active CPU total is back under the 4h Hobby allowance
-(expected between about 28 Oct and 5 Nov). The Monday release task reports every week, even when there is
-nothing to ship.
+**Standing rule — `main` is where work lands, `release` is what is live, and `release` moves once a week
+(agreed with Keith 2026-10-10; direction reversed 2026-11-06, Keith's preference from his portfolio).**
+Vercel's **Production Branch is `release`**, not `main`. Every deploy empties the page cache, so the live
+site changes only when `release` moves. **Permanent** (Keith, 2026-10-26): the weekly promotion stays after
+the Usage page's 30-day Fluid Active CPU total is back under the 4h Hobby allowance (3h 47m on 6 Nov 2026, so
+it is: the margin is about 13 minutes, which is why it stays). The Monday release task reports every week,
+even when there is nothing to ship.
 
-- **Site-changing PRs open with base `release`, not `main`** — `/next-agent-card` PRs included. A merge into
-  `release` deploys nothing (it is a preview branch, and previews are off unless asked), so those merges are
-  free and don't use the weekly slot. The test for "site-changing": **any file in the PR that is not on
-  `SITE_IRRELEVANT`** (below). Not sure? Base `release`.
-- **Docs-only and content-only PRs go straight to `main`** — every file on `SITE_IRRELEVANT`. The ignore step
-  skips them, so they cost nothing; the Monday digest and the pipeline runs already land this way.
-- **The weekly release is the one slot.** Bring `release` up to date first (a PR with base `release` and head
-  `main`, because automation and docs PRs land on `main` in between), then open **one** PR with base `main` and
-  head `release`, titled "Release YYYY-MM-DD", listing the PRs it carries and any Supabase migration that must
-  be applied before it ships (never assume one has run). Merge it with a **merge commit**, not a squash. That
-  merge is the week's single production deploy.
-  **Release day is Monday morning** (Keith, 2026-10-10): a weekly routine opens the draft release PR then, only
-  if `release` is ahead of `main` with site-changing commits; Keith merges it.
-- **Never merge the release PR yourself** — leave it open, say what it carries, and let Keith merge it. When a
-  site-changing PR is ready, merge it into `release` only if Keith has said to; otherwise leave it open and
-  tell him which PRs are queued.
+> **Switch-over (one-off; delete this block when step 5 is done).** Until Keith has set Production Branch to
+> `release` in Vercel, `main` is still production and the *old* flow holds: PRs that change the site target
+> `release`, and the Monday release PR is `release` → `main`. This text reaches `main` with that last
+> old-style release. Steps: (1) Keith merges that release PR; (2) recreate `release` from `main`
+> (`git push origin origin/main:refs/heads/release`; GitHub deletes the head branch on merge); (3) Keith sets
+> Vercel → Settings → Git → **Production Branch** to `release`; (4) a follow-up PR removes `main` from
+> `deploymentEnabled` in `vercel.json` and the Monday routine's prompt is flipped to the new direction;
+> (5) delete this block. Do **not** remove `main` from `deploymentEnabled` before step 3, or the last
+> old-style release merge would not build.
+
+- **Every PR opens with base `main`** — features, docs, content and `/next-agent-card` alike. `main` is not
+  production, so a merge into it deploys nothing and costs none of the weekly slot; merge as often as is
+  useful. There is no longer a "is this site-changing?" decision to get wrong. Merge into `main` only when
+  Keith has said to; otherwise leave the PR open and tell him what is queued.
+- **The weekly promotion is the one slot.** Open **one** PR with base `release` and head `main`, titled
+  "Release YYYY-MM-DD", listing the PRs it carries and any Supabase migration that must be applied before it
+  ships (never assume one has run). Merge it with a **merge commit**, not a squash. That merge is the week's
+  single production deploy. GitHub does not delete `main` when it is a PR's head, so there is no branch to
+  recreate (the old direction deleted `release` each week). **Release day is Monday morning** (Keith,
+  2026-10-10): a weekly routine opens the draft promotion PR then, only if `main` is ahead of `release` with
+  changes that touch the site; Keith merges it.
+- **Never merge the promotion PR yourself** — leave it open, say what it carries, and let Keith merge it.
 - **The 100-deployments-a-day cap is shared with Paideia — check the release actually built.** Vercel's
   Hobby plan allows 100 deployments per day per *account*, and Stromata and Paideia share the account. Every
   push counts, **including the ones `vercel-ignore-build.sh` cancels**: skipping a build saves build minutes,
   not cap slots. On 2 Nov 2026 the cap was spent between 09:05 and 12:36 UTC, 86 of the 100 by Paideia
   (about ten Claude branches plus `main`, the morning GitHub Actions minutes reset), and a Stromata push then
-  got `Resource is limited - try again in 24 hours (api-deployments-free-per-day)`. A release merge in that
-  window would not deploy. So after the release PR merges, confirm a production deployment for its merge
+  got `Resource is limited - try again in 24 hours (api-deployments-free-per-day)`. A promotion in that
+  window would not deploy. So after the promotion PR merges, confirm a production deployment for its merge
   commit reached `READY` (Vercel MCP `list_deployments` with `target: production`, or the dashboard). If it
   was refused, wait for the window to roll over and redeploy that commit from the Vercel dashboard rather
   than pushing again, since another push only spends another slot.
-- **A broken site or a security fix is the exception:** it goes straight to `main` (tell Keith), and `main` is
-  then merged into `release` so the branches don't diverge.
+- **A broken site or a security fix is the exception:** open its PR with base `release` (it goes live on
+  merge; tell Keith), then merge `release` back into `main` so the branches don't diverge.
 - Publishing texts is fine in a batch (about 4 min of CPU once per sitting; batch it, don't trickle it).
 
 Evidence for the rule: 6–9 Oct ran at roughly 4–6 min/day (target ≤ 8) after two real deploys in six days,
-against 37 merges between 20 and 29 Sep. The weekly release is a guard against sliding back, not a claim that
-one more deploy would hurt today.
+against 37 merges between 20 and 29 Sep; the 30-day total read 3h 47m on 6 Nov against the 4h allowance. The
+weekly promotion is a guard against sliding back, not a claim that one more deploy would hurt today.
 
-**A backlog card counts as `Built` once its change is on `main`** (Keith, 2026-10-10) — not when its PR merges into
-`release`. A card whose PR sits in `release` waiting for the weekly release is still `Planned`. Shipping is the
-release PR's merge, so the reconciliation sweep checks that the PR's merge commit is reachable from `main`.
-
-The `/next-agent-card` command (`.claude/commands/next-agent-card.md`) on `main` still has its old wording (it opens
-its PR without naming a base, and its sweep flips `Built` at PR merge) until PR #147 ships in the first release.
-**Until then, follow this section over the command.**
+**A backlog card counts as `Built` once its change is on `release`** (Keith, 2026-10-10; branch renamed
+2026-11-06) — not when its PR merges into `main`. A card whose PR sits in `main` waiting for the weekly
+promotion is still `Planned`. Shipping is the promotion PR's merge, so the reconciliation sweep checks that
+the PR's merge commit is reachable from `release`. The `/next-agent-card` command follows this section.
 
 **Docs-only and content-only production commits don't deploy.** The same script skips a *production*
-build when every file in the commit is on `SITE_IRRELEVANT` at the top of `scripts/vercel-ignore-build.sh`:
+(`release`) build when every file in the commit is on `SITE_IRRELEVANT` at the top of `scripts/vercel-ignore-build.sh`:
 `CHANGELOG.md`, `CLAUDE.md`, `scripts/analytics/reports/`, and the content pipeline's own files —
 `scripts/ingestion/run-log/`, `scripts/ingestion/prospect-queue.json`, `scripts/ingestion/output/` — chiefly so
-the Monday analytics-digest commit and a pipeline run stop wiping the page cache. Rules: **a path goes on that
+a promotion that carries only the analytics digest, pipeline runs and docs deploys nothing. Rules: **a path goes on that
 list only if nothing the *public* site builds or serves reads it — grep `app/` and `lib/` first**
 (`scripts/analytics/aggregate.mjs` is *not* listed: `lib/analytics/dashboard.ts` imports it; nor is the code
 in `scripts/ingestion/*.mjs`, which an admin route imports). **The accepted exception:** the admin pipeline and
@@ -579,6 +584,23 @@ comes from saves calling `revalidatePath`:
   Until 2026-11-04 the text, author, collection and Scripture pages were all like that: `/texts/[slug]`
   alone was most of the Hobby CPU. An empty `return []` is enough (● in `next build`);
   `lib/cache/public-pages-are-cached.test.ts` fails CI on a new cached `[param]` page without it.
+- **Keep public routes cacheable; this is what decides the Hobby CPU bill.** Since 2026-11-04 traffic, not
+  deploys or edits, is most of the cost, so a route that renders per request is paid for on every crawler
+  hit. When building a public feature:
+  1. A `[param]` page with a `revalidate` window exports `generateStaticParams` (see above).
+  2. Public pages and the code they import never read `cookies()`, `headers()`, `draftMode()`,
+     `connection()` or `searchParams`, and never opt out with `noStore`, `dynamic = 'force-dynamic'`,
+     `revalidate = 0` or the public client's `{ live: true }`. Anything per visitor (reading progress,
+     "continue reading", the season) stays in the browser, as it does today.
+  3. No browser fetch to an `/api` route from public code: it is billed on every page view even when the
+     page is cached. Render the data into the cached page instead.
+  4. A route that truly must be dynamic (search, feeds, downloads) sets a CDN `Cache-Control` with
+     `s-maxage`, and goes on `DYNAMIC_ALLOWED` with its reason.
+  `lib/cache/public-routes-stay-cached.test.ts` enforces 2–4 by source scan and
+  `lib/cache/public-pages-are-cached.test.ts` enforces 1. A scan cannot follow every import, so **for a PR
+  that adds or changes a public route, also read the `next build` route table and confirm the route shows
+  ● or ○, not ƒ**, and say so in the PR. To see where CPU goes, Vercel → Observability → Vercel Functions,
+  sorted by Active CPU (Hobby shows 12 hours); the budget is ~8 min a day.
 - **`/scripture/[ref]` is the exception: daily, on purpose** (`revalidate: 86400`, passed to the client
   too), because publishing does not fan out to its ~4,000 leaves.
 - **A CLI script that edits published content calls `revalidateSite()`** from `scripts/lib/revalidate.mjs`
@@ -651,7 +673,7 @@ in a run-log is invisible.
 | **Code / product change** (a `/next-agent-card` build, a bug fix, an infra change) | `CHANGELOG.md`, newest entry on top | **Inside the same PR** — the entry is committed on the branch and merges atomically with the code. A code PR should always touch CHANGELOG.md; this is enforced by convention (the mechanic + this doc), not a CI gate. |
 | **Content import** (pipeline stages, Sourcer bundles) | `scripts/ingestion/run-log/YYYY-MM-DD.md` | At the end of the run. **Not** CHANGELOG.md. |
 | **Analytics digest** | Notion Growth Digest DB (+ committed report under `scripts/analytics/reports/`) | Weekly, by the digest routine/workflow. |
-| **Backlog card lifecycle** | Notion Feature Backlog `Status` | `Agent-ready` → `Planned` (at PR open, by the builder) → `Built` (once the change is on `main` — after the weekly release, not at the merge into `release` — by the next `/next-agent-card` run's reconciliation sweep, step 0, or by whoever merges the release). |
+| **Backlog card lifecycle** | Notion Feature Backlog `Status` | `Agent-ready` → `Planned` (at PR open, by the builder) → `Built` (once the change is on `release` — after the weekly promotion, not at the merge into `main` — by the next `/next-agent-card` run's reconciliation sweep, step 0, or by whoever merges the release). |
 
 **The two loop-closers that make this self-healing:**
 
@@ -659,12 +681,12 @@ in a run-log is invisible.
    can never lag behind what shipped — there is no separate "remember to update the log" step
    to forget.
 2. **The weekly reconciliation sweep** (`/next-agent-card` step 0) flips `Planned` → `Built`
-   for any card whose PR has since reached `main`, and backfills a CHANGELOG entry if one is somehow
+   for any card whose PR has since reached `release`, and backfills a CHANGELOG entry if one is somehow
    missing. This closes the merge-time gap without wiring a webhook from GitHub into Notion:
    `Built` is Keith's merge made visible, reconciled on the next run, not guessed at PR time.
 
 If you ship a code change by hand (not via a routine), you own the same two acts: a CHANGELOG
-entry in the PR, and flipping the backlog card to `Built` once it is on `main`.
+entry in the PR, and flipping the backlog card to `Built` once it is on `release`.
 
 **Before building any backlog card — by hand or by routine — check it is not already in flight, then
 claim it.** A card's `Status` cannot tell you: `Planned` reads the same whether a build exists or not.
