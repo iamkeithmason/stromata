@@ -248,7 +248,7 @@ function FilterRow({
       >
         {label}
       </span>
-      <div className="flex gap-2 flex-wrap">
+      <div className="flex gap-x-2 flex-wrap">
         {options.map(o => (
           <FilterPill
             key={o.slug}

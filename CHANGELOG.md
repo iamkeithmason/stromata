@@ -7,6 +7,29 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-11-09 — The authors index is an arch grid; filter tags match the homepage
+
+Keith asked for two things on `/authors`: tradition and era filters that look like the homepage's tags, and the
+authors shown as a grid like the homepage's featured band.
+
+- **One author card for both grids.** The featured band's arch-and-caption markup moved out of
+  `FeaturedAuthors.tsx` into **`app/components/AuthorCard.tsx`**, and `/authors` now renders the same card in a
+  grid (2 columns on phones, 3 from `sm`, 4 from `md`). The index adds a text count under the tradition. Authors
+  without a portrait show their initial in the arch, as `LancetArch` already did. The whole card is one link, so the
+  phone tap target is the portrait plus caption. The small tradition link that sat at the right of each list row is
+  gone (a link cannot sit inside a link); the tradition filter does that job on this page.
+- **Filter tags are cut-corner catalogue tags.** `FilterPill` (shared by `/authors` and `/texts`) now draws the same
+  `.chip-tag` as `ThemeChip`: filled `--paper-deep`, no outline. Selected, it fills with `--ink-soft` and the label
+  turns `--paper`. The button is a 44px tap target with the tag drawn on an inner span, the same arrangement as
+  `ThemeChip`; before, the pill was about 22px tall. The filter rows drop their vertical gap, since the tap target
+  now supplies it.
+- **Portraits after the first row load lazily.** `LancetArch` takes a `lazy` prop (`loading="lazy"`). The old list
+  fetched every portrait on every view, so a reader who never scrolls now costs less Storage egress than before.
+  The homepage band and seasonal panel stay eager.
+
+Analytics unchanged: each card still fires `author-open` with `from="authors-index"` (or `featured-band`) and the
+author's name. Checked at 1440 and 390 from a local build against live data; no sideways scroll at 390.
+
 ## 2026-11-09 — The ornament tracing scripts are in the repo
 
 The seventeen genre ornaments were made in a cloud scratchpad, so the stroke library and tracing scripts would
