@@ -396,6 +396,7 @@ function TextLead({ text }: { text: TextRow }) {
             deathYear={author?.death_year ?? null}
             accessionNumber={text.accession_number}
             traditionSlug={author?.tradition?.slug ?? null}
+            genre={text.genre?.name ?? null}
             index={0}
           />
         </Link>
@@ -449,6 +450,7 @@ function CollectionLead({ entry }: { entry: Extract<FeedEntry, { kind: 'collecti
               accessionNumber={null}
               accessionDisplay={accessionDisplay}
               traditionSlug={author?.tradition?.slug ?? null}
+              genre={representative.genre?.name ?? null}
               index={0}
             />
           </StackedCover>
@@ -541,6 +543,7 @@ function FeedGridCard({ entry, index }: { entry: FeedEntry; index: number }) {
               accessionNumber={null}
               accessionDisplay={accessionDisplay}
               traditionSlug={author?.tradition?.slug ?? null}
+              genre={representative.genre?.name ?? null}
               index={index}
             />
           </StackedCover>
@@ -571,6 +574,7 @@ function FeedGridCard({ entry, index }: { entry: FeedEntry; index: number }) {
           deathYear={author?.death_year ?? null}
           accessionNumber={text.accession_number}
           traditionSlug={author?.tradition?.slug ?? null}
+          genre={text.genre?.name ?? null}
           index={index}
         />
       </Link>

@@ -55,6 +55,7 @@ export function ReadingHistorySection() {
                   deathYear={entry.deathYear}
                   accessionNumber={entry.accessionNumber}
                   traditionSlug={entry.traditionSlug}
+                  genre={entry.genreName ?? null}
                   index={i}
                 />
               </Link>

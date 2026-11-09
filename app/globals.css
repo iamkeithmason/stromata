@@ -93,6 +93,7 @@
   --on-dark-gold-soft: rgba(224, 200, 134, 0.55);  /* faint reversed gold (underlines) */
 
   --cover-mid:  #F5F0E6;   /* book-cover inner panel — a stable cream, NOT theme-flipped */
+  --cover-ornament: #8A5F1E; /* genre ornament on the cover panel. --gold-ink's value, but NOT theme-flipped: covers stay cream in the reader dark theme */
   --cover-stack-back: rgba(10, 8, 5, 0.50);   /* collection stack: rearmost spine behind a cover */
   --cover-stack-mid:  rgba(10, 8, 5, 0.28);   /* collection stack: middle spine */
 

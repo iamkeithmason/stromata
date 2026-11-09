@@ -1,4 +1,5 @@
 import { traditionColor } from '@/lib/tradition-colors'
+import { ornamentUrl } from '@/lib/genres/ornaments'
 
 /**
  * Long titles on small covers. A cover's title panel holds four lines (three on a
@@ -34,6 +35,7 @@ export function BookCover({
   index,
   readingMinutes,
   accessionDisplay,
+  genre,
 }: {
   title: string
   authorName: string | null
@@ -49,8 +51,15 @@ export function BookCover({
    * - string             → render this exact string (e.g. "№ 100–105")
    */
   accessionDisplay?: string | null
+  /**
+   * Genre name (e.g. "Sermon"). When it has an ornament (lib/genres/ornaments.ts),
+   * the ornament takes the place of the hairline rule between title and author;
+   * an unknown or missing genre keeps the rule.
+   */
+  genre?: string | null
 }) {
   const ground = traditionColor(traditionSlug)
+  const ornament = ornamentUrl(genre)
   const shortTitle = shortenAtWord(title, SMALL_COVER_CHARS)
   const num = String(accessionNumber ?? index + 1).padStart(2, '0')
   const bandAccession = accessionDisplay !== undefined
@@ -111,7 +120,7 @@ export function BookCover({
         )}
       </div>
 
-      {/* Mid panel: vellum, italic title + rule + author */}
+      {/* Mid panel: vellum, italic title + genre ornament (or rule) + author */}
       <div
         className="book-cover-mid"
         style={{
@@ -154,16 +163,48 @@ export function BookCover({
             </>
           )}
         </p>
-        <div
-          style={{
-            width: 'min(20px, 10cqi)',
-            height: 1,
-            background: 'var(--ink)',
-            opacity: 0.35,
-            margin: 'min(1rem, 8cqi) auto',
-            flexShrink: 0,
-          }}
-        />
+        {ornament ? (
+          /* Genre ornament, drawn as a mask so each shape is fetched once and
+             cached, and coloured by a token that the reader dark theme leaves
+             alone (the cover panel stays cream). Decorative: the genre is
+             stated in text wherever it matters.
+             Sized to the panel's slack (9 Nov 2026): it takes 18cqi of height
+             against the rule's 16cqi. At 16cqi + 8cqi of margin, 53 of the 106
+             published titles over 40 characters lost their descenders (up to
+             8px) at every cover width; at this size none do. Re-measure before
+             making it bigger. */
+          <span
+            aria-hidden="true"
+            className="book-cover-ornament"
+            style={{
+              display: 'block',
+              width: 'min(28px, 14cqi)',
+              height: 'min(28px, 14cqi)',
+              margin: 'min(4px, 2cqi) auto',
+              flexShrink: 0,
+              backgroundColor: 'var(--cover-ornament)',
+              WebkitMaskImage: `url(${ornament})`,
+              maskImage: `url(${ornament})`,
+              WebkitMaskSize: 'contain',
+              maskSize: 'contain',
+              WebkitMaskRepeat: 'no-repeat',
+              maskRepeat: 'no-repeat',
+              WebkitMaskPosition: 'center',
+              maskPosition: 'center',
+            }}
+          />
+        ) : (
+          <div
+            style={{
+              width: 'min(20px, 10cqi)',
+              height: 1,
+              background: 'var(--ink)',
+              opacity: 0.35,
+              margin: 'min(1rem, 8cqi) auto',
+              flexShrink: 0,
+            }}
+          />
+        )}
         {authorName && (
           <p
             className="book-cover-author"

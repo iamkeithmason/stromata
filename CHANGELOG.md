@@ -7,6 +7,35 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-11-09 — Genre ornaments on the book covers
+
+Every book cover now shows its genre's woodcut ornament (a fish for a sermon, a quill for a letter, a key for
+exegesis) in place of the short hairline between title and author. Keith chose the covers as the first live
+surface on 9 Nov; the seventeen ornaments were traced from pre-1600 woodcuts in PR #202 and lived only on
+`/design/visual` until now. A cover whose genre is unknown keeps the rule.
+
+- **Shared module.** The path data moved from `app/design/visual/herbal-ornaments.ts` to
+  `lib/genres/ornaments.ts`, with each ornament's source and licence. `/design/visual` imports it from there.
+- **Not inlined.** All seventeen paths come to about 85 KB, and a grid repeats them. Covers draw
+  `public/ornaments/<genre>.svg` as a CSS mask instead, so each shape is fetched once and cached; a cover adds
+  about 450 bytes of markup. `npm run ornaments:svg` regenerates the files, and `lib/genres/ornaments.test.ts`
+  fails if they drift from the module or a vocabulary genre lacks an ornament.
+- **New token `--cover-ornament`.** It is `--gold-ink`'s value, but kept out of the reader-dark override:
+  `--gold-ink` flips there, and the cover panel stays cream. Swatch on `/design`.
+- **Sized to the panel's slack, measured.** At the first size tried (16cqi plus 8cqi of margin), 53 of the 106
+  published titles over 40 characters lost their descenders, by up to 8px, at every cover width (84, 148 and
+  200px). The title lines were all still there, but the title box was squeezed. At 14cqi plus 4cqi of margin
+  (18cqi against the rule's 16) none do. Re-measure before making it bigger; the note is in `BookCover.tsx`.
+- **Genre threaded to every cover:** homepage (texts, and collections via their representative text), search,
+  the reader frontispiece, the read-next module (the candidate query now selects `genre:genres(name)`) and
+  reading history. Reading history lives in the browser, so it stores the genre from now on; entries saved
+  before this release show the rule until the text is visited again.
+
+No analytics: the ornament is decorative and not a link. Public routes unchanged in the build table (`/` and
+the `[slug]` pages ○/●). Author-page genre headings get the ornaments later, with author-page Phase A.
+
+---
+
 ## 2026-11-09 — Site canvas: theme, location and search pages join the board
 
 Nine pages now, up from six. The theme page, a location page (England, new to the screens manifest, so the PDF
