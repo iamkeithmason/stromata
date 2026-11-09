@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import Link from 'next/link'
 import { FilterPill } from './FilterPill'
 import { FilterToggle } from './FilterToggle'
@@ -91,11 +91,9 @@ export function TextsBrowser({
 
   const hasFilter = Boolean(filters.tradition || filters.era || filters.genre)
   const activeCount = [filters.tradition, filters.era, filters.genre].filter(Boolean).length
-  const [filtersOpen, setFiltersOpen] = useState(hasFilter)
-  // A filter applied from a shared link arrives after the first render.
-  useEffect(() => {
-    if (hasFilter) setFiltersOpen(true)
-  }, [hasFilter])
+  // Closed on load, filtered link or not: the gold count on the button says
+  // a filter is on, and the list stays on the first screen (as on /authors).
+  const [filtersOpen, setFiltersOpen] = useState(false)
 
   const filtered = useMemo(() => {
     const list = items.filter(
@@ -124,8 +122,7 @@ export function TextsBrowser({
       <div className="mb-8 space-y-3">
         {/* Thirty-odd facet tags used to fill the first screen before any
             title. They sit behind the same Filter button as /authors, here at
-            every width, and open whenever a filter is set so a shared filtered
-            link still shows what it is filtering on. */}
+            every width. */}
         <FilterToggle
           open={filtersOpen}
           onToggle={() => setFiltersOpen(o => !o)}
