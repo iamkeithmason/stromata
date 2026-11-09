@@ -5,9 +5,10 @@ import type { Season } from './year'
 /**
  * The season's pick: one text per liturgical season, chosen by hand.
  *
- * Shared by the seasonal panel and, on phones, the homepage hero, which both
- * name the pick. The lookup is wrapped in React's `cache`, so one render of the
- * homepage asks Supabase once however many places show the pick.
+ * Read by the seasonal panel. (For a day in Nov 2026 the homepage hero also
+ * named the pick on phones; Keith preferred the panel alone, to avoid saying it
+ * twice.) The lookup is wrapped in React's `cache`, so any future second reader
+ * in the same render costs no extra Supabase query.
  */
 
 export type SeasonPick = {

@@ -8,6 +8,8 @@ import { ERAS } from '@/lib/constants'
 import { readingMinutes } from '@/lib/reading-time'
 import { JsonLd } from '@/app/components/JsonLd'
 import { SITE_URL } from '@/lib/metadata'
+import { resolveEraPlate, type EraPlateOverride } from '@/lib/eras/plates'
+import { EraPlateHeader } from '@/app/components/EraPlateHeader'
 
 // Incremental Static Regeneration: these pages are prerendered via
 // generateStaticParams, so without a revalidate window newly published texts
@@ -66,6 +68,16 @@ export default async function EraPage({ params }: Props) {
 
   if (!era) notFound()
 
+  // The plate override is read on its own, and a failure is not fatal: if
+  // migration 035 has not been applied yet the columns do not exist, and the
+  // page must still render (with the default plate) rather than 500.
+  const { data: plateRow } = await supabase
+    .from('eras')
+    .select('plate_url, plate_credit, plate_focus_y')
+    .eq('slug', slug)
+    .maybeSingle()
+  const plate = resolveEraPlate(era.slug, (plateRow as EraPlateOverride | null) ?? null)
+
   const { data: authors } = await supabase
     .from('authors')
     .select('id')
@@ -120,17 +132,21 @@ export default async function EraPage({ params }: Props) {
       <JsonLd data={collectionJsonLd} />
       <SiteHeader breadcrumb={null} />
 
-      <main id="main-content" className="content-shell py-12">
-        <div className="mb-10">
-          <h1 className="font-serif text-3xl mb-2" style={{ color: '#1b1b1b' }}>{era.label}</h1>
-          {yearRange && (
-            <p className="text-sm" style={{ color: '#6f6a60' }}>{yearRange}</p>
-          )}
-        </div>
+      {plate && <EraPlateHeader plate={plate} title={era.label} years={yearRange} />}
+
+      <main id="main-content" className={plate ? 'content-shell pb-12' : 'content-shell py-12'}>
+        {!plate && (
+          <div className="mb-10">
+            <h1 className="font-serif text-3xl mb-2" style={{ color: 'var(--ink)' }}>{era.label}</h1>
+            {yearRange && (
+              <p className="text-sm" style={{ color: 'var(--ink-mute)' }}>{yearRange}</p>
+            )}
+          </div>
+        )}
 
         {era.description && (
           <div className="mb-10">
-            <p className="font-serif leading-relaxed" style={{ color: '#1b1b1b' }}>{era.description}</p>
+            <p className="font-serif leading-relaxed" style={{ color: 'var(--ink)' }}>{era.description}</p>
           </div>
         )}
 
@@ -138,17 +154,17 @@ export default async function EraPage({ params }: Props) {
           <div>
             <div className="mb-6">
               <div className="flex items-baseline justify-between mb-3">
-                <h2 className="font-serif italic text-base" style={{ color: '#1b1b1b' }}>
+                <h2 className="font-serif italic text-base" style={{ color: 'var(--ink)' }}>
                   Texts in the library
                 </h2>
-                <span className="smallcaps" style={{ color: '#6f6a60' }}>
+                <span className="smallcaps" style={{ color: 'var(--ink-mute)' }}>
                   {texts.length}
                 </span>
               </div>
-              <hr style={{ borderColor: '#1b1b1b', borderTopWidth: '1px' }} />
+              <hr style={{ borderColor: 'var(--ink)', borderTopWidth: '1px' }} />
             </div>
 
-            <ul className="divide-y" style={{ borderColor: '#e5e0d8' }}>
+            <ul className="divide-y" style={{ borderColor: 'var(--rule-soft)' }}>
               {texts.map(t => (
                 <li key={t.id}>
                   <Link data-umami-event="text-open" data-umami-event-from="era-page" data-umami-event-text={t.slug}
@@ -159,22 +175,22 @@ export default async function EraPage({ params }: Props) {
                       <div>
                         <span
                           className="font-serif group-hover:opacity-70 transition-opacity"
-                          style={{ color: '#1b1b1b' }}
+                          style={{ color: 'var(--ink)' }}
                         >
                           {t.title}
                         </span>
                         {t.author && (
-                          <span className="text-xs ml-3" style={{ color: '#6f6a60' }}>
+                          <span className="text-xs ml-3" style={{ color: 'var(--ink-mute)' }}>
                             {t.author.name}
                             {t.author.tradition && ` · ${t.author.tradition.name}`}
                           </span>
                         )}
                       </div>
-                      <div className="text-xs mt-0.5" style={{ color: '#9c9589' }}>
+                      <div className="text-xs mt-0.5" style={{ color: 'var(--ink-faint)' }}>
                         approx. {readingMinutes(t.word_count)} min read
                       </div>
                     </div>
-                    <span className="text-xs ml-4 shrink-0 mt-0.5" style={{ color: '#6f6a60' }}>
+                    <span className="text-xs ml-4 shrink-0 mt-0.5" style={{ color: 'var(--ink-mute)' }}>
                       {t.genre?.name}
                     </span>
                   </Link>
@@ -185,7 +201,7 @@ export default async function EraPage({ params }: Props) {
         )}
 
         {texts.length === 0 && (
-          <p className="text-sm" style={{ color: '#6f6a60' }}>No texts published yet.</p>
+          <p className="text-sm" style={{ color: 'var(--ink-mute)' }}>No texts published yet.</p>
         )}
       </main>
       <TrackPageEvent event="era-page-view" data={{ era: era.label }} />

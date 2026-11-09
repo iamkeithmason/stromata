@@ -38,6 +38,61 @@ old-style release from building. Order: merge the last old-style release, recrea
 the Production Branch to `release`, a follow-up removes `main` from `deploymentEnabled` and the Monday routine's prompt
 is flipped.
 
+---
+
+## 2026-11-04 — Era plates: a picture of each era's world, with an admin override; the season's pick in the panel only
+
+**Era plates.** Each era page now opens with a full-bleed band showing a public-domain image of its world: the
+era's name and dates over the foot of the image, and a credit line beneath. The band is 16:9 on phones (about
+220px) and 3:1 from 640px, capped at 420px. Keith asked for people where possible, to humanise the eras. All
+nine eras have a default plate, committed at `public/plates/eras/` (2000×1000 crops, 280–590 KB) and listed with
+credits in `lib/eras/plates.ts`:
+
+- **Apostolic:** *Six Apostles*, a Spanish retable panel c. 1500, Peter and Paul at the centre (Met, CC0)
+- **Ante-Nicene:** the Dura-Europos procession of women (Yale, CC0)
+- **Nicene & Post-Nicene:** Justinian and Bishop Maximian at San Vitale, Ravenna, c. 547, in an Alinari print (Rijksmuseum, PD)
+- **Early Medieval:** a Carolingian ivory of Emmaus (Met, CC0)
+- **High Medieval:** a Royal Psalter Last Supper, cropped to keep Christ's head whole (Met, CC0)
+- **Late Medieval:** a detail of Campin's Merode Altarpiece (Met, CC0)
+- **Reformation:** *Impressio librorum*, a printing house c. 1590 (Rijksmuseum, PD)
+- **Post-Reformation:** the Leiden University Library, 1610 (Rijksmuseum, PD)
+- **Modern:** the Christ Church library, Oxford, 1814 (Rijksmuseum, PD)
+
+Each licence was checked at the holder's own source (the Met API's `isPublicDomain`, Yale's IIIF manifest, the
+Rijksmuseum page's Public Domain mark). The Apostolic and Nicene plates replace first picks on Wikimedia
+Commons, which this cloud session cannot reach.
+
+**Changing a plate without a deploy.** Migration `035_era_plates.sql` adds `eras.plate_url`, `plate_credit`
+and `plate_focus_y`, and a public `plates` bucket. The admin era form gains a plate section. You can upload a
+replacement, which `/api/admin/eras/plate` stores at 2000px wide, add its credit line (required), set the crop
+focus with a slider, or go back to the default. Saving revalidates the era page as before. The migration was
+applied to production on 4 Nov, so nothing needs running before the release. The public page reads the plate columns in a separate,
+fault-tolerant query, so era pages render with their defaults whether or not it has run (checked locally
+against the live database without it).
+
+**Traced genre ornaments.** `/design/visual` (noindex, not linked) now shows all seventeen genre ornaments, traced from
+woodcuts and prints made before 1600. Seven come from one herbal, *Ortus sanitatis* (Strasbourg, 1499; Internet
+Archive, Public Domain Mark): fish (Sermon), lily (Meditation), rose (Poem), spelt (Catechesis), olive (Essay),
+vine (Commentary) and pomegranate (Dialogue). Objects the herbal lacks come from Met Open Access prints: a loaf
+from Dürer's *Last Supper* (Homily), a candle after Zündt (Prayer), St Peter's key after Baldung (Exegesis) and a
+harp after Cranach (Hymn). Five more followed a second round: a straw skep after Gheeraerts, 1567 (Rule), a
+battlemented tower and an open book from the Nuremberg Chronicle, 1493 (Apology, Treatise; the book replaces a
+column that turned to a stick at small sizes), Augustine's arrow-pierced heart after Cranach (Confession) and a
+quill after Palatino's writing manual, 1548 (Letter). They are cut rather than drawn: lines swell and thin, end blunt or chiselled, with a
+few hatch cuts. Keith turned down solid silhouettes (lumpy) and even-weight line art (read as modern UI icons)
+before accepting these. Each entry in `app/design/visual/herbal-ornaments.ts` records its source and licence.
+The last, a martyr's palm after Schongauer's *Saint Agnes* (Met, public domain), completes all seventeen. Nothing outside the exploration page uses them yet.
+
+The era page also moves onto tokens (`--ink`, `--ink-mute`, `--ink-faint`, `--rule-soft`) and comes off the
+`legacyRawColour` list. A new token, `--plate-scrim`, darkens the foot of the band.
+
+**The season's pick: panel only.** On phones the hero no longer repeats the season's pick, and "Start with"
+returns. Keith preferred the pick to be named once, in the panel. The hero stays tight. The `hero-pick`
+analytics surface added by PR #201 is withdrawn before it ever shipped: it is gone from CLAUDE.md's vocabulary
+and from `verify-analytics.mjs`, and the Events Register records the withdrawal.
+
+---
+
 ## 2026-11-04 — The first phone screen names a text; making the library visual (exploration)
 
 **The first phone screen.** The homepage critique's main finding: on a 390px phone, the first screen
