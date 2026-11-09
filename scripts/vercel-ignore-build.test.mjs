@@ -87,10 +87,12 @@ test('the old commit-message tag no longer builds a preview on an ordinary branc
   rmSync(dir, { recursive: true, force: true })
 })
 
-test('vercel.json lets only main and preview/** create deployments', async () => {
+test('vercel.json lets only the production branch (release) and preview/** create deployments', async () => {
   const { readFileSync } = await import('node:fs')
   const cfg = JSON.parse(readFileSync(join(dirname(SCRIPT), '..', 'vercel.json'), 'utf8'))
-  assert.deepEqual(cfg.git.deploymentEnabled, { '**': false, main: true, 'preview/**': true })
+  // `main` is not production (Production Branch is `release` since 9 Nov 2026), so a push to it makes no
+  // deployment at all, not even a cancelled one that would spend a slot of the shared 100-a-day cap.
+  assert.deepEqual(cfg.git.deploymentEnabled, { '**': false, release: true, 'preview/**': true })
 })
 
 // ── production: what may be skipped ─────────────────────────────────────────

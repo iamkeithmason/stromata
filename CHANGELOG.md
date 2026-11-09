@@ -7,6 +7,39 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-11-09 — Switch-over finished: `release` is production
+
+The last old-style release (#206, `release` → `main`) merged and built on 9 Nov. `release` was recreated from `main`,
+and Keith set Vercel's Production Branch to `release` (the setting now lives under Settings → Environments →
+Production → Branch Tracking, not the Git page). This PR finishes the switch: `main` comes off
+`git.deploymentEnabled` in `vercel.json` (and its test), so a merge into `main` makes no deployment at all, and the
+one-off "Switch-over" block is removed from CLAUDE.md. The Monday release routine now opens `main` → `release`.
+
+---
+
+## 2026-11-06 — `main` is where work lands, `release` is what is live
+
+**Usage check first.** The Fluid Active CPU 30-day total read **3h 47m** on 6 Nov (4h allowance), down from 4h 19m
+on 28 Oct, as the 29 Sep–5 Oct days rolled off. Recent days run about 5–9 min, with spikes near 14 min (29 Oct) and
+10 min (4 Nov). That is under the allowance by about 13 minutes, i.e. thin, so the weekly promotion stays (it was
+made permanent on 26 Oct).
+
+**The branch roles are reversed**, at Keith's request (his portfolio already works this way). Before: `main` was
+production and `release` was the queue, so every site-changing PR had to remember to target `release`. After:
+every PR targets `main`, Vercel's Production Branch is `release`, and the weekly promotion is a PR with base
+`release` and head `main`. It also removes the weekly "GitHub deleted `release`, recreate it" step, because GitHub
+does not delete the default branch when it is a PR's head. This PR rewrites CLAUDE.md "Vercel usage", the
+`/next-agent-card` command (PRs open against `main`; `Built` means reachable from `release`) and the ignore-script
+comments, and adds `release` to `git.deploymentEnabled` in `vercel.json` (keeping `main` for now).
+
+**Switch-over is staged on purpose** (CLAUDE.md "Switch-over" block): `vercel.json` is read from the pushed commit,
+so removing `main` from `deploymentEnabled` before Keith has flipped the Production Branch would stop the last
+old-style release from building. Order: merge the last old-style release, recreate `release` from `main`, Keith sets
+the Production Branch to `release`, a follow-up removes `main` from `deploymentEnabled` and the Monday routine's prompt
+is flipped.
+
+---
+
 ## 2026-11-05 — Scripture citation quality: audited, with a plan (docs only)
 
 Backlog card *Scripture citation clustering & normalization quality*. A read-only audit of 193
@@ -16,6 +49,9 @@ starts were right in every row; the one real loss is that a comma list ("11:20, 
 `range` entities. Chapter-only citations are 8% of rows and should never merge verse-level ones. The
 write-up, deterministic clustering rules and a five-step bounded plan are in
 `docs/research/2026-11-05-scripture-citation-quality.md`. No code, schema or data changed.
+
+---
+
 
 ## 2026-11-04 — The first phone screen names a text; making the library visual (exploration)
 

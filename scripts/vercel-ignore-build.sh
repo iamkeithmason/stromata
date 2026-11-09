@@ -8,8 +8,8 @@
 # each one. See CHANGELOG.md 2026-09-29 and 2026-10-04.
 #
 # PREVIEWS ARE OPT-IN, AND AN UNASKED PUSH MAKES NO DEPLOYMENT AT ALL
-#   vercel.json → git.deploymentEnabled lets only `main` and `preview/**` create
-#   deployments. That is the real gate: this script can only CANCEL a deployment
+#   vercel.json → git.deploymentEnabled lets only the production branch (`release`)
+#   and `preview/**` create deployments. That is the real gate: this script can only CANCEL a deployment
 #   that already exists, and on 2 Nov 2026 cancelled deployments still counted
 #   towards Hobby's 100-a-day cap (shared with Paideia: 137 deployments across
 #   the two projects, about 38 of them real builds), which then refused a push.
@@ -102,8 +102,8 @@ if [ "$VERCEL_ENV" = "production" ]; then
       ;;
   esac
 
-  # HEAD^ is the first parent: for a "Merge pull request" commit that is the
-  # previous main, so the diff is the whole PR. Vercel clones with --depth=10,
+  # HEAD^ is the first parent: for a "Merge pull request" commit (the weekly
+  # main → release promotion) that is the previous release, so the diff is the whole PR. Vercel clones with --depth=10,
   # and `git diff HEAD^ HEAD` is the pattern its docs use.
   if ! git rev-parse --verify --quiet HEAD^ > /dev/null; then
     echo "Production: no parent commit to compare with — building."
