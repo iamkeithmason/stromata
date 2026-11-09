@@ -32,7 +32,8 @@
     "check:prospect-urls": "node scripts/check-prospect-urls.mjs",
     "screens": "node scripts/screens/render.mjs",
     "screens:canvas": "node scripts/screens/canvas.mjs",
-    "ornaments:svg": "tsx scripts/design/write-ornament-svgs.ts"
+    "ornaments:svg": "tsx scripts/design/write-ornament-svgs.ts",
+    "mark:svg": "tsx scripts/design/write-mark-svgs.ts"
   },
   "dependencies": {
     "@react-pdf/renderer": "^4.9.0",

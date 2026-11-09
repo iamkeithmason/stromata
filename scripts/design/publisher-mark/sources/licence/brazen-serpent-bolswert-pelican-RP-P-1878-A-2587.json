@@ -1,0 +1,83 @@
+{
+ "holder": "Rijksmuseum, Amsterdam",
+ "linked_art_id": "https://id.rijksmuseum.nl/200427462",
+ "object_number": [
+  "RP-P-1878-A-2587"
+ ],
+ "titles": [
+  "Pelikaan en de koperen slang, 12",
+  "Amstelredams eer ende opcomen door de denckwaerdighe miraklen aldaer geschied aen ende door het H. Sacrament des Altaers Anno 1345",
+  "Het Mirakel van Amsterdam, 1345"
+ ],
+ "production_dates": [
+  "1639"
+ ],
+ "descriptions": [
+  "Allegorische embleem met de pelikaan die zich in de borst pikt om haar jongen met haar eigen bloed te voeden samen met de koperen slang om het kruis. Prent nr. 12 uit de serie van 16 voorstellingen van Het Mirakel van Amsterdam, naar de gebeurtenissen op 15 maart 1345. Onder de voorstelling twee zesregelige verzen in het Latijn en Nederlands.",
+  "Illustratie voor het boekje: L. Marius, Amstelredams eer ende opcomen door de denckwaerdighe miraklen aldaer geschied aen ende door het H. Sacrament des Altaers Anno 1345, H. Aertssens, Antwerpen 1639.",
+  "gravure",
+  "height 131 mm x width 87 mm",
+  "plaatrand: hoogte 131 mm (links afgesneden, gedrukt van een grotere plaat waarop twee voorstellingen stonden) x breedte 87 mm"
+ ],
+ "object_page": "https://www.rijksmuseum.nl/nl/collectie/object/RP-P-1878-A-2587--8787375e1365409780f8b96a9593e67e",
+ "image_access_point": "https://iiif.micr.io/GeGCe/full/max/0/default.jpg",
+ "rights_in_record": [
+  "https://creativecommons.org/publicdomain/mark/1.0/",
+  "https://creativecommons.org/publicdomain/zero/1.0/"
+ ],
+ "rights_snippet": [
+  {
+   "type": "LinguisticObject",
+   "digitally_carried_by": [
+    {
+     "type": "DigitalObject",
+     "access_point": [
+      {
+       "id": "https://iiif.micr.io/GeGCe/full/max/0/default.jpg",
+       "type": "DigitalObject"
+      }
+     ],
+     "referred_to_by": [
+      {
+       "type": "LinguisticObject",
+       "_label": "Public Domain",
+       "classified_as": [
+        {
+         "id": "https://vocab.getty.edu/aat/300460240",
+         "type": "Type"
+        }
+       ],
+       "content": "https://creativecommons.org/publicdomain/mark/1.0/"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "https://data.rijksmuseum.nl/200427462",
+   "type": "LinguisticObject",
+   "classified_as": [
+    {
+     "id": "http://vocab.getty.edu/aat/300379475",
+     "type": "Type"
+    }
+   ],
+   "subject_to": [
+    {
+     "type": "Right",
+     "classified_as": [
+      {
+       "id": "https://creativecommons.org/publicdomain/zero/1.0/",
+       "type": "Type"
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "fetched": "2026-11-09",
+ "makers": [
+  "Boëtius Adamsz. Bolswert",
+  "Hendrik Aertssens (II)"
+ ]
+}

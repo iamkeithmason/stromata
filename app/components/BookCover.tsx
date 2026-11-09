@@ -1,5 +1,6 @@
 import { traditionColor } from '@/lib/tradition-colors'
 import { ornamentUrl } from '@/lib/genres/ornaments'
+import { markUrl } from '@/lib/brand/mark-url'
 
 /**
  * Long titles on covers. The title panel holds five lines on every cover (the
@@ -256,17 +257,28 @@ export function BookCover({
           flexShrink: 0,
         }}
       >
+        {/* The publisher's mark (lib/brand/mark.ts): the S wound through a
+            cross, in its small cut, drawn as a mask like the genre ornaments.
+            It takes the old S's line box (7cqi, capped at 0.875rem), so the
+            band keeps the height it was matched to on 9 Nov 2026. */}
         <span
+          aria-hidden="true"
           className="book-cover-s"
           style={{
-            fontFamily: 'var(--serif-display)',
-            fontSize: 'min(0.875rem, 7cqi)',
-            color: 'var(--on-dark-soft)',
-            lineHeight: 1,
+            display: 'block',
+            width: 'min(0.875rem, 7cqi)',
+            height: 'min(0.875rem, 7cqi)',
+            backgroundColor: 'var(--on-dark-soft)',
+            WebkitMaskImage: `url(${markUrl('small')})`,
+            maskImage: `url(${markUrl('small')})`,
+            WebkitMaskSize: 'contain',
+            maskSize: 'contain',
+            WebkitMaskRepeat: 'no-repeat',
+            maskRepeat: 'no-repeat',
+            WebkitMaskPosition: 'center',
+            maskPosition: 'center',
           }}
-        >
-          S
-        </span>
+        />
         {readingMinutes && (
           <span
             style={{
