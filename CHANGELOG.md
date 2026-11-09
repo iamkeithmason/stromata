@@ -7,6 +7,33 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-11-09 — The featured text slot now has a read path
+
+**What was wrong.** Migration 012 gave `texts` a `featured` flag, a start date and a curator's note, and gave `authors` a
+feast day. The admin forms wrote them, and the form's own label stated a selection rule ("the most recently featured
+wins; feast days take priority"), but nothing on the public site read any of it. The homepage section called the "featured
+lead" was only the newest text. Keith had already ticked one text and written its note on 22 Sep.
+
+**What changed.**
+- `lib/featured.ts` holds the rule as a pure function, `pickEditorial`: an author whose `feast_day` (stored `MM-DD`) is
+  today comes first; otherwise the featured text with the latest `featured_from` that has begun (an undated one ranks last);
+  otherwise nothing. Eight unit tests in `lib/featured.test.ts`, including a future start date and the feast-over-pick order.
+- The homepage reads the two candidate sets in parallel and, when there is a pick, shows an "Editor's pick" (or "Kept today",
+  on a feast) lead above "Recently added", with the curator's note set above the summary as an attributed, indented line
+  ("— the editor"), so it reads as a note to the reader and not as the generated summary. Nothing is shown when there is no
+  pick, and a failed read means no pick rather than an error page, since the slot is optional furniture. The existing
+  recency lead is unchanged.
+- The text's own page shows the same note above the summary (only for a text still marked featured), so a reader who
+  arrives from a search engine sees it too.
+- **Analytics rename, approved by Keith.** The recency lead's `from` was `featured-lead`; it is now `recency-lead`, and the
+  new slot sends `editorial-pick` (author, text and theme-chip links on both). Recorded in CLAUDE.md's property
+  vocabulary and its "Known legacy exceptions". `scripts/verify-analytics.mjs` renames its `author-open` row and gains
+  `text-open` rows for both values on `/`.
+
+**Not done.** The wire has not been observed: this needs a deployment, and previews are opt-in. The Events Register in Notion
+also needs the two `from` values. The feast-day branch is covered by the unit tests only; no author has a `feast_day` set yet.
+No migration; no new public columns (the `authors` grant already covers `feast_day`).
+
 ## 2026-11-06 — `main` is where work lands, `release` is what is live
 
 **Usage check first.** The Fluid Active CPU 30-day total read **3h 47m** on 6 Nov (4h allowance), down from 4h 19m

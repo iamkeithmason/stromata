@@ -233,7 +233,7 @@ Two traps worth knowing:
 
 | Property | Meaning | Value form |
 |---|---|---|
-| `from` | the surface the click originated on | kebab-case surface name. Homepage: `seasonal-panel`, `hero-pick` (the season's pick in the hero, phones only), `featured-lead`, `homepage-grid`, `featured-band`, `reading-history`. Reader: `text-reader`, `text-page`, `related-figures`, `read-next`; the phone reading header and its sheet (PR #187): `text-hero-contents`, `text-running-head`, `text-sheet-contents`, `text-sheet-next`, `text-sheet-read-next`, `text-sheet-prev`, `text-sheet`. Browse and index: `texts-index`, `authors-index`, `locations-index`, `search-results`, `search-chip`. Entity pages: `author-page`, `collection-page`, `theme-page`, `era-page`, `tradition-page`, `scripture-page`, `location-page`. **The list is the vocabulary — a new surface gets a new value here, in the Events Register, and nowhere else.** |
+| `from` | the surface the click originated on | kebab-case surface name. Homepage: `seasonal-panel`, `hero-pick` (the season's pick in the hero, phones only), `recency-lead` (the newest text or collection; was `featured-lead` until 2026-11-09), `editorial-pick` (the editor's featured text or the author's feast day), `homepage-grid`, `featured-band`, `reading-history`. Reader: `text-reader`, `text-page`, `related-figures`, `read-next`; the phone reading header and its sheet (PR #187): `text-hero-contents`, `text-running-head`, `text-sheet-contents`, `text-sheet-next`, `text-sheet-read-next`, `text-sheet-prev`, `text-sheet`. Browse and index: `texts-index`, `authors-index`, `locations-index`, `search-results`, `search-chip`. Entity pages: `author-page`, `collection-page`, `theme-page`, `era-page`, `tradition-page`, `scripture-page`, `location-page`. **The list is the vocabulary — a new surface gets a new value here, in the Events Register, and nowhere else.** |
 | `text` | which text was opened | **slug**, never the title |
 | `collection` | which collection was opened | **slug** |
 | `author` | which author | display name (matches `authors.name`) |
@@ -296,6 +296,7 @@ cleared from the admin header), so the founder's own browsing never inflates the
   this date `text-read` values are titles and don't join to Supabase; after, they're slugs — the two
   spans aren't directly comparable. Surfaced by the `stromata-analytics` digest's Events Register
   reconciliation on its first run.
+- On **2026-11-09** the homepage lead's `from` value changed from `featured-lead` to **`recency-lead`**. The slot is simply the most recently added text or collection; the old name implied an editorial choice. The editorial slot (`texts.featured`, or an author's feast day) takes its own value, `editorial-pick`, so the two series are never merged. Keith approved the rename (backlog card "Wire up the featured text slot"). Counts under `featured-lead` before the date and `recency-lead` after are the same surface and are not directly comparable by name; `theme-click` from the lead sends the same value as its `source`.
 - From the **release after 2 Nov 2026** (the first one carrying this change), `text-open` counts
   **clicks only**. Until then every text page also sent a `text-open` on load, with no `from`, beside
   `text-view` carrying the same data, so `text-open` mixed page views into its click count and left a
