@@ -23,6 +23,11 @@ authors shown as a grid like the homepage's featured band.
   turns `--paper`. The button is a 44px tap target with the tag drawn on an inner span, the same arrangement as
   `ThemeChip`; before, the pill was about 22px tall. The filter rows drop their vertical gap, since the tap target
   now supplies it.
+- **On phones the filters wait behind a Filter button.** At 390px the tradition and era tags ran to nine rows and
+  pushed the first author below the first screen. Below `sm` they now sit behind a **Filter ▾** toggle
+  (`aria-expanded`), which shows how many filters are on (e.g. "1 on") so a filtered list never looks unfiltered.
+  Sort and "Clear filters" stay visible. From `sm` up nothing changes: the tags are always shown. The first author
+  now starts about 340px down on a phone instead of about 780px. `/texts` is unchanged.
 - **Portraits after the first row load lazily.** `LancetArch` takes a `lazy` prop (`loading="lazy"`). The old list
   fetched every portrait on every view, so a reader who never scrolls now costs less Storage egress than before.
   The homepage band and seasonal panel stay eager.

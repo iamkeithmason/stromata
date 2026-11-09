@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { FilterPill } from './FilterPill'
 import { useUrlFilters } from '@/lib/use-url-filters'
 import { pickFacet } from '@/lib/facets'
@@ -84,6 +84,12 @@ export function AuthorsBrowser({
   }
 
   const hasFilter = Boolean(filters.tradition || filters.era)
+  const activeCount = (filters.tradition ? 1 : 0) + (filters.era ? 1 : 0)
+
+  // Phones only: the tradition and era tags fill most of the first screen
+  // (nine rows of tags at 390px), so they wait behind a Filter button and the
+  // authors come first. From sm up there is room, and they are always shown.
+  const [filtersOpen, setFiltersOpen] = useState(false)
 
   const filtered = useMemo(() => {
     const list = items.filter(
@@ -110,18 +116,45 @@ export function AuthorsBrowser({
       />
 
       <div className="mb-8 space-y-3">
-        <FilterRow
-          label="Tradition"
-          options={facets.traditions}
-          selected={filters.tradition}
-          onToggle={slug => set('tradition', slug)}
-        />
-        <FilterRow
-          label="Era"
-          options={facets.eras}
-          selected={filters.era}
-          onToggle={slug => set('era', slug)}
-        />
+        <div className="sm:hidden">
+          <button
+            type="button"
+            onClick={() => setFiltersOpen(o => !o)}
+            aria-expanded={filtersOpen}
+            aria-controls="author-filters"
+            className="inline-flex items-center gap-2 hover:opacity-70 transition-opacity"
+            style={{ minHeight: 44, background: 'transparent', cursor: 'pointer' }}
+          >
+            <span className="smallcaps" style={{ color: 'var(--ink-soft)' }}>
+              Filter
+            </span>
+            {activeCount > 0 && (
+              <span className="text-xs" style={{ color: 'var(--gold-ink)' }}>
+                {activeCount} on
+              </span>
+            )}
+            <span aria-hidden="true" style={{ color: 'var(--ink-faint)', fontSize: 'var(--text-sm)' }}>
+              {filtersOpen ? '▴' : '▾'}
+            </span>
+          </button>
+        </div>
+        <div
+          id="author-filters"
+          className={`${filtersOpen ? 'block' : 'hidden'} sm:block space-y-3`}
+        >
+          <FilterRow
+            label="Tradition"
+            options={facets.traditions}
+            selected={filters.tradition}
+            onToggle={slug => set('tradition', slug)}
+          />
+          <FilterRow
+            label="Era"
+            options={facets.eras}
+            selected={filters.era}
+            onToggle={slug => set('era', slug)}
+          />
+        </div>
         <div className="flex items-center gap-3 flex-wrap pt-1">
           <span className="smallcaps" style={{ color: 'var(--ink-faint)' }}>
             Sort
