@@ -17,7 +17,9 @@
  * on every cover of a grid): they draw `public/ornaments/<slug>.svg` as a CSS
  * mask, so the browser fetches each shape once. Regenerate those files with
  * `npm run ornaments:svg` after changing a path; ornaments.test.ts fails while
- * the two disagree. The tracing scripts are not in the repo.
+ * the two disagree. The tracing scripts, stroke library and source crops live in
+ * scripts/design/ornaments/; its build.py rebuilds every path and checks it
+ * against this file byte for byte.
  */
 
 export type HerbalOrnament = { name: string; source: string; d: string }
