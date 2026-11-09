@@ -13,6 +13,7 @@
  *        generated from the genre, so the shelves read as kinds of writing.
  *   III. One plate per era — nine public-domain images, chosen once, for the
  *        eras rather than the texts. Not sourced yet; the frames say what to find.
+ *   IV.  The publisher's mark — the S wound through a cross, print and small cuts.
  *
  * Real published data throughout, metadata only (no `body`; see
  * lib/supabase/no-body-in-listings.test.ts). Colour comes from tokens.
@@ -25,6 +26,7 @@ import { createPublicClient } from '@/lib/supabase/public'
 import { traditionColor } from '@/lib/tradition-colors'
 import { SectionHeader } from '@/app/components/SectionHeader'
 import { HERBAL_ORNAMENTS } from '@/lib/genres/ornaments'
+import { PUBLISHER_MARK } from '@/lib/brand/mark'
 
 export const metadata: Metadata = {
   title: 'Making the library visual (exploration) — The Stromata',
@@ -392,6 +394,33 @@ export default async function VisualExploration() {
               </figcaption>
             </figure>
           ))}
+        </div>
+
+        {/* ── IV ── */}
+        <SectionHeader title="IV. The publisher&rsquo;s mark" aside="two cuts" />
+        <p className="font-serif mb-6" style={{ color: 'var(--ink-soft)', maxWidth: '60ch', lineHeight: 1.6 }}>
+          The S wound through a cross, after the bronze serpent lifted up (Numbers 21; John 3:14&ndash;15),
+          from Keith&rsquo;s inked sketch. The cross reads first; to a casual reader it is an S. The print
+          cut is a woodcut in the ornaments&rsquo; hand, for printed books and large sizes. The small cut is a
+          solid silhouette drawn for its size, and replaces the plain S in every cover&rsquo;s bottom band.
+        </p>
+        <div className="flex flex-wrap items-end gap-6 mb-16">
+          {([['print', 240, 'Print cut, 240px'], ['small', 64, 'Small cut, 64px'], ['small', 14, 'Small cut, 14px']] as const).map(([cut, size, label]) => (
+            <figure key={label} style={{ margin: 0 }}>
+              <div style={{ background: 'var(--hero-ground)', padding: size > 100 ? 24 : 12, display: 'inline-block' }}>
+                <svg width={size} height={size} viewBox="0 0 100 100" role="img" aria-label={`The publisher's mark, ${cut} cut`} style={{ display: 'block' }}>
+                  <path d={PUBLISHER_MARK[cut].d} fillRule="evenodd" fill="var(--on-dark-soft)" />
+                </svg>
+              </div>
+              <figcaption className="caption mt-2" style={{ color: 'var(--ink-faint)' }}>{label}</figcaption>
+            </figure>
+          ))}
+          <figure style={{ margin: 0 }}>
+            <svg width={240} height={240} viewBox="0 0 100 100" role="img" aria-label="The publisher's mark, print cut, in ink" style={{ display: 'block' }}>
+              <path d={PUBLISHER_MARK.print.d} fillRule="evenodd" fill="var(--ink)" />
+            </svg>
+            <figcaption className="caption mt-2" style={{ color: 'var(--ink-faint)' }}>Print cut in ink, as it would print</figcaption>
+          </figure>
         </div>
 
         <p className="caption" style={{ color: 'var(--ink-faint)', maxWidth: '60ch' }}>

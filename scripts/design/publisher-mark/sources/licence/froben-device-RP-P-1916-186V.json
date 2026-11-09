@@ -1,0 +1,83 @@
+{
+ "holder": "Rijksmuseum, Amsterdam",
+ "linked_art_id": "https://id.rijksmuseum.nl/200136718",
+ "object_number": [
+  "RP-P-1916-186(V)"
+ ],
+ "titles": [
+  "Drukkersmerk van Johann Froben"
+ ],
+ "production_dates": [
+  "1556"
+ ],
+ "descriptions": [
+  "collector's mark: Lugt 2228",
+  "verzamelaarsmerk, gestempeld: Lugt 2228",
+  "Prent afkomstig uit: Forster, Johann. Dictionarium Hebraicum Novuum. Bazel: Johann Froben, 1556.",
+  "houtsnede",
+  "blad: hoogte 239 mm x breedte 163 mm",
+  "height 239 mm x width 163 mm"
+ ],
+ "object_page": "https://www.rijksmuseum.nl/nl/collectie/object/RP-P-1916-186(V)--ce35e20ec0842a4b38ae560a15d904be",
+ "image_access_point": "https://iiif.micr.io/rRnwP/full/max/0/default.jpg",
+ "rights_in_record": [
+  "https://creativecommons.org/publicdomain/mark/1.0/",
+  "https://creativecommons.org/publicdomain/zero/1.0/"
+ ],
+ "rights_snippet": [
+  {
+   "type": "LinguisticObject",
+   "digitally_carried_by": [
+    {
+     "type": "DigitalObject",
+     "access_point": [
+      {
+       "id": "https://iiif.micr.io/rRnwP/full/max/0/default.jpg",
+       "type": "DigitalObject"
+      }
+     ],
+     "referred_to_by": [
+      {
+       "type": "LinguisticObject",
+       "_label": "Public Domain",
+       "classified_as": [
+        {
+         "id": "https://vocab.getty.edu/aat/300460240",
+         "type": "Type"
+        }
+       ],
+       "content": "https://creativecommons.org/publicdomain/mark/1.0/"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "https://data.rijksmuseum.nl/200136718",
+   "type": "LinguisticObject",
+   "classified_as": [
+    {
+     "id": "http://vocab.getty.edu/aat/300379475",
+     "type": "Type"
+    }
+   ],
+   "subject_to": [
+    {
+     "type": "Right",
+     "classified_as": [
+      {
+       "id": "https://creativecommons.org/publicdomain/zero/1.0/",
+       "type": "Type"
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "fetched": "2026-11-09",
+ "makers": [
+  "attrib./after: Hans Holbein (II)",
+  "Johann Froben",
+  "Monogrammist CV"
+ ]
+}

@@ -7,6 +7,35 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-11-09 — The publisher's mark on every cover
+
+The plain S in each book cover's bottom band is now the publisher's mark: an S wound through a cross, after the
+bronze serpent lifted up (Numbers 21:4–9; John 3:14–15). Keith designed and inked it in April 2026; on 9 Nov it was
+cut in the hand of the genre ornaments over four rounds (logged on the Notion card "Woodcut publisher's mark: the S
+woven with a cross"). The cross reads first, so the serpent reads as redemptive; to a casual reader it is an S. The
+S is a letterform, with no head or scales.
+
+- **Two cuts, one module.** `lib/brand/mark.ts` holds both as evenodd paths on a 0 0 100 100 box. The **print** cut
+  is a woodcut (knife strokes that overshoot at the corners, hatching on the shadow side, the S as two outlines) in
+  smooth cubic curves, checked at 60mm and 300 dpi, for printed books and large sizes. The **small** cut is a solid
+  silhouette drawn for its size, for the cover band (about 10–14px) and the reader frontispiece (about 6px).
+- **What the rounds settled.** Round 1 followed the sketch's weights and read as "$" at cover size: an S with a bar
+  above and below is the dollar sign. Long arms reaching past the S, a round boss and no bar below fixed it. Gaps in
+  the weave do not survive small, so the small cut merges cross and S into one shape.
+- **On covers** the mark is drawn from `public/mark/small.svg` as a CSS mask, like the genre ornaments, in
+  `--on-dark-soft`, and takes the old S's line box (7cqi, capped at 0.875rem), so the band keeps the height it was
+  matched to. `lib/brand/mark-url.ts` keeps the URL apart from the path data, because the cover also renders in a
+  client component. `npm run mark:svg` writes the files; `lib/brand/mark.test.ts` fails if they drift from the
+  module, or if the print cut stops being curves.
+- **`/design/visual`** gains a fourth study showing both cuts.
+- **The drawing is in the repo:** `scripts/design/publisher-mark/` holds the scripts, Keith's sketch, the period
+  references studied (Froben, Holbein, Solis, Beham, Bolswert and others, with each holder's licence record), and
+  `build.py`, which rebuilds both cuts and checks them against `lib/brand/mark.ts` byte for byte. Changing one
+  number in the stored small path made it report the difference and exit 1.
+
+Checked locally against live data at 390px and 1440px on the homepage, search, a text page and `/design/visual`:
+no sideways scroll, and the band heights are unchanged.
+
 ## 2026-11-09 — The ornament tracing scripts are in the repo
 
 The seventeen genre ornaments were made in a cloud scratchpad, so the stroke library and tracing scripts would
