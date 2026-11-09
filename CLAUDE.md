@@ -425,6 +425,10 @@ project "3 - Stromata", so ordinary chats can review the interface too (the prac
 - **Meters:** one run is about 30 shots against the live database, a few MB of Supabase egress (and, against
   production, a little Fluid CPU). Once per release; don't re-run it for polish.
 - `--png` also writes each shot to `docs/screens/png/` (gitignored); `--only=<name>` renders a subset.
+- **The site canvas** (`npm run screens:canvas`, after a `--png` run) puts the manifest pages that carry
+  `canvas`/`links` on one zoomable board, with a line per route weighted by Umami clicks (`--range=`, default
+  30d; `--fragment` to publish as an artifact). A link's `from` values must be on `scripts/lib/from-surfaces.mjs`,
+  which a test keeps in step with the `from` row of the property vocabulary below. Add a surface in both places.
 
 ---
 
