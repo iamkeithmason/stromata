@@ -429,6 +429,8 @@ project "3 - Stromata", so ordinary chats can review the interface too (the prac
   `canvas`/`links` on one zoomable board, with a line per route weighted by Umami clicks (`--range=`, default
   30d; `--fragment` to publish as an artifact). A link's `from` values must be on `scripts/lib/from-surfaces.mjs`,
   which a test keeps in step with the `from` row of the property vocabulary below. Add a surface in both places.
+  A legacy event that records its surface under another name sets `property` on the link (`theme-click` uses
+  `"source"`); those values are not vocabulary-checked.
 
 ---
 

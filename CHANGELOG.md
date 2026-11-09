@@ -7,6 +7,25 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-11-09 — Site canvas: theme, location and search pages join the board
+
+Nine pages now, up from six. The theme page, a location page (England, new to the screens manifest, so the PDF
+gains it too) and search results are on the canvas, along with the routes into and out of them. Two links
+needed more than the `from` model:
+
+- **`theme-click` predates the `from` rule** and records its surface as `source` (`homepage`, `featured-lead`,
+  `text-page`). A link can now name `property: "source"`. Only `from` values are checked against the
+  vocabulary, since the legacy values were never part of it. The adapter reads each (event, property) pair it
+  needs: six Umami calls a run.
+- **`search-chip` is not on the search page.** It is the homepage hero's "Start with" author chips, so its line
+  runs from Home to Author.
+
+What the 90 days to 9 Nov show: the search results page sent **no** clicks to texts or authors, against 5
+searches submitted. Every theme visit that left a trace came from a text page (10 of 10 `theme-click`), and
+the theme page then sent 4 clicks on to texts. Location pages are near-silent (1 click in, 1 out).
+
+---
+
 ## 2026-11-09 — Site canvas trial: key pages on one board, linked by reader clicks
 
 A trial of the backlog card "Site canvas: zoomable map of key pages, linked by real reader clicks". `npm run
