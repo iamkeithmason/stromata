@@ -64,6 +64,22 @@ the `[slug]` pages ○/●). Author-page genre headings get the ornaments later,
 
 ---
 
+## 2026-11-09 — Ranked search applied, and made as fast as it was measured to be (migration 037)
+
+Migrations 036 and 037 are **applied to production** (Keith asked for it on 9 Nov), so `/search` now uses
+the ranked, whole-word body search instead of the fallback.
+
+Timed through the public API right after 036 was applied, the function took 1.5 s for "alms" and 2.7 s for
+"god". The 0.39 s quoted in #213 came from a plain query on a temporary copy, not the function. There were
+two causes. Postgres inlined the CTE that builds the excerpt into a select that names it three times, so
+every `ts_headline` ran three times. And the has-before and has-after flags used `strpos` across 52 KB
+bodies. Migration 037 marks the CTEs `materialized` and replaces `strpos` with `starts_with`/`right`. The
+flags matched the old ones on all 50 test rows, and results are unchanged. Now 0.19–0.60 s in the database
+and 0.85–1.3 s through the API, of which about 0.5 s is the API's own floor. Write-up:
+`docs/research/2026-11-09-time-what-you-ship-not-a-replica.md`.
+
+---
+
 ## 2026-11-09 — Search matches whole words, ranks body hits, and reads multi-word queries word by word
 
 Two backlog cards in one PR, because both change the same query code in `app/search/page.tsx`:
