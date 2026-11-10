@@ -7,6 +7,57 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-11-10 — Edition provenance audit, Step 1: a read-only script that proposes edition fields
+
+`scripts/propose-edition-metadata.mjs` reads `source_attribution`, `translation_notes` and `provenance_notes` on every
+published text and proposes structured edition fields: `is_translation` (true / false / unknown), translator(s), series
+(`ANF`, `NPNF1`, `NPNF2`, `LIB_FATHERS`, `LUTHER_PHILA`, `PARKER`, `SCHAFF_CREEDS`, `TCL_SPCK`, `OTHER`), volume,
+publication year, publisher and place. Every field records the method that produced it (`pattern`, `alias`,
+`inferred`, `llm`, `inherited_from_collection`) and every doubt a reason code. It writes nothing to the database; Step 2
+(migration + an apply script for editor-approved rows) will read the CSV's `editor_decision` column.
+
+- **Read-only by construction.** It takes the anon/publishable key or a SELECT-only role and refuses a `service_role`
+  JWT or an `sb_secret_` key outright. Selects metadata columns only, never `body`: about 0.5 MB of egress a run.
+- **Pass 1 is deterministic** (`scripts/lib/edition-parse.mjs`, pure, 25 tests built from the 10 Nov audit's known
+  cases). Translator parsing is token-aware JS, because the earlier Postgres regex could not tell an initial ("S.
+  Thelwall") from a sentence end. NPNF with no series number is inferred from the author (Series 1 is only Augustine
+  and Chrysostom). A series named only to rule it out (Psychomachia's "appears in neither the Ante-Nicene nor the
+  Nicene and Post-Nicene Fathers") is flagged, not taken.
+- **Pass 2 (`--llm`, off by default)** sends only unresolved rows to the model and keeps a field only when its evidence
+  is a verbatim substring of the row's own notes and contains the value. Without an API key, `--llm-export` writes the
+  requests for any model to answer and `--llm-answers` applies the answers through the same guard. The first Pass 2 was
+  answered by a subagent (answers committed as `llm-answers.json`): 36 rows asked, 96 fields passed the guard, none
+  rejected, 25 filled a blank (Jewel vol. 4, 1845; Wyclif vol. III; the Bullinger letters marked as translations; the
+  Lady Jane Grey and Concordia Triglotta source titles). No row became resolved: what is missing there (a translator,
+  the *Stromata*'s ANF volume) is not in the notes, and the guard will not let a model supply it.
+- **Sourced and editor-confirmed fields** live in a committed file, `outputs/edition-audit/sourced-fields.json`, which
+  the script applies after Pass 1. A `source` entry carries a verbatim citation and its URL, and every value must
+  appear in that citation; an `editor` entry carries a note of who confirmed it. These override Pass 1 and keep what
+  they replaced. First entries, from New Advent's own citations: the 7 Ignatius letters (Alexander Roberts & James
+  Donaldson, ANF 1, 1885) and the 7 *Stromata* parts (ANF 2, 1885). The *Stromata* notes credit "Roberts-Donaldson",
+  who edited the series; the citation names **William Wilson** as translator, so 6 parts now carry Wilson and a
+  `translator_is_editor` flag for the notes to be corrected in Step 2 (Book III is printed in Latin, so it takes the
+  volume only). Keith confirmed Jewel's *Paper on Usury* as vol. 4.
+- **Second sourcing pass:** Damasus's *Confession* is Blomfield Jackson's translation (NPNF2 3, 1892, Theodoret
+  *EH* V.11). The Lady Jane Grey parts come from Nicolas's *Memoirs and Remains of Lady Jane Grey* (London: Colburn &
+  Bentley, 1831): the three Bullinger letters are Latin, translated without a named translator, and six other parts
+  are her own English (the Tower inscriptions part stays open, as some are Latin). Wycliffe's *Short Rule of Life* is
+  his Middle English, ed. Thomas Arnold (Clarendon, 1869, vol. III). **Pliny's letters to Trajan are not the
+  Melmoth/Bosanquet translation the notes claim:** the Georgetown page names no translator, and its wording ("It is my
+  practice, my lord…") differs from Melmoth's ("It is my invariable rule, Sir…", Gutenberg #2811). The translator
+  credit is withdrawn and the text stays on the copyright-review list. Every copy traced (Georgetown, Fordham, World
+  History Encyclopedia) leads back to James O'Donnell's 1990s Penn web file, which names no translator. Keith confirmed
+  the six Lady Jane Grey English-original readings. After both passes, 539 of 555 resolved (97.1%).
+- **First run, 556 published texts:** 516 resolved (92.8%); series + volume + translator for 419 (the SQL audit found
+  ~410); 46 original-language works marked `is_translation: false`; 40 unresolved, each with a reason. Output in
+  `outputs/edition-audit/2026-11-10/`, including a proposed `source_editions` seed and a copyright-review list.
+- **Found on the way:** four of the audit's blank-provenance fixtures (`treatise-on-the-practical-life`,
+  `on-the-thoughts`, `confession`, `sermon-of-the-wolf-to-the-english`) are now drafts, so a published-only run no
+  longer sees them; the 7 *Stromata* parts all cite ANF with no volume; all 10 Lady Jane Grey parts carry a bare
+  Archive.org URL as their attribution.
+
+---
+
 ## 2026-11-10 — Replace a held text's body in place: `replace-text-body.mjs`
 
 Three texts unpublished on 10 Nov for copyright or provenance (Praktikos, Patrick's Confession, Sermo Lupi)
