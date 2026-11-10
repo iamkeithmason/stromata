@@ -58,6 +58,23 @@ publication year, publisher and place. Every field records the method that produ
 
 ---
 
+## 2026-11-10 — Replace a held text's body in place: `replace-text-body.mjs`
+
+Three texts unpublished on 10 Nov for copyright or provenance (Praktikos, Patrick's Confession, Sermo Lupi)
+have cleared translations. `pipeline-import.mjs` only inserts and skips an existing slug, so nothing could
+put a new body into the existing row, and a new row would have cost the permanent accession number and the
+old URL. `scripts/replace-text-body.mjs` does it: it reads staged files from
+`scripts/ingestion/output/replacements/`, guards on id + slug + accession number + `published = false`,
+writes body and provenance fields, sets `review_state` to `pending`, clears `sections`, rebuilds
+`text_scripture_references`, and never touches `published`, `editorial_introduction` or `note_draft`.
+Dry run by default (old/new word counts, first and last 300 characters); `--apply` writes with the service
+key; `--sql=<file>` emits one guarded transaction per text for a session that only has the Supabase MCP.
+`lib/licenses.ts` gains `cc-by-4.0` for the Dysinger Praktikos transcription. Two `archive-ocr-config.mjs`
+entries stage White's Patrick and the Cook & Tinker Wulfstan. Details and the OCR readings for the editor:
+`scripts/ingestion/run-log/2026-11-10-replacements.md`.
+
+---
+
 ## 2026-11-09 — The publisher's mark on every cover
 
 The plain S in each book cover's bottom band is now the publisher's mark: an S wound through a cross, after the
