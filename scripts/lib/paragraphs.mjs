@@ -484,14 +484,33 @@ export function parseBreaksReply(text) {
 }
 
 /**
+ * A sentence opening with "For" nearly always gives the ground for the one
+ * before it, so a break in front of it separates a claim from its reason. The
+ * prompt asks the model not to; on the first run (10 Nov 2026) it did so 124
+ * times in 1,245 breaks, so the draft step drops them. An editor can still add
+ * one by hand in review.
+ */
+export function opensWithFor(sentence) {
+  return /^["'“‘(\[*_]*For(?!\p{L})/u.test(String(sentence ?? '').trim());
+}
+
+/**
  * Turn a model's sentence indices for one paragraph into legal picks: drop
- * anything out of range or repeated, then drop breaks (latest first) until no
+ * anything out of range or repeated, and any break before a "For" sentence,
+ * then drop breaks (latest first) until no
  * piece is under MIN_PIECE_WORDS. Deterministic, so a reply can only ever
  * narrow to something valid, never be stretched into something it did not say.
  */
 export function tidyBreaks(text, indices) {
-  const count = sentencesOf(text).length;
-  let cuts = [...new Set(indices.filter((n) => Number.isInteger(n) && n >= 0 && n < count - 1))].sort((a, b) => a - b);
+  const sentences = sentencesOf(text);
+  const count = sentences.length;
+  let cuts = [
+    ...new Set(
+      indices.filter(
+        (n) => Number.isInteger(n) && n >= 0 && n < count - 1 && !opensWithFor(sentences[n + 1])
+      )
+    ),
+  ].sort((a, b) => a - b);
   for (;;) {
     const pieces = pieceWords(text, cuts);
     const short = pieces.findIndex((w) => w < MIN_PIECE_WORDS);

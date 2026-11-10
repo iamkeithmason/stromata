@@ -13,6 +13,7 @@ import {
   countWords,
   draftState,
   noBreaksDoc,
+  opensWithFor,
   paragraphBlocks,
   paragraphStats,
   parseBreaksReply,
@@ -295,4 +296,15 @@ test('a no-turn result is stored as a held, empty proposal', () => {
   const doc = noBreaksDoc('Claude found no turn');
   assert.equal(draftState(doc), 'held');
   assert.deepEqual(doc.breaks, []);
+});
+
+test('the draft step drops a break before a sentence opening with "For"', () => {
+  const sent = (id, first) => [first, ...Array.from({ length: 18 }, (_, i) => `w${id}x${i}`), `end${id}.`].join(' ');
+  const text = Array.from({ length: 12 }, (_, i) => sent(i, i === 5 ? 'For' : i === 8 ? '“For' : 'Then')).join(' ');
+  // Breaks after sentence 4 (next opens "For") and 7 (next opens “For) go; 2 stays.
+  assert.deepEqual(tidyBreaks(text, [2, 4, 7]), [2]);
+  assert.ok(opensWithFor('For this reason he wrote.'));
+  assert.ok(opensWithFor('_For_ the Lord is near.'));
+  assert.ok(!opensWithFor('Forasmuch as he wrote.'), 'a word boundary, not a prefix');
+  assert.ok(!opensWithFor('But for this he wrote.'));
 });

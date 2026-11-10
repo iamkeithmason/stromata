@@ -56,6 +56,15 @@ passed because they run as `postgres`, with no timeout. Pages of 60 run in 0.8â€
 so without the trigger change, drafting proposals for 25 published texts would advertise them as changed and
 invite crawler re-renders of unchanged pages.
 
+**First drafting run, 10 Nov 2026** (Keith's laptop): 26 texts got proposals and 1 was held (no turn found),
+with 1,265 breaks in all. *De Principiis* II failed on the first pass and succeeded on a retry by slug. Reading
+a sample turned up a pattern: 127 breaks fell before a sentence opening with "For", which nearly always gives
+the reason for the sentence before it, so a break there separates a claim from its grounds. The prompt already
+asked the model to avoid this. `tidyBreaks` now drops such breaks deterministically (`opensWithFor`), and with
+Keith's go-ahead the 127 were removed from the stored proposals in SQL before his review. That leaves 1,138
+breaks across 26 texts. Removing a break only merges pieces, so no paragraph fell under the 60-word minimum.
+Every anchor still occurs exactly once, and no `updated_at` moved.
+
 Measured the same day with that function's SQL: 151 published texts have an 800+ word paragraph (Tier 1: 25, Tier 2: 72, Tier 3: 54), plus 2 unpublished drafts. The card recorded Tier 1 as 27
 and Tier 2 as 70; the totals match exactly, and the recorded definition gives 25 today, so the 10 Nov query
 differed in some detail that was not written down. JS and SQL figures agree exactly on the two bodies checked
