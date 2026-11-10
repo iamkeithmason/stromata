@@ -7,6 +7,34 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-11-10 — Edition provenance audit, Step 1: a read-only script that proposes edition fields
+
+`scripts/propose-edition-metadata.mjs` reads `source_attribution`, `translation_notes` and `provenance_notes` on every
+published text and proposes structured edition fields: `is_translation` (true / false / unknown), translator(s), series
+(`ANF`, `NPNF1`, `NPNF2`, `LIB_FATHERS`, `LUTHER_PHILA`, `PARKER`, `SCHAFF_CREEDS`, `TCL_SPCK`, `OTHER`), volume,
+publication year, publisher and place. Every field records the method that produced it (`pattern`, `alias`,
+`inferred`, `llm`, `inherited_from_collection`) and every doubt a reason code. It writes nothing to the database; Step 2
+(migration + an apply script for editor-approved rows) will read the CSV's `editor_decision` column.
+
+- **Read-only by construction.** It takes the anon/publishable key or a SELECT-only role and refuses a `service_role`
+  JWT or an `sb_secret_` key outright. Selects metadata columns only, never `body`: about 0.5 MB of egress a run.
+- **Pass 1 is deterministic** (`scripts/lib/edition-parse.mjs`, pure, 25 tests built from the 10 Nov audit's known
+  cases). Translator parsing is token-aware JS, because the earlier Postgres regex could not tell an initial ("S.
+  Thelwall") from a sentence end. NPNF with no series number is inferred from the author (Series 1 is only Augustine
+  and Chrysostom). A series named only to rule it out (Psychomachia's "appears in neither the Ante-Nicene nor the
+  Nicene and Post-Nicene Fathers") is flagged, not taken.
+- **Pass 2 (`--llm`, off by default)** sends only unresolved rows to the model and keeps a field only when its evidence
+  is a verbatim substring of the row's own notes and contains the value.
+- **First run, 556 published texts:** 516 resolved (92.8%); series + volume + translator for 419 (the SQL audit found
+  ~410); 46 original-language works marked `is_translation: false`; 40 unresolved, each with a reason. Output in
+  `outputs/edition-audit/2026-11-10/`, including a proposed `source_editions` seed and a copyright-review list.
+- **Found on the way:** four of the audit's blank-provenance fixtures (`treatise-on-the-practical-life`,
+  `on-the-thoughts`, `confession`, `sermon-of-the-wolf-to-the-english`) are now drafts, so a published-only run no
+  longer sees them; the 7 *Stromata* parts all cite ANF with no volume; all 10 Lady Jane Grey parts carry a bare
+  Archive.org URL as their attribution.
+
+---
+
 ## 2026-11-09 — The publisher's mark on every cover
 
 The plain S in each book cover's bottom band is now the publisher's mark: an S wound through a cross, after the
