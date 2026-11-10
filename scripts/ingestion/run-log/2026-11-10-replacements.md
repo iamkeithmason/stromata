@@ -82,7 +82,7 @@ the print.
 **Correction to the brief:** the translation *is* individually credited. It is signed at its end
 "Elizabeth W. Manwaring", as each selection in the volume is signed by its translator. `source_attribution`
 and `translation_notes` name her. US status is unaffected (published 1908). UK status turns on her death
-year, which two searches on 10 Nov could not find. Left flagged in `translation_notes`.
+year, which two searches on 10 Nov could not find. Left flagged in `translation_notes`. Keith's ruling (10 Nov): publication in 1908 settles US status; the UK death year stays an open question on the record, and it does not block publishing.
 
 OCR corrections (config `manualCorrections`): mjus-tice → injustice; tliese, tliis, wliich, wlierein; dihgence;
 tilings → things (×2); appomted; livxig; hatmg; "might I Here" → "might! Here"; "together I Let" →
