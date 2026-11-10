@@ -42,11 +42,17 @@ paragraph break per anchor.
   note, so later runs do not pay to read it again; `--force` redrafts only pending proposals, and only when
   `--paragraphs` is named, so a forced summaries run cannot undo a hold.
 
-Migration `038_paragraph_breaks.sql` (the column, its shape check, the function, service role only, and
-`texts_updated_at` recreated so that a write to `paragraphs_draft` alone no longer moves `updated_at`) must be
-applied before this ships. `updated_at` is the sitemap's lastModified, so without that, drafting proposals for 25
-published texts would advertise them as changed and invite crawler re-renders of unchanged pages. Measured the same day with that function's SQL: 151 published texts have an 800+
-word paragraph (Tier 1: 25, Tier 2: 72, Tier 3: 54), plus 2 unpublished drafts. The card recorded Tier 1 as 27
+Migration `038_paragraph_breaks.sql` adds the column, its shape check and the function (service role only). It
+also points `texts_updated_at` at a new `texts_touch_updated_at()`, so a write to `paragraphs_draft` alone no
+longer moves `updated_at`. That is a function rather than a trigger `WHEN` clause because Postgres refuses a
+whole-row `WHEN` on a table with generated columns. It ignores `word_count` and `body_tsv`, which follow `body`.
+**Applied to production on 10 Nov 2026**, with Keith's go-ahead, and checked there: 151 / 25 / 2 from the
+function; a draft-only write keeps `updated_at`; a real edit moves it; the shape check rejects a malformed
+document; anon can neither call the function nor read the column. `updated_at` is the sitemap's lastModified,
+so without the trigger change, drafting proposals for 25 published texts would advertise them as changed and
+invite crawler re-renders of unchanged pages.
+
+Measured the same day with that function's SQL: 151 published texts have an 800+ word paragraph (Tier 1: 25, Tier 2: 72, Tier 3: 54), plus 2 unpublished drafts. The card recorded Tier 1 as 27
 and Tier 2 as 70; the totals match exactly, and the recorded definition gives 25 today, so the 10 Nov query
 differed in some detail that was not written down. JS and SQL figures agree exactly on the two bodies checked
 (Country Parson, On Repentance).

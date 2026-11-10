@@ -104,9 +104,30 @@ $$;
 revoke all on function public.paragraph_wall_stats(integer) from public, anon, authenticated;
 grant execute on function public.paragraph_wall_stats(integer) to service_role;
 
+-- The rule lives in a function, not a trigger WHEN clause: Postgres refuses a
+-- whole-row reference in a BEFORE trigger's WHEN on a table with generated
+-- columns (texts has word_count and body_tsv). Both are derived from body,
+-- which is compared, so leaving them out of the comparison loses nothing.
+-- update_updated_at() itself is left as it is for any other table using it.
+create or replace function public.texts_touch_updated_at()
+returns trigger
+language plpgsql
+set search_path = ''
+as $$
+declare
+  ignored text[] := array['paragraphs_draft', 'updated_at', 'word_count', 'body_tsv'];
+begin
+  if (to_jsonb(new) - ignored) = (to_jsonb(old) - ignored) then
+    new.updated_at := old.updated_at;
+  else
+    new.updated_at := now();
+  end if;
+  return new;
+end;
+$$;
+
 drop trigger if exists texts_updated_at on public.texts;
 create trigger texts_updated_at
   before update on public.texts
   for each row
-  when ((to_jsonb(old) - 'paragraphs_draft' - 'updated_at') is distinct from (to_jsonb(new) - 'paragraphs_draft' - 'updated_at'))
-  execute function public.update_updated_at();
+  execute function public.texts_touch_updated_at();
