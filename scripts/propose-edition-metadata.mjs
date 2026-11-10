@@ -255,6 +255,8 @@ function applySourcedFile(items) {
     const p = it.proposal;
     const method = entry.basis === 'editor' ? 'editor' : 'sourced';
     p.sourced = { basis: entry.basis, source_url: entry.source_url ?? null, citation: entry.citation ?? null, note: entry.note ?? null, refused, superseded: {} };
+    if (entry.note) p.notes.push(`${method}: ${entry.note}`);
+    if (/^FINDING:/.test(entry.note || '') && p.is_translation === true && !p.reasons.includes('modern_translation_check')) p.reasons.push('modern_translation_check');
     for (const [field, value] of Object.entries(ok)) {
       if (field === 'translator_display') {
         const names = canonicaliseTranslators(value.split(/\s*(?:&| and |,)\s*/).filter(Boolean)).names;
@@ -271,13 +273,28 @@ function applySourcedFile(items) {
         if (p.is_translation !== false) { p.is_translation = true; p.method.is_translation ??= method; }
         continue;
       }
-      if (p[field] !== null && p[field] !== undefined && p[field] !== value) {
+      if (p[field] !== null && p[field] !== undefined && p[field] !== 'unknown' && p[field] !== value) {
         p.sourced.superseded[field] = p[field];
         p.notes.push(`${field} ${JSON.stringify(p[field])} replaced by ${JSON.stringify(value)} (${method})`);
       }
       p[field] = value;
       p.method[field] = method;
       if (field === 'volume') p.reasons = p.reasons.filter(r => r !== 'volume_missing');
+      if (field === 'is_translation' && value === false) p.reasons = p.reasons.filter(r => r !== 'translator_missing' && r !== 'modern_translation_check');
+      if (field === 'publication_year' && p.is_translation === true && value <= PD_PUBLICATION_CUTOFF) p.reasons = p.reasons.filter(r => r !== 'modern_translation_check');
+    }
+    if (/^FINDING:/.test(entry.note || '')) {
+      // A finding that disproves the notes' translator credit withdraws it, so the row cannot count as resolved on it.
+      if (p.translator_display && !ok.translator_display) {
+        p.sourced.superseded.translator_display = p.translator_display;
+        p.translator_display = null;
+        p.translators = [];
+        p.method.translators = p.method.translator_display = method;
+        if (!p.reasons.includes('translator_missing')) p.reasons.push('translator_missing');
+      }
+      p.confidence = 'low';
+      applied++;
+      continue;
     }
     p.confidence = method === 'sourced' && !refused.length ? (p.reasons.some(r => ['year_suspect', 'series_false_positive_suspect', 'ambiguous_series', 'url_only'].includes(r)) ? 'medium' : 'high') : 'medium';
     applied++;

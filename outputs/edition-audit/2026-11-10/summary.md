@@ -8,24 +8,24 @@ A row is **resolved** when it is an original-language/English work (`is_translat
 
 | | Rows | Share |
 |---|---:|---:|
-| Resolved overall | 532 | 95.9% |
-| `is_translation` decided (true/false) | 541 | 97.5% |
-| …of which original language / English (`false`) | 46 | 8.3% |
+| Resolved overall | 539 | 97.1% |
+| `is_translation` decided (true/false) | 548 | 98.7% |
+| …of which original language / English (`false`) | 53 | 9.5% |
 | …of which translations (`true`) | 495 | 89.2% |
 | Translations with a translator | 486 | 98.2% of translations |
 | Translations with a series | 473 | 95.6% of translations |
 | Multi-volume series rows with a volume | 437 | 100.0% of 437 |
-| Rows with a publication year | 385 | 69.4% |
-| Rows with a publisher | 287 | 51.7% |
-| Series + volume + translator (the SQL audit's measure) | 434 | 78.2% |
+| Rows with a publication year | 395 | 71.2% |
+| Rows with a publisher | 297 | 53.5% |
+| Series + volume + translator (the SQL audit's measure) | 435 | 78.4% |
 
-Confidence: high 393 · medium 136 · low 26
+Confidence: high 393 · medium 143 · low 19
 
-Pass 2 (LLM): 22 unresolved rows asked; 51 fields passed the verbatim-evidence guard, 0 were rejected, and 24 filled a field Pass 1 had left blank (the rest restated what Pass 1 already had). 0 of the asked rows are now resolved.
+Pass 2 (LLM): 14 unresolved rows asked; 34 fields passed the verbatim-evidence guard, 0 were rejected, and 12 filled a field Pass 1 had left blank (the rest restated what Pass 1 already had). 0 of the asked rows are now resolved.
 
-Sourced and editor-confirmed fields (`outputs/edition-audit/sourced-fields.json`): 14 rows checked against an outside citation, 1 confirmed by the editor. 6 of them corrected a value the notes gave (`the-stromata-book-i`, `the-stromata-book-ii`, `the-stromata-book-iv`, `the-stromata-book-v`, `the-stromata-book-vi`, `the-stromata-book-vii`).
+Sourced and editor-confirmed fields (`outputs/edition-audit/sourced-fields.json`): 27 rows checked against an outside citation, 1 confirmed by the editor. 7 of them corrected a value the notes gave (`letters-109697-to-trajan-on-the-christians`, `the-stromata-book-i`, `the-stromata-book-ii`, `the-stromata-book-iv`, `the-stromata-book-v`, `the-stromata-book-vi`, `the-stromata-book-vii`).
 
-Field values by method: pattern 2982 · inherited_from_collection 122 · sourced 82 · alias 42 · inferred 26 · llm 24 · editor 1
+Field values by method: pattern 2974 · sourced 134 · inherited_from_collection 122 · alias 42 · inferred 26 · llm 12 · editor 1
 
 ## What we hold, by series and volume
 
@@ -43,7 +43,7 @@ Field values by method: pattern 2982 · inherited_from_collection 122 · sourced
 
 ## Unresolved rows, by reason
 
-23 unresolved rows. Every one carries at least one reason code (checked).
+16 unresolved rows. Every one carries at least one reason code (checked).
 
 ### `original_english` — 45 rows (0 unresolved)
 
@@ -89,41 +89,34 @@ Field values by method: pattern 2982 · inherited_from_collection 122 · sourced
 - `the-rule-and-exercises-of-holy-dying-taylor-02-chapter-ii` (Jeremy Taylor) — 1651
 - …and 5 more (see proposals.csv)
 
-### `translator_missing` — 23 rows
+### `translator_missing` — 16 rows
 
-- `a-paper-on-usury` (John Jewel) — OTHER 4 · 1845
-- `a-short-rule-of-life` (John Wycliffe) — OTHER 3 · 1869 — _provenance notes mention translation, but not of this part specifically_
-- `conference-with-john-feckenham` (Lady Jane Grey) — _provenance notes mention translation, but not of this part specifically_
-- `confession-catholic-faith-damasus` (Pope Damasus I) — NPNF2 3 · 1892
-- `first-letter-to-henry-bullinger` (Lady Jane Grey) — _provenance notes mention translation, but not of this part specifically_
+- `a-paper-on-usury` (John Jewel) — OTHER 4 · 1845 — _editor: Keith confirmed on 10 Nov 2026 that "pp. 4: 1283-98" in the provenance notes means volume 4 of The Works of John Jewel._
+- `first-letter-to-henry-bullinger` (Lady Jane Grey) — 1831 — _provenance notes mention translation, but not of this part specifically; sourced: Latin original; the edition prints an English "[translation.]" after each letter without naming the translator (presumably the editor, Nicolas). Public domain by the 1831 publication date._
 - `how-the-office-of-curates-is-ordained-of-god` (John Wycliffe)
-- `letter-to-lady-katherine-grey` (Lady Jane Grey) — _provenance notes mention translation, but not of this part specifically_
-- `letter-to-the-duke-of-suffolk` (Lady Jane Grey) — _provenance notes mention translation, but not of this part specifically_
-- `letter-to-thomas-harding-on-his-apostasy` (Lady Jane Grey) — _provenance notes mention translation, but not of this part specifically_
-- `note-to-her-father-memorial-for-sir-john-brydges-and-tower-inscriptions` (Lady Jane Grey) — _provenance notes mention translation, but not of this part specifically_
+- `letters-109697-to-trajan-on-the-christians` (Pliny the Younger) — _sourced: FINDING: the published text is not the Melmoth/Bosanquet translation the notes claim; its translator is unidentified and it may be a modern translation. Copyright review needed._
+- `note-to-her-father-memorial-for-sir-john-brydges-and-tower-inscriptions` (Lady Jane Grey) — 1831 — _provenance notes mention translation, but not of this part specifically; sourced: Edition sourced; translation status left open because the Tower inscriptions include Latin._
 - `on-prayer` (John Wycliffe) — 1880
 - `on-the-body-and-blood-of-our-lord` (Ratramnus) — _provenance notes mention translation, but not of this part specifically_
-- `prayer-before-execution` (Lady Jane Grey) — _provenance notes mention translation, but not of this part specifically_
 - `preface-to-the-pastoral-care` (Alfred the Great) — 1876
 - `psychomachia-prudentius` (Prudentius) — 1743 — _series named only to rule it out: "Nicene and Post-Nicene Fathers"_
-- `scaffold-speech` (Lady Jane Grey) — _provenance notes mention translation, but not of this part specifically_
-- `second-letter-to-henry-bullinger` (Lady Jane Grey) — _provenance notes mention translation, but not of this part specifically_
+- `second-letter-to-henry-bullinger` (Lady Jane Grey) — 1831 — _provenance notes mention translation, but not of this part specifically; sourced: Latin original; the edition prints an English "[translation.]" after each letter without naming the translator (presumably the editor, Nicolas). Public domain by the 1831 publication date._
 - `secular-authority-luther` (Martin Luther) — LUTHER_PHILA 3 · 1915
 - `short-clear-exposition-christian-faith-zwingli` (Huldrych Zwingli) — 1536
 - `small-catechism` (Martin Luther) — _year 1529 is not after the author's death (1546); likely the original's date, not the translation's_
 - `the-apostles-creed` (Unknown (Early Church)) — OTHER · 1921
 - `the-nicene-creed` (Unknown (Ecumenical)) — OTHER · 1921
-- `third-letter-to-henry-bullinger` (Lady Jane Grey) — _provenance notes mention translation, but not of this part specifically_
+- `third-letter-to-henry-bullinger` (Lady Jane Grey) — 1831 — _provenance notes mention translation, but not of this part specifically; sourced: Latin original; the edition prints an English "[translation.]" after each letter without naming the translator (presumably the editor, Nicolas). Public domain by the 1831 publication date._
 
 ### `translator_is_editor` — 7 rows (0 unresolved)
 
 - `fragments-lost-writings-irenaeus` (Irenaeus of Lyons) — ANF 1 · Philip Schaff · 1885 — _credit ends "et al."; the per-work translator is not named_
-- `the-stromata-book-i` (Clement of Alexandria) — ANF 2 · William Wilson · 1885 — _translator from notes ("Alexander Roberts & James Donaldson") replaced by the cited edition's ("William Wilson")_
-- `the-stromata-book-ii` (Clement of Alexandria) — ANF 2 · William Wilson · 1885 — _translator from notes ("Alexander Roberts & James Donaldson") replaced by the cited edition's ("William Wilson")_
-- `the-stromata-book-iv` (Clement of Alexandria) — ANF 2 · William Wilson · 1885 — _translator from notes ("Alexander Roberts & James Donaldson") replaced by the cited edition's ("William Wilson")_
-- `the-stromata-book-v` (Clement of Alexandria) — ANF 2 · William Wilson · 1885 — _translator from notes ("Alexander Roberts & James Donaldson") replaced by the cited edition's ("William Wilson")_
-- `the-stromata-book-vi` (Clement of Alexandria) — ANF 2 · William Wilson · 1885 — _translator from notes ("Alexander Roberts & James Donaldson") replaced by the cited edition's ("William Wilson")_
-- `the-stromata-book-vii` (Clement of Alexandria) — ANF 2 · William Wilson · 1885 — _translator from notes ("Alexander Roberts & James Donaldson") replaced by the cited edition's ("William Wilson")_
+- `the-stromata-book-i` (Clement of Alexandria) — ANF 2 · William Wilson · 1885 — _sourced: The row's notes credit "Roberts-Donaldson", the series editors; the citation names William Wilson as translator.; translator from notes ("Alexander Roberts & James Donaldson") replaced by the cited edition's ("William Wilson")_
+- `the-stromata-book-ii` (Clement of Alexandria) — ANF 2 · William Wilson · 1885 — _sourced: The row's notes credit "Roberts-Donaldson", the series editors; the citation names William Wilson as translator.; translator from notes ("Alexander Roberts & James Donaldson") replaced by the cited edition's ("William Wilson")_
+- `the-stromata-book-iv` (Clement of Alexandria) — ANF 2 · William Wilson · 1885 — _sourced: The row's notes credit "Roberts-Donaldson", the series editors; the citation names William Wilson as translator.; translator from notes ("Alexander Roberts & James Donaldson") replaced by the cited edition's ("William Wilson")_
+- `the-stromata-book-v` (Clement of Alexandria) — ANF 2 · William Wilson · 1885 — _sourced: The row's notes credit "Roberts-Donaldson", the series editors; the citation names William Wilson as translator.; translator from notes ("Alexander Roberts & James Donaldson") replaced by the cited edition's ("William Wilson")_
+- `the-stromata-book-vi` (Clement of Alexandria) — ANF 2 · William Wilson · 1885 — _sourced: The row's notes credit "Roberts-Donaldson", the series editors; the citation names William Wilson as translator.; translator from notes ("Alexander Roberts & James Donaldson") replaced by the cited edition's ("William Wilson")_
+- `the-stromata-book-vii` (Clement of Alexandria) — ANF 2 · William Wilson · 1885 — _sourced: The row's notes credit "Roberts-Donaldson", the series editors; the citation names William Wilson as translator.; translator from notes ("Alexander Roberts & James Donaldson") replaced by the cited edition's ("William Wilson")_
 
 ### `year_suspect` — 2 rows (0 unresolved)
 
@@ -139,9 +132,9 @@ Field values by method: pattern 2982 · inherited_from_collection 122 · sourced
 - `tractate-25-john-615-44` (Augustine of Hippo) — NPNF1 7 · John Gibb — _suspect year "18888" in source_attribution; collection parts disagree on translator_display (most say "John Gibb & James Innes")_
 - `tractate-30-john-719-24` (Augustine of Hippo) — NPNF1 7 · John Gibb — _suspect year "18888" in source_attribution; collection parts disagree on translator_display (most say "John Gibb & James Innes")_
 
-### `modern_translation_check` — 9 rows (1 unresolved)
+### `modern_translation_check` — 9 rows (2 unresolved)
 
-- `letters-109697-to-trajan-on-the-christians` (Pliny the Younger) — Melmoth & Bosanquet
+- `letters-109697-to-trajan-on-the-christians` (Pliny the Younger) — _sourced: FINDING: the published text is not the Melmoth/Bosanquet translation the notes claim; its translator is unidentified and it may be a modern translation. Copyright review needed._
 - `small-catechism` (Martin Luther) — _year 1529 is not after the author's death (1546); likely the original's date, not the translation's_
 - `small-catechism-confession` (Martin Luther) — Robert E. Smith · 1994
 - `small-catechism-daily-devotions` (Martin Luther) — Robert E. Smith · 1994
@@ -151,23 +144,23 @@ Field values by method: pattern 2982 · inherited_from_collection 122 · sourced
 - `small-catechism-ten-commandments` (Martin Luther) — Robert E. Smith · 1994
 - `small-catechism-the-creed` (Martin Luther) — Robert E. Smith · 1994
 
-### `url_only` — 15 rows
+### `url_only` — 15 rows (8 unresolved)
 
-- `a-paper-on-usury` (John Jewel) — OTHER 4 · 1845
-- `a-short-rule-of-life` (John Wycliffe) — OTHER 3 · 1869 — _provenance notes mention translation, but not of this part specifically_
-- `conference-with-john-feckenham` (Lady Jane Grey) — _provenance notes mention translation, but not of this part specifically_
-- `first-letter-to-henry-bullinger` (Lady Jane Grey) — _provenance notes mention translation, but not of this part specifically_
+- `a-paper-on-usury` (John Jewel) — OTHER 4 · 1845 — _editor: Keith confirmed on 10 Nov 2026 that "pp. 4: 1283-98" in the provenance notes means volume 4 of The Works of John Jewel._
+- `a-short-rule-of-life` (John Wycliffe) — OTHER 3 · 1869 — _provenance notes mention translation, but not of this part specifically; sourced: Middle English original, edited by Thomas Arnold (vol. III, Miscellaneous works)._
+- `conference-with-john-feckenham` (Lady Jane Grey) — 1831 — _provenance notes mention translation, but not of this part specifically; sourced: English original: the editor lists only the Bullinger letters as Latin with translations. is_translation is inferred from that list, so confirm it if in doubt._
+- `first-letter-to-henry-bullinger` (Lady Jane Grey) — 1831 — _provenance notes mention translation, but not of this part specifically; sourced: Latin original; the edition prints an English "[translation.]" after each letter without naming the translator (presumably the editor, Nicolas). Public domain by the 1831 publication date._
 - `how-the-office-of-curates-is-ordained-of-god` (John Wycliffe)
-- `letter-to-lady-katherine-grey` (Lady Jane Grey) — _provenance notes mention translation, but not of this part specifically_
-- `letter-to-the-duke-of-suffolk` (Lady Jane Grey) — _provenance notes mention translation, but not of this part specifically_
-- `letter-to-thomas-harding-on-his-apostasy` (Lady Jane Grey) — _provenance notes mention translation, but not of this part specifically_
-- `note-to-her-father-memorial-for-sir-john-brydges-and-tower-inscriptions` (Lady Jane Grey) — _provenance notes mention translation, but not of this part specifically_
+- `letter-to-lady-katherine-grey` (Lady Jane Grey) — 1831 — _provenance notes mention translation, but not of this part specifically; sourced: English original: the editor lists only the Bullinger letters as Latin with translations. is_translation is inferred from that list, so confirm it if in doubt._
+- `letter-to-the-duke-of-suffolk` (Lady Jane Grey) — 1831 — _provenance notes mention translation, but not of this part specifically; sourced: English original: the editor lists only the Bullinger letters as Latin with translations. is_translation is inferred from that list, so confirm it if in doubt._
+- `letter-to-thomas-harding-on-his-apostasy` (Lady Jane Grey) — 1831 — _provenance notes mention translation, but not of this part specifically; sourced: English original: the editor lists only the Bullinger letters as Latin with translations. is_translation is inferred from that list, so confirm it if in doubt._
+- `note-to-her-father-memorial-for-sir-john-brydges-and-tower-inscriptions` (Lady Jane Grey) — 1831 — _provenance notes mention translation, but not of this part specifically; sourced: Edition sourced; translation status left open because the Tower inscriptions include Latin._
 - `on-the-body-and-blood-of-our-lord` (Ratramnus) — _provenance notes mention translation, but not of this part specifically_
-- `prayer-before-execution` (Lady Jane Grey) — _provenance notes mention translation, but not of this part specifically_
+- `prayer-before-execution` (Lady Jane Grey) — 1831 — _provenance notes mention translation, but not of this part specifically; sourced: English original: the editor lists only the Bullinger letters as Latin with translations. is_translation is inferred from that list, so confirm it if in doubt._
 - `preface-to-the-pastoral-care` (Alfred the Great) — 1876
-- `scaffold-speech` (Lady Jane Grey) — _provenance notes mention translation, but not of this part specifically_
-- `second-letter-to-henry-bullinger` (Lady Jane Grey) — _provenance notes mention translation, but not of this part specifically_
-- `third-letter-to-henry-bullinger` (Lady Jane Grey) — _provenance notes mention translation, but not of this part specifically_
+- `scaffold-speech` (Lady Jane Grey) — 1831 — _provenance notes mention translation, but not of this part specifically; sourced: English original: the editor lists only the Bullinger letters as Latin with translations. is_translation is inferred from that list, so confirm it if in doubt._
+- `second-letter-to-henry-bullinger` (Lady Jane Grey) — 1831 — _provenance notes mention translation, but not of this part specifically; sourced: Latin original; the edition prints an English "[translation.]" after each letter without naming the translator (presumably the editor, Nicolas). Public domain by the 1831 publication date._
+- `third-letter-to-henry-bullinger` (Lady Jane Grey) — 1831 — _provenance notes mention translation, but not of this part specifically; sourced: Latin original; the edition prints an English "[translation.]" after each letter without naming the translator (presumably the editor, Nicolas). Public domain by the 1831 publication date._
 
 ## Collections whose parts disagree
 
@@ -180,7 +173,7 @@ Values offered from sibling parts (`inherited_from_collection`):
 
 ## Translators
 
-74 distinct translator names.
+72 distinct translator names.
 
 | Translator | Rows |
 |---|---:|
@@ -207,12 +200,12 @@ Values offered from sibling parts (`inherited_from_collection`):
 | Hugh Campbell | 7 |
 | Robert E. Smith | 7 |
 | W.R.W. Stephens | 6 |
+| Blomfield Jackson | 5 |
 | James Barmby | 5 |
 | M.W. Keatinge | 5 |
 | W.H. Fremantle | 5 |
 | Allan Menzies | 4 |
 | Benjamin Thorpe | 4 |
-| Blomfield Jackson | 4 |
 | E.W. Watson | 4 |
 | G. Lewis | 4 |
 | J.F. Shaw | 4 |
@@ -231,7 +224,6 @@ Values offered from sibling parts (`inherited_from_collection`):
 | A.T.W. Steinhaeuser | 1 |
 | Adolph Spaeth | 1 |
 | B.P. Pratten | 1 |
-| Bosanquet | 1 |
 | C.A. Heurtley | 1 |
 | C.L. Cornish | 1 |
 | Charles Gordon Browne | 1 |
@@ -252,7 +244,6 @@ Values offered from sibling parts (`inherited_from_collection`):
 | John Patrick | 1 |
 | L.D. Reed | 1 |
 | M.B. Riddle | 1 |
-| Melmoth | 1 |
 | Sidney Norton Deane | 1 |
 | Susanna Winkworth | 1 |
 | Talbot W. Chambers | 1 |
@@ -297,7 +288,7 @@ A starting point for the Step 2 migration, built only from what the notes say. E
 
 Translations dated after 1928, or undated outside a known public-domain series (`modern_translation_check`), and translated works with no provenance text at all. This is a routing list, not a verdict.
 
-- `letters-109697-to-trajan-on-the-christians` (Pliny the Younger) — modern_translation_check · Melmoth & Bosanquet
+- `letters-109697-to-trajan-on-the-christians` (Pliny the Younger) — modern_translation_check
 - `small-catechism` (Martin Luther) — modern_translation_check
 - `small-catechism-confession` (Martin Luther) — modern_translation_check · 1994 · Robert E. Smith
 - `small-catechism-daily-devotions` (Martin Luther) — modern_translation_check · 1994 · Robert E. Smith

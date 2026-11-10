@@ -37,7 +37,15 @@ publication year, publisher and place. Every field records the method that produ
   Donaldson, ANF 1, 1885) and the 7 *Stromata* parts (ANF 2, 1885). The *Stromata* notes credit "Roberts-Donaldson",
   who edited the series; the citation names **William Wilson** as translator, so 6 parts now carry Wilson and a
   `translator_is_editor` flag for the notes to be corrected in Step 2 (Book III is printed in Latin, so it takes the
-  volume only). Keith confirmed Jewel's *Paper on Usury* as vol. 4. After these, 532 of 555 resolved (95.9%).
+  volume only). Keith confirmed Jewel's *Paper on Usury* as vol. 4.
+- **Second sourcing pass:** Damasus's *Confession* is Blomfield Jackson's translation (NPNF2 3, 1892, Theodoret
+  *EH* V.11). The Lady Jane Grey parts come from Nicolas's *Memoirs and Remains of Lady Jane Grey* (London: Colburn &
+  Bentley, 1831): the three Bullinger letters are Latin, translated without a named translator, and six other parts
+  are her own English (the Tower inscriptions part stays open, as some are Latin). Wycliffe's *Short Rule of Life* is
+  his Middle English, ed. Thomas Arnold (Clarendon, 1869, vol. III). **Pliny's letters to Trajan are not the
+  Melmoth/Bosanquet translation the notes claim:** the Georgetown page names no translator, and its wording ("It is my
+  practice, my lord…") differs from Melmoth's ("It is my invariable rule, Sir…", Gutenberg #2811). The translator
+  credit is withdrawn and the text stays on the copyright-review list. After both passes, 539 of 555 resolved (97.1%).
 - **First run, 556 published texts:** 516 resolved (92.8%); series + volume + translator for 419 (the SQL audit found
   ~410); 46 original-language works marked `is_translation: false`; 40 unresolved, each with a reason. Output in
   `outputs/edition-audit/2026-11-10/`, including a proposed `source_editions` seed and a copyright-review list.

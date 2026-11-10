@@ -128,7 +128,9 @@
         "url_only",
         "translator_missing"
       ],
-      "notes": [],
+      "notes": [
+        "editor: Keith confirmed on 10 Nov 2026 that \"pp. 4: 1283-98\" in the provenance notes means volume 4 of The Works of John Jewel."
+      ],
       "llm": {
         "accepted": {
           "series_raw": {
@@ -404,67 +406,45 @@
       "collection_slug": null,
       "collection_order": null,
       "published": true,
-      "is_translation": "unknown",
+      "is_translation": false,
       "translator_display": null,
       "translators": [],
       "translator_raw": null,
       "series_key": "OTHER",
-      "series_raw": "Select English Works of John Wyclif",
+      "series_raw": null,
       "volume": 3,
       "publication_year": 1869,
       "publisher": "Clarendon Press",
       "place": "Oxford",
       "method": {
-        "publisher": "pattern",
-        "publication_year": "pattern",
+        "publisher": "sourced",
+        "publication_year": "sourced",
         "series_key": "pattern",
-        "series_raw": "llm",
-        "volume": "llm",
-        "place": "llm"
+        "is_translation": "sourced",
+        "volume": "sourced",
+        "place": "sourced"
       },
       "source_field": {
         "publisher": "provenance_notes",
         "publication_year": "provenance_notes",
         "series_key": "provenance_notes"
       },
-      "confidence": "low",
-      "resolved": false,
+      "confidence": "medium",
+      "resolved": true,
       "reasons": [
-        "url_only",
-        "translator_missing"
+        "url_only"
       ],
       "notes": [
-        "provenance notes mention translation, but not of this part specifically"
+        "provenance notes mention translation, but not of this part specifically",
+        "sourced: Middle English original, edited by Thomas Arnold (vol. III, Miscellaneous works)."
       ],
-      "llm": {
-        "accepted": {
-          "series_raw": {
-            "value": "Select English Works of John Wyclif",
-            "evidence": "Select English Works of John Wyclif, Vol. III"
-          },
-          "volume": {
-            "value": 3,
-            "evidence": "Vol. III"
-          },
-          "publication_year": {
-            "value": 1869,
-            "evidence": "Oxford, in 1869"
-          },
-          "publisher": {
-            "value": "Clarendon Press",
-            "evidence": "Clarendon Press, Oxford"
-          },
-          "place": {
-            "value": "Oxford",
-            "evidence": "Clarendon Press, Oxford"
-          }
-        },
-        "rejected": [],
-        "applied": [
-          "series_raw",
-          "volume",
-          "place"
-        ]
+      "sourced": {
+        "basis": "source",
+        "source_url": "https://archive.org/details/selectenglishworks03wycl",
+        "citation": "Archive.org record selectenglishworks03wycl: title \"Select English works of John Wyclif\"; creator \"Wycliffe, John, d. 1384\", \"Arnold, Thomas, 1823-1900\"; publisher \"Oxford : Clarendon Press\"; date \"1869\"; volume \"3\".",
+        "note": "Middle English original, edited by Thomas Arnold (vol. III, Miscellaneous works).",
+        "refused": [],
+        "superseded": {}
       },
       "raw": {
         "source_attribution": "https://archive.org/details/selectenglishworks03wycl/page/n25/mode/2up",
@@ -5636,40 +5616,39 @@
       "collection_slug": "letters-of-lady-jane-grey",
       "collection_order": 5,
       "published": true,
-      "is_translation": "unknown",
+      "is_translation": false,
       "translator_display": null,
       "translators": [],
       "translator_raw": null,
       "series_key": null,
-      "series_raw": "Memoirs and Remains of Lady Jane Grey",
+      "series_raw": null,
       "volume": null,
-      "publication_year": null,
-      "publisher": null,
-      "place": null,
+      "publication_year": 1831,
+      "publisher": "H. Colburn & R. Bentley",
+      "place": "London",
       "method": {
-        "series_raw": "llm"
+        "is_translation": "sourced",
+        "publication_year": "sourced",
+        "publisher": "sourced",
+        "place": "sourced"
       },
       "source_field": {},
-      "confidence": "low",
-      "resolved": false,
+      "confidence": "medium",
+      "resolved": true,
       "reasons": [
-        "url_only",
-        "translator_missing"
+        "url_only"
       ],
       "notes": [
-        "provenance notes mention translation, but not of this part specifically"
+        "provenance notes mention translation, but not of this part specifically",
+        "sourced: English original: the editor lists only the Bullinger letters as Latin with translations. is_translation is inferred from that list, so confirm it if in doubt."
       ],
-      "llm": {
-        "accepted": {
-          "series_raw": {
-            "value": "Memoirs and Remains of Lady Jane Grey",
-            "evidence": "Memoirs and Remains of Lady Jane Grey"
-          }
-        },
-        "rejected": [],
-        "applied": [
-          "series_raw"
-        ]
+      "sourced": {
+        "basis": "source",
+        "source_url": "https://archive.org/details/memoirsremainsof00grey",
+        "citation": "Archive.org record memoirsremainsof00grey: title \"Memoirs and remains of Lady Jane Grey\"; creator \"Grey, Jane, Lady, 1537-1554\", \"Nicolas, Nicholas Harris, Sir, 1799-1848\"; publisher \"London : H. Colburn & R. Bentley\"; date \"1831\". Editor's preface: \"Three letters in Latin to Henry Bullinger. These letters were written before her marriage, and between the years 1550 and 1553. Translations of them are also inserted.\"",
+        "note": "English original: the editor lists only the Bullinger letters as Latin with translations. is_translation is inferred from that list, so confirm it if in doubt.",
+        "refused": [],
+        "superseded": {}
       },
       "raw": {
         "source_attribution": "https://archive.org/details/memoirsremainsof00grey/page/5/mode/2up",
@@ -5688,8 +5667,10 @@
       "collection_order": null,
       "published": true,
       "is_translation": true,
-      "translator_display": null,
-      "translators": [],
+      "translator_display": "Blomfield Jackson",
+      "translators": [
+        "Blomfield Jackson"
+      ],
       "translator_raw": null,
       "series_key": "NPNF2",
       "series_raw": "Nicene and Post-Nicene Fathers",
@@ -5699,11 +5680,13 @@
       "place": "Buffalo, NY",
       "method": {
         "series_key": "pattern",
-        "volume": "pattern",
+        "volume": "sourced",
         "is_translation": "inferred",
-        "publisher": "pattern",
-        "place": "pattern",
-        "publication_year": "pattern"
+        "publisher": "sourced",
+        "place": "sourced",
+        "publication_year": "sourced",
+        "translator_display": "sourced",
+        "translators": "sourced"
       },
       "source_field": {
         "series_key": "source_attribution",
@@ -5712,41 +5695,19 @@
         "place": "source_attribution",
         "publication_year": "source_attribution"
       },
-      "confidence": "low",
-      "resolved": false,
-      "reasons": [
-        "translator_missing"
+      "confidence": "high",
+      "resolved": true,
+      "reasons": [],
+      "notes": [
+        "sourced: Theodoret, Ecclesiastical History V.11, \"A confession of the Catholic faith which Pope Damasus sent to Bishop Paulinus\"; the citation covers the whole of Book V."
       ],
-      "notes": [],
-      "llm": {
-        "accepted": {
-          "is_translation": {
-            "value": true,
-            "evidence": "Standard Nicene and Post-Nicene Fathers (NPNF) translation"
-          },
-          "series_raw": {
-            "value": "Nicene and Post-Nicene Fathers, Second Series",
-            "evidence": "Nicene and Post-Nicene Fathers, Second Series"
-          },
-          "volume": {
-            "value": 3,
-            "evidence": "Second Series, Vol. 3"
-          },
-          "publication_year": {
-            "value": 1892,
-            "evidence": "Christian Literature Publishing Co., 1892"
-          },
-          "publisher": {
-            "value": "Christian Literature Publishing Co.",
-            "evidence": "Christian Literature Publishing Co."
-          },
-          "place": {
-            "value": "Buffalo, NY",
-            "evidence": "Buffalo, NY"
-          }
-        },
-        "rejected": [],
-        "applied": []
+      "sourced": {
+        "basis": "source",
+        "source_url": "https://www.newadvent.org/fathers/27025.htm",
+        "citation": "Translated by Blomfield Jackson. From Nicene and Post-Nicene Fathers, Second Series, Vol. 3. Edited by Philip Schaff and Henry Wace. (Buffalo, NY: Christian Literature Publishing Co., 1892.) Revised and edited for New Advent by Kevin Knight.",
+        "note": "Theodoret, Ecclesiastical History V.11, \"A confession of the Catholic faith which Pope Damasus sent to Bishop Paulinus\"; the citation covers the whole of Book V.",
+        "refused": [],
+        "superseded": {}
       },
       "raw": {
         "source_attribution": "From the appendix to Theodoret's Ecclesiastical History, in Nicene and Post-Nicene Fathers, Second Series, Vol. 3. Edited by Philip Schaff and Henry Wace. (Buffalo, NY: Christian Literature Publishing Co., 1892.)",
@@ -10798,11 +10759,14 @@
       "series_key": null,
       "series_raw": "Memoirs and Remains of Lady Jane Grey",
       "volume": null,
-      "publication_year": null,
-      "publisher": null,
-      "place": null,
+      "publication_year": 1831,
+      "publisher": "H. Colburn & R. Bentley",
+      "place": "London",
       "method": {
-        "is_translation": "llm",
+        "is_translation": "sourced",
+        "publication_year": "sourced",
+        "publisher": "sourced",
+        "place": "sourced",
         "series_raw": "llm"
       },
       "source_field": {},
@@ -10813,7 +10777,8 @@
         "translator_missing"
       ],
       "notes": [
-        "provenance notes mention translation, but not of this part specifically"
+        "provenance notes mention translation, but not of this part specifically",
+        "sourced: Latin original; the edition prints an English \"[translation.]\" after each letter without naming the translator (presumably the editor, Nicolas). Public domain by the 1831 publication date."
       ],
       "llm": {
         "accepted": {
@@ -10828,9 +10793,16 @@
         },
         "rejected": [],
         "applied": [
-          "is_translation",
           "series_raw"
         ]
+      },
+      "sourced": {
+        "basis": "source",
+        "source_url": "https://archive.org/details/memoirsremainsof00grey",
+        "citation": "Archive.org record memoirsremainsof00grey: title \"Memoirs and remains of Lady Jane Grey\"; creator \"Grey, Jane, Lady, 1537-1554\", \"Nicolas, Nicholas Harris, Sir, 1799-1848\"; publisher \"London : H. Colburn & R. Bentley\"; date \"1831\". Editor's preface: \"Three letters in Latin to Henry Bullinger. These letters were written before her marriage, and between the years 1550 and 1553. Translations of them are also inserted.\"",
+        "note": "Latin original; the edition prints an English \"[translation.]\" after each letter without naming the translator (presumably the editor, Nicolas). Public domain by the 1831 publication date.",
+        "refused": [],
+        "superseded": {}
       },
       "raw": {
         "source_attribution": "https://archive.org/details/memoirsremainsof00grey/page/5/mode/2up",
@@ -11853,40 +11825,39 @@
       "collection_slug": "letters-of-lady-jane-grey",
       "collection_order": 6,
       "published": true,
-      "is_translation": "unknown",
+      "is_translation": false,
       "translator_display": null,
       "translators": [],
       "translator_raw": null,
       "series_key": null,
-      "series_raw": "Memoirs and Remains of Lady Jane Grey",
+      "series_raw": null,
       "volume": null,
-      "publication_year": null,
-      "publisher": null,
-      "place": null,
+      "publication_year": 1831,
+      "publisher": "H. Colburn & R. Bentley",
+      "place": "London",
       "method": {
-        "series_raw": "llm"
+        "is_translation": "sourced",
+        "publication_year": "sourced",
+        "publisher": "sourced",
+        "place": "sourced"
       },
       "source_field": {},
-      "confidence": "low",
-      "resolved": false,
+      "confidence": "medium",
+      "resolved": true,
       "reasons": [
-        "url_only",
-        "translator_missing"
+        "url_only"
       ],
       "notes": [
-        "provenance notes mention translation, but not of this part specifically"
+        "provenance notes mention translation, but not of this part specifically",
+        "sourced: English original: the editor lists only the Bullinger letters as Latin with translations. is_translation is inferred from that list, so confirm it if in doubt."
       ],
-      "llm": {
-        "accepted": {
-          "series_raw": {
-            "value": "Memoirs and Remains of Lady Jane Grey",
-            "evidence": "Memoirs and Remains of Lady Jane Grey"
-          }
-        },
-        "rejected": [],
-        "applied": [
-          "series_raw"
-        ]
+      "sourced": {
+        "basis": "source",
+        "source_url": "https://archive.org/details/memoirsremainsof00grey",
+        "citation": "Archive.org record memoirsremainsof00grey: title \"Memoirs and remains of Lady Jane Grey\"; creator \"Grey, Jane, Lady, 1537-1554\", \"Nicolas, Nicholas Harris, Sir, 1799-1848\"; publisher \"London : H. Colburn & R. Bentley\"; date \"1831\". Editor's preface: \"Three letters in Latin to Henry Bullinger. These letters were written before her marriage, and between the years 1550 and 1553. Translations of them are also inserted.\"",
+        "note": "English original: the editor lists only the Bullinger letters as Latin with translations. is_translation is inferred from that list, so confirm it if in doubt.",
+        "refused": [],
+        "superseded": {}
       },
       "raw": {
         "source_attribution": "https://archive.org/details/memoirsremainsof00grey/page/5/mode/2up",
@@ -11904,40 +11875,39 @@
       "collection_slug": "letters-of-lady-jane-grey",
       "collection_order": 7,
       "published": true,
-      "is_translation": "unknown",
+      "is_translation": false,
       "translator_display": null,
       "translators": [],
       "translator_raw": null,
       "series_key": null,
-      "series_raw": "Memoirs and Remains of Lady Jane Grey",
+      "series_raw": null,
       "volume": null,
-      "publication_year": null,
-      "publisher": null,
-      "place": null,
+      "publication_year": 1831,
+      "publisher": "H. Colburn & R. Bentley",
+      "place": "London",
       "method": {
-        "series_raw": "llm"
+        "is_translation": "sourced",
+        "publication_year": "sourced",
+        "publisher": "sourced",
+        "place": "sourced"
       },
       "source_field": {},
-      "confidence": "low",
-      "resolved": false,
+      "confidence": "medium",
+      "resolved": true,
       "reasons": [
-        "url_only",
-        "translator_missing"
+        "url_only"
       ],
       "notes": [
-        "provenance notes mention translation, but not of this part specifically"
+        "provenance notes mention translation, but not of this part specifically",
+        "sourced: English original: the editor lists only the Bullinger letters as Latin with translations. is_translation is inferred from that list, so confirm it if in doubt."
       ],
-      "llm": {
-        "accepted": {
-          "series_raw": {
-            "value": "Memoirs and Remains of Lady Jane Grey",
-            "evidence": "Memoirs and Remains of Lady Jane Grey"
-          }
-        },
-        "rejected": [],
-        "applied": [
-          "series_raw"
-        ]
+      "sourced": {
+        "basis": "source",
+        "source_url": "https://archive.org/details/memoirsremainsof00grey",
+        "citation": "Archive.org record memoirsremainsof00grey: title \"Memoirs and remains of Lady Jane Grey\"; creator \"Grey, Jane, Lady, 1537-1554\", \"Nicolas, Nicholas Harris, Sir, 1799-1848\"; publisher \"London : H. Colburn & R. Bentley\"; date \"1831\". Editor's preface: \"Three letters in Latin to Henry Bullinger. These letters were written before her marriage, and between the years 1550 and 1553. Translations of them are also inserted.\"",
+        "note": "English original: the editor lists only the Bullinger letters as Latin with translations. is_translation is inferred from that list, so confirm it if in doubt.",
+        "refused": [],
+        "superseded": {}
       },
       "raw": {
         "source_attribution": "https://archive.org/details/memoirsremainsof00grey/page/5/mode/2up",
@@ -11955,40 +11925,39 @@
       "collection_slug": "letters-of-lady-jane-grey",
       "collection_order": 4,
       "published": true,
-      "is_translation": "unknown",
+      "is_translation": false,
       "translator_display": null,
       "translators": [],
       "translator_raw": null,
       "series_key": null,
-      "series_raw": "Memoirs and Remains of Lady Jane Grey",
+      "series_raw": null,
       "volume": null,
-      "publication_year": null,
-      "publisher": null,
-      "place": null,
+      "publication_year": 1831,
+      "publisher": "H. Colburn & R. Bentley",
+      "place": "London",
       "method": {
-        "series_raw": "llm"
+        "is_translation": "sourced",
+        "publication_year": "sourced",
+        "publisher": "sourced",
+        "place": "sourced"
       },
       "source_field": {},
-      "confidence": "low",
-      "resolved": false,
+      "confidence": "medium",
+      "resolved": true,
       "reasons": [
-        "url_only",
-        "translator_missing"
+        "url_only"
       ],
       "notes": [
-        "provenance notes mention translation, but not of this part specifically"
+        "provenance notes mention translation, but not of this part specifically",
+        "sourced: English original: the editor lists only the Bullinger letters as Latin with translations. is_translation is inferred from that list, so confirm it if in doubt."
       ],
-      "llm": {
-        "accepted": {
-          "series_raw": {
-            "value": "Memoirs and Remains of Lady Jane Grey",
-            "evidence": "Memoirs and Remains of Lady Jane Grey"
-          }
-        },
-        "rejected": [],
-        "applied": [
-          "series_raw"
-        ]
+      "sourced": {
+        "basis": "source",
+        "source_url": "https://archive.org/details/memoirsremainsof00grey",
+        "citation": "Archive.org record memoirsremainsof00grey: title \"Memoirs and remains of Lady Jane Grey\"; creator \"Grey, Jane, Lady, 1537-1554\", \"Nicolas, Nicholas Harris, Sir, 1799-1848\"; publisher \"London : H. Colburn & R. Bentley\"; date \"1831\". Editor's preface: \"Three letters in Latin to Henry Bullinger. These letters were written before her marriage, and between the years 1550 and 1553. Translations of them are also inserted.\"",
+        "note": "English original: the editor lists only the Bullinger letters as Latin with translations. is_translation is inferred from that list, so confirm it if in doubt.",
+        "refused": [],
+        "superseded": {}
       },
       "raw": {
         "source_attribution": "https://archive.org/details/memoirsremainsof00grey/page/5/mode/2up",
@@ -12007,11 +11976,8 @@
       "collection_order": 1,
       "published": true,
       "is_translation": true,
-      "translator_display": "Melmoth & Bosanquet",
-      "translators": [
-        "Melmoth",
-        "Bosanquet"
-      ],
+      "translator_display": null,
+      "translators": [],
       "translator_raw": "Melmoth/Bosanquet translation",
       "series_key": null,
       "series_raw": null,
@@ -12020,20 +11986,33 @@
       "publisher": null,
       "place": null,
       "method": {
-        "translators": "pattern",
-        "translator_display": "pattern",
+        "translators": "sourced",
+        "translator_display": "sourced",
         "is_translation": "pattern"
       },
       "source_field": {
         "translators": "source_attribution",
         "translator_display": "source_attribution"
       },
-      "confidence": "high",
-      "resolved": true,
+      "confidence": "low",
+      "resolved": false,
       "reasons": [
-        "modern_translation_check"
+        "modern_translation_check",
+        "translator_missing"
       ],
-      "notes": [],
+      "notes": [
+        "sourced: FINDING: the published text is not the Melmoth/Bosanquet translation the notes claim; its translator is unidentified and it may be a modern translation. Copyright review needed."
+      ],
+      "sourced": {
+        "basis": "source",
+        "source_url": "https://faculty.georgetown.edu/jod/texts/pliny.html",
+        "citation": "Georgetown page names no translator. Its text opens \"It is my practice, my lord, to refer to you all matters concerning which I am in doubt.\" Melmoth, rev. Bosanquet (Project Gutenberg #2811, https://www.gutenberg.org/ebooks/2811) opens \"IT is my invariable rule, Sir, to refer to you in all matters where I feel doubtful\".",
+        "note": "FINDING: the published text is not the Melmoth/Bosanquet translation the notes claim; its translator is unidentified and it may be a modern translation. Copyright review needed.",
+        "refused": [],
+        "superseded": {
+          "translator_display": "Melmoth & Bosanquet"
+        }
+      },
       "raw": {
         "source_attribution": "Melmoth/Bosanquet translation (revised), via Georgetown University's Forum Romanum text archive.",
         "translation_notes": "Melmoth/Bosanquet 19th-century translation (revised); public domain. Pliny the Younger d. c. 113.",
@@ -12140,10 +12119,13 @@
       "series_key": null,
       "series_raw": "Memoirs and Remains of Lady Jane Grey",
       "volume": null,
-      "publication_year": null,
-      "publisher": null,
-      "place": null,
+      "publication_year": 1831,
+      "publisher": "H. Colburn & R. Bentley",
+      "place": "London",
       "method": {
+        "publication_year": "sourced",
+        "publisher": "sourced",
+        "place": "sourced",
         "series_raw": "llm"
       },
       "source_field": {},
@@ -12154,7 +12136,8 @@
         "translator_missing"
       ],
       "notes": [
-        "provenance notes mention translation, but not of this part specifically"
+        "provenance notes mention translation, but not of this part specifically",
+        "sourced: Edition sourced; translation status left open because the Tower inscriptions include Latin."
       ],
       "llm": {
         "accepted": {
@@ -12167,6 +12150,14 @@
         "applied": [
           "series_raw"
         ]
+      },
+      "sourced": {
+        "basis": "source",
+        "source_url": "https://archive.org/details/memoirsremainsof00grey",
+        "citation": "Archive.org record memoirsremainsof00grey: title \"Memoirs and remains of Lady Jane Grey\"; creator \"Grey, Jane, Lady, 1537-1554\", \"Nicolas, Nicholas Harris, Sir, 1799-1848\"; publisher \"London : H. Colburn & R. Bentley\"; date \"1831\". Editor's preface: \"Three letters in Latin to Henry Bullinger. These letters were written before her marriage, and between the years 1550 and 1553. Translations of them are also inserted.\"",
+        "note": "Edition sourced; translation status left open because the Tower inscriptions include Latin.",
+        "refused": [],
+        "superseded": {}
       },
       "raw": {
         "source_attribution": "https://archive.org/details/memoirsremainsof00grey/page/5/mode/2up",
@@ -14601,40 +14592,39 @@
       "collection_slug": "letters-of-lady-jane-grey",
       "collection_order": 8,
       "published": true,
-      "is_translation": "unknown",
+      "is_translation": false,
       "translator_display": null,
       "translators": [],
       "translator_raw": null,
       "series_key": null,
-      "series_raw": "Memoirs and Remains of Lady Jane Grey",
+      "series_raw": null,
       "volume": null,
-      "publication_year": null,
-      "publisher": null,
-      "place": null,
+      "publication_year": 1831,
+      "publisher": "H. Colburn & R. Bentley",
+      "place": "London",
       "method": {
-        "series_raw": "llm"
+        "is_translation": "sourced",
+        "publication_year": "sourced",
+        "publisher": "sourced",
+        "place": "sourced"
       },
       "source_field": {},
-      "confidence": "low",
-      "resolved": false,
+      "confidence": "medium",
+      "resolved": true,
       "reasons": [
-        "url_only",
-        "translator_missing"
+        "url_only"
       ],
       "notes": [
-        "provenance notes mention translation, but not of this part specifically"
+        "provenance notes mention translation, but not of this part specifically",
+        "sourced: English original: the editor lists only the Bullinger letters as Latin with translations. is_translation is inferred from that list, so confirm it if in doubt."
       ],
-      "llm": {
-        "accepted": {
-          "series_raw": {
-            "value": "Memoirs and Remains of Lady Jane Grey",
-            "evidence": "Memoirs and Remains of Lady Jane Grey"
-          }
-        },
-        "rejected": [],
-        "applied": [
-          "series_raw"
-        ]
+      "sourced": {
+        "basis": "source",
+        "source_url": "https://archive.org/details/memoirsremainsof00grey",
+        "citation": "Archive.org record memoirsremainsof00grey: title \"Memoirs and remains of Lady Jane Grey\"; creator \"Grey, Jane, Lady, 1537-1554\", \"Nicolas, Nicholas Harris, Sir, 1799-1848\"; publisher \"London : H. Colburn & R. Bentley\"; date \"1831\". Editor's preface: \"Three letters in Latin to Henry Bullinger. These letters were written before her marriage, and between the years 1550 and 1553. Translations of them are also inserted.\"",
+        "note": "English original: the editor lists only the Bullinger letters as Latin with translations. is_translation is inferred from that list, so confirm it if in doubt.",
+        "refused": [],
+        "superseded": {}
       },
       "raw": {
         "source_attribution": "https://archive.org/details/memoirsremainsof00grey/page/5/mode/2up",
@@ -15458,40 +15448,39 @@
       "collection_slug": "letters-of-lady-jane-grey",
       "collection_order": 9,
       "published": true,
-      "is_translation": "unknown",
+      "is_translation": false,
       "translator_display": null,
       "translators": [],
       "translator_raw": null,
       "series_key": null,
-      "series_raw": "Memoirs and Remains of Lady Jane Grey",
+      "series_raw": null,
       "volume": null,
-      "publication_year": null,
-      "publisher": null,
-      "place": null,
+      "publication_year": 1831,
+      "publisher": "H. Colburn & R. Bentley",
+      "place": "London",
       "method": {
-        "series_raw": "llm"
+        "is_translation": "sourced",
+        "publication_year": "sourced",
+        "publisher": "sourced",
+        "place": "sourced"
       },
       "source_field": {},
-      "confidence": "low",
-      "resolved": false,
+      "confidence": "medium",
+      "resolved": true,
       "reasons": [
-        "url_only",
-        "translator_missing"
+        "url_only"
       ],
       "notes": [
-        "provenance notes mention translation, but not of this part specifically"
+        "provenance notes mention translation, but not of this part specifically",
+        "sourced: English original: the editor lists only the Bullinger letters as Latin with translations. is_translation is inferred from that list, so confirm it if in doubt."
       ],
-      "llm": {
-        "accepted": {
-          "series_raw": {
-            "value": "Memoirs and Remains of Lady Jane Grey",
-            "evidence": "Memoirs and Remains of Lady Jane Grey"
-          }
-        },
-        "rejected": [],
-        "applied": [
-          "series_raw"
-        ]
+      "sourced": {
+        "basis": "source",
+        "source_url": "https://archive.org/details/memoirsremainsof00grey",
+        "citation": "Archive.org record memoirsremainsof00grey: title \"Memoirs and remains of Lady Jane Grey\"; creator \"Grey, Jane, Lady, 1537-1554\", \"Nicolas, Nicholas Harris, Sir, 1799-1848\"; publisher \"London : H. Colburn & R. Bentley\"; date \"1831\". Editor's preface: \"Three letters in Latin to Henry Bullinger. These letters were written before her marriage, and between the years 1550 and 1553. Translations of them are also inserted.\"",
+        "note": "English original: the editor lists only the Bullinger letters as Latin with translations. is_translation is inferred from that list, so confirm it if in doubt.",
+        "refused": [],
+        "superseded": {}
       },
       "raw": {
         "source_attribution": "https://archive.org/details/memoirsremainsof00grey/page/5/mode/2up",
@@ -15608,11 +15597,14 @@
       "series_key": null,
       "series_raw": "Memoirs and Remains of Lady Jane Grey",
       "volume": null,
-      "publication_year": null,
-      "publisher": null,
-      "place": null,
+      "publication_year": 1831,
+      "publisher": "H. Colburn & R. Bentley",
+      "place": "London",
       "method": {
-        "is_translation": "llm",
+        "is_translation": "sourced",
+        "publication_year": "sourced",
+        "publisher": "sourced",
+        "place": "sourced",
         "series_raw": "llm"
       },
       "source_field": {},
@@ -15623,7 +15615,8 @@
         "translator_missing"
       ],
       "notes": [
-        "provenance notes mention translation, but not of this part specifically"
+        "provenance notes mention translation, but not of this part specifically",
+        "sourced: Latin original; the edition prints an English \"[translation.]\" after each letter without naming the translator (presumably the editor, Nicolas). Public domain by the 1831 publication date."
       ],
       "llm": {
         "accepted": {
@@ -15638,9 +15631,16 @@
         },
         "rejected": [],
         "applied": [
-          "is_translation",
           "series_raw"
         ]
+      },
+      "sourced": {
+        "basis": "source",
+        "source_url": "https://archive.org/details/memoirsremainsof00grey",
+        "citation": "Archive.org record memoirsremainsof00grey: title \"Memoirs and remains of Lady Jane Grey\"; creator \"Grey, Jane, Lady, 1537-1554\", \"Nicolas, Nicholas Harris, Sir, 1799-1848\"; publisher \"London : H. Colburn & R. Bentley\"; date \"1831\". Editor's preface: \"Three letters in Latin to Henry Bullinger. These letters were written before her marriage, and between the years 1550 and 1553. Translations of them are also inserted.\"",
+        "note": "Latin original; the edition prints an English \"[translation.]\" after each letter without naming the translator (presumably the editor, Nicolas). Public domain by the 1831 publication date.",
+        "refused": [],
+        "superseded": {}
       },
       "raw": {
         "source_attribution": "https://archive.org/details/memoirsremainsof00grey/page/5/mode/2up",
@@ -19925,6 +19925,7 @@
         "translator_is_editor"
       ],
       "notes": [
+        "sourced: The row's notes credit \"Roberts-Donaldson\", the series editors; the citation names William Wilson as translator.",
         "translator from notes (\"Alexander Roberts & James Donaldson\") replaced by the cited edition's (\"William Wilson\")"
       ],
       "sourced": {
@@ -19987,6 +19988,7 @@
         "translator_is_editor"
       ],
       "notes": [
+        "sourced: The row's notes credit \"Roberts-Donaldson\", the series editors; the citation names William Wilson as translator.",
         "translator from notes (\"Alexander Roberts & James Donaldson\") replaced by the cited edition's (\"William Wilson\")"
       ],
       "sourced": {
@@ -20041,7 +20043,8 @@
       "resolved": true,
       "reasons": [],
       "notes": [
-        "printed untranslated, in the original language"
+        "printed untranslated, in the original language",
+        "sourced: ANF printed Book III in Latin, untranslated; the page credits Wilson for the volume, not for this book, so only the volume and imprint are taken."
       ],
       "sourced": {
         "basis": "source",
@@ -20101,6 +20104,7 @@
         "translator_is_editor"
       ],
       "notes": [
+        "sourced: The row's notes credit \"Roberts-Donaldson\", the series editors; the citation names William Wilson as translator.",
         "translator from notes (\"Alexander Roberts & James Donaldson\") replaced by the cited edition's (\"William Wilson\")"
       ],
       "sourced": {
@@ -20163,6 +20167,7 @@
         "translator_is_editor"
       ],
       "notes": [
+        "sourced: The row's notes credit \"Roberts-Donaldson\", the series editors; the citation names William Wilson as translator.",
         "translator from notes (\"Alexander Roberts & James Donaldson\") replaced by the cited edition's (\"William Wilson\")"
       ],
       "sourced": {
@@ -20225,6 +20230,7 @@
         "translator_is_editor"
       ],
       "notes": [
+        "sourced: The row's notes credit \"Roberts-Donaldson\", the series editors; the citation names William Wilson as translator.",
         "translator from notes (\"Alexander Roberts & James Donaldson\") replaced by the cited edition's (\"William Wilson\")"
       ],
       "sourced": {
@@ -20287,6 +20293,7 @@
         "translator_is_editor"
       ],
       "notes": [
+        "sourced: The row's notes credit \"Roberts-Donaldson\", the series editors; the citation names William Wilson as translator.",
         "translator from notes (\"Alexander Roberts & James Donaldson\") replaced by the cited edition's (\"William Wilson\")"
       ],
       "sourced": {
@@ -20567,11 +20574,14 @@
       "series_key": null,
       "series_raw": "Memoirs and Remains of Lady Jane Grey",
       "volume": null,
-      "publication_year": null,
-      "publisher": null,
-      "place": null,
+      "publication_year": 1831,
+      "publisher": "H. Colburn & R. Bentley",
+      "place": "London",
       "method": {
-        "is_translation": "llm",
+        "is_translation": "sourced",
+        "publication_year": "sourced",
+        "publisher": "sourced",
+        "place": "sourced",
         "series_raw": "llm"
       },
       "source_field": {},
@@ -20582,7 +20592,8 @@
         "translator_missing"
       ],
       "notes": [
-        "provenance notes mention translation, but not of this part specifically"
+        "provenance notes mention translation, but not of this part specifically",
+        "sourced: Latin original; the edition prints an English \"[translation.]\" after each letter without naming the translator (presumably the editor, Nicolas). Public domain by the 1831 publication date."
       ],
       "llm": {
         "accepted": {
@@ -20597,9 +20608,16 @@
         },
         "rejected": [],
         "applied": [
-          "is_translation",
           "series_raw"
         ]
+      },
+      "sourced": {
+        "basis": "source",
+        "source_url": "https://archive.org/details/memoirsremainsof00grey",
+        "citation": "Archive.org record memoirsremainsof00grey: title \"Memoirs and remains of Lady Jane Grey\"; creator \"Grey, Jane, Lady, 1537-1554\", \"Nicolas, Nicholas Harris, Sir, 1799-1848\"; publisher \"London : H. Colburn & R. Bentley\"; date \"1831\". Editor's preface: \"Three letters in Latin to Henry Bullinger. These letters were written before her marriage, and between the years 1550 and 1553. Translations of them are also inserted.\"",
+        "note": "Latin original; the edition prints an English \"[translation.]\" after each letter without naming the translator (presumably the editor, Nicolas). Public domain by the 1831 publication date.",
+        "refused": [],
+        "superseded": {}
       },
       "raw": {
         "source_attribution": "https://archive.org/details/memoirsremainsof00grey/page/5/mode/2up",

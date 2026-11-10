@@ -195,5 +195,170 @@
     "fields": {
       "volume": 4
     }
+  },
+  "confession-catholic-faith-damasus": {
+    "basis": "source",
+    "source_url": "https://www.newadvent.org/fathers/27025.htm",
+    "checked": "2026-11-10",
+    "citation": "Translated by Blomfield Jackson. From Nicene and Post-Nicene Fathers, Second Series, Vol. 3. Edited by Philip Schaff and Henry Wace. (Buffalo, NY: Christian Literature Publishing Co., 1892.) Revised and edited for New Advent by Kevin Knight.",
+    "note": "Theodoret, Ecclesiastical History V.11, \"A confession of the Catholic faith which Pope Damasus sent to Bishop Paulinus\"; the citation covers the whole of Book V.",
+    "fields": {
+      "translator_display": "Blomfield Jackson",
+      "volume": 3,
+      "publication_year": 1892,
+      "publisher": "Christian Literature Publishing Co.",
+      "place": "Buffalo, NY"
+    }
+  },
+  "first-letter-to-henry-bullinger": {
+    "basis": "source",
+    "source_url": "https://archive.org/details/memoirsremainsof00grey",
+    "checked": "2026-11-10",
+    "citation": "Archive.org record memoirsremainsof00grey: title \"Memoirs and remains of Lady Jane Grey\"; creator \"Grey, Jane, Lady, 1537-1554\", \"Nicolas, Nicholas Harris, Sir, 1799-1848\"; publisher \"London : H. Colburn & R. Bentley\"; date \"1831\". Editor's preface: \"Three letters in Latin to Henry Bullinger. These letters were written before her marriage, and between the years 1550 and 1553. Translations of them are also inserted.\"",
+    "note": "Latin original; the edition prints an English \"[translation.]\" after each letter without naming the translator (presumably the editor, Nicolas). Public domain by the 1831 publication date.",
+    "fields": {
+      "is_translation": true,
+      "publication_year": 1831,
+      "publisher": "H. Colburn & R. Bentley",
+      "place": "London"
+    }
+  },
+  "second-letter-to-henry-bullinger": {
+    "basis": "source",
+    "source_url": "https://archive.org/details/memoirsremainsof00grey",
+    "checked": "2026-11-10",
+    "citation": "Archive.org record memoirsremainsof00grey: title \"Memoirs and remains of Lady Jane Grey\"; creator \"Grey, Jane, Lady, 1537-1554\", \"Nicolas, Nicholas Harris, Sir, 1799-1848\"; publisher \"London : H. Colburn & R. Bentley\"; date \"1831\". Editor's preface: \"Three letters in Latin to Henry Bullinger. These letters were written before her marriage, and between the years 1550 and 1553. Translations of them are also inserted.\"",
+    "note": "Latin original; the edition prints an English \"[translation.]\" after each letter without naming the translator (presumably the editor, Nicolas). Public domain by the 1831 publication date.",
+    "fields": {
+      "is_translation": true,
+      "publication_year": 1831,
+      "publisher": "H. Colburn & R. Bentley",
+      "place": "London"
+    }
+  },
+  "third-letter-to-henry-bullinger": {
+    "basis": "source",
+    "source_url": "https://archive.org/details/memoirsremainsof00grey",
+    "checked": "2026-11-10",
+    "citation": "Archive.org record memoirsremainsof00grey: title \"Memoirs and remains of Lady Jane Grey\"; creator \"Grey, Jane, Lady, 1537-1554\", \"Nicolas, Nicholas Harris, Sir, 1799-1848\"; publisher \"London : H. Colburn & R. Bentley\"; date \"1831\". Editor's preface: \"Three letters in Latin to Henry Bullinger. These letters were written before her marriage, and between the years 1550 and 1553. Translations of them are also inserted.\"",
+    "note": "Latin original; the edition prints an English \"[translation.]\" after each letter without naming the translator (presumably the editor, Nicolas). Public domain by the 1831 publication date.",
+    "fields": {
+      "is_translation": true,
+      "publication_year": 1831,
+      "publisher": "H. Colburn & R. Bentley",
+      "place": "London"
+    }
+  },
+  "conference-with-john-feckenham": {
+    "basis": "source",
+    "source_url": "https://archive.org/details/memoirsremainsof00grey",
+    "checked": "2026-11-10",
+    "citation": "Archive.org record memoirsremainsof00grey: title \"Memoirs and remains of Lady Jane Grey\"; creator \"Grey, Jane, Lady, 1537-1554\", \"Nicolas, Nicholas Harris, Sir, 1799-1848\"; publisher \"London : H. Colburn & R. Bentley\"; date \"1831\". Editor's preface: \"Three letters in Latin to Henry Bullinger. These letters were written before her marriage, and between the years 1550 and 1553. Translations of them are also inserted.\"",
+    "note": "English original: the editor lists only the Bullinger letters as Latin with translations. is_translation is inferred from that list, so confirm it if in doubt.",
+    "fields": {
+      "is_translation": false,
+      "publication_year": 1831,
+      "publisher": "H. Colburn & R. Bentley",
+      "place": "London"
+    }
+  },
+  "letter-to-lady-katherine-grey": {
+    "basis": "source",
+    "source_url": "https://archive.org/details/memoirsremainsof00grey",
+    "checked": "2026-11-10",
+    "citation": "Archive.org record memoirsremainsof00grey: title \"Memoirs and remains of Lady Jane Grey\"; creator \"Grey, Jane, Lady, 1537-1554\", \"Nicolas, Nicholas Harris, Sir, 1799-1848\"; publisher \"London : H. Colburn & R. Bentley\"; date \"1831\". Editor's preface: \"Three letters in Latin to Henry Bullinger. These letters were written before her marriage, and between the years 1550 and 1553. Translations of them are also inserted.\"",
+    "note": "English original: the editor lists only the Bullinger letters as Latin with translations. is_translation is inferred from that list, so confirm it if in doubt.",
+    "fields": {
+      "is_translation": false,
+      "publication_year": 1831,
+      "publisher": "H. Colburn & R. Bentley",
+      "place": "London"
+    }
+  },
+  "letter-to-the-duke-of-suffolk": {
+    "basis": "source",
+    "source_url": "https://archive.org/details/memoirsremainsof00grey",
+    "checked": "2026-11-10",
+    "citation": "Archive.org record memoirsremainsof00grey: title \"Memoirs and remains of Lady Jane Grey\"; creator \"Grey, Jane, Lady, 1537-1554\", \"Nicolas, Nicholas Harris, Sir, 1799-1848\"; publisher \"London : H. Colburn & R. Bentley\"; date \"1831\". Editor's preface: \"Three letters in Latin to Henry Bullinger. These letters were written before her marriage, and between the years 1550 and 1553. Translations of them are also inserted.\"",
+    "note": "English original: the editor lists only the Bullinger letters as Latin with translations. is_translation is inferred from that list, so confirm it if in doubt.",
+    "fields": {
+      "is_translation": false,
+      "publication_year": 1831,
+      "publisher": "H. Colburn & R. Bentley",
+      "place": "London"
+    }
+  },
+  "letter-to-thomas-harding-on-his-apostasy": {
+    "basis": "source",
+    "source_url": "https://archive.org/details/memoirsremainsof00grey",
+    "checked": "2026-11-10",
+    "citation": "Archive.org record memoirsremainsof00grey: title \"Memoirs and remains of Lady Jane Grey\"; creator \"Grey, Jane, Lady, 1537-1554\", \"Nicolas, Nicholas Harris, Sir, 1799-1848\"; publisher \"London : H. Colburn & R. Bentley\"; date \"1831\". Editor's preface: \"Three letters in Latin to Henry Bullinger. These letters were written before her marriage, and between the years 1550 and 1553. Translations of them are also inserted.\"",
+    "note": "English original: the editor lists only the Bullinger letters as Latin with translations. is_translation is inferred from that list, so confirm it if in doubt.",
+    "fields": {
+      "is_translation": false,
+      "publication_year": 1831,
+      "publisher": "H. Colburn & R. Bentley",
+      "place": "London"
+    }
+  },
+  "prayer-before-execution": {
+    "basis": "source",
+    "source_url": "https://archive.org/details/memoirsremainsof00grey",
+    "checked": "2026-11-10",
+    "citation": "Archive.org record memoirsremainsof00grey: title \"Memoirs and remains of Lady Jane Grey\"; creator \"Grey, Jane, Lady, 1537-1554\", \"Nicolas, Nicholas Harris, Sir, 1799-1848\"; publisher \"London : H. Colburn & R. Bentley\"; date \"1831\". Editor's preface: \"Three letters in Latin to Henry Bullinger. These letters were written before her marriage, and between the years 1550 and 1553. Translations of them are also inserted.\"",
+    "note": "English original: the editor lists only the Bullinger letters as Latin with translations. is_translation is inferred from that list, so confirm it if in doubt.",
+    "fields": {
+      "is_translation": false,
+      "publication_year": 1831,
+      "publisher": "H. Colburn & R. Bentley",
+      "place": "London"
+    }
+  },
+  "scaffold-speech": {
+    "basis": "source",
+    "source_url": "https://archive.org/details/memoirsremainsof00grey",
+    "checked": "2026-11-10",
+    "citation": "Archive.org record memoirsremainsof00grey: title \"Memoirs and remains of Lady Jane Grey\"; creator \"Grey, Jane, Lady, 1537-1554\", \"Nicolas, Nicholas Harris, Sir, 1799-1848\"; publisher \"London : H. Colburn & R. Bentley\"; date \"1831\". Editor's preface: \"Three letters in Latin to Henry Bullinger. These letters were written before her marriage, and between the years 1550 and 1553. Translations of them are also inserted.\"",
+    "note": "English original: the editor lists only the Bullinger letters as Latin with translations. is_translation is inferred from that list, so confirm it if in doubt.",
+    "fields": {
+      "is_translation": false,
+      "publication_year": 1831,
+      "publisher": "H. Colburn & R. Bentley",
+      "place": "London"
+    }
+  },
+  "note-to-her-father-memorial-for-sir-john-brydges-and-tower-inscriptions": {
+    "basis": "source",
+    "source_url": "https://archive.org/details/memoirsremainsof00grey",
+    "checked": "2026-11-10",
+    "citation": "Archive.org record memoirsremainsof00grey: title \"Memoirs and remains of Lady Jane Grey\"; creator \"Grey, Jane, Lady, 1537-1554\", \"Nicolas, Nicholas Harris, Sir, 1799-1848\"; publisher \"London : H. Colburn & R. Bentley\"; date \"1831\". Editor's preface: \"Three letters in Latin to Henry Bullinger. These letters were written before her marriage, and between the years 1550 and 1553. Translations of them are also inserted.\"",
+    "note": "Edition sourced; translation status left open because the Tower inscriptions include Latin.",
+    "fields": {
+      "publication_year": 1831,
+      "publisher": "H. Colburn & R. Bentley",
+      "place": "London"
+    }
+  },
+  "a-short-rule-of-life": {
+    "basis": "source",
+    "source_url": "https://archive.org/details/selectenglishworks03wycl",
+    "checked": "2026-11-10",
+    "citation": "Archive.org record selectenglishworks03wycl: title \"Select English works of John Wyclif\"; creator \"Wycliffe, John, d. 1384\", \"Arnold, Thomas, 1823-1900\"; publisher \"Oxford : Clarendon Press\"; date \"1869\"; volume \"3\".",
+    "note": "Middle English original, edited by Thomas Arnold (vol. III, Miscellaneous works).",
+    "fields": {
+      "is_translation": false,
+      "volume": 3,
+      "publication_year": 1869,
+      "publisher": "Clarendon Press",
+      "place": "Oxford"
+    }
+  },
+  "letters-109697-to-trajan-on-the-christians": {
+    "basis": "source",
+    "source_url": "https://faculty.georgetown.edu/jod/texts/pliny.html",
+    "checked": "2026-11-10",
+    "citation": "Georgetown page names no translator. Its text opens \"It is my practice, my lord, to refer to you all matters concerning which I am in doubt.\" Melmoth, rev. Bosanquet (Project Gutenberg #2811, https://www.gutenberg.org/ebooks/2811) opens \"IT is my invariable rule, Sir, to refer to you in all matters where I feel doubtful\".",
+    "note": "FINDING: the published text is not the Melmoth/Bosanquet translation the notes claim; its translator is unidentified and it may be a modern translation. Copyright review needed.",
+    "fields": {}
   }
 }
