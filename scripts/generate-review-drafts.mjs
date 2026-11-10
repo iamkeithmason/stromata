@@ -121,6 +121,8 @@ import {
 
 const SECTIONS_MODEL = process.env.SECTIONS_MODEL || NOTE_MODEL;
 const PARAGRAPHS_MODEL = process.env.PARAGRAPHS_MODEL || NOTE_MODEL;
+// Texts per `paragraph_wall_stats` call; 60 measured at 0.2–0.7 s a page.
+const WALL_STATS_PAGE = 60;
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 dotenv.config({ path: path.join(__dirname, '..', '.env.local'), override: true });
@@ -607,16 +609,31 @@ async function fillSectionDrafts() {
 
 async function fillParagraphDrafts() {
   // Paragraph word counts come from the database, so deciding which texts to
-  // draft downloads no bodies.
-  const { data: stats, error } = await supabase.rpc('paragraph_wall_stats', { min_words: FLAG_WORDS });
-  if (error) {
-    console.error(
-      `Failed to load paragraph figures: ${error.message}` +
-      (/paragraph_wall_stats/.test(error.message) ? ' (has migration 038 been applied?)' : '')
-    );
+  // draft downloads no bodies. One page of texts per call: the whole corpus in
+  // one call outran the API's 8 s statement timeout (migration 039).
+  const { count: textCount, error: countError } = await supabase
+    .from('texts')
+    .select('id', { count: 'exact', head: true });
+  if (countError) {
+    console.error(`Failed to count texts: ${countError.message}`);
     return 0;
   }
-  const rows = stats ?? [];
+  const rows = [];
+  for (let offset = 0; offset < (textCount ?? 0); offset += WALL_STATS_PAGE) {
+    const { data: page, error } = await supabase.rpc('paragraph_wall_stats', {
+      min_words: FLAG_WORDS,
+      page_offset: offset,
+      page_size: WALL_STATS_PAGE,
+    });
+    if (error) {
+      console.error(
+        `Failed to load paragraph figures: ${error.message}` +
+        (/paragraph_wall_stats/.test(error.message) ? ' (have migrations 038 and 039 been applied?)' : '')
+      );
+      return 0;
+    }
+    rows.push(...(page ?? []));
+  }
 
   // The corpus report: every text with an 800+ word paragraph, by tier.
   const byTier = { 1: [0, 0], 2: [0, 0], 3: [0, 0] };

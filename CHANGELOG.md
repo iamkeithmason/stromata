@@ -48,7 +48,11 @@ longer moves `updated_at`. That is a function rather than a trigger `WHEN` claus
 whole-row `WHEN` on a table with generated columns. It ignores `word_count` and `body_tsv`, which follow `body`.
 **Applied to production on 10 Nov 2026**, with Keith's go-ahead, and checked there: 151 / 25 / 2 from the
 function; a draft-only write keeps `updated_at`; a real edit moves it; the shape check rejects a malformed
-document; anon can neither call the function nor read the column. `updated_at` is the sitemap's lastModified,
+document; anon can neither call the function nor read the column. Migration `039_paragraph_wall_stats_paged.sql`
+(also applied 10 Nov) makes the function take a page of texts at a time. In one call over the whole corpus it
+took 15–16 s, past the API's 8 s statement timeout, so the first real dry run failed. The connector checks had
+passed because they run as `postgres`, with no timeout. Pages of 60 run in 0.8–2.3 s, with the same 153 rows.
+`updated_at` is the sitemap's lastModified,
 so without the trigger change, drafting proposals for 25 published texts would advertise them as changed and
 invite crawler re-renders of unchanged pages.
 

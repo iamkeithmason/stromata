@@ -100,13 +100,16 @@ test('paragraphStats computes the same three figures as the SQL function', () =>
 });
 
 test('the SQL function in the migration uses the same separator, heading pattern and thresholds', () => {
-  const sql = fs.readFileSync(path.join(__dirname, '../../supabase/migrations/038_paragraph_breaks.sql'), 'utf8');
+  // 039 replaced 038's function with a paged one; the counting must be the same in both.
+  for (const file of ['038_paragraph_breaks.sql', '039_paragraph_wall_stats_paged.sql']) {
+  const sql = fs.readFileSync(path.join(__dirname, '../../supabase/migrations', file), 'utf8');
   // E'' strings double their backslashes; these are the JS patterns spelled that way.
   assert.ok(sql.includes(String.raw`regexp_split_to_table(t.body, E'\\n[ \\t]*\\n')`), 'separator');
   assert.ok(sql.includes(String.raw`regexp_replace(b.blk, E'(^|\\n)#{1,6}[ \\t][^\\n]*', '', 'g')`), 'heading lines');
   assert.ok(sql.includes(String.raw`E' \t\n\r')`), 'trims all whitespace, as JS trim() does');
   assert.ok(sql.includes(String.raw`regexp_split_to_array(txt, '\s+')`), 'word split');
   assert.ok(sql.includes('words >= 300'), 'long-paragraph threshold');
+  }
 });
 
 // ── Sentences ────────────────────────────────────────────────────────────────

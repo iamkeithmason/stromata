@@ -11,7 +11,7 @@
  * The flow mirrors sections (scripts/lib/sections.mjs):
  *   detect   — `paragraphStats` flags a text with a prose paragraph of 800+
  *              words; pipeline-import.mjs prints the flag, and the SQL function
- *              `paragraph_wall_stats` (migration 038) computes the same counts
+ *              `paragraph_wall_stats` (migrations 038, 039) computes the same counts
  *              in the database so selection downloads no bodies.
  *   propose  — Claude reads one long paragraph at a time, as numbered
  *              sentences, and names the sentences after which the argument
