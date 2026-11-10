@@ -28,6 +28,15 @@
  *                                 at /admin/review/sections, not in the publish
  *                                 queue. A new import that meets the definition
  *                                 is picked up by the next run, with no flag.
+ *   texts.paragraphs_draft      — proposed editorial paragraph breaks for
+ *                                 texts with a prose paragraph of 800+ words
+ *                                 (scripts/lib/paragraphs.mjs). Anchors only,
+ *                                 never a body. Unpublished texts are drafted
+ *                                 whatever their tier (new imports, the
+ *                                 standing habit); published ones in tier
+ *                                 order, Tier 1 by default (--tier=2 or 3 to
+ *                                 go further). Reviewed at
+ *                                 /admin/review/paragraphs.
  *
  * Nothing here publishes, and nothing here writes a live field: every write
  * goes to a *_draft column, which is what makes the script safe to re-run and
@@ -40,6 +49,17 @@
  * each text sends its paragraphs cut to 50 words, roughly 8–15k input tokens,
  * so the backfill is about $2 on Opus; the script prints the exact figure.
  *
+ * The paragraphs step chooses its texts with the `paragraph_wall_stats` SQL
+ * function (migration 038), which counts paragraph words inside the database,
+ * so no body is downloaded to decide. It then reads the body of each chosen
+ * text once. On 10 Nov 2026 the first run was 27 texts (25 published Tier 1,
+ * 2 unpublished drafts), 3.6 MB of bodies (0.07% of the 5 GB cycle).
+ * Anthropic tokens: one call per 800+ word prose paragraph, sending that
+ * paragraph as numbered sentences. Those 27 texts hold 248 such paragraphs,
+ * 314k words: about 530k input tokens and a few thousand output, so about $3
+ * on Opus. `--dry-run` prints the tier report and the candidates without
+ * calling anything; the script prints the exact cost of a real run.
+ *
  * Usage:
  *   node scripts/generate-review-drafts.mjs                          # everything missing
  *   node scripts/generate-review-drafts.mjs --collection <slug>      # one collection
@@ -49,6 +69,10 @@
  *   node scripts/generate-review-drafts.mjs --limit=10               # cap the work
  *   node scripts/generate-review-drafts.mjs --sections               # only the sections step
  *   node scripts/generate-review-drafts.mjs --sections --slug=<slug> # sections for one text
+ *   node scripts/generate-review-drafts.mjs --paragraphs             # only the paragraph-breaks step (Tier 1)
+ *   node scripts/generate-review-drafts.mjs --paragraphs --tier=2    # … Tiers 1 and 2
+ *   node scripts/generate-review-drafts.mjs --paragraphs --slug=<slug>
+ *   node scripts/generate-review-drafts.mjs --paragraphs --dry-run   # the corpus report: tiers, candidates
  */
 
 import dotenv from 'dotenv';
@@ -81,8 +105,21 @@ import {
   selectSectionTargets,
   validatePicks,
 } from './lib/sections.mjs';
+import {
+  FLAG_WORDS,
+  PARAGRAPHS_PROMPT,
+  buildParagraphsDoc,
+  paragraphStats,
+  parseBreaksReply,
+  selectParagraphTargets,
+  sentenceDigest,
+  tidyBreaks,
+  tierFor,
+  validatePicks as validateBreakPicks,
+} from './lib/paragraphs.mjs';
 
 const SECTIONS_MODEL = process.env.SECTIONS_MODEL || NOTE_MODEL;
+const PARAGRAPHS_MODEL = process.env.PARAGRAPHS_MODEL || NOTE_MODEL;
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 dotenv.config({ path: path.join(__dirname, '..', '.env.local'), override: true });
@@ -104,6 +141,8 @@ const MODE = {
   force: hasFlag('--force'),
   limit: flagValue('--limit') ? parseInt(flagValue('--limit'), 10) : null,
   sections: hasFlag('--sections'),
+  paragraphs: hasFlag('--paragraphs'),
+  tier: flagValue('--tier') ? parseInt(flagValue('--tier'), 10) : 1,
   slug: flagValue('--slug'),
 };
 
@@ -563,9 +602,148 @@ async function fillSectionDrafts() {
   return done;
 }
 
+// ── Step 5: texts.paragraphs_draft ───────────────────────────────────────────
+
+async function fillParagraphDrafts() {
+  // Paragraph word counts come from the database, so deciding which texts to
+  // draft downloads no bodies.
+  const { data: stats, error } = await supabase.rpc('paragraph_wall_stats', { min_words: FLAG_WORDS });
+  if (error) {
+    console.error(
+      `Failed to load paragraph figures: ${error.message}` +
+      (/paragraph_wall_stats/.test(error.message) ? ' (has migration 038 been applied?)' : '')
+    );
+    return 0;
+  }
+  const rows = stats ?? [];
+
+  // The corpus report: every text with an 800+ word paragraph, by tier.
+  const byTier = { 1: [0, 0], 2: [0, 0], 3: [0, 0] };
+  for (const r of rows) {
+    const t = tierFor(r);
+    if (t) byTier[t][r.published ? 0 : 1]++;
+  }
+  console.log(`Paragraphs: texts with a ${FLAG_WORDS}+ word paragraph (published · unpublished):`);
+  console.log(`  Tier 1  ${byTier[1][0]} · ${byTier[1][1]}   1,000+ word paragraph, 90%+ of words in 300+ word paragraphs`);
+  console.log(`  Tier 2  ${byTier[2][0]} · ${byTier[2][1]}   1,000+ word paragraph`);
+  console.log(`  Tier 3  ${byTier[3][0]} · ${byTier[3][1]}   800–999`);
+  console.log(`  ${rows.filter((r) => r.has_draft).length} already have a proposal.`);
+
+  const targets = selectParagraphTargets(rows, { maxTier: MODE.tier, force: MODE.force, slug: MODE.slug });
+  if (!targets.length) {
+    console.log(`Paragraphs: nothing to draft${MODE.slug ? ` for "${MODE.slug}"` : ''}.\n`);
+    return 0;
+  }
+  const slice = MODE.limit ? targets.slice(0, MODE.limit) : targets;
+  console.log(
+    `Paragraphs: ${slice.length} candidate(s), published up to Tier ${MODE.tier} plus unpublished (model: ${PARAGRAPHS_MODEL}).`
+  );
+
+  let done = 0;
+  let wallCount = 0;
+  for (let i = 0; i < slice.length; i++) {
+    const text = slice[i];
+    const tag = `  [${i + 1}/${slice.length}] T${tierFor(text)} ${text.title}`;
+
+    if (MODE.dryRun) {
+      console.log(`${tag} — longest paragraph ${text.max_words} words`);
+      done++;
+      continue;
+    }
+
+    // One body at a time, and only for a candidate.
+    const { data: row, error: bodyError } = await supabase
+      .from('texts')
+      .select('body, author:authors(name)')
+      .eq('id', text.id)
+      .single();
+    if (bodyError || !row?.body) {
+      console.error(`${tag} — ✗ could not read the body`);
+      continue;
+    }
+    const body = row.body;
+    const { blocks, walls } = paragraphStats(body);
+    if (!walls.length) {
+      console.log(`${tag} — no long prose paragraph (verse, list or quotation); skipped`);
+      continue;
+    }
+    wallCount += walls.length;
+
+    const picks = [];
+    let failed = false;
+    for (const w of walls) {
+      const userMessage = [
+        `Title: ${text.title}`,
+        `Author: ${[row.author].flat()[0]?.name ?? 'Unknown'}`,
+        '',
+        `The paragraph, ${blocks[w].words} words:`,
+        sentenceDigest(blocks[w].text),
+      ].join('\n');
+      try {
+        const message = await anthropic.messages.create({
+          model: PARAGRAPHS_MODEL,
+          max_tokens: 300,
+          system: PARAGRAPHS_PROMPT,
+          messages: [{ role: 'user', content: userMessage }],
+        });
+        record(PARAGRAPHS_MODEL, {
+          inputTokens: message.usage?.input_tokens ?? 0,
+          outputTokens: message.usage?.output_tokens ?? 0,
+        });
+        // The reply only ever narrows: out-of-range, repeated or crowded breaks are dropped.
+        for (const sentence of tidyBreaks(blocks[w].text, parseBreaksReply(message.content?.[0]?.text))) {
+          picks.push({ paragraph: w, sentence });
+        }
+      } catch (err) {
+        console.error(`${tag} — ✗ paragraph ${w + 1}: ${err.message}`);
+        failed = true;
+        break;
+      }
+    }
+    if (failed) continue;
+    if (!picks.length) {
+      console.log(`${tag} — the model found no turn in ${walls.length} long paragraph(s); nothing stored`);
+      continue;
+    }
+
+    const problems = validateBreakPicks(body, picks);
+    if (problems.length) {
+      console.error(`${tag} — ✗ unusable draft: ${problems.join(' ')}`);
+      continue;
+    }
+    const { error: writeError } = await supabase
+      .from('texts')
+      .update({ paragraphs_draft: buildParagraphsDoc(body, picks) })
+      .eq('id', text.id);
+    if (writeError) {
+      console.error(`${tag} — ✗ write error: ${writeError.message}`);
+      continue;
+    }
+    console.log(`${tag} — ✓ ${picks.length} break(s) across ${walls.length} paragraph(s)`);
+    done++;
+  }
+  if (!MODE.dryRun) console.log(`  ${wallCount} long paragraph(s) read.`);
+  console.log('');
+  return done;
+}
+
 // ── Main ─────────────────────────────────────────────────────────────────────
 
 async function main() {
+  if (MODE.paragraphs) {
+    console.log(
+      `Drafting paragraph breaks${MODE.slug ? ` for "${MODE.slug}"` : ''}` +
+      `${MODE.dryRun ? ' (dry run — no API calls, no writes)' : ''}` +
+      `${MODE.force ? ' (force — redrafting existing drafts)' : ''}\n`
+    );
+    const paragraphs = await fillParagraphDrafts();
+    console.log(`── Summary ─────────────────────────────────────────────────`);
+    console.log(`  Paragraph proposals ${MODE.dryRun ? 'would draft' : 'drafted'}: ${paragraphs}`);
+    reportSpend();
+    if (!MODE.dryRun && paragraphs > 0) console.log('\nReview them at /admin/review/paragraphs.');
+    return;
+  }
+
   if (MODE.sections) {
     console.log(
       `Drafting sections${MODE.slug ? ` for "${MODE.slug}"` : ''}` +
@@ -596,9 +774,11 @@ async function main() {
   // Sections are drafted for published texts too, so an empty draft queue does
   // not end the run; only a run scoped to a collection skips them.
   const sections = MODE.collection || MODE.standalone ? 0 : await fillSectionDrafts();
+  const paragraphs = MODE.collection || MODE.standalone ? 0 : await fillParagraphDrafts();
   if (texts.length === 0) {
     console.log(`── Summary ─────────────────────────────────────────────────`);
     console.log(`  Sections ${MODE.dryRun ? 'would draft' : 'drafted'}: ${sections}`);
+    console.log(`  Paragraph proposals ${MODE.dryRun ? 'would draft' : 'drafted'}: ${paragraphs}`);
     reportSpend();
     return;
   }
@@ -627,6 +807,7 @@ async function main() {
   console.log(`  Summaries ${verb}: ${summaries}`);
   console.log(`  Collection descriptions ${verb}: ${descriptions}`);
   console.log(`  Sections ${verb}: ${sections}`);
+  console.log(`  Paragraph proposals ${verb}: ${paragraphs}`);
   reportSpend();
   if (!MODE.dryRun) console.log('\nReview them at /admin/review.');
 }

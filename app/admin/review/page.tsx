@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { createServerClient } from '@/lib/supabase/server'
 import { STANDALONE_SLUG, progressOf, type ReviewState } from '@/lib/review/queue'
 import { sameSections } from '@/scripts/lib/sections.mjs'
+import { draftState } from '@/scripts/lib/paragraphs.mjs'
 
 export const dynamic = 'force-dynamic'
 
@@ -64,6 +65,15 @@ export default async function ReviewQueuePage() {
   const sectionsWaiting = ((sectionRows ?? []) as { sections_draft: unknown; sections: unknown }[])
     .filter(r => !sameSections(r.sections_draft, r.sections)).length
 
+  // Proposed paragraph breaks, likewise mostly on published texts. The draft
+  // documents are small (anchors only); no bodies are read here.
+  const { data: paragraphRows } = await supabase
+    .from('texts')
+    .select('paragraphs_draft')
+    .not('paragraphs_draft', 'is', null)
+  const paragraphsWaiting = ((paragraphRows ?? []) as { paragraphs_draft: unknown }[])
+    .filter(r => draftState(r.paragraphs_draft) === 'pending').length
+
   const overall = progressOf(rows.map(r => r.review_state))
   const collectionCount = ordered.filter(g => g.slug !== STANDALONE_SLUG).length
 
@@ -87,6 +97,16 @@ export default async function ReviewQueuePage() {
         <span className="text-stone-800 font-medium">Sections</span>
         <span className="text-xs text-stone-400">
           {sectionsWaiting > 0 ? `${sectionsWaiting} to review` : 'none waiting'}
+        </span>
+      </Link>
+
+      <Link
+        href="/admin/review/paragraphs"
+        className="mt-2 flex items-baseline justify-between border border-stone-200 rounded p-4 active:bg-stone-100 hover:border-stone-400 transition-colors"
+      >
+        <span className="text-stone-800 font-medium">Paragraph breaks</span>
+        <span className="text-xs text-stone-400">
+          {paragraphsWaiting > 0 ? `${paragraphsWaiting} to review` : 'none waiting'}
         </span>
       </Link>
 

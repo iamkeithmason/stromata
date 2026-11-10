@@ -7,6 +7,46 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-11-10 — Editorial paragraph breaks for walls of text: flag at import, Claude proposes, Keith approves
+
+Many published texts keep their source's typesetting, where a chapter is one paragraph; on a phone that is
+several screens of unbroken type. Keith ruled on 10 Nov that adding paragraph breaks is a legitimate editorial
+act if no word changes and the breaks are recorded as the editor's, with the flag at 800 words. This builds the
+habit, on the pattern of editor's sections.
+
+`scripts/lib/paragraphs.mjs` holds all of it, pure and unit-tested: the detector (split at blank lines, drop
+heading lines, count words: the 10 Nov measurement), the tiers, a sentence splitter that will not end a
+sentence after an abbreviation, an initial or a scripture reference, nor inside a quotation or a bracket, and
+the anchors. A proposal is stored in the new `texts.paragraphs_draft` as anchors (the closing words of the
+sentence a break follows, lengthened until unique), never as a body. Only prose paragraphs can take breaks;
+verse, lists, blockquotes, headings and footnotes are left alone. `applyBreaks` inserts a blank line at each
+anchor and refuses, changing nothing, unless the result has exactly the same words and exactly one new
+paragraph break per anchor.
+
+- **Import**: `pipeline-import.mjs` warns when a text has a prose paragraph of 800+ words (flag-only, like verse).
+- **Drafting**: `npm run generate:review-drafts -- --paragraphs` (`--tier=2|3`, `--slug=`, `--dry-run`,
+  `--force`, prints its token cost). The model reads one long paragraph at a time as numbered sentences and
+  names the sentences after which the argument turns; a deterministic step drops anything out of range or
+  crowded and turns the rest into anchors. Selection runs in the database through a new SQL function,
+  `paragraph_wall_stats`, so choosing texts downloads no bodies. Published texts go in tier order (Tier 1 by
+  default); unpublished drafts are drafted whatever their tier. The plain `generate:review-drafts` run includes
+  this step too, as it does sections.
+- **Review**: `/admin/review/paragraphs`, linked from the review queue. Each break shows the end of the sentence
+  before and the start of the one after; move it a sentence either way, remove it, add one inside a long piece,
+  read the paragraph as it would be, then Save, Hold or Approve. Approve writes the body (guarded on
+  `updated_at`, so a concurrent edit is refused), appends "Paragraph breaks added by the editor for reading; the
+  source prints this as continuous text." to `provenance_notes`, and refreshes only that text's page. It never
+  touches `published`.
+
+Migration `038_paragraph_breaks.sql` (the column, its shape check, and the function, service role only) must be
+applied before this ships. Measured the same day with that function's SQL: 151 published texts have an 800+
+word paragraph (Tier 1: 25, Tier 2: 72, Tier 3: 54), plus 2 unpublished drafts. The card recorded Tier 1 as 27
+and Tier 2 as 70; the totals match exactly, and the recorded definition gives 25 today, so the 10 Nov query
+differed in some detail that was not written down. JS and SQL figures agree exactly on the two bodies checked
+(Country Parson, On Repentance).
+
+---
+
 ## 2026-11-10 — Replace a held text's body in place: `replace-text-body.mjs`
 
 Three texts unpublished on 10 Nov for copyright or provenance (Praktikos, Patrick's Confession, Sermo Lupi)
