@@ -99,6 +99,15 @@ and refreshes the page. Sections are editorial, **not part of the original text*
 `{source: "editorial", sections: [{label, starts_with}]}` so the reader can mark them as the editor's.
 `starts_with` is derived from the body, never typed; keep every caller on the shared functions.
 
+**Paragraph breaks** (`/admin/review/paragraphs`, linked from the queue) are the other editorial layer for long
+texts: sections solve navigation, these solve reading, and a text can need both. Any prose paragraph of 800+
+words is flagged (Keith, 10 Nov 2026), at import and by `paragraph_wall_stats` in the database.
+`npm run generate:review-drafts -- --paragraphs` (`--tier=1|2|3`, default 1; `--slug=`, `--dry-run` prints the
+tier report, `--force`) has Claude propose breaks into `texts.paragraphs_draft` as anchors, never a body.
+Approve inserts them into `body`, and `applyBreaks` refuses unless every word is unchanged; it appends the
+editor's line to `provenance_notes` and refreshes only that text's page. Verse, lists, blockquotes, headings
+and footnotes are never broken. All of it lives in `scripts/lib/paragraphs.mjs`; keep every caller there.
+
 ## Pipeline GUI — `/admin/pipeline` (local operator UI, for Keith not Claude)
 
 There is a browser GUI for the whole pipeline, living inside the existing admin app at
@@ -1295,6 +1304,7 @@ still apply per-file, still parallelize the same way. What changes is Stage 2/5a
 | `scripts/lib/leading-h1.mjs` | Decides whether a body's opening `# H1` duplicates the title or is content: keep-list → structural veto → name test → reviewed drop-list. The judgement half; `source-chrome.mjs` stays mechanical | Auto via strip-source-chrome |
 | `scripts/strip-source-chrome.mjs` | Heal source-site chrome in already-imported Supabase texts (dry-run default, `--write`; `--slug=`/`--id=`/`--drafts` to scope, `--drop-leading-h1` for a duplicated title heading, **`--files` to apply the same verdict to the staged output markdown so the two stores cannot drift**) | Maintenance only |
 | `scripts/pipeline-import.mjs` | Import staged output into Supabase as `published: false` | Stage 5a |
+| `scripts/lib/paragraphs.mjs` | Walls of text: the 800-word detector and tiers, sentence ends, break anchors, `applyBreaks` (refuses any change but whitespace), the drafting prompt. Mirrors `paragraph_wall_stats` (migration 038) | Auto via pipeline-import (flag), generate-review-drafts `--paragraphs`, /admin/review/paragraphs |
 | `scripts/rejoin-text-paragraphs.mjs` | Heal mid-sentence page-break splits in already-imported Supabase texts (dry-run default, `--write` to apply; `--slug=`/`--id=` to scope) | Maintenance only |
 | `scripts/dedup-draft-texts.mjs` | Find draft texts that duplicate a published text (matches on title + author *name*, so it catches the draft-author-stub case) and optionally delete the redundant draft (dry-run default, `--write` deletes HIGH-confidence body matches, `--force` includes lower-confidence, `--slug=` to scope, `--fuzzy` lists near-title matches). Never touches published rows, authors, or collections. | Maintenance only |
 | `scripts/check-prospect-urls.mjs` | Fetch every `Cleared edition URL` / `Additional edition URLs` / `Reference URL` in the Notion prospect list and report the ones that no longer answer. Read-only, and uses the **REST API with `NOTION_TOKEN`**, so it does not spend the MCP query budget. Distinguishes **dead (404/410) from blocked (403, e.g. sacred-texts behind Cloudflare)** — only dead exits non-zero, because failing on a 403 every run is how a check stops being read. **Reachability only: a 200 does not mean the URL holds the right work** — the read-the-title check before Stage 2 still stands. `--cleared-only`, `--status=`, `--json`, `--fail-on=any`. Assertion half in `scripts/lib/url-check.mjs`, unit-tested | Maintenance; before a sync |

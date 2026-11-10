@@ -7,6 +7,71 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-11-10 — Editorial paragraph breaks for walls of text: flag at import, Claude proposes, Keith approves
+
+Many published texts keep their source's typesetting, where a chapter is one paragraph; on a phone that is
+several screens of unbroken type. Keith ruled on 10 Nov that adding paragraph breaks is a legitimate editorial
+act if no word changes and the breaks are recorded as the editor's, with the flag at 800 words. This builds the
+habit, on the pattern of editor's sections.
+
+`scripts/lib/paragraphs.mjs` holds all of it, pure and unit-tested: the detector (split at blank lines, drop
+heading lines, count words: the 10 Nov measurement), the tiers, a sentence splitter that will not end a
+sentence after an abbreviation, an initial or a scripture reference, nor inside a quotation or a bracket, and
+the anchors. A proposal is stored in the new `texts.paragraphs_draft` as anchors (the closing words of the
+sentence a break follows, lengthened until unique), never as a body. Only prose paragraphs can take breaks;
+verse, lists, blockquotes, headings and footnotes are left alone. `applyBreaks` inserts a blank line at each
+anchor and refuses, changing nothing, unless the result has exactly the same words and exactly one new
+paragraph break per anchor.
+
+- **Import**: `pipeline-import.mjs` warns when a text has a prose paragraph of 800+ words (flag-only, like verse).
+- **Drafting**: `npm run generate:review-drafts -- --paragraphs` (`--tier=2|3`, `--slug=`, `--dry-run`,
+  `--force`, prints its token cost). The model reads one long paragraph at a time as numbered sentences and
+  names the sentences after which the argument turns; a deterministic step drops anything out of range or
+  crowded and turns the rest into anchors. Selection runs in the database through a new SQL function,
+  `paragraph_wall_stats`, so choosing texts downloads no bodies. Published texts go in tier order (Tier 1 by
+  default); unpublished drafts are drafted whatever their tier. The plain `generate:review-drafts` run includes
+  this step too, as it does sections.
+- **Review**: `/admin/review/paragraphs`, linked from the review queue. Each break shows the end of the sentence
+  before and the start of the one after; move it a sentence either way, remove it, add one inside a long piece,
+  read the paragraph as it would be, then Save, Hold or Approve. Approve writes the body, appends "Paragraph
+  breaks added by the editor for reading; the source prints this as continuous text." to `provenance_notes`, and
+  refreshes only that text's page. It never touches `published`. It is refused if the text was edited after the
+  page loaded (the breaks are placed by sentence number, so on an edited body they could land where Keith never
+  looked), and if a break would stop one of the text's editor's sections from finding its paragraph. Saving with
+  every break removed holds the text as reading fine. A text Claude finds no turn in is stored as held with a
+  note, so later runs do not pay to read it again; `--force` redrafts only pending proposals, and only when
+  `--paragraphs` is named, so a forced summaries run cannot undo a hold.
+
+Migration `038_paragraph_breaks.sql` adds the column, its shape check and the function (service role only). It
+also points `texts_updated_at` at a new `texts_touch_updated_at()`, so a write to `paragraphs_draft` alone no
+longer moves `updated_at`. That is a function rather than a trigger `WHEN` clause because Postgres refuses a
+whole-row `WHEN` on a table with generated columns. It ignores `word_count` and `body_tsv`, which follow `body`.
+**Applied to production on 10 Nov 2026**, with Keith's go-ahead, and checked there: 151 / 25 / 2 from the
+function; a draft-only write keeps `updated_at`; a real edit moves it; the shape check rejects a malformed
+document; anon can neither call the function nor read the column. Migration `039_paragraph_wall_stats_paged.sql`
+(also applied 10 Nov) makes the function take a page of texts at a time. In one call over the whole corpus it
+took 15–16 s, past the API's 8 s statement timeout, so the first real dry run failed. The connector checks had
+passed because they run as `postgres`, with no timeout. Pages of 60 run in 0.8–2.3 s, with the same 153 rows.
+`updated_at` is the sitemap's lastModified,
+so without the trigger change, drafting proposals for 25 published texts would advertise them as changed and
+invite crawler re-renders of unchanged pages.
+
+**First drafting run, 10 Nov 2026** (Keith's laptop): 26 texts got proposals and 1 was held (no turn found),
+with 1,265 breaks in all. *De Principiis* II failed on the first pass and succeeded on a retry by slug. Reading
+a sample turned up a pattern: 127 breaks fell before a sentence opening with "For", which nearly always gives
+the reason for the sentence before it, so a break there separates a claim from its grounds. The prompt already
+asked the model to avoid this. `tidyBreaks` now drops such breaks deterministically (`opensWithFor`), and with
+Keith's go-ahead the 127 were removed from the stored proposals in SQL before his review. That leaves 1,138
+breaks across 26 texts. Removing a break only merges pieces, so no paragraph fell under the 60-word minimum.
+Every anchor still occurs exactly once, and no `updated_at` moved.
+
+Measured the same day with that function's SQL: 151 published texts have an 800+ word paragraph (Tier 1: 25, Tier 2: 72, Tier 3: 54), plus 2 unpublished drafts. The card recorded Tier 1 as 27
+and Tier 2 as 70; the totals match exactly, and the recorded definition gives 25 today, so the 10 Nov query
+differed in some detail that was not written down. JS and SQL figures agree exactly on the two bodies checked
+(Country Parson, On Repentance).
+
+---
+
 ## 2026-11-10 — Edition provenance audit, Step 1: a read-only script that proposes edition fields
 
 `scripts/propose-edition-metadata.mjs` reads `source_attribution`, `translation_notes` and `provenance_notes` on every
