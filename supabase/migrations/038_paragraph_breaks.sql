@@ -29,7 +29,15 @@
 -- the patterns match). It returns the three numbers the tier needs; the tier
 -- itself is decided in one place, `tierFor` in that file. It reads every body
 -- of `min_words` or more inside Postgres (CPU, not egress). Callable by the
--- service role only.
+-- service role only. (`btrim` with every whitespace character, because plain
+-- `trim` strips only spaces and JS `trim()` strips all whitespace.)
+--
+-- `texts_updated_at` is recreated to skip an update that changes nothing but
+-- `paragraphs_draft`. `updated_at` feeds the sitemap's lastModified, so
+-- drafting proposals for 25 published texts (and every Save or Hold on the
+-- phone) would otherwise advertise them as changed and invite crawlers to
+-- re-render pages whose text has not changed: Fluid CPU on the Hobby budget.
+-- Approving breaks writes `body`, so it still moves `updated_at`, as it must.
 
 alter table public.texts
   add column paragraphs_draft jsonb;
@@ -49,7 +57,7 @@ returns table (
   slug text,
   title text,
   published boolean,
-  has_draft boolean,
+  draft_state text,
   max_words integer,
   total_words integer,
   long_words integer
@@ -61,7 +69,7 @@ set search_path = public
 as $$
   with blocks as (
     select t.id,
-      trim(regexp_replace(b.blk, E'(^|\\n)#{1,6}[ \\t][^\\n]*', '', 'g')) as txt
+      btrim(regexp_replace(b.blk, E'(^|\\n)#{1,6}[ \\t][^\\n]*', '', 'g'), E' \t\n\r') as txt
     from public.texts t,
       lateral regexp_split_to_table(t.body, E'\\n[ \\t]*\\n') as b(blk)
     where t.body is not null and coalesce(t.word_count, min_words) >= min_words
@@ -80,7 +88,13 @@ as $$
     group by id
     having max(words) >= min_words
   )
-  select t.id, t.slug, t.title, t.published, t.paragraphs_draft is not null,
+  select t.id, t.slug, t.title, t.published,
+    case
+      when t.paragraphs_draft is null then 'none'
+      when t.paragraphs_draft ? 'applied_at' then 'applied'
+      when (t.paragraphs_draft->>'held')::boolean then 'held'
+      else 'pending'
+    end,
     p.max_words, p.total_words, p.long_words
   from per_text p
   join public.texts t on t.id = p.id
@@ -89,3 +103,10 @@ $$;
 
 revoke all on function public.paragraph_wall_stats(integer) from public, anon, authenticated;
 grant execute on function public.paragraph_wall_stats(integer) to service_role;
+
+drop trigger if exists texts_updated_at on public.texts;
+create trigger texts_updated_at
+  before update on public.texts
+  for each row
+  when ((to_jsonb(old) - 'paragraphs_draft' - 'updated_at') is distinct from (to_jsonb(new) - 'paragraphs_draft' - 'updated_at'))
+  execute function public.update_updated_at();

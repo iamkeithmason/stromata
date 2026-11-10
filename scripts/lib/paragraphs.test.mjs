@@ -12,6 +12,7 @@ import {
   buildParagraphsDoc,
   countWords,
   draftState,
+  noBreaksDoc,
   paragraphBlocks,
   paragraphStats,
   parseBreaksReply,
@@ -103,6 +104,7 @@ test('the SQL function in the migration uses the same separator, heading pattern
   // E'' strings double their backslashes; these are the JS patterns spelled that way.
   assert.ok(sql.includes(String.raw`regexp_split_to_table(t.body, E'\\n[ \\t]*\\n')`), 'separator');
   assert.ok(sql.includes(String.raw`regexp_replace(b.blk, E'(^|\\n)#{1,6}[ \\t][^\\n]*', '', 'g')`), 'heading lines');
+  assert.ok(sql.includes(String.raw`E' \t\n\r')`), 'trims all whitespace, as JS trim() does');
   assert.ok(sql.includes(String.raw`regexp_split_to_array(txt, '\s+')`), 'word split');
   assert.ok(sql.includes('words >= 300'), 'long-paragraph threshold');
 });
@@ -133,6 +135,14 @@ test('no sentence ends inside a quotation or a bracket, so no break can fall the
     'And so “it was. Still open',
   ]);
   assert.deepEqual(sentencesOf('He said, "Go. Now." Then left.'), ['He said, "Go. Now."', 'Then left.']);
+});
+
+test('ordinary words are not abbreviations, and an unpaired straight quote is ignored', () => {
+  assert.equal(
+    sentencesOf('Know what thou art. And he went. The answer is no. Then he left with Jude. Then go.').length,
+    5
+  );
+  assert.equal(sentencesOf('He measured 6" across. Then it broke. And so it ended.').length, 3);
 });
 
 test('sentence ends are offsets just past the closing punctuation', () => {
@@ -170,6 +180,7 @@ test('a proposal is stored as anchors, never as a body', () => {
   assert.deepEqual(resolvePicks(BODY, doc), {
     picks: [{ paragraph: p, sentence: 9 }, { paragraph: p, sentence: 24 }],
     missing: [],
+    alreadyBroken: 0,
     applied: false,
   });
 });
@@ -254,19 +265,31 @@ test('tidyBreaks keeps a reply legal: in range, unique, no piece under the minim
   }
 });
 
-test('selection: unpublished flagged texts always; published ones by tier; drafted ones only with force', () => {
+test('selection: unpublished flagged texts always; published by tier; force redrafts pending, never a hold or an apply', () => {
+  const wall = { max_words: 1500, total_words: 1500, long_words: 1500 };
   const rows = [
-    { slug: 't1', published: true, has_draft: false, max_words: 1500, total_words: 2000, long_words: 2000 },
-    { slug: 't2', published: true, has_draft: false, max_words: 1500, total_words: 9000, long_words: 2000 },
-    { slug: 't3', published: true, has_draft: false, max_words: 900, total_words: 900, long_words: 900 },
-    { slug: 'new', published: false, has_draft: false, max_words: 850, total_words: 900, long_words: 850 },
-    { slug: 'done', published: true, has_draft: true, max_words: 1500, total_words: 1500, long_words: 1500 },
-    { slug: 'fine', published: false, has_draft: false, max_words: 400, total_words: 900, long_words: 400 },
+    { slug: 't1', published: true, draft_state: 'none', ...wall },
+    { slug: 't2', published: true, draft_state: 'none', max_words: 1500, total_words: 9000, long_words: 2000 },
+    { slug: 't3', published: true, draft_state: 'none', max_words: 900, total_words: 900, long_words: 900 },
+    { slug: 'new', published: false, draft_state: 'none', max_words: 850, total_words: 900, long_words: 850 },
+    { slug: 'pending', published: true, draft_state: 'pending', ...wall },
+    { slug: 'held', published: true, draft_state: 'held', ...wall },
+    { slug: 'applied', published: true, draft_state: 'applied', ...wall },
+    { slug: 'fine', published: false, draft_state: 'none', max_words: 400, total_words: 900, long_words: 400 },
   ];
   const slugs = (opts) => selectParagraphTargets(rows, opts).map((r) => r.slug);
   assert.deepEqual(slugs(), ['t1', 'new']);
   assert.deepEqual(slugs({ maxTier: 3 }), ['t1', 't2', 't3', 'new']);
-  assert.deepEqual(slugs({ force: true }), ['t1', 'new', 'done']);
+  assert.deepEqual(slugs({ force: true }), ['t1', 'new', 'pending']);
   assert.deepEqual(slugs({ slug: 't3' }), ['t3']);
+  assert.deepEqual(slugs({ slug: 'held' }), [], 'a hold survives a named run without force');
+  assert.deepEqual(slugs({ slug: 'held', force: true }), ['held'], 'and yields only to a named, forced one');
+  assert.deepEqual(slugs({ slug: 'applied', force: true }), [], 'an applied text is never redrafted');
   assert.deepEqual(slugs({ slug: 'fine' }), [], 'a text with no wall is never drafted');
+});
+
+test('a no-turn result is stored as a held, empty proposal', () => {
+  const doc = noBreaksDoc('Claude found no turn');
+  assert.equal(draftState(doc), 'held');
+  assert.deepEqual(doc.breaks, []);
 });

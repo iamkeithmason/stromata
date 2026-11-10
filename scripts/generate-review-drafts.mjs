@@ -109,6 +109,7 @@ import {
   FLAG_WORDS,
   PARAGRAPHS_PROMPT,
   buildParagraphsDoc,
+  noBreaksDoc,
   paragraphStats,
   parseBreaksReply,
   selectParagraphTargets,
@@ -627,9 +628,18 @@ async function fillParagraphDrafts() {
   console.log(`  Tier 1  ${byTier[1][0]} · ${byTier[1][1]}   1,000+ word paragraph, 90%+ of words in 300+ word paragraphs`);
   console.log(`  Tier 2  ${byTier[2][0]} · ${byTier[2][1]}   1,000+ word paragraph`);
   console.log(`  Tier 3  ${byTier[3][0]} · ${byTier[3][1]}   800–999`);
-  console.log(`  ${rows.filter((r) => r.has_draft).length} already have a proposal.`);
+  const states = rows.reduce((m, r) => ({ ...m, [r.draft_state]: (m[r.draft_state] ?? 0) + 1 }), {});
+  console.log(
+    `  Proposals: ${states.pending ?? 0} pending · ${states.held ?? 0} held · ${states.applied ?? 0} applied.`
+  );
 
-  const targets = selectParagraphTargets(rows, { maxTier: MODE.tier, force: MODE.force, slug: MODE.slug });
+  // --force redrafts pending proposals only when this step is asked for by
+  // name: a plain forced run (to redo summaries) must not re-spend ~$3 here.
+  const targets = selectParagraphTargets(rows, {
+    maxTier: MODE.tier,
+    force: MODE.force && MODE.paragraphs,
+    slug: MODE.slug,
+  });
   if (!targets.length) {
     console.log(`Paragraphs: nothing to draft${MODE.slug ? ` for "${MODE.slug}"` : ''}.\n`);
     return 0;
@@ -664,7 +674,12 @@ async function fillParagraphDrafts() {
     const body = row.body;
     const { blocks, walls } = paragraphStats(body);
     if (!walls.length) {
-      console.log(`${tag} — no long prose paragraph (verse, list or quotation); skipped`);
+      // Stored as a held, empty proposal so later runs do not read this body again.
+      await supabase
+        .from('texts')
+        .update({ paragraphs_draft: noBreaksDoc('The long paragraphs are verse, a list or a quotation; left alone.') })
+        .eq('id', text.id);
+      console.log(`${tag} — no long prose paragraph (verse, list or quotation); recorded, skipped`);
       continue;
     }
     wallCount += walls.length;
@@ -702,7 +717,14 @@ async function fillParagraphDrafts() {
     }
     if (failed) continue;
     if (!picks.length) {
-      console.log(`${tag} — the model found no turn in ${walls.length} long paragraph(s); nothing stored`);
+      // A decision, not a failure: record it so the next run does not pay for it again.
+      const { error: noneError } = await supabase
+        .from('texts')
+        .update({ paragraphs_draft: noBreaksDoc('Claude found no turn worth a break in the long paragraphs.') })
+        .eq('id', text.id);
+      console.log(
+        `${tag} — no turn found in ${walls.length} long paragraph(s); ${noneError ? `✗ ${noneError.message}` : 'recorded as held'}`
+      );
       continue;
     }
 

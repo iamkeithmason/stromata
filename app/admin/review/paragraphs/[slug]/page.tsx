@@ -8,7 +8,13 @@ export const dynamic = 'force-dynamic'
 
 type Props = { params: Promise<{ slug: string }> }
 
-type ParagraphsDoc = { source: 'editorial'; breaks: { after: string }[]; held?: boolean; applied_at?: string }
+type ParagraphsDoc = {
+  source: 'editorial'
+  breaks: { after: string }[]
+  held?: boolean
+  applied_at?: string
+  note?: string
+}
 
 export default async function ParagraphsReviewPage({ params }: Props) {
   const { slug } = await params
@@ -16,7 +22,7 @@ export default async function ParagraphsReviewPage({ params }: Props) {
 
   const { data } = await supabase
     .from('texts')
-    .select('id, title, slug, published, body, paragraphs_draft, author:authors(name)')
+    .select('id, title, slug, published, body, paragraphs_draft, updated_at, author:authors(name)')
     .eq('slug', slug)
     .maybeSingle()
   const text = data as unknown as {
@@ -26,6 +32,7 @@ export default async function ParagraphsReviewPage({ params }: Props) {
     published: boolean
     body: string | null
     paragraphs_draft: ParagraphsDoc | null
+    updated_at: string | null
     author: { name: string } | null
   } | null
   if (!text?.paragraphs_draft) notFound()
@@ -33,7 +40,7 @@ export default async function ParagraphsReviewPage({ params }: Props) {
   const body = text.body ?? ''
   const state = draftState(text.paragraphs_draft)
   const { blocks, walls } = paragraphStats(body)
-  const { picks, missing } = resolvePicks(body, text.paragraphs_draft)
+  const { picks, missing, alreadyBroken } = resolvePicks(body, text.paragraphs_draft)
 
   // Only the long paragraphs travel to the browser, as sentences: that is all
   // a break can be placed between.
@@ -71,6 +78,9 @@ export default async function ParagraphsReviewPage({ params }: Props) {
         published={text.published}
         walls={wallData}
         missing={missing.length}
+        alreadyBroken={state === 'applied' ? 0 : alreadyBroken}
+        note={text.paragraphs_draft.note ?? null}
+        loadedAt={text.updated_at ?? ''}
         state={state as 'pending' | 'held' | 'applied'}
         nextSlug={nextSlug}
       />

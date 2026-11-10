@@ -16,6 +16,12 @@ type Props = {
   walls: Wall[]
   /** Proposed breaks that no longer find their place in the body. */
   missing: number
+  /** Proposed breaks that are already in the body (added by hand since). */
+  alreadyBroken: number
+  /** Why a held, empty proposal has no breaks, when the drafting step said. */
+  note: string | null
+  /** The text's updated_at when this page loaded; the server refuses a stale page. */
+  loadedAt: string
   state: 'pending' | 'held' | 'applied'
   nextSlug: string | null
 }
@@ -42,6 +48,13 @@ function pieces(words: number[], breaks: number[]): number[] {
   return out
 }
 
+/** How many sentences piece `p` of a paragraph holds. */
+function sentenceCount(w: Wall, p: number): number {
+  const from = p === 0 ? 0 : w.breaks[p - 1] + 1
+  const to = p === w.breaks.length ? w.sentences.length - 1 : w.breaks[p]
+  return to - from + 1
+}
+
 /**
  * One text's proposed paragraph breaks, reviewed on a phone. Each break shows
  * the end of the sentence before it and the start of the one after: move it a
@@ -50,7 +63,7 @@ function pieces(words: number[], breaks: number[]): number[] {
  * Approve, inserts them into the body only if every word is unchanged.
  */
 export default function ParagraphsEditor(props: Props) {
-  const { id, title, slug, author, published, missing, nextSlug } = props
+  const { id, title, slug, author, published, missing, alreadyBroken, note, loadedAt, nextSlug } = props
   const [walls, setWalls] = useState<Wall[]>(props.walls)
   const [state, setState] = useState(props.state)
   const [saving, setSaving] = useState<'save' | 'hold' | 'approve' | null>(null)
@@ -106,21 +119,22 @@ export default function ParagraphsEditor(props: Props) {
       const res = await fetch(`/api/admin/review/paragraphs/${id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ picks, action }),
+        body: JSON.stringify({ picks, action, loadedAt }),
       })
       const json = await res.json().catch(() => ({}))
       if (!res.ok) {
         setMessage({ tone: 'error', text: json.error ?? `Save failed (${res.status}).` })
         return
       }
-      setState(action === 'approve' ? 'applied' : action === 'hold' ? 'held' : 'pending')
+      const next = (json.state ?? 'pending') as 'pending' | 'held' | 'applied'
+      setState(next)
       setMessage({
         tone: 'ok',
         text:
-          action === 'approve'
+          next === 'applied'
             ? `Applied ${total} break${total === 1 ? '' : 's'}. Every word checked unchanged; provenance note updated.`
-            : action === 'hold'
-              ? 'Held.'
+            : next === 'held'
+              ? total === 0 ? 'No breaks: held as reading fine.' : 'Held.'
               : 'Draft saved.',
       })
     } catch {
@@ -155,6 +169,15 @@ export default function ParagraphsEditor(props: Props) {
         </p>
       ) : (
         <>
+          {note && (
+            <p className="text-sm text-stone-600 bg-stone-50 border border-stone-200 rounded px-3 py-2 mb-4">{note}</p>
+          )}
+          {alreadyBroken > 0 && (
+            <p className="text-sm text-amber-800 bg-amber-50 border border-amber-300 rounded px-3 py-2 mb-4">
+              {alreadyBroken} proposed break{alreadyBroken === 1 ? ' is' : 's are'} already in the text (added by hand
+              since the proposal) and {alreadyBroken === 1 ? 'is' : 'are'} not shown here.
+            </p>
+          )}
           {missing > 0 && (
             <p className="text-sm text-amber-800 bg-amber-50 border border-amber-300 rounded px-3 py-2 mb-4">
               The body has changed since this proposal was made: {missing} break{missing === 1 ? '' : 's'} could
@@ -210,7 +233,7 @@ export default function ParagraphsEditor(props: Props) {
 
                   <div className="mt-3 flex flex-wrap gap-x-4">
                     {sizes.map((n, p) =>
-                      n > TARGET_MAX_WORDS ? (
+                      n > TARGET_MAX_WORDS && sentenceCount(w, p) > 1 ? (
                         <button key={p} type="button" onClick={() => addInPiece(wi, p)} className="text-xs text-stone-500 py-2">
                           + Break piece {p + 1} ({n} words)
                         </button>

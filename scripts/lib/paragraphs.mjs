@@ -163,13 +163,17 @@ export function paragraphStats(body) {
 // ── Sentences ────────────────────────────────────────────────────────────────
 
 // Words whose full stop is not a sentence end. Lower-cased, without the stop.
+// Only abbreviations that are not also ordinary words: "thou art.", "he said
+// no.", "with Jude." end sentences, so art, no, jude, sir, ex, rev, bar and lit
+// are deliberately absent. (Before a number the stop is never an end anyway:
+// the next sentence must open with a capital.)
 const ABBREVIATIONS = new Set(
   (
-    'mr mrs dr st ss sts cf ch chap c cc p pp v vv ver vol vols viz i.e e.g ib ibid id op cit loc sq sqq seq ' +
-    'n no nos lib art q obj rep ep epist hom serm tract ps psa pss gen ex exod lev num deut josh judg ' +
-    'sam kgs chron neh esth prov eccl eccles ecclus isa jer lam ezek dan hos obad mic nah hab zeph hag ' +
-    'zech mal matt mk mt lk jn rom cor gal eph phil col thess tim tit philem heb jas pet jude rev apoc ' +
-    'wisd macc bar tob jud sir esd lit fol ff al vs'
+    'mr mrs dr st ss sts cf ch chap cc pp vv ver vol vols viz i.e e.g ib ibid op cit loc sq sqq seq ' +
+    'nos lib obj ep epist hom serm tract ps psa pss gen exod lev num deut josh judg ' +
+    'sam kgs chron neh esth prov eccl eccles ecclus isa jer lam ezek hos obad mic nah hab zeph hag ' +
+    'zech mal matt mk mt lk jn rom cor gal eph phil col thess tim tit philem heb jas pet apoc ' +
+    'wisd macc tob esd fol ff vs'
   ).split(' ')
 );
 
@@ -178,11 +182,14 @@ const ABBREVIATIONS = new Set(
  * any closing quote or bracket). A full stop after an abbreviation or an
  * initial is not an end, and nothing inside an open quotation or bracket is:
  * a quoted passage of several sentences stays one unit, which is what keeps a
- * break out of a quotation.
+ * break out of a quotation. Straight double quotes are trusted only when they
+ * pair up: an odd count is OCR noise or ditto marks, and tracking it would
+ * turn the rest of the paragraph into one sentence.
  */
 export function sentenceEnds(text) {
   const s = String(text ?? '');
   const ends = [];
+  const trustStraight = (s.match(/"/g) ?? []).length % 2 === 0;
   let curly = 0;
   let straight = false;
   let paren = 0;
@@ -190,7 +197,7 @@ export function sentenceEnds(text) {
     const c = s[i];
     if (c === '“') curly++;
     else if (c === '”') curly = Math.max(0, curly - 1);
-    else if (c === '"') straight = !straight;
+    else if (c === '"' && trustStraight) straight = !straight;
     else if (c === '(' || c === '[') paren++;
     else if (c === ')' || c === ']') paren = Math.max(0, paren - 1);
     if (c !== '.' && c !== '!' && c !== '?') continue;
@@ -202,7 +209,7 @@ export function sentenceEnds(text) {
     let closeParen = paren;
     while (j < s.length && /["'”’)\]*_]/.test(s[j])) {
       if (s[j] === '”') closeCurly = Math.max(0, closeCurly - 1);
-      if (s[j] === '"') closeStraight = !closeStraight;
+      if (s[j] === '"' && trustStraight) closeStraight = !closeStraight;
       if (s[j] === ')' || s[j] === ']') closeParen = Math.max(0, closeParen - 1);
       j++;
     }
@@ -355,8 +362,9 @@ export function buildParagraphsDoc(body, picks) {
 
 /**
  * The stored document → picks against the current body. `missing` lists the
- * anchors that no longer find a legal place (the body changed); `applied` is
- * true when every anchor is already followed by a paragraph break.
+ * anchors that no longer find a legal place (the body changed);
+ * `alreadyBroken` counts anchors already followed by a paragraph break (put in
+ * by hand, or applied); `applied` is true when that is all of them.
  */
 export function resolvePicks(body, doc) {
   const src = String(body ?? '');
@@ -385,7 +393,7 @@ export function resolvePicks(body, doc) {
     else picks.push({ paragraph, sentence });
   }
   const total = doc?.breaks?.length ?? 0;
-  return { picks, missing, applied: total > 0 && alreadyBroken === total };
+  return { picks, missing, alreadyBroken, applied: total > 0 && alreadyBroken === total };
 }
 
 /** Same text, ignoring whitespace: the check every apply must pass. */
@@ -495,16 +503,32 @@ export function tidyBreaks(text, indices) {
 
 /**
  * Which texts to draft for, from rows shaped like the SQL function's output
- * (`max_words`, `total_words`, `long_words`, `published`, `has_draft`).
+ * (`max_words`, `total_words`, `long_words`, `published`, `draft_state`).
  * Unpublished texts are drafted whatever their tier (the standing habit for
  * new imports); published ones in tier order, up to `maxTier`.
+ *
+ * `force` redrafts a pending proposal. It never touches an applied one, and a
+ * held one (Keith's decision, or a text Claude found no turn in) only when the
+ * text is named with `slug`, so a broad forced run cannot undo a hold.
  */
 export function selectParagraphTargets(rows, { maxTier = 1, force = false, slug = null } = {}) {
   return rows.filter((r) => {
     const tier = tierFor(r);
     if (tier === 0) return false;
-    if (!force && r.has_draft) return false;
+    const state = r.draft_state ?? 'none';
+    if (state === 'applied') return false;
+    if (state === 'held' && !(force && slug)) return false;
+    if (state === 'pending' && !force) return false;
     if (slug) return r.slug === slug;
     return !r.published || tier <= maxTier;
   });
+}
+
+/**
+ * A decided-but-empty document: stored when Claude finds no turn worth a break
+ * (or the long paragraphs turn out not to be prose), so the next run does not
+ * pay to read the same text again. It sits under "Held" with its note.
+ */
+export function noBreaksDoc(note) {
+  return { source: 'editorial', breaks: [], held: true, note };
 }

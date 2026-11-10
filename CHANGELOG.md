@@ -33,13 +33,19 @@ paragraph break per anchor.
   this step too, as it does sections.
 - **Review**: `/admin/review/paragraphs`, linked from the review queue. Each break shows the end of the sentence
   before and the start of the one after; move it a sentence either way, remove it, add one inside a long piece,
-  read the paragraph as it would be, then Save, Hold or Approve. Approve writes the body (guarded on
-  `updated_at`, so a concurrent edit is refused), appends "Paragraph breaks added by the editor for reading; the
-  source prints this as continuous text." to `provenance_notes`, and refreshes only that text's page. It never
-  touches `published`.
+  read the paragraph as it would be, then Save, Hold or Approve. Approve writes the body, appends "Paragraph
+  breaks added by the editor for reading; the source prints this as continuous text." to `provenance_notes`, and
+  refreshes only that text's page. It never touches `published`. It is refused if the text was edited after the
+  page loaded (the breaks are placed by sentence number, so on an edited body they could land where Keith never
+  looked), and if a break would stop one of the text's editor's sections from finding its paragraph. Saving with
+  every break removed holds the text as reading fine. A text Claude finds no turn in is stored as held with a
+  note, so later runs do not pay to read it again; `--force` redrafts only pending proposals, and only when
+  `--paragraphs` is named, so a forced summaries run cannot undo a hold.
 
-Migration `038_paragraph_breaks.sql` (the column, its shape check, and the function, service role only) must be
-applied before this ships. Measured the same day with that function's SQL: 151 published texts have an 800+
+Migration `038_paragraph_breaks.sql` (the column, its shape check, the function, service role only, and
+`texts_updated_at` recreated so that a write to `paragraphs_draft` alone no longer moves `updated_at`) must be
+applied before this ships. `updated_at` is the sitemap's lastModified, so without that, drafting proposals for 25
+published texts would advertise them as changed and invite crawler re-renders of unchanged pages. Measured the same day with that function's SQL: 151 published texts have an 800+
 word paragraph (Tier 1: 25, Tier 2: 72, Tier 3: 54), plus 2 unpublished drafts. The card recorded Tier 1 as 27
 and Tier 2 as 70; the totals match exactly, and the recorded definition gives 25 today, so the 10 Nov query
 differed in some detail that was not written down. JS and SQL figures agree exactly on the two bodies checked

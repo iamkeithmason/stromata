@@ -8,6 +8,7 @@ import {
   validatePicks,
   withProvenanceLine,
 } from '@/scripts/lib/paragraphs.mjs'
+import { bodyBlocks, resolvePicks as resolveSections } from '@/scripts/lib/sections.mjs'
 
 type Params = { params: Promise<{ id: string }> }
 
@@ -23,9 +24,13 @@ type Action = (typeof ACTIONS)[number]
  *
  * Approve is the one write to `body`. `applyBreaks` inserts a blank line at
  * each anchor and throws unless the result has exactly the same words as the
- * body it started from, with exactly one new paragraph break per anchor; the
- * update is conditional on `updated_at`, so an edit made elsewhere since this
- * request read the body is refused rather than overwritten. It appends the
+ * body it started from, with exactly one new paragraph break per anchor. The
+ * page sends the `updated_at` it loaded, and the request is refused if the
+ * text has changed since: the breaks Keith saw are placed by sentence number,
+ * so on an edited body they could land somewhere he never looked. The write
+ * is conditional on the same value. It also refuses if a break would stop an
+ * editor's section from finding its paragraph (sections anchor on a
+ * paragraph's opening words, and a new paragraph could share them). It appends the
  * editor's line to provenance_notes and refreshes the text's own page, and
  * only that page: nothing else the site renders shows the body. It never
  * touches `published` — an unpublished text stays a draft.
@@ -33,7 +38,7 @@ type Action = (typeof ACTIONS)[number]
 export async function PATCH(request: NextRequest, { params }: Params) {
   const { id } = await params
 
-  let payload: { picks?: unknown; action?: unknown }
+  let payload: { picks?: unknown; action?: unknown; loadedAt?: unknown }
   try {
     payload = await request.json()
   } catch {
@@ -56,7 +61,7 @@ export async function PATCH(request: NextRequest, { params }: Params) {
   const supabase = createServerClient()
   const { data } = await supabase
     .from('texts')
-    .select('id, slug, body, provenance_notes, paragraphs_draft, updated_at')
+    .select('id, slug, body, provenance_notes, paragraphs_draft, sections, sections_draft, updated_at')
     .eq('id', id)
     .maybeSingle()
   const text = data as {
@@ -65,9 +70,20 @@ export async function PATCH(request: NextRequest, { params }: Params) {
     body: string | null
     provenance_notes: string | null
     paragraphs_draft: unknown
+    sections: unknown
+    sections_draft: unknown
     updated_at: string | null
   } | null
   if (!text) return NextResponse.json({ error: 'Not found.' }, { status: 404 })
+  // Draft-only writes leave updated_at alone (migration 038), so this moves
+  // only when the text itself was edited after the page loaded.
+  const loadedAt = typeof payload.loadedAt === 'string' ? payload.loadedAt : null
+  if (!loadedAt || !text.updated_at || new Date(loadedAt).getTime() !== new Date(text.updated_at).getTime()) {
+    return NextResponse.json(
+      { error: 'The text has changed since this page loaded; nothing was saved. Reload and check the breaks.' },
+      { status: 409 }
+    )
+  }
   if (draftState(text.paragraphs_draft) === 'applied') {
     return NextResponse.json({ error: 'These breaks have already been applied.' }, { status: 409 })
   }
@@ -78,12 +94,15 @@ export async function PATCH(request: NextRequest, { params }: Params) {
   const doc = picks.length ? buildParagraphsDoc(body, picks) : { source: 'editorial', breaks: [] }
 
   if (action !== 'approve') {
+    // Saving with every break removed is a decision that the text reads fine:
+    // store it as held, or it would sit in "to review" with nothing to approve.
+    const held = action === 'hold' || doc.breaks.length === 0
     const { error } = await supabase
       .from('texts')
-      .update({ paragraphs_draft: action === 'hold' ? { ...doc, held: true } : doc })
+      .update({ paragraphs_draft: held ? { ...doc, held: true } : doc })
       .eq('id', id)
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
-    return NextResponse.json({ ok: true, action, breaks: doc.breaks.length })
+    return NextResponse.json({ ok: true, state: held ? 'held' : 'pending', breaks: doc.breaks.length })
   }
 
   let newBody: string
@@ -93,8 +112,21 @@ export async function PATCH(request: NextRequest, { params }: Params) {
     return NextResponse.json({ error: (err as Error).message }, { status: 409 })
   }
 
+  // Every section that resolves today must still resolve after the breaks.
+  for (const sectionsDoc of [text.sections, text.sections_draft]) {
+    if (!sectionsDoc) continue
+    const before = resolveSections(bodyBlocks(body), sectionsDoc).missing.length
+    const after = resolveSections(bodyBlocks(newBody), sectionsDoc).missing.length
+    if (after > before) {
+      return NextResponse.json(
+        { error: 'A break would hide one of this text’s editor’s sections (two paragraphs would open alike). Move or remove the break next to that section; nothing was changed.' },
+        { status: 409 }
+      )
+    }
+  }
+
   const now = new Date().toISOString()
-  let update = supabase
+  const { data: written, error } = await supabase
     .from('texts')
     .update({
       body: newBody,
@@ -103,8 +135,8 @@ export async function PATCH(request: NextRequest, { params }: Params) {
       updated_at: now,
     })
     .eq('id', id)
-  update = text.updated_at ? update.eq('updated_at', text.updated_at) : update.is('updated_at', null)
-  const { data: written, error } = await update.select('id')
+    .eq('updated_at', text.updated_at)
+    .select('id')
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
   if (!written?.length) {
     return NextResponse.json(
@@ -114,5 +146,5 @@ export async function PATCH(request: NextRequest, { params }: Params) {
   }
 
   revalidatePaths([`/texts/${text.slug}`])
-  return NextResponse.json({ ok: true, action, breaks: doc.breaks.length })
+  return NextResponse.json({ ok: true, state: 'applied', breaks: doc.breaks.length })
 }
