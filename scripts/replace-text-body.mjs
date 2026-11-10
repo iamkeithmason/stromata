@@ -14,6 +14,7 @@
  *   source_url, source_attribution, translation_notes, provenance_notes, review_note
  *   license        — blank for public domain, or a slug in lib/licenses.ts
  *   clear_summary  — true only if the old summary quotes the old translation
+ *   summary        — optional replacement summary (≤ 160 characters, the house limit)
  *
  * What it writes: body, the four provenance fields, license, sections → null
  * (editorial sections point into the old body), review_state → 'pending',
@@ -83,6 +84,8 @@ export function readStaged(raw, label = 'staged file') {
     }
   }
   if (!body || body.length < 500) throw new Error(`${label}: body is missing or implausibly short`);
+  if (data.summary && data.summary.length > 160) throw new Error(`${label}: summary is over 160 characters`);
+  if (data.summary && data.clear_summary === true) throw new Error(`${label}: give summary or clear_summary, not both`);
   const fn = checkFootnotes(body);
   if (fn.problems.length) throw new Error(`${label}: ${fn.problems.join('; ')}`);
   return {
@@ -90,6 +93,7 @@ export function readStaged(raw, label = 'staged file') {
     expectedId: data.expected_id,
     expectedAccession: data.expected_accession,
     clearSummary: data.clear_summary === true,
+    summary: data.summary || null,
     fields: {
       body,
       source_url: data.source_url,
@@ -121,6 +125,7 @@ export function sqlLiteral(v) {
 export function buildSql(item, refs = null) {
   const sets = Object.entries(item.fields).map(([k, v]) => `  ${k} = ${sqlLiteral(v)}`);
   if (item.clearSummary) sets.push('  summary = null');
+  if (item.summary) sets.push(`  summary = ${sqlLiteral(item.summary)}`);
   const guard = `id = ${sqlLiteral(item.expectedId)} and slug = ${sqlLiteral(item.slug)} ` +
     `and accession_number = ${item.expectedAccession} and published = false`;
   const lines = [
@@ -172,7 +177,7 @@ function preview(item, oldRow, refs) {
   console.log(`words: old ${oldWords ?? 'unknown (no database read)'} → new ${wordCount(b)}` +
     (item.notes ? ` (${proseWordCount(b)} without the ${item.notes} footnote definitions)` : ''));
   console.log(`scripture references in new body: ${refs ? refs.length : 'not computed (run under tsx)'}`);
-  console.log(`summary: ${item.clearSummary ? 'cleared' : 'kept'} · license: ${item.fields.license ?? 'null'} · review_state → pending`);
+  console.log(`summary: ${item.summary ? `replaced: ${item.summary}` : item.clearSummary ? 'cleared' : 'kept'} · license: ${item.fields.license ?? 'null'} · review_state → pending`);
   console.log('--- first 300 characters ---');
   console.log(b.slice(0, 300));
   console.log('--- last 300 characters ---');
@@ -233,6 +238,7 @@ async function main() {
     if (apply) {
       const update = { ...item.fields };
       if (item.clearSummary) update.summary = null;
+      if (item.summary) update.summary = item.summary;
       const { data, error } = await supabase.from('texts').update(update)
         .eq('id', item.expectedId).eq('slug', item.slug)
         .eq('accession_number', item.expectedAccession).eq('published', false).select('id');

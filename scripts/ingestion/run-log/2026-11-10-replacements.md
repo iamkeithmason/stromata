@@ -4,14 +4,14 @@ Three held texts given cleared translations **in place** (same id, slug, accessi
 themes) with `scripts/replace-text-body.mjs`. Staged bodies: `scripts/ingestion/output/replacements/`.
 Rows stay `published: false`, `review_state: pending`. `on-the-thoughts` (accession 24) untouched.
 
-**Database status at the end of this session: NOT YET WRITTEN.** The cloud session has no service-role
-key, and the Supabase connector's confirmation prompt for the write went unanswered. To apply from a
-machine with `.env.local`: `npx tsx scripts/replace-text-body.mjs` (dry run), then `--apply`.
+**Database status: written 10 Nov 2026** through the Supabase connector (`--sql`), Keith confirming each write.
+Each row was checked afterwards: stored body MD5 and provenance fields equal to the staged file, `published: false`,
+`review_state: pending`. Scripture references rebuilt (Praktikos 24, Confession 121, Sermon 0).
 
 | Text | Accession | Old words | New words | Scripture refs |
 |---|---|---|---|---|
-| treatise-on-the-practical-life | 25 | 7,514 | 7,206 | 21 (replaces 46) |
-| confession | 21 | 6,345 | 7,299 (6,806 without the 53 footnotes) | 118 |
+| treatise-on-the-practical-life | 25 | 7,514 | 7,250 (7,206 without the editor's note) | 24 (replaces 46) |
+| confession | 21 | 6,345 | 7,299 (6,806 without the 53 footnotes) | 121 |
 | sermon-of-the-wolf-to-the-english | 30 | 2,665 | 1,856 | 0 |
 
 ## treatise-on-the-practical-life — Evagrius, Praktikos (Dysinger)
@@ -19,13 +19,16 @@ Source: evagriusponticus.net TAN transcription. Letter to Anatolius, 100 chapter
 the "about this transcription" panel removed. Citations rendered inline `(Book c:v)`. Dysinger's nested
 lists (69 items, e.g. ch. 57) kept as markdown lists. `license: cc-by-4.0` (added to `lib/licenses.ts`).
 For the editor:
-- Psalms are cited in the source's **Septuagint** numbering (Ps 126, 41, 10, 17, 26, 125, 103); the reader's
-  verse popover will show the Hebrew-numbered psalm. Convert, or leave as the translator cites them?
+- Psalm and Malachi references converted, at Keith's request, from Dysinger's Septuagint numbering to English
+  numbering, with one editor's note (`[^ed1]`) saying so: Ps 126:1→127:1, 41:6→42:5, 10:2→11:2, 17:39→18:38,
+  26:2→27:2, 125:6→126:6, Mal 3:20→4:2. Dysinger's "Ps 103.13" ("makes glad the heart of man") is Ps 104:15 in
+  English numbering (103:15 in the Greek), so the source's verse looks like a slip; cited here as 104:15.
+- Chapter 14 prints its last sentence twice (once as a list, once as prose), as the source does.
 - The source has no heading 8 among its chapter-group headings (1–7, 9, 10). Not a parsing loss.
 - Source typos left as printed: "wraps a round" (letter), "the an who brought the news" (95),
   missing full stops in 94 and 99.
 - The rubric "by the same [Evagrius]" before the chapters was dropped; the heading reads "Treatise on the Praktiké: 100 Chapters".
-- `summary` kept (no quotation), but it describes only the letter ("monks' clothing"); worth regenerating.
+- `summary` replaced at Keith's request (the old one described only the letter): "A hundred short chapters on the eight tempting thoughts and the way to dispassion, opened by a letter on the meaning of the monk's habit."
 - `note_draft` (not touched) leans on the old translation's vocabulary (cucullion, analabos).
 
 ## confession — Patrick (N. J. D. White, 1918)
@@ -42,7 +45,7 @@ For the editor:
   bracketed note explaining the italics was dropped with them.
 - Apparatus readings corrected from the OCR: section labels misread as 9 (→8), 26 (→25), 66 (→55, 56),
   68 (→58), 60 (→50), "ao" (→20), "n-" (→61); "Acts XYiii" → xviii; "Pa."/"Fs." → Ps.; "^om." → Rom.;
-  "Tit. iii, 5, §" → 5, 6. Section 8's "Eph. vi. 6" may be vi. 5 ("fear and trembling"): check the scan.
+  "Tit. iii, 5, §" → 5, 6. White's "Is." written "Isa." so the scripture index recognises Isaiah. Section 8's "Eph. vi. 6" may be vi. 5 ("fear and trembling"): check the scan.
 - Spellings kept as printed: Calpornus, Banavem (single n), Helias, Scottic.
 
 Judgement calls (confirm against the scan):
@@ -79,7 +82,7 @@ the print.
 **Correction to the brief:** the translation *is* individually credited. It is signed at its end
 "Elizabeth W. Manwaring", as each selection in the volume is signed by its translator. `source_attribution`
 and `translation_notes` name her. US status is unaffected (published 1908). UK status turns on her death
-year, which I could not confirm this session; please check before publishing.
+year, which two searches on 10 Nov could not find. Left flagged in `translation_notes`.
 
 OCR corrections (config `manualCorrections`): mjus-tice → injustice; tliese, tliis, wliich, wlierein; dihgence;
 tilings → things (×2); appomted; livxig; hatmg; "might I Here" → "might! Here"; "together I Let" →

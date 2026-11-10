@@ -5,15 +5,16 @@ expected_id: "539d5bbd-7fc5-47e0-99b3-afb7f40d42de"
 source_url: "https://evagriusponticus.net/cpg2430/cpg2430.eng.1990.dysinger.html"
 source_attribution: "Translated by Luke Dysinger, O.S.B. Transcription from Joel Kalvesmaki (ed.), Guide to Evagrius Ponticus (evagriusponticus.net), licensed CC BY 4.0."
 translation_notes: "Luke Dysinger's translation of the Praktikos, marked by the source as released into the public domain; the online transcription is licensed CC BY 4.0, which requires the attribution above. Replaces a copyrighted translation unpublished 10 Nov 2026."
-provenance_notes: "Text sourced from Guide to Evagrius Ponticus (evagriusponticus.net), TAN transcription cpg2430.eng.1990.dysinger (Kalvesmaki, after Dysinger 1990). Prefatory letter, 100 chapters and epilogue; site chrome and the transcription metadata panel removed; scripture citations rendered inline as (Book chapter:verse), Psalms in the source's Septuagint numbering. Accessed November 2026."
+provenance_notes: "Text sourced from Guide to Evagrius Ponticus (evagriusponticus.net), TAN transcription cpg2430.eng.1990.dysinger (Kalvesmaki, after Dysinger 1990). Prefatory letter, 100 chapters and epilogue; site chrome and the transcription metadata panel removed; scripture citations rendered inline as (Book chapter:verse), Psalm and Malachi references converted from the source's Septuagint numbering to English numbering, with an editor's note saying so. Accessed November 2026."
 review_note: "10 Nov 2026: body replaced with Luke Dysinger's translation (evagriusponticus.net, CC BY 4.0 transcription); provenance fields updated; ready for review."
 license: "cc-by-4.0"
 clear_summary: false
+summary: "A hundred short chapters on the eight tempting thoughts and the way to dispassion, opened by a letter on the meaning of the monk's habit."
 ---
 
 Since you recently wrote to me in Scetis from the Holy Mountain, dear brother Anatolius, demanding that I explain to you the symbolic habit of the Egyptian monks - for you believe it to be neither accidental nor superfluous that [the habit] is so different from what other people wear - I will therefore tell you what we have learned concerning this from the holy fathers.
 
-The hood (koukoullion) is a symbol of the grace of our Saviour [and] God: it shelters their mind (hegemonikon) and nurses their childlike [relationship] with Christ in the face of those who are always attempting to beat and wound it. Anyone who bears this hood on his head is truly chanting [the inner meaning of the psalm], Unless the Lord builds the house and guards the city, in vain do the builder and watchman labor (Psalm 126:1). Words like these produce humility and uproot the primordial vice of pride that cast Lucifer the Day-Star down to the earth (Isaiah 14:12).
+The hood (koukoullion) is a symbol of the grace of our Saviour [and] God: it shelters their mind (hegemonikon) and nurses their childlike [relationship] with Christ in the face of those who are always attempting to beat and wound it. Anyone who bears this hood on his head is truly chanting [the inner meaning of the psalm], Unless the Lord builds the house and guards the city, in vain do the builder and watchman labor (Psalm 127:1)[^ed1]. Words like these produce humility and uproot the primordial vice of pride that cast Lucifer the Day-Star down to the earth (Isaiah 14:12).
 
 The nakedness of their hands manifests the absence of hypocrisy in their way of life. Vainglory is [terribly] clever at covering and darkening virtues, always hunting for the esteem [glory] that comes from men and chasing faith away. For how it is possible for you to believe, it says, when you receive glory from one another; and the glory that comes only from God you do not seek? (John 5:44) For the good ought to be chosen for no other [reason] than itself. Apart from this, anything that moves us to do good will appear far more precious than the good itself: and nothing could be more absurd than to consider and assert that something is better than God!
 
@@ -162,7 +163,7 @@ And [thus] at the time of prayer [you will] fantasize images: and not [being abl
 
 26\. Gifts quench resentment. Let Jacob persuade you of this. He got round Esau with gifts, when he was coming against him with four hundred men (Genesis 32). We who are poor should make up for our lack of other things by being hospitable at table.
 
-27\. When we are oppressed by the demon of listlessness, we should tearfully divide our soul in two, making one part encourage the other, sowing good hopes in ourselves and singing David’s words, ‘Why are you depressed, my soul, why do you disturb me? Hope in God, because I will praise him, the Savior of my person, my God’ (Psalm 41:6).
+27\. When we are oppressed by the demon of listlessness, we should tearfully divide our soul in two, making one part encourage the other, sowing good hopes in ourselves and singing David’s words, ‘Why are you depressed, my soul, why do you disturb me? Hope in God, because I will praise him, the Savior of my person, my God’ (Psalm 42:5).
 
 28\. At the time of temptation we should not abandon our cell, whatever plausible pretext we nay invent; we should stay in it and persevere and valiantly tackle all comers, particularly the demon of listlessness, which is the most oppressive of them all, and so particularly brings out the quality of the soul. Running away from such conflicts and trying to evade this teaches the mind to be helpless, cowardly and fugitive.
 
@@ -214,7 +215,7 @@ These things it is necessary to know, so that when [tempting-] thoughts begin to
 
 49\. We are not commanded to work the whole time or to keep vigil the whole time or to fast the whole time, but there is a law that we should pray ceaselessly (1 Thessalonians 5:17). The first three, which heal the part of the soul in which the passions are, need the body for their practice, and it is congenitally too weak for such labours; but prayer makes the mind strong and pure for the struggle, since the mind is naturally made for prayer and it is natural to it to fight demons even without the body, on behalf of all the powers of the soul.
 
-50\. If any monk wishes to experience of the savage demons and to become acquainted with their art, he should observe his [tempting-]thoughts and note [down] their intensification and diminution, and their interconnectedness, and their timing, and which demons produce what, and which demon comes after another, and which does not follow after which; and he should seek from Christ the inner meanings [logoi] of these things They dislike those who approach the ascetic life with greater knowledge, for they wish to shoot in darkness at the upright of heart (Psalm 10:2).
+50\. If any monk wishes to experience of the savage demons and to become acquainted with their art, he should observe his [tempting-]thoughts and note [down] their intensification and diminution, and their interconnectedness, and their timing, and which demons produce what, and which demon comes after another, and which does not follow after which; and he should seek from Christ the inner meanings [logoi] of these things They dislike those who approach the ascetic life with greater knowledge, for they wish to shoot in darkness at the upright of heart (Psalm 11:2).
 
 51\. Through observation you will discover that two of the demons are the sharpest, so quick that they almost overtake the movement of your mind the demon of fornication and the one which drags us off to blaspheme God But the second does not last for long, while the first, provided it does not stir our thoughts (logismoi) with passion, will not impede our knowledge of God
 
@@ -289,7 +290,7 @@ But with all your power beseech God for the ability to fight off your enemies in
 
 71\. The demonic songs move our desire and throw the soul into shameful fantasies. But “psalms and hymns and spiritual songs” (Ephesians 5:19) summon the nous to continuous memory of virtue by cooling our boiling indignation and by quenching our desires.
 
-72\. Wrestlers are in the position of crushing and being crushed; the demons wrestle with us and as they crush us, they are crushed by us in return As it says, ‘I will crush them and they will not be able to rise’ (Psalm 17:39) and ‘My enemies and those who were crushing me wearied and fell.’ (Psalm 26:2)
+72\. Wrestlers are in the position of crushing and being crushed; the demons wrestle with us and as they crush us, they are crushed by us in return As it says, ‘I will crush them and they will not be able to rise’ (Psalm 18:38) and ‘My enemies and those who were crushing me wearied and fell.’ (Psalm 27:2)
 
 73\. Repose is connected with wisdom, toil with prudence It is impossible to win wisdom without fighting, and it is impossible to conduct the war well without prudence It is to prudence that the responsibility is given for withstanding the fury (thumos) of the demons, obliging the powers of the soul to work in accordance with their nature and preparing the way for wisdom.
 
@@ -344,7 +345,7 @@ But with all your power beseech God for the ability to fight off your enemies in
   - [3B] eagerly to endure afflictions belongs to Courage and Patience.
 - [4] Justice effects a certain symphony and harmony among the [different] parts of the soul.
 
-90\. The fruit of sowing is sheaves, and the fruit of the virtues is knowledge And as tears accompany sowing, so joy accompanies reaping (Psalm 125:6)
+90\. The fruit of sowing is sheaves, and the fruit of the virtues is knowledge And as tears accompany sowing, so joy accompanies reaping (Psalm 126:6)
 
 ### Sayings of Holy Monks
 
@@ -372,4 +373,6 @@ The same man freed one of the brethren who was being troubled by fantasies at ni
 
 ## Epilogue
 
-Let that suffice now, my dear Anatolius, about practical science (praktike); this is what I have found, by the grace of the holy Spirit, gleaning ripening grapes from my crop but if the sun of righteousness (Malachi 3:20) shines on us in his zenith and the grape becomes fully ripe, then we shall drink his wine, which makes glad the heart of man (Psalm 103:13), at the prayers and intercession of the righteous Gregory who planted me, and at those of the holy fathers who now water me, and by the power of Jesus Christ our Lord who makes me grow (1 Corinthians 3:6-7), to whom be glory and might for ever and ever.
+Let that suffice now, my dear Anatolius, about practical science (praktike); this is what I have found, by the grace of the holy Spirit, gleaning ripening grapes from my crop but if the sun of righteousness (Malachi 4:2) shines on us in his zenith and the grape becomes fully ripe, then we shall drink his wine, which makes glad the heart of man (Psalm 104:15), at the prayers and intercession of the righteous Gregory who planted me, and at those of the holy fathers who now water me, and by the power of Jesus Christ our Lord who makes me grow (1 Corinthians 3:6-7), to whom be glory and might for ever and ever.
+
+[^ed1]: Psalms and Malachi are cited by the numbering of the English Bible. Dysinger follows the Greek Septuagint, which numbers most psalms one lower and sometimes counts verses differently, and which also numbers the last verses of Malachi as part of its third chapter.

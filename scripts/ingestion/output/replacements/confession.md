@@ -168,7 +168,7 @@ But the women who are kept in slavery suffer especially; they constantly endure 
 
 62\. But I pray those who believe in and fear God, whosoever shall have vouchsafed to look upon and receive this writing which Patrick the sinner, unlearned verily, composed in Ireland, that no one ever say it was my ignorance that did whatever trifling matter I did, or proved, in accordance with God's good pleasure; but judge ye, and let it be most truly believed that it was the gift of God. And this is my confession before I die.
 
-[^1]: Is. xlii. 25; Acts xiii. 47.
+[^1]: Isa. xlii. 25; Acts xiii. 47.
 [^2]: Luke xxiv. 45; Joel ii. 12; Luke i. 48.
 [^3]: Ps. lxxxix. 5; Acts ii. 5.
 [^4]: Col. i. 16; Phil. ii. 9–11; Rom. ii. 6; Tit. iii. 5, 6; Rom. viii. 16, 17.
@@ -176,7 +176,7 @@ But the women who are kept in slavery suffer especially; they constantly endure 
 [^6]: 2 Tim. i. 8; Ps. v. 6; Wisd. i. 11; Matt. xii. 36.
 [^7]: Eph. vi. 6; Rom. xiv. 10, 12.
 [^8]: Ecclus. iv. 29.
-[^9]: Ps. cxix. 112; Exod. iv. 10; Is. xxxii. 4; 2 Cor. iii. 2, 3; Acts xiii. 47; Ecclus. vii. 16.
+[^9]: Ps. cxix. 112; Exod. iv. 10; Isa. xxxii. 4; 2 Cor. iii. 2, 3; Acts xiii. 47; Ecclus. vii. 16.
 [^10]: Ps. cxix. 67; Luke i. 49; Ps. cxvi. 12.
 [^11]: Rev. xix. 5; Acts vii. 22; Heb. xii. 28; 1 Thess. ii. 10.
 [^12]: Rom. xii. 3; 2 Thess. ii. 16; Phil. ii. 15; 2 Pet. i. 15.
@@ -217,7 +217,7 @@ But the women who are kept in slavery suffer especially; they constantly endure 
 [^47]: Gal. i. 4; 1 Cor. iv. 3; Acts xx. 24; Ps. lv. 22.
 [^48]: 1 Pet. iv. 19; Eph. vi. 20.
 [^49]: Ps. cxvi. 12; Ps. vii. 9; Matt. xx. 22.
-[^50]: Is. xliii. 21.
+[^50]: Isa. xliii. 21.
 [^51]: Rom. ix. 26; Rom. viii. 17, 29; Rom. xi. 36.
 [^52]: 1 John ii. 17; Ps. lxxxix. 36.
 [^53]: 1 Tim. v. 21.

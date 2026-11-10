@@ -62,3 +62,8 @@ test('buildSql guards on id, slug, accession and published = false, and never pu
   assert.doesNotMatch(sql, /summary = null/);
   assert.match(buildSql(readStaged(staged('clear_summary: true\n'))), /summary = null/);
 });
+
+test('a staged summary is written, and an over-long one is refused', () => {
+  assert.match(buildSql(readStaged(staged('summary: "Short and new."\n'))), /summary = \$q\$Short and new\.\$q\$/);
+  assert.throws(() => readStaged(staged(`summary: "${'x'.repeat(161)}"\n`)), /over 160/);
+});
