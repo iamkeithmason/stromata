@@ -1,6 +1,6 @@
 # Edition metadata audit — 2026-11-10
 
-Read-only proposal run over 556 texts (published only). Pass 1 (deterministic) only. Nothing was written to the database.
+Read-only proposal run over 556 texts (published only). Pass 1 (deterministic) + Pass 2 (LLM, verbatim-evidence only). Nothing was written to the database.
 
 A row is **resolved** when it is an original-language/English work (`is_translation: false`), or a translation with a translator and, for a multi-volume series, a volume.
 
@@ -9,19 +9,21 @@ A row is **resolved** when it is an original-language/English work (`is_translat
 | | Rows | Share |
 |---|---:|---:|
 | Resolved overall | 516 | 92.8% |
-| `is_translation` decided (true/false) | 534 | 96.0% |
+| `is_translation` decided (true/false) | 538 | 96.8% |
 | …of which original language / English (`false`) | 46 | 8.3% |
-| …of which translations (`true`) | 488 | 87.8% |
-| Translations with a translator | 476 | 97.5% of translations |
-| Translations with a series | 470 | 96.3% of translations |
+| …of which translations (`true`) | 492 | 88.5% |
+| Translations with a translator | 476 | 96.7% of translations |
+| Translations with a series | 470 | 95.5% of translations |
 | Multi-volume series rows with a volume | 428 | 98.4% of 435 |
-| Rows with a publication year | 380 | 68.3% |
-| Rows with a publisher | 269 | 48.4% |
+| Rows with a publication year | 381 | 68.5% |
+| Rows with a publisher | 270 | 48.6% |
 | Series + volume + translator (the SQL audit's measure) | 419 | 75.4% |
 
 Confidence: high 377 · medium 142 · low 37
 
-Field values by method: pattern 2978 · inherited_from_collection 123 · alias 54 · inferred 26
+Pass 2 (LLM): 36 unresolved rows asked; 96 fields passed the verbatim-evidence guard, 0 were rejected, and 25 filled a field Pass 1 had left blank (the rest restated what Pass 1 already had). 0 of the asked rows are now resolved.
+
+Field values by method: pattern 2978 · inherited_from_collection 123 · alias 54 · inferred 26 · llm 25
 
 ## What we hold, by series and volume
 
@@ -30,7 +32,7 @@ Field values by method: pattern 2978 · inherited_from_collection 123 · alias 5
 | NPNF1 — Nicene and Post-Nicene Fathers, Series 1 | 214 | 1 (14), 2 (26), 3 (1), 4 (33), 5 (6), 6 (2), 7 (124), 9 (6), 10 (1), 12 (1) |
 | ANF — Ante-Nicene Fathers | 119 | 1 (17), 2 (11), 3 (19), 4 (15), 5 (18), 6 (7), 7 (19), 9 (2), 10 (4), ? (7) |
 | NPNF2 — Nicene and Post-Nicene Fathers, Series 2 | 92 | 1 (10), 3 (5), 4 (1), 5 (1), 6 (5), 7 (25), 8 (1), 9 (4), 10 (2), 11 (23), 12 (5), 13 (9), 14 (1) |
-| OTHER — Other named edition | 50 | ? (50) |
+| OTHER — Other named edition | 50 | 3 (1), 4 (1), ? (48) |
 | LUTHER_PHILA — Works of Martin Luther (Philadelphia Edition) | 7 | 1 (1), 2 (5), 3 (1) |
 | PARKER — Parker Society | 4 | ? (4) |
 | LIB_FATHERS — Library of the Fathers (Oxford) | 2 | 5 (1), 41 (1) |
@@ -104,8 +106,8 @@ Field values by method: pattern 2978 · inherited_from_collection 123 · alias 5
 
 ### `translator_missing` — 30 rows
 
-- `a-paper-on-usury` (John Jewel) — OTHER
-- `a-short-rule-of-life` (John Wycliffe) — OTHER · 1869 — _provenance notes mention translation, but not of this part specifically_
+- `a-paper-on-usury` (John Jewel) — OTHER 4 · 1845
+- `a-short-rule-of-life` (John Wycliffe) — OTHER 3 · 1869 — _provenance notes mention translation, but not of this part specifically_
 - `address-on-vainglory-and-how-to-bring-up-children` (John Chrysostom)
 - `conference-with-john-feckenham` (Lady Jane Grey) — _provenance notes mention translation, but not of this part specifically_
 - `confession-catholic-faith-damasus` (Pope Damasus I) — NPNF2 3 · 1892
@@ -167,8 +169,8 @@ Field values by method: pattern 2978 · inherited_from_collection 123 · alias 5
 
 ### `url_only` — 16 rows
 
-- `a-paper-on-usury` (John Jewel) — OTHER
-- `a-short-rule-of-life` (John Wycliffe) — OTHER · 1869 — _provenance notes mention translation, but not of this part specifically_
+- `a-paper-on-usury` (John Jewel) — OTHER 4 · 1845
+- `a-short-rule-of-life` (John Wycliffe) — OTHER 3 · 1869 — _provenance notes mention translation, but not of this part specifically_
 - `address-on-vainglory-and-how-to-bring-up-children` (John Chrysostom)
 - `conference-with-john-feckenham` (Lady Jane Grey) — _provenance notes mention translation, but not of this part specifically_
 - `first-letter-to-henry-bullinger` (Lady Jane Grey) — _provenance notes mention translation, but not of this part specifically_
@@ -302,8 +304,8 @@ A starting point for the Step 2 migration, built only from what the notes say. E
 - Clarendon Press, Oxford, 1900 — 2 rows
 - London, 1865 — 2 rows
 - Concordia Publishing House, St. Louis, 1921 — 2 rows
-- Cambridge University Press — 1 row
-- Clarendon Press, 1869 — 1 row
+- Cambridge University Press, Cambridge, 1845 — 1 row
+- Clarendon Press, Oxford, 1869 — 1 row
 - 1908 — 1 row
 - London, 1675 — 1 row
 - G. P. Putnam's Sons, Knickerbocker Press, New York, 1905 — 1 row

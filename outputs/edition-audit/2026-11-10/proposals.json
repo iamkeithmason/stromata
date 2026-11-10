@@ -1,6 +1,6 @@
 {
   "generated": "2026-11-10",
-  "pass": "deterministic",
+  "pass": "deterministic+llm",
   "count": 556,
   "proposals": [
     {
@@ -105,14 +105,18 @@
       "translators": [],
       "translator_raw": null,
       "series_key": "OTHER",
-      "series_raw": null,
-      "volume": null,
-      "publication_year": null,
+      "series_raw": "The Works of John Jewel",
+      "volume": 4,
+      "publication_year": 1845,
       "publisher": "Cambridge University Press",
-      "place": null,
+      "place": "Cambridge",
       "method": {
         "publisher": "pattern",
-        "series_key": "pattern"
+        "series_key": "pattern",
+        "series_raw": "llm",
+        "volume": "llm",
+        "publication_year": "llm",
+        "place": "llm"
       },
       "source_field": {
         "publisher": "provenance_notes",
@@ -125,6 +129,37 @@
         "translator_missing"
       ],
       "notes": [],
+      "llm": {
+        "accepted": {
+          "series_raw": {
+            "value": "The Works of John Jewel",
+            "evidence": "The Works of John Jewel"
+          },
+          "volume": {
+            "value": 4,
+            "evidence": "pp. 4: 1283-98"
+          },
+          "publication_year": {
+            "value": 1845,
+            "evidence": "Jewel J (1845b)"
+          },
+          "publisher": {
+            "value": "Cambridge University Press",
+            "evidence": "Cambridge: Cambridge University Press"
+          },
+          "place": {
+            "value": "Cambridge",
+            "evidence": "Cambridge: Cambridge University Press"
+          }
+        },
+        "rejected": [],
+        "applied": [
+          "series_raw",
+          "volume",
+          "publication_year",
+          "place"
+        ]
+      },
       "raw": {
         "source_attribution": "https://archive.org/details/worksofjohnjewel04jewe/page/n51/mode/2up",
         "translation_notes": null,
@@ -367,15 +402,18 @@
       "translators": [],
       "translator_raw": null,
       "series_key": "OTHER",
-      "series_raw": null,
-      "volume": null,
+      "series_raw": "Select English Works of John Wyclif",
+      "volume": 3,
       "publication_year": 1869,
       "publisher": "Clarendon Press",
-      "place": null,
+      "place": "Oxford",
       "method": {
         "publisher": "pattern",
         "publication_year": "pattern",
-        "series_key": "pattern"
+        "series_key": "pattern",
+        "series_raw": "llm",
+        "volume": "llm",
+        "place": "llm"
       },
       "source_field": {
         "publisher": "provenance_notes",
@@ -391,6 +429,36 @@
       "notes": [
         "provenance notes mention translation, but not of this part specifically"
       ],
+      "llm": {
+        "accepted": {
+          "series_raw": {
+            "value": "Select English Works of John Wyclif",
+            "evidence": "Select English Works of John Wyclif, Vol. III"
+          },
+          "volume": {
+            "value": 3,
+            "evidence": "Vol. III"
+          },
+          "publication_year": {
+            "value": 1869,
+            "evidence": "Oxford, in 1869"
+          },
+          "publisher": {
+            "value": "Clarendon Press",
+            "evidence": "Clarendon Press, Oxford"
+          },
+          "place": {
+            "value": "Oxford",
+            "evidence": "Clarendon Press, Oxford"
+          }
+        },
+        "rejected": [],
+        "applied": [
+          "series_raw",
+          "volume",
+          "place"
+        ]
+      },
       "raw": {
         "source_attribution": "https://archive.org/details/selectenglishworks03wycl/page/n25/mode/2up",
         "translation_notes": null,
@@ -473,6 +541,11 @@
         "translator_missing"
       ],
       "notes": [],
+      "llm": {
+        "accepted": {},
+        "rejected": [],
+        "applied": []
+      },
       "raw": {
         "source_attribution": "https://archive.org/stream/StJohnChrysostomVaingloryAndChildren/St+John+Chrysostom--Vainglory_and_Children_djvu.txt",
         "translation_notes": null,
@@ -5601,12 +5674,14 @@
       "translators": [],
       "translator_raw": null,
       "series_key": null,
-      "series_raw": null,
+      "series_raw": "Memoirs and Remains of Lady Jane Grey",
       "volume": null,
       "publication_year": null,
       "publisher": null,
       "place": null,
-      "method": {},
+      "method": {
+        "series_raw": "llm"
+      },
       "source_field": {},
       "confidence": "low",
       "resolved": false,
@@ -5617,6 +5692,18 @@
       "notes": [
         "provenance notes mention translation, but not of this part specifically"
       ],
+      "llm": {
+        "accepted": {
+          "series_raw": {
+            "value": "Memoirs and Remains of Lady Jane Grey",
+            "evidence": "Memoirs and Remains of Lady Jane Grey"
+          }
+        },
+        "rejected": [],
+        "applied": [
+          "series_raw"
+        ]
+      },
       "raw": {
         "source_attribution": "https://archive.org/details/memoirsremainsof00grey/page/5/mode/2up",
         "translation_notes": null,
@@ -5664,6 +5751,36 @@
         "translator_missing"
       ],
       "notes": [],
+      "llm": {
+        "accepted": {
+          "is_translation": {
+            "value": true,
+            "evidence": "Standard Nicene and Post-Nicene Fathers (NPNF) translation"
+          },
+          "series_raw": {
+            "value": "Nicene and Post-Nicene Fathers, Second Series",
+            "evidence": "Nicene and Post-Nicene Fathers, Second Series"
+          },
+          "volume": {
+            "value": 3,
+            "evidence": "Second Series, Vol. 3"
+          },
+          "publication_year": {
+            "value": 1892,
+            "evidence": "Christian Literature Publishing Co., 1892"
+          },
+          "publisher": {
+            "value": "Christian Literature Publishing Co.",
+            "evidence": "Christian Literature Publishing Co."
+          },
+          "place": {
+            "value": "Buffalo, NY",
+            "evidence": "Buffalo, NY"
+          }
+        },
+        "rejected": [],
+        "applied": []
+      },
       "raw": {
         "source_attribution": "From the appendix to Theodoret's Ecclesiastical History, in Nicene and Post-Nicene Fathers, Second Series, Vol. 3. Edited by Philip Schaff and Henry Wace. (Buffalo, NY: Christian Literature Publishing Co., 1892.)",
         "translation_notes": "Author died 384. Standard Nicene and Post-Nicene Fathers (NPNF) translation, public domain; text is drawn from the NPNF appendix to Theodoret's Ecclesiastical History.",
@@ -10707,17 +10824,20 @@
       "collection_slug": "letters-of-lady-jane-grey",
       "collection_order": null,
       "published": true,
-      "is_translation": "unknown",
+      "is_translation": true,
       "translator_display": null,
       "translators": [],
       "translator_raw": null,
       "series_key": null,
-      "series_raw": null,
+      "series_raw": "Memoirs and Remains of Lady Jane Grey",
       "volume": null,
       "publication_year": null,
       "publisher": null,
       "place": null,
-      "method": {},
+      "method": {
+        "is_translation": "llm",
+        "series_raw": "llm"
+      },
       "source_field": {},
       "confidence": "low",
       "resolved": false,
@@ -10728,6 +10848,23 @@
       "notes": [
         "provenance notes mention translation, but not of this part specifically"
       ],
+      "llm": {
+        "accepted": {
+          "is_translation": {
+            "value": true,
+            "evidence": "originally in Latin and appear here in English translation"
+          },
+          "series_raw": {
+            "value": "Memoirs and Remains of Lady Jane Grey",
+            "evidence": "Memoirs and Remains of Lady Jane Grey"
+          }
+        },
+        "rejected": [],
+        "applied": [
+          "is_translation",
+          "series_raw"
+        ]
+      },
       "raw": {
         "source_attribution": "https://archive.org/details/memoirsremainsof00grey/page/5/mode/2up",
         "translation_notes": null,
@@ -11046,6 +11183,11 @@
         "translator_missing"
       ],
       "notes": [],
+      "llm": {
+        "accepted": {},
+        "rejected": [],
+        "applied": []
+      },
       "raw": {
         "source_attribution": "https://archive.org/details/englishworksofwy00wycl/page/146/mode/2up",
         "translation_notes": null,
@@ -11717,12 +11859,14 @@
       "translators": [],
       "translator_raw": null,
       "series_key": null,
-      "series_raw": null,
+      "series_raw": "Memoirs and Remains of Lady Jane Grey",
       "volume": null,
       "publication_year": null,
       "publisher": null,
       "place": null,
-      "method": {},
+      "method": {
+        "series_raw": "llm"
+      },
       "source_field": {},
       "confidence": "low",
       "resolved": false,
@@ -11733,6 +11877,18 @@
       "notes": [
         "provenance notes mention translation, but not of this part specifically"
       ],
+      "llm": {
+        "accepted": {
+          "series_raw": {
+            "value": "Memoirs and Remains of Lady Jane Grey",
+            "evidence": "Memoirs and Remains of Lady Jane Grey"
+          }
+        },
+        "rejected": [],
+        "applied": [
+          "series_raw"
+        ]
+      },
       "raw": {
         "source_attribution": "https://archive.org/details/memoirsremainsof00grey/page/5/mode/2up",
         "translation_notes": null,
@@ -11754,12 +11910,14 @@
       "translators": [],
       "translator_raw": null,
       "series_key": null,
-      "series_raw": null,
+      "series_raw": "Memoirs and Remains of Lady Jane Grey",
       "volume": null,
       "publication_year": null,
       "publisher": null,
       "place": null,
-      "method": {},
+      "method": {
+        "series_raw": "llm"
+      },
       "source_field": {},
       "confidence": "low",
       "resolved": false,
@@ -11770,6 +11928,18 @@
       "notes": [
         "provenance notes mention translation, but not of this part specifically"
       ],
+      "llm": {
+        "accepted": {
+          "series_raw": {
+            "value": "Memoirs and Remains of Lady Jane Grey",
+            "evidence": "Memoirs and Remains of Lady Jane Grey"
+          }
+        },
+        "rejected": [],
+        "applied": [
+          "series_raw"
+        ]
+      },
       "raw": {
         "source_attribution": "https://archive.org/details/memoirsremainsof00grey/page/5/mode/2up",
         "translation_notes": null,
@@ -11791,12 +11961,14 @@
       "translators": [],
       "translator_raw": null,
       "series_key": null,
-      "series_raw": null,
+      "series_raw": "Memoirs and Remains of Lady Jane Grey",
       "volume": null,
       "publication_year": null,
       "publisher": null,
       "place": null,
-      "method": {},
+      "method": {
+        "series_raw": "llm"
+      },
       "source_field": {},
       "confidence": "low",
       "resolved": false,
@@ -11807,6 +11979,18 @@
       "notes": [
         "provenance notes mention translation, but not of this part specifically"
       ],
+      "llm": {
+        "accepted": {
+          "series_raw": {
+            "value": "Memoirs and Remains of Lady Jane Grey",
+            "evidence": "Memoirs and Remains of Lady Jane Grey"
+          }
+        },
+        "rejected": [],
+        "applied": [
+          "series_raw"
+        ]
+      },
       "raw": {
         "source_attribution": "https://archive.org/details/memoirsremainsof00grey/page/5/mode/2up",
         "translation_notes": null,
@@ -11955,12 +12139,14 @@
       "translators": [],
       "translator_raw": null,
       "series_key": null,
-      "series_raw": null,
+      "series_raw": "Memoirs and Remains of Lady Jane Grey",
       "volume": null,
       "publication_year": null,
       "publisher": null,
       "place": null,
-      "method": {},
+      "method": {
+        "series_raw": "llm"
+      },
       "source_field": {},
       "confidence": "low",
       "resolved": false,
@@ -11971,6 +12157,18 @@
       "notes": [
         "provenance notes mention translation, but not of this part specifically"
       ],
+      "llm": {
+        "accepted": {
+          "series_raw": {
+            "value": "Memoirs and Remains of Lady Jane Grey",
+            "evidence": "Memoirs and Remains of Lady Jane Grey"
+          }
+        },
+        "rejected": [],
+        "applied": [
+          "series_raw"
+        ]
+      },
       "raw": {
         "source_attribution": "https://archive.org/details/memoirsremainsof00grey/page/5/mode/2up",
         "translation_notes": null,
@@ -12948,7 +13146,7 @@
       "collection_slug": null,
       "collection_order": null,
       "published": true,
-      "is_translation": "unknown",
+      "is_translation": true,
       "translator_display": null,
       "translators": [],
       "translator_raw": null,
@@ -12958,7 +13156,9 @@
       "publication_year": null,
       "publisher": null,
       "place": null,
-      "method": {},
+      "method": {
+        "is_translation": "llm"
+      },
       "source_field": {},
       "confidence": "low",
       "resolved": false,
@@ -12969,6 +13169,18 @@
       "notes": [
         "provenance notes mention translation, but not of this part specifically"
       ],
+      "llm": {
+        "accepted": {
+          "is_translation": {
+            "value": true,
+            "evidence": "Translation from the nineteenth-century edition"
+          }
+        },
+        "rejected": [],
+        "applied": [
+          "is_translation"
+        ]
+      },
       "raw": {
         "source_attribution": "https://archive.org/details/bookofratramnpri00ratr/page/n25/mode/2up",
         "translation_notes": null,
@@ -14391,12 +14603,14 @@
       "translators": [],
       "translator_raw": null,
       "series_key": null,
-      "series_raw": null,
+      "series_raw": "Memoirs and Remains of Lady Jane Grey",
       "volume": null,
       "publication_year": null,
       "publisher": null,
       "place": null,
-      "method": {},
+      "method": {
+        "series_raw": "llm"
+      },
       "source_field": {},
       "confidence": "low",
       "resolved": false,
@@ -14407,6 +14621,18 @@
       "notes": [
         "provenance notes mention translation, but not of this part specifically"
       ],
+      "llm": {
+        "accepted": {
+          "series_raw": {
+            "value": "Memoirs and Remains of Lady Jane Grey",
+            "evidence": "Memoirs and Remains of Lady Jane Grey"
+          }
+        },
+        "rejected": [],
+        "applied": [
+          "series_raw"
+        ]
+      },
       "raw": {
         "source_attribution": "https://archive.org/details/memoirsremainsof00grey/page/5/mode/2up",
         "translation_notes": null,
@@ -14476,10 +14702,11 @@
       "series_raw": null,
       "volume": null,
       "publication_year": 1876,
-      "publisher": null,
+      "publisher": "Gazette Office",
       "place": null,
       "method": {
-        "publication_year": "pattern"
+        "publication_year": "pattern",
+        "publisher": "llm"
       },
       "source_field": {
         "publication_year": "provenance_notes"
@@ -14491,6 +14718,22 @@
         "translator_missing"
       ],
       "notes": [],
+      "llm": {
+        "accepted": {
+          "publication_year": {
+            "value": 1876,
+            "evidence": "Gazette Office, 1876"
+          },
+          "publisher": {
+            "value": "Gazette Office",
+            "evidence": "Gazette Office, 1876"
+          }
+        },
+        "rejected": [],
+        "applied": [
+          "publisher"
+        ]
+      },
       "raw": {
         "source_attribution": "https://www.google.com/books/edition/King_Alfred_s_work_in_Church_and_State_L/Ka9sIZ33XEAC?hl=en&gbpv=0",
         "translation_notes": null,
@@ -14661,10 +14904,11 @@
       "volume": null,
       "publication_year": 1743,
       "publisher": null,
-      "place": null,
+      "place": "London",
       "method": {
         "is_translation": "inferred",
-        "publication_year": "pattern"
+        "publication_year": "pattern",
+        "place": "llm"
       },
       "source_field": {
         "publication_year": "source_attribution"
@@ -14678,6 +14922,26 @@
       "notes": [
         "series named only to rule it out: \"Nicene and Post-Nicene Fathers\""
       ],
+      "llm": {
+        "accepted": {
+          "is_translation": {
+            "value": true,
+            "evidence": "Anonymous English verse translation"
+          },
+          "publication_year": {
+            "value": 1743,
+            "evidence": "printed 1743"
+          },
+          "place": {
+            "value": "London",
+            "evidence": "1743 London edition"
+          }
+        },
+        "rejected": [],
+        "applied": [
+          "place"
+        ]
+      },
       "raw": {
         "source_attribution": "Anonymous English verse translation, printed 1743 as \"Psychomachia; the war of the soul: or, the battle of the virtues, and vices. Translated from Aur. Prudentius Clemens.\"",
         "translation_notes": "Anonymous, published 1743 — public domain by publication date. No 19th-century public-domain English translation exists: Prudentius (c.348–c.413) appears in neither the Ante-Nicene nor the Nicene and Post-Nicene Fathers, R. Martin Pope's 1905 volume translates the Hymns only, and the modern editions (H. J. Thomson, Loeb; Sister M. Clement Eagan, Fathers of the Church) remain in copyright.",
@@ -15196,12 +15460,14 @@
       "translators": [],
       "translator_raw": null,
       "series_key": null,
-      "series_raw": null,
+      "series_raw": "Memoirs and Remains of Lady Jane Grey",
       "volume": null,
       "publication_year": null,
       "publisher": null,
       "place": null,
-      "method": {},
+      "method": {
+        "series_raw": "llm"
+      },
       "source_field": {},
       "confidence": "low",
       "resolved": false,
@@ -15212,6 +15478,18 @@
       "notes": [
         "provenance notes mention translation, but not of this part specifically"
       ],
+      "llm": {
+        "accepted": {
+          "series_raw": {
+            "value": "Memoirs and Remains of Lady Jane Grey",
+            "evidence": "Memoirs and Remains of Lady Jane Grey"
+          }
+        },
+        "rejected": [],
+        "applied": [
+          "series_raw"
+        ]
+      },
       "raw": {
         "source_attribution": "https://archive.org/details/memoirsremainsof00grey/page/5/mode/2up",
         "translation_notes": null,
@@ -15320,17 +15598,20 @@
       "collection_slug": "letters-of-lady-jane-grey",
       "collection_order": 2,
       "published": true,
-      "is_translation": "unknown",
+      "is_translation": true,
       "translator_display": null,
       "translators": [],
       "translator_raw": null,
       "series_key": null,
-      "series_raw": null,
+      "series_raw": "Memoirs and Remains of Lady Jane Grey",
       "volume": null,
       "publication_year": null,
       "publisher": null,
       "place": null,
-      "method": {},
+      "method": {
+        "is_translation": "llm",
+        "series_raw": "llm"
+      },
       "source_field": {},
       "confidence": "low",
       "resolved": false,
@@ -15341,6 +15622,23 @@
       "notes": [
         "provenance notes mention translation, but not of this part specifically"
       ],
+      "llm": {
+        "accepted": {
+          "is_translation": {
+            "value": true,
+            "evidence": "originally in Latin and appear here in English translation"
+          },
+          "series_raw": {
+            "value": "Memoirs and Remains of Lady Jane Grey",
+            "evidence": "Memoirs and Remains of Lady Jane Grey"
+          }
+        },
+        "rejected": [],
+        "applied": [
+          "is_translation",
+          "series_raw"
+        ]
+      },
       "raw": {
         "source_attribution": "https://archive.org/details/memoirsremainsof00grey/page/5/mode/2up",
         "translation_notes": null,
@@ -15439,6 +15737,36 @@
         "translator_missing"
       ],
       "notes": [],
+      "llm": {
+        "accepted": {
+          "is_translation": {
+            "value": true,
+            "evidence": "Philadelphia Edition translation"
+          },
+          "series_raw": {
+            "value": "Works of Martin Luther, with Introductions and Notes",
+            "evidence": "Works of Martin Luther, with Introductions and Notes"
+          },
+          "volume": {
+            "value": 3,
+            "evidence": "Vol. III"
+          },
+          "publication_year": {
+            "value": 1915,
+            "evidence": "A. J. Holman Company, 1915"
+          },
+          "publisher": {
+            "value": "A. J. Holman Company",
+            "evidence": "Philadelphia: A. J. Holman Company"
+          },
+          "place": {
+            "value": "Philadelphia",
+            "evidence": "Philadelphia: A. J. Holman Company"
+          }
+        },
+        "rejected": [],
+        "applied": []
+      },
       "raw": {
         "source_attribution": "From Works of Martin Luther, with Introductions and Notes, Vol. III (Philadelphia: A. J. Holman Company, 1915 ff.), pp. 225-273.",
         "translation_notes": "Author died 1546. Philadelphia Edition translation confirmed public domain. Verified via verbatim phrase match of the dedication letter ('To the Illustrious, High-born Prince and Lord, John, Duke of Saxony...') against the Philadelphia Edition hosted at onthewing.org. This is a different, earlier translation of the same 1523 treatise as 'Temporal Authority: To What Extent It Should Be Obeyed', which was held separately this session as a probable match to the copyrighted Luther's Works American Edition - the two are not duplicates of the same edition, only of the same underlying work.",
@@ -15676,6 +16004,16 @@
         "translator_missing"
       ],
       "notes": [],
+      "llm": {
+        "accepted": {
+          "is_translation": {
+            "value": true,
+            "evidence": "Translated from the Latin"
+          }
+        },
+        "rejected": [],
+        "applied": []
+      },
       "raw": {
         "source_attribution": "Translated from the Latin. Written by Zwingli in July 1531 as a confession of faith addressed to King Francis I of France; first published posthumously by Heinrich Bullinger in 1536.",
         "translation_notes": "Author died 1531 (killed at the Battle of Kappel). This is a translated confession addressed to a French king; formal register and biblical citation style are consistent with an early-20th-century scholarly English edition of Zwingli's Latin works, well within public-domain terms.",
@@ -15754,6 +16092,16 @@
       "notes": [
         "year 1529 is not after the author's death (1546); likely the original's date, not the translation's"
       ],
+      "llm": {
+        "accepted": {
+          "is_translation": {
+            "value": true,
+            "evidence": "Translated from Luther's 1529 German original"
+          }
+        },
+        "rejected": [],
+        "applied": []
+      },
       "raw": {
         "source_attribution": "Sourced from Wikisource.",
         "translation_notes": "Translated from Luther's 1529 German original. Wikisource edition — confirm the specific English translation and its public-domain status before publishing.",
@@ -16231,7 +16579,7 @@
       "translators": [],
       "translator_raw": null,
       "series_key": "OTHER",
-      "series_raw": null,
+      "series_raw": "Concordia Triglotta: The Symbolical Books of the Ev. Lutheran Church",
       "volume": null,
       "publication_year": 1921,
       "publisher": "Concordia Publishing House",
@@ -16240,7 +16588,8 @@
         "publisher": "pattern",
         "place": "pattern",
         "publication_year": "pattern",
-        "series_key": "pattern"
+        "series_key": "pattern",
+        "series_raw": "llm"
       },
       "source_field": {
         "publisher": "source_attribution",
@@ -16254,6 +16603,30 @@
         "translator_missing"
       ],
       "notes": [],
+      "llm": {
+        "accepted": {
+          "series_raw": {
+            "value": "Concordia Triglotta: The Symbolical Books of the Ev. Lutheran Church",
+            "evidence": "Concordia Triglotta: The Symbolical Books of the Ev. Lutheran Church"
+          },
+          "publication_year": {
+            "value": 1921,
+            "evidence": "Concordia Publishing House, 1921"
+          },
+          "publisher": {
+            "value": "Concordia Publishing House",
+            "evidence": "Concordia Publishing House"
+          },
+          "place": {
+            "value": "St. Louis",
+            "evidence": "St. Louis"
+          }
+        },
+        "rejected": [],
+        "applied": [
+          "series_raw"
+        ]
+      },
       "raw": {
         "source_attribution": "The Three Universal or Ecumenical Creeds, in Concordia Triglotta: The Symbolical Books of the Ev. Lutheran Church (St. Louis: Concordia Publishing House, 1921).",
         "translation_notes": "Ancient liturgical creed (2nd–4th c. baptismal formula, reaching its received Latin form by the 8th c.); the received English text printed here is the Concordia Triglotta's (1921), itself continuous with the Book of Common Prayer wording — public domain by age and by publication date.",
@@ -18184,6 +18557,24 @@
         "translator_missing"
       ],
       "notes": [],
+      "llm": {
+        "accepted": {
+          "series_raw": {
+            "value": "Ante-Nicene Fathers",
+            "evidence": "Ante-Nicene Fathers"
+          },
+          "volume": {
+            "value": 1,
+            "evidence": "Vol. 1"
+          },
+          "publication_year": {
+            "value": 1885,
+            "evidence": "Vol. 1 (1885)"
+          }
+        },
+        "rejected": [],
+        "applied": []
+      },
       "raw": {
         "source_attribution": "Ante-Nicene Fathers, Vol. 1 (1885), revised for New Advent by Kevin Knight",
         "translation_notes": null,
@@ -18227,6 +18618,24 @@
         "translator_missing"
       ],
       "notes": [],
+      "llm": {
+        "accepted": {
+          "series_raw": {
+            "value": "Ante-Nicene Fathers",
+            "evidence": "Ante-Nicene Fathers"
+          },
+          "volume": {
+            "value": 1,
+            "evidence": "Vol. 1"
+          },
+          "publication_year": {
+            "value": 1885,
+            "evidence": "Vol. 1 (1885)"
+          }
+        },
+        "rejected": [],
+        "applied": []
+      },
       "raw": {
         "source_attribution": "Ante-Nicene Fathers, Vol. 1 (1885), revised for New Advent by Kevin Knight",
         "translation_notes": null,
@@ -18270,6 +18679,24 @@
         "translator_missing"
       ],
       "notes": [],
+      "llm": {
+        "accepted": {
+          "series_raw": {
+            "value": "Ante-Nicene Fathers",
+            "evidence": "Ante-Nicene Fathers"
+          },
+          "volume": {
+            "value": 1,
+            "evidence": "Vol. 1"
+          },
+          "publication_year": {
+            "value": 1885,
+            "evidence": "Vol. 1 (1885)"
+          }
+        },
+        "rejected": [],
+        "applied": []
+      },
       "raw": {
         "source_attribution": "Ante-Nicene Fathers, Vol. 1 (1885), revised for New Advent by Kevin Knight",
         "translation_notes": null,
@@ -18313,6 +18740,24 @@
         "translator_missing"
       ],
       "notes": [],
+      "llm": {
+        "accepted": {
+          "series_raw": {
+            "value": "Ante-Nicene Fathers",
+            "evidence": "Ante-Nicene Fathers"
+          },
+          "volume": {
+            "value": 1,
+            "evidence": "Vol. 1"
+          },
+          "publication_year": {
+            "value": 1885,
+            "evidence": "Vol. 1 (1885)"
+          }
+        },
+        "rejected": [],
+        "applied": []
+      },
       "raw": {
         "source_attribution": "Ante-Nicene Fathers, Vol. 1 (1885), revised for New Advent by Kevin Knight",
         "translation_notes": null,
@@ -18356,6 +18801,24 @@
         "translator_missing"
       ],
       "notes": [],
+      "llm": {
+        "accepted": {
+          "series_raw": {
+            "value": "Ante-Nicene Fathers",
+            "evidence": "Ante-Nicene Fathers"
+          },
+          "volume": {
+            "value": 1,
+            "evidence": "Vol. 1"
+          },
+          "publication_year": {
+            "value": 1885,
+            "evidence": "Vol. 1 (1885)"
+          }
+        },
+        "rejected": [],
+        "applied": []
+      },
       "raw": {
         "source_attribution": "Ante-Nicene Fathers, Vol. 1 (1885), revised for New Advent by Kevin Knight",
         "translation_notes": null,
@@ -18399,6 +18862,24 @@
         "translator_missing"
       ],
       "notes": [],
+      "llm": {
+        "accepted": {
+          "series_raw": {
+            "value": "Ante-Nicene Fathers",
+            "evidence": "Ante-Nicene Fathers"
+          },
+          "volume": {
+            "value": 1,
+            "evidence": "Vol. 1"
+          },
+          "publication_year": {
+            "value": 1885,
+            "evidence": "Vol. 1 (1885)"
+          }
+        },
+        "rejected": [],
+        "applied": []
+      },
       "raw": {
         "source_attribution": "Ante-Nicene Fathers, Vol. 1 (1885), revised for New Advent by Kevin Knight",
         "translation_notes": null,
@@ -18442,6 +18923,24 @@
         "translator_missing"
       ],
       "notes": [],
+      "llm": {
+        "accepted": {
+          "series_raw": {
+            "value": "Ante-Nicene Fathers",
+            "evidence": "Ante-Nicene Fathers"
+          },
+          "volume": {
+            "value": 1,
+            "evidence": "Vol. 1"
+          },
+          "publication_year": {
+            "value": 1885,
+            "evidence": "Vol. 1 (1885)"
+          }
+        },
+        "rejected": [],
+        "applied": []
+      },
       "raw": {
         "source_attribution": "Ante-Nicene Fathers, Vol. 1 (1885), revised for New Advent by Kevin Knight",
         "translation_notes": null,
@@ -18719,7 +19218,7 @@
       "translators": [],
       "translator_raw": null,
       "series_key": "OTHER",
-      "series_raw": null,
+      "series_raw": "Concordia Triglotta: The Symbolical Books of the Ev. Lutheran Church",
       "volume": null,
       "publication_year": 1921,
       "publisher": "Concordia Publishing House",
@@ -18728,7 +19227,8 @@
         "publisher": "pattern",
         "place": "pattern",
         "publication_year": "pattern",
-        "series_key": "pattern"
+        "series_key": "pattern",
+        "series_raw": "llm"
       },
       "source_field": {
         "publisher": "source_attribution",
@@ -18742,6 +19242,30 @@
         "translator_missing"
       ],
       "notes": [],
+      "llm": {
+        "accepted": {
+          "series_raw": {
+            "value": "Concordia Triglotta: The Symbolical Books of the Ev. Lutheran Church",
+            "evidence": "Concordia Triglotta: The Symbolical Books of the Ev. Lutheran Church"
+          },
+          "publication_year": {
+            "value": 1921,
+            "evidence": "Concordia Publishing House, 1921"
+          },
+          "publisher": {
+            "value": "Concordia Publishing House",
+            "evidence": "Concordia Publishing House"
+          },
+          "place": {
+            "value": "St. Louis",
+            "evidence": "St. Louis"
+          }
+        },
+        "rejected": [],
+        "applied": [
+          "series_raw"
+        ]
+      },
       "raw": {
         "source_attribution": "The Three Universal or Ecumenical Creeds, in Concordia Triglotta: The Symbolical Books of the Ev. Lutheran Church (St. Louis: Concordia Publishing House, 1921).",
         "translation_notes": "Drafted at the Council of Nicaea (325) and expanded to its received form at Constantinople (381); the received English text printed here is the Concordia Triglotta's (1921) — public domain by age and by publication date.",
@@ -19413,6 +19937,28 @@
         "volume_missing"
       ],
       "notes": [],
+      "llm": {
+        "accepted": {
+          "is_translation": {
+            "value": true,
+            "evidence": "Roberts-Donaldson translation"
+          },
+          "translator_display": {
+            "value": "Roberts-Donaldson",
+            "evidence": "Roberts-Donaldson translation"
+          },
+          "series_raw": {
+            "value": "Ante-Nicene Fathers",
+            "evidence": "Ante-Nicene Fathers series (1885)"
+          },
+          "publication_year": {
+            "value": 1885,
+            "evidence": "Ante-Nicene Fathers series (1885)"
+          }
+        },
+        "rejected": [],
+        "applied": []
+      },
       "raw": {
         "source_attribution": "Roberts-Donaldson translation, revised. Via New Advent, Fathers of the Church (newadvent.org/fathers/02101.htm). Public domain.",
         "translation_notes": "The Roberts-Donaldson translation is in the public domain as part of the Ante-Nicene Fathers series (1885). No rights clearance required.",
@@ -19461,6 +20007,28 @@
         "volume_missing"
       ],
       "notes": [],
+      "llm": {
+        "accepted": {
+          "is_translation": {
+            "value": true,
+            "evidence": "Roberts-Donaldson translation"
+          },
+          "translator_display": {
+            "value": "Roberts-Donaldson",
+            "evidence": "Roberts-Donaldson translation"
+          },
+          "series_raw": {
+            "value": "Ante-Nicene Fathers",
+            "evidence": "Ante-Nicene Fathers series (1885)"
+          },
+          "publication_year": {
+            "value": 1885,
+            "evidence": "Ante-Nicene Fathers series (1885)"
+          }
+        },
+        "rejected": [],
+        "applied": []
+      },
       "raw": {
         "source_attribution": "Roberts-Donaldson translation. Via New Advent, Fathers of the Church (newadvent.org/fathers/02102.htm). Public domain.",
         "translation_notes": "The Roberts-Donaldson translation is in the public domain as part of the Ante-Nicene Fathers series (1885). No rights clearance required.",
@@ -19552,6 +20120,28 @@
         "volume_missing"
       ],
       "notes": [],
+      "llm": {
+        "accepted": {
+          "is_translation": {
+            "value": true,
+            "evidence": "Roberts-Donaldson translation"
+          },
+          "translator_display": {
+            "value": "Roberts-Donaldson",
+            "evidence": "Roberts-Donaldson translation"
+          },
+          "series_raw": {
+            "value": "Ante-Nicene Fathers",
+            "evidence": "Ante-Nicene Fathers series (1885)"
+          },
+          "publication_year": {
+            "value": 1885,
+            "evidence": "Ante-Nicene Fathers series (1885)"
+          }
+        },
+        "rejected": [],
+        "applied": []
+      },
       "raw": {
         "source_attribution": "Roberts-Donaldson translation. Via New Advent, Fathers of the Church (newadvent.org/fathers/02104.htm). Public domain.",
         "translation_notes": "The Roberts-Donaldson translation is in the public domain as part of the Ante-Nicene Fathers series (1885). No rights clearance required.",
@@ -19600,6 +20190,28 @@
         "volume_missing"
       ],
       "notes": [],
+      "llm": {
+        "accepted": {
+          "is_translation": {
+            "value": true,
+            "evidence": "Roberts-Donaldson translation"
+          },
+          "translator_display": {
+            "value": "Roberts-Donaldson",
+            "evidence": "Roberts-Donaldson translation"
+          },
+          "series_raw": {
+            "value": "Ante-Nicene Fathers",
+            "evidence": "Ante-Nicene Fathers series (1885)"
+          },
+          "publication_year": {
+            "value": 1885,
+            "evidence": "Ante-Nicene Fathers series (1885)"
+          }
+        },
+        "rejected": [],
+        "applied": []
+      },
       "raw": {
         "source_attribution": "Roberts-Donaldson translation. Via New Advent, Fathers of the Church (newadvent.org/fathers/02105.htm). Public domain.",
         "translation_notes": "The Roberts-Donaldson translation is in the public domain as part of the Ante-Nicene Fathers series (1885). No rights clearance required.",
@@ -19648,6 +20260,28 @@
         "volume_missing"
       ],
       "notes": [],
+      "llm": {
+        "accepted": {
+          "is_translation": {
+            "value": true,
+            "evidence": "Roberts-Donaldson translation"
+          },
+          "translator_display": {
+            "value": "Roberts-Donaldson",
+            "evidence": "Roberts-Donaldson translation"
+          },
+          "series_raw": {
+            "value": "Ante-Nicene Fathers",
+            "evidence": "Ante-Nicene Fathers series (1885)"
+          },
+          "publication_year": {
+            "value": 1885,
+            "evidence": "Ante-Nicene Fathers series (1885)"
+          }
+        },
+        "rejected": [],
+        "applied": []
+      },
       "raw": {
         "source_attribution": "Roberts-Donaldson translation. Via New Advent, Fathers of the Church (newadvent.org/fathers/02106.htm). Public domain.",
         "translation_notes": "The Roberts-Donaldson translation is in the public domain as part of the Ante-Nicene Fathers series (1885). No rights clearance required.",
@@ -19696,6 +20330,28 @@
         "volume_missing"
       ],
       "notes": [],
+      "llm": {
+        "accepted": {
+          "is_translation": {
+            "value": true,
+            "evidence": "Roberts-Donaldson translation"
+          },
+          "translator_display": {
+            "value": "Roberts-Donaldson",
+            "evidence": "Roberts-Donaldson translation"
+          },
+          "series_raw": {
+            "value": "Ante-Nicene Fathers",
+            "evidence": "Ante-Nicene Fathers series (1885)"
+          },
+          "publication_year": {
+            "value": 1885,
+            "evidence": "Ante-Nicene Fathers series (1885)"
+          }
+        },
+        "rejected": [],
+        "applied": []
+      },
       "raw": {
         "source_attribution": "Roberts-Donaldson translation. Via New Advent, Fathers of the Church (newadvent.org/fathers/02107.htm). Public domain.",
         "translation_notes": "The Roberts-Donaldson translation is in the public domain as part of the Ante-Nicene Fathers series (1885). No rights clearance required.",
@@ -19957,17 +20613,20 @@
       "collection_slug": "letters-of-lady-jane-grey",
       "collection_order": 3,
       "published": true,
-      "is_translation": "unknown",
+      "is_translation": true,
       "translator_display": null,
       "translators": [],
       "translator_raw": null,
       "series_key": null,
-      "series_raw": null,
+      "series_raw": "Memoirs and Remains of Lady Jane Grey",
       "volume": null,
       "publication_year": null,
       "publisher": null,
       "place": null,
-      "method": {},
+      "method": {
+        "is_translation": "llm",
+        "series_raw": "llm"
+      },
       "source_field": {},
       "confidence": "low",
       "resolved": false,
@@ -19978,6 +20637,23 @@
       "notes": [
         "provenance notes mention translation, but not of this part specifically"
       ],
+      "llm": {
+        "accepted": {
+          "is_translation": {
+            "value": true,
+            "evidence": "originally in Latin and appear here in English translation"
+          },
+          "series_raw": {
+            "value": "Memoirs and Remains of Lady Jane Grey",
+            "evidence": "Memoirs and Remains of Lady Jane Grey"
+          }
+        },
+        "rejected": [],
+        "applied": [
+          "is_translation",
+          "series_raw"
+        ]
+      },
       "raw": {
         "source_attribution": "https://archive.org/details/memoirsremainsof00grey/page/5/mode/2up",
         "translation_notes": null,

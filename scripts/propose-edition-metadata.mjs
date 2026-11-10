@@ -14,7 +14,9 @@
  *   node scripts/propose-edition-metadata.mjs --slug=dialogue-with-trypho
  *   node scripts/propose-edition-metadata.mjs --collection=confessions
  *   node scripts/propose-edition-metadata.mjs --include-drafts      # needs a read role past RLS
- *   node scripts/propose-edition-metadata.mjs --llm                 # Pass 2 for unresolved rows
+ *   node scripts/propose-edition-metadata.mjs --llm                 # Pass 2 for unresolved rows (API key)
+ *   node scripts/propose-edition-metadata.mjs --llm-export=req.json # Pass 2 requests, for any model to answer
+ *   node scripts/propose-edition-metadata.mjs --llm-answers=ans.json  # apply those answers through the same guard
  *   node scripts/propose-edition-metadata.mjs --input=rows.json     # offline: rows from a file
  *   node scripts/propose-edition-metadata.mjs --out=<dir>           # default outputs/edition-audit/<today>/
  *
@@ -61,6 +63,8 @@ const opts = {
   collection: flag('collection'),
   includeDrafts: Boolean(flag('include-drafts')),
   llm: Boolean(flag('llm')),
+  llmExport: flag('llm-export'),
+  llmAnswers: flag('llm-answers'),
   input: flag('input'),
   out: flag('out'),
 };
@@ -139,47 +143,91 @@ Return JSON only, of the form {"<field>": {"value": ..., "evidence": "..."}} for
 "evidence" MUST be copied character-for-character from the notes. Omit any field the notes do not state. Never use outside knowledge:
 if the notes do not name a translator, do not supply one.`;
 
+/** Rows Pass 2 may look at: unresolved after Pass 1, with some provenance text to read. */
+function llmTargets(items) {
+  return items.filter(it => !isResolved(it.proposal) && (it.row.source_attribution || it.row.translation_notes || it.row.provenance_notes));
+}
+
+/** The user message for one row: title, author and the three notes, cleaned exactly as the guard cleans them. */
+function llmPrompt(it) {
+  const notes = ['source_attribution', 'translation_notes', 'provenance_notes']
+    .map(f => `${f}: ${clean(it.row[f]) || '(blank)'}`).join('\n');
+  return `Title: ${it.row.title}\nAuthor: ${it.row.author?.name ?? ''}\n\n${notes}`;
+}
+
+/** Apply one model answer through the verbatim-evidence guard. Fields Pass 1 already filled are never overwritten. */
+function applyLlmAnswer(it, parsed) {
+  const { accepted, rejected } = acceptLlmFields(it.row, parsed);
+  const p = it.proposal;
+  const applied = [];
+  p.llm = { accepted, rejected, applied };
+  for (const [field, { value }] of Object.entries(accepted)) {
+    if (field === 'translator_display') {
+      if (p.translators.length) continue;
+      applied.push(field);
+      p.translator_display = value;
+      p.translators = value.split(/\s*(?:&| and |,|\/)\s*/).filter(Boolean);
+      p.method.translator_display = p.method.translators = 'llm';
+      p.reasons = p.reasons.filter(r => r !== 'translator_missing');
+      if (p.is_translation === 'unknown') { p.is_translation = true; p.method.is_translation = 'llm'; }
+    } else if (p[field] === null || p[field] === undefined || p[field] === 'unknown') {
+      applied.push(field);
+      p[field] = value;
+      p.method[field] = 'llm';
+      if (field === 'volume') p.reasons = p.reasons.filter(r => r !== 'volume_missing');
+      if (field === 'is_translation' && value === false) p.reasons = p.reasons.filter(r => r !== 'translator_missing' && r !== 'modern_translation_check');
+    }
+  }
+  if (applied.length) p.confidence = 'low';
+}
+
+/** Pass 2 through the Anthropic API (`--llm`, needs ANTHROPIC_API_KEY). */
 async function runLlmPass(items) {
   const Anthropic = (await import('@anthropic-ai/sdk')).default;
   const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
   let inTok = 0, outTok = 0;
-  const targets = items.filter(it => !isResolved(it.proposal) && (it.row.source_attribution || it.row.translation_notes || it.row.provenance_notes));
+  const targets = llmTargets(items);
   console.log(`\nPass 2 (--llm, ${LLM_MODEL}): ${targets.length} unresolved rows with provenance text.`);
   for (const it of targets) {
-    const notes = ['source_attribution', 'translation_notes', 'provenance_notes']
-      .map(f => `${f}: ${clean(it.row[f]) || '(blank)'}`).join('\n');
     const res = await anthropic.messages.create({
       model: LLM_MODEL,
       max_tokens: 600,
       system: LLM_SYSTEM,
-      messages: [{ role: 'user', content: `Title: ${it.row.title}\nAuthor: ${it.row.author?.name ?? ''}\n\n${notes}` }],
+      messages: [{ role: 'user', content: llmPrompt(it) }],
     });
     inTok += res.usage?.input_tokens || 0;
     outTok += res.usage?.output_tokens || 0;
     const textOut = res.content.map(c => c.text || '').join('');
     let parsed = null;
-    try { parsed = JSON.parse(textOut.slice(textOut.indexOf('{'), textOut.lastIndexOf('}') + 1)); } catch { /* rejected below */ }
-    const { accepted, rejected } = acceptLlmFields(it.row, parsed);
-    const p = it.proposal;
-    p.llm = { accepted, rejected };
-    for (const [field, { value }] of Object.entries(accepted)) {
-      if (field === 'translator_display') {
-        if (p.translators.length) continue;
-        p.translator_display = value;
-        p.translators = value.split(/\s*(?:&| and |,|\/)\s*/).filter(Boolean);
-        p.method.translator_display = p.method.translators = 'llm';
-        p.reasons = p.reasons.filter(r => r !== 'translator_missing');
-        if (p.is_translation === 'unknown') { p.is_translation = true; p.method.is_translation = 'llm'; }
-      } else if (p[field] === null || p[field] === undefined || p[field] === 'unknown') {
-        p[field] = value;
-        p.method[field] = 'llm';
-        if (field === 'volume') p.reasons = p.reasons.filter(r => r !== 'volume_missing');
-      }
-    }
-    if (Object.keys(accepted).length) p.confidence = 'low';
+    try { parsed = JSON.parse(textOut.slice(textOut.indexOf('{'), textOut.lastIndexOf('}') + 1)); } catch { /* rejected by the guard */ }
+    applyLlmAnswer(it, parsed);
     process.stdout.write('.');
   }
   console.log(`\nPass 2 tokens: ${inTok} in, ${outTok} out.`);
+}
+
+/**
+ * Pass 2 without an API key: `--llm-export=<file>` writes the system prompt and one
+ * request per target row; any model (a subagent, a chat) answers them into
+ * {"<slug>": {<field>: {value, evidence}}}; `--llm-answers=<file>` applies those
+ * answers through the same guard as `--llm`. The guard, not the answerer, decides.
+ */
+function exportLlmRequests(items, file) {
+  const requests = llmTargets(items).map(it => ({ slug: it.slug, prompt: llmPrompt(it) }));
+  fs.writeFileSync(path.resolve(file), JSON.stringify({ system: LLM_SYSTEM, requests }, null, 2) + '\n');
+  console.log(`Wrote ${requests.length} Pass 2 requests to ${file}.`);
+}
+
+function applyLlmAnswersFile(items, file) {
+  const answers = JSON.parse(fs.readFileSync(path.resolve(file), 'utf8'));
+  const targets = llmTargets(items);
+  let applied = 0;
+  for (const it of targets) {
+    if (!(it.slug in answers)) continue;
+    applyLlmAnswer(it, answers[it.slug]);
+    applied++;
+  }
+  console.log(`Pass 2 (--llm-answers): applied ${applied} of ${targets.length} target rows from ${file}.`);
 }
 
 // ── Output ────────────────────────────────────────────────────────────────────
@@ -278,7 +326,7 @@ function summarise(records, collectionReport) {
   const translations = records.filter(r => r.is_translation === true);
   const lines = [];
   lines.push(`# Edition metadata audit — ${today}`, '');
-  lines.push(`Read-only proposal run over ${n} texts (${opts.includeDrafts ? 'published and draft' : 'published only'}${opts.slug ? `, slug ${opts.slug}` : ''}${opts.collection ? `, collection ${opts.collection}` : ''}). Pass 1 (deterministic)${opts.llm ? ' + Pass 2 (LLM, verbatim-evidence only)' : ' only'}. Nothing was written to the database.`, '');
+  lines.push(`Read-only proposal run over ${n} texts (${opts.includeDrafts ? 'published and draft' : 'published only'}${opts.slug ? `, slug ${opts.slug}` : ''}${opts.collection ? `, collection ${opts.collection}` : ''}). Pass 1 (deterministic)${(opts.llm || opts.llmAnswers) ? ' + Pass 2 (LLM, verbatim-evidence only)' : ' only'}. Nothing was written to the database.`, '');
   lines.push('A row is **resolved** when it is an original-language/English work (`is_translation: false`), or a translation with a translator and, for a multi-volume series, a volume.', '');
 
   lines.push('## Resolution', '');
@@ -296,6 +344,11 @@ function summarise(records, collectionReport) {
   const ser = records.filter(r => r.series_key && r.series_key !== 'OTHER' && r.volume && r.translators.length).length;
   lines.push(`| Series + volume + translator (the SQL audit's measure) | ${ser} | ${pct(ser, n)} |`, '');
   lines.push('Confidence: ' + ['high', 'medium', 'low'].map(c => `${c} ${records.filter(r => r.confidence === c).length}`).join(' · '), '');
+  const asked = records.filter(r => r.llm);
+  if (asked.length) {
+    const n = k => asked.reduce((t, r) => t + (Array.isArray(r.llm[k]) ? r.llm[k].length : Object.keys(r.llm[k]).length), 0);
+    lines.push(`Pass 2 (LLM): ${asked.length} unresolved rows asked; ${n('accepted')} fields passed the verbatim-evidence guard, ${n('rejected')} were rejected, and ${n('applied')} filled a field Pass 1 had left blank (the rest restated what Pass 1 already had). ${asked.filter(r => r.resolved).length} of the asked rows are now resolved.`, '');
+  }
   const methodCounts = countBy(records.flatMap(r => Object.values(r.method)), x => x);
   lines.push('Field values by method: ' + [...methodCounts].sort((a, b) => b[1] - a[1]).map(([k, v]) => `${k} ${v}`).join(' · '), '');
 
@@ -412,12 +465,14 @@ async function main() {
 
   const items = rows.map(row => ({ slug: row.slug, row, collection_slug: row.collection?.slug ?? null, proposal: proposeEdition(row) }));
   const collectionReport = reconcileCollections(items);
+  if (typeof opts.llmExport === 'string') exportLlmRequests(items, opts.llmExport);
   if (opts.llm) await runLlmPass(items);
+  else if (typeof opts.llmAnswers === 'string') applyLlmAnswersFile(items, opts.llmAnswers);
 
   const records = items.map(toRecord);
   const outDir = path.resolve(typeof opts.out === 'string' ? opts.out : path.join(root, 'outputs', 'edition-audit', today));
   fs.mkdirSync(outDir, { recursive: true });
-  fs.writeFileSync(path.join(outDir, 'proposals.json'), JSON.stringify({ generated: today, pass: opts.llm ? 'deterministic+llm' : 'deterministic', count: records.length, proposals: records }, null, 2) + '\n');
+  fs.writeFileSync(path.join(outDir, 'proposals.json'), JSON.stringify({ generated: today, pass: (opts.llm || opts.llmAnswers) ? 'deterministic+llm' : 'deterministic', count: records.length, proposals: records }, null, 2) + '\n');
   fs.writeFileSync(path.join(outDir, 'proposals.csv'), toCsv(records));
   fs.writeFileSync(path.join(outDir, 'summary.md'), summarise(records, collectionReport));
 

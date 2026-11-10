@@ -24,7 +24,12 @@ publication year, publisher and place. Every field records the method that produ
   and Chrysostom). A series named only to rule it out (Psychomachia's "appears in neither the Ante-Nicene nor the
   Nicene and Post-Nicene Fathers") is flagged, not taken.
 - **Pass 2 (`--llm`, off by default)** sends only unresolved rows to the model and keeps a field only when its evidence
-  is a verbatim substring of the row's own notes and contains the value.
+  is a verbatim substring of the row's own notes and contains the value. Without an API key, `--llm-export` writes the
+  requests for any model to answer and `--llm-answers` applies the answers through the same guard. The first Pass 2 was
+  answered by a subagent (answers committed as `llm-answers.json`): 36 rows asked, 96 fields passed the guard, none
+  rejected, 25 filled a blank (Jewel vol. 4, 1845; Wyclif vol. III; the Bullinger letters marked as translations; the
+  Lady Jane Grey and Concordia Triglotta source titles). No row became resolved: what is missing there (a translator,
+  the *Stromata*'s ANF volume) is not in the notes, and the guard will not let a model supply it.
 - **First run, 556 published texts:** 516 resolved (92.8%); series + volume + translator for 419 (the SQL audit found
   ~410); 46 original-language works marked `is_translation: false`; 40 unresolved, each with a reason. Output in
   `outputs/edition-audit/2026-11-10/`, including a proposed `source_editions` seed and a copyright-review list.
