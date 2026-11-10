@@ -1,0 +1,199 @@
+{
+  "_about": "Curated, committed input to scripts/propose-edition-metadata.mjs. \"source\" entries carry a verbatim citation from the named URL, and every value must appear in it; \"editor\" entries are values Keith confirmed by hand. Applied after Pass 1 and before Pass 2.",
+  "the-epistle-of-ignatius-to-the-ephesians": {
+    "basis": "source",
+    "source_url": "https://www.newadvent.org/fathers/0104.htm",
+    "checked": "2026-11-10",
+    "citation": "Translated by Alexander Roberts and James Donaldson. From Ante-Nicene Fathers, Vol. 1. Edited by Alexander Roberts, James Donaldson, and A. Cleveland Coxe. (Buffalo, NY: Christian Literature Publishing Co., 1885.) Revised and edited for New Advent by Kevin Knight.",
+    "fields": {
+      "translator_display": "Alexander Roberts and James Donaldson",
+      "volume": 1,
+      "publication_year": 1885,
+      "publisher": "Christian Literature Publishing Co.",
+      "place": "Buffalo, NY"
+    }
+  },
+  "the-epistle-of-ignatius-to-the-magnesians": {
+    "basis": "source",
+    "source_url": "https://www.newadvent.org/fathers/0105.htm",
+    "checked": "2026-11-10",
+    "citation": "Translated by Alexander Roberts and James Donaldson. From Ante-Nicene Fathers, Vol. 1. Edited by Alexander Roberts, James Donaldson, and A. Cleveland Coxe. (Buffalo, NY: Christian Literature Publishing Co., 1885.) Revised and edited for New Advent by Kevin Knight.",
+    "fields": {
+      "translator_display": "Alexander Roberts and James Donaldson",
+      "volume": 1,
+      "publication_year": 1885,
+      "publisher": "Christian Literature Publishing Co.",
+      "place": "Buffalo, NY"
+    }
+  },
+  "the-epistle-of-ignatius-to-the-trallians": {
+    "basis": "source",
+    "source_url": "https://www.newadvent.org/fathers/0106.htm",
+    "checked": "2026-11-10",
+    "citation": "Translated by Alexander Roberts and James Donaldson. From Ante-Nicene Fathers, Vol. 1. Edited by Alexander Roberts, James Donaldson, and A. Cleveland Coxe. (Buffalo, NY: Christian Literature Publishing Co., 1885.) Revised and edited for New Advent by Kevin Knight.",
+    "fields": {
+      "translator_display": "Alexander Roberts and James Donaldson",
+      "volume": 1,
+      "publication_year": 1885,
+      "publisher": "Christian Literature Publishing Co.",
+      "place": "Buffalo, NY"
+    }
+  },
+  "the-epistle-of-ignatius-to-the-romans": {
+    "basis": "source",
+    "source_url": "https://www.newadvent.org/fathers/0107.htm",
+    "checked": "2026-11-10",
+    "citation": "Translated by Alexander Roberts and James Donaldson. From Ante-Nicene Fathers, Vol. 1. Edited by Alexander Roberts, James Donaldson, and A. Cleveland Coxe. (Buffalo, NY: Christian Literature Publishing Co., 1885.) Revised and edited for New Advent by Kevin Knight.",
+    "fields": {
+      "translator_display": "Alexander Roberts and James Donaldson",
+      "volume": 1,
+      "publication_year": 1885,
+      "publisher": "Christian Literature Publishing Co.",
+      "place": "Buffalo, NY"
+    }
+  },
+  "the-epistle-of-ignatius-to-the-philadelphians": {
+    "basis": "source",
+    "source_url": "https://www.newadvent.org/fathers/0108.htm",
+    "checked": "2026-11-10",
+    "citation": "Translated by Alexander Roberts and James Donaldson. From Ante-Nicene Fathers, Vol. 1. Edited by Alexander Roberts, James Donaldson, and A. Cleveland Coxe. (Buffalo, NY: Christian Literature Publishing Co., 1885.) Revised and edited for New Advent by Kevin Knight.",
+    "fields": {
+      "translator_display": "Alexander Roberts and James Donaldson",
+      "volume": 1,
+      "publication_year": 1885,
+      "publisher": "Christian Literature Publishing Co.",
+      "place": "Buffalo, NY"
+    }
+  },
+  "the-epistle-of-ignatius-to-the-smyrnaeans": {
+    "basis": "source",
+    "source_url": "https://www.newadvent.org/fathers/0109.htm",
+    "checked": "2026-11-10",
+    "citation": "Translated by Alexander Roberts and James Donaldson. From Ante-Nicene Fathers, Vol. 1. Edited by Alexander Roberts, James Donaldson, and A. Cleveland Coxe. (Buffalo, NY: Christian Literature Publishing Co., 1885.) Revised and edited for New Advent by Kevin Knight.",
+    "fields": {
+      "translator_display": "Alexander Roberts and James Donaldson",
+      "volume": 1,
+      "publication_year": 1885,
+      "publisher": "Christian Literature Publishing Co.",
+      "place": "Buffalo, NY"
+    }
+  },
+  "the-epistle-of-ignatius-to-polycarp": {
+    "basis": "source",
+    "source_url": "https://www.newadvent.org/fathers/0110.htm",
+    "checked": "2026-11-10",
+    "citation": "Translated by Alexander Roberts and James Donaldson. From Ante-Nicene Fathers, Vol. 1. Edited by Alexander Roberts, James Donaldson, and A. Cleveland Coxe. (Buffalo, NY: Christian Literature Publishing Co., 1885.) Revised and edited for New Advent by Kevin Knight.",
+    "fields": {
+      "translator_display": "Alexander Roberts and James Donaldson",
+      "volume": 1,
+      "publication_year": 1885,
+      "publisher": "Christian Literature Publishing Co.",
+      "place": "Buffalo, NY"
+    }
+  },
+  "the-stromata-book-i": {
+    "basis": "source",
+    "source_url": "https://www.newadvent.org/fathers/02101.htm",
+    "checked": "2026-11-10",
+    "citation": "Translated by William Wilson. From Ante-Nicene Fathers, Vol. 2. Edited by Alexander Roberts, James Donaldson, and A. Cleveland Coxe. (Buffalo, NY: Christian Literature Publishing Co., 1885.) Revised and edited for New Advent by Kevin Knight.",
+    "fields": {
+      "translator_display": "William Wilson",
+      "volume": 2,
+      "publication_year": 1885,
+      "publisher": "Christian Literature Publishing Co.",
+      "place": "Buffalo, NY"
+    },
+    "note": "The row's notes credit \"Roberts-Donaldson\", the series editors; the citation names William Wilson as translator."
+  },
+  "the-stromata-book-ii": {
+    "basis": "source",
+    "source_url": "https://www.newadvent.org/fathers/02102.htm",
+    "checked": "2026-11-10",
+    "citation": "Translated by William Wilson. From Ante-Nicene Fathers, Vol. 2. Edited by Alexander Roberts, James Donaldson, and A. Cleveland Coxe. (Buffalo, NY: Christian Literature Publishing Co., 1885.) Revised and edited for New Advent by Kevin Knight.",
+    "fields": {
+      "translator_display": "William Wilson",
+      "volume": 2,
+      "publication_year": 1885,
+      "publisher": "Christian Literature Publishing Co.",
+      "place": "Buffalo, NY"
+    },
+    "note": "The row's notes credit \"Roberts-Donaldson\", the series editors; the citation names William Wilson as translator."
+  },
+  "the-stromata-book-iii": {
+    "basis": "source",
+    "source_url": "https://www.newadvent.org/fathers/02103.htm",
+    "checked": "2026-11-10",
+    "citation": "Translated by William Wilson. From Ante-Nicene Fathers, Vol. 2. Edited by Alexander Roberts, James Donaldson, and A. Cleveland Coxe. (Buffalo, NY: Christian Literature Publishing Co., 1885.) Revised and edited for New Advent by Kevin Knight.",
+    "fields": {
+      "volume": 2,
+      "publication_year": 1885,
+      "publisher": "Christian Literature Publishing Co.",
+      "place": "Buffalo, NY"
+    },
+    "note": "ANF printed Book III in Latin, untranslated; the page credits Wilson for the volume, not for this book, so only the volume and imprint are taken."
+  },
+  "the-stromata-book-iv": {
+    "basis": "source",
+    "source_url": "https://www.newadvent.org/fathers/02104.htm",
+    "checked": "2026-11-10",
+    "citation": "Translated by William Wilson. From Ante-Nicene Fathers, Vol. 2. Edited by Alexander Roberts, James Donaldson, and A. Cleveland Coxe. (Buffalo, NY: Christian Literature Publishing Co., 1885.) Revised and edited for New Advent by Kevin Knight.",
+    "fields": {
+      "translator_display": "William Wilson",
+      "volume": 2,
+      "publication_year": 1885,
+      "publisher": "Christian Literature Publishing Co.",
+      "place": "Buffalo, NY"
+    },
+    "note": "The row's notes credit \"Roberts-Donaldson\", the series editors; the citation names William Wilson as translator."
+  },
+  "the-stromata-book-v": {
+    "basis": "source",
+    "source_url": "https://www.newadvent.org/fathers/02105.htm",
+    "checked": "2026-11-10",
+    "citation": "Translated by William Wilson. From Ante-Nicene Fathers, Vol. 2. Edited by Alexander Roberts, James Donaldson, and A. Cleveland Coxe. (Buffalo, NY: Christian Literature Publishing Co., 1885.) Revised and edited for New Advent by Kevin Knight.",
+    "fields": {
+      "translator_display": "William Wilson",
+      "volume": 2,
+      "publication_year": 1885,
+      "publisher": "Christian Literature Publishing Co.",
+      "place": "Buffalo, NY"
+    },
+    "note": "The row's notes credit \"Roberts-Donaldson\", the series editors; the citation names William Wilson as translator."
+  },
+  "the-stromata-book-vi": {
+    "basis": "source",
+    "source_url": "https://www.newadvent.org/fathers/02106.htm",
+    "checked": "2026-11-10",
+    "citation": "Translated by William Wilson. From Ante-Nicene Fathers, Vol. 2. Edited by Alexander Roberts, James Donaldson, and A. Cleveland Coxe. (Buffalo, NY: Christian Literature Publishing Co., 1885.) Revised and edited for New Advent by Kevin Knight.",
+    "fields": {
+      "translator_display": "William Wilson",
+      "volume": 2,
+      "publication_year": 1885,
+      "publisher": "Christian Literature Publishing Co.",
+      "place": "Buffalo, NY"
+    },
+    "note": "The row's notes credit \"Roberts-Donaldson\", the series editors; the citation names William Wilson as translator."
+  },
+  "the-stromata-book-vii": {
+    "basis": "source",
+    "source_url": "https://www.newadvent.org/fathers/02107.htm",
+    "checked": "2026-11-10",
+    "citation": "Translated by William Wilson. From Ante-Nicene Fathers, Vol. 2. Edited by Alexander Roberts, James Donaldson, and A. Cleveland Coxe. (Buffalo, NY: Christian Literature Publishing Co., 1885.) Revised and edited for New Advent by Kevin Knight.",
+    "fields": {
+      "translator_display": "William Wilson",
+      "volume": 2,
+      "publication_year": 1885,
+      "publisher": "Christian Literature Publishing Co.",
+      "place": "Buffalo, NY"
+    },
+    "note": "The row's notes credit \"Roberts-Donaldson\", the series editors; the citation names William Wilson as translator."
+  },
+  "a-paper-on-usury": {
+    "basis": "editor",
+    "checked": "2026-11-10",
+    "note": "Keith confirmed on 10 Nov 2026 that \"pp. 4: 1283-98\" in the provenance notes means volume 4 of The Works of John Jewel.",
+    "fields": {
+      "volume": 4
+    }
+  }
+}

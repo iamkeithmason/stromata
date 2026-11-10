@@ -30,6 +30,14 @@ publication year, publisher and place. Every field records the method that produ
   rejected, 25 filled a blank (Jewel vol. 4, 1845; Wyclif vol. III; the Bullinger letters marked as translations; the
   Lady Jane Grey and Concordia Triglotta source titles). No row became resolved: what is missing there (a translator,
   the *Stromata*'s ANF volume) is not in the notes, and the guard will not let a model supply it.
+- **Sourced and editor-confirmed fields** live in a committed file, `outputs/edition-audit/sourced-fields.json`, which
+  the script applies after Pass 1. A `source` entry carries a verbatim citation and its URL, and every value must
+  appear in that citation; an `editor` entry carries a note of who confirmed it. These override Pass 1 and keep what
+  they replaced. First entries, from New Advent's own citations: the 7 Ignatius letters (Alexander Roberts & James
+  Donaldson, ANF 1, 1885) and the 7 *Stromata* parts (ANF 2, 1885). The *Stromata* notes credit "Roberts-Donaldson",
+  who edited the series; the citation names **William Wilson** as translator, so 6 parts now carry Wilson and a
+  `translator_is_editor` flag for the notes to be corrected in Step 2 (Book III is printed in Latin, so it takes the
+  volume only). Keith confirmed Jewel's *Paper on Usury* as vol. 4. After these, 532 of 555 resolved (95.9%).
 - **First run, 556 published texts:** 516 resolved (92.8%); series + volume + translator for 419 (the SQL audit found
   ~410); 46 original-language works marked `is_translation: false`; 40 unresolved, each with a reason. Output in
   `outputs/edition-audit/2026-11-10/`, including a proposed `source_editions` seed and a copyright-review list.

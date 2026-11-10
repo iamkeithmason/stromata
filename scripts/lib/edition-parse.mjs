@@ -824,3 +824,42 @@ export function acceptLlmFields(row, modelOut) {
 function evidenceHasRoman(evidence, n) {
   return (evidence.match(/\b[IVXLC]+\b/g) || []).some(r => romanToInt(r) === n);
 }
+
+// ── Sourced and editor-confirmed fields ───────────────────────────────────────
+
+export const SOURCED_FIELDS = ['is_translation', 'translator_display', 'series_key', 'volume', 'publication_year', 'publisher', 'place'];
+
+/**
+ * Check one entry of the curated sourced-fields file. Two bases:
+ *   "source": a field looked up in an outside citation. Every string or number
+ *             value must appear in the entry's verbatim `citation` (a volume may
+ *             appear as a Roman numeral), and the entry must name its `source_url`.
+ *   "editor": a value the editor confirmed by hand; it needs a `note` saying so.
+ * Returns { ok: {field: value}, refused: [{field, why}] }.
+ */
+export function checkSourcedEntry(entry) {
+  const ok = {};
+  const refused = [];
+  const fields = entry?.fields || {};
+  for (const [field, value] of Object.entries(fields)) {
+    if (!SOURCED_FIELDS.includes(field)) { refused.push({ field, why: 'not a proposable field' }); continue; }
+    if (entry.basis === 'editor') {
+      if (!entry.note) { refused.push({ field, why: 'editor entry without a note' }); continue; }
+      ok[field] = value;
+      continue;
+    }
+    if (entry.basis !== 'source') { refused.push({ field, why: `unknown basis "${entry.basis}"` }); continue; }
+    if (!entry.source_url || !entry.citation) { refused.push({ field, why: 'source entry needs source_url and citation' }); continue; }
+    const cite = clean(entry.citation);
+    if (typeof value === 'boolean' || field === 'series_key') { ok[field] = value; continue; }
+    if (typeof value === 'number') {
+      if (cite.includes(String(value)) || (field === 'volume' && evidenceHasRoman(cite, value))) ok[field] = value;
+      else refused.push({ field, why: 'number not in citation' });
+      continue;
+    }
+    const parts = String(value).split(/\s*(?:&| and |,)\s*/).filter(Boolean);
+    if (parts.every(n => cite.includes(n))) ok[field] = value;
+    else refused.push({ field, why: 'value not in citation' });
+  }
+  return { ok, refused };
+}

@@ -315,3 +315,17 @@ test('Pass 1 is deterministic', () => {
   const r = row({ source_attribution: 'Translated by Marcus Dods (NPNF, Series I, Vol. II).' });
   assert.deepEqual(proposeEdition(r), proposeEdition(r));
 });
+
+test('Sourced entries: values must appear in the verbatim citation; editor entries need a note', async () => {
+  const { checkSourcedEntry } = await import('./edition-parse.mjs');
+  const cite = 'Translated by William Wilson. From Ante-Nicene Fathers, Vol. 2. Edited by Alexander Roberts, James Donaldson, and A. Cleveland Coxe. (Buffalo, NY: Christian Literature Publishing Co., 1885.)';
+  const { ok, refused } = checkSourcedEntry({
+    basis: 'source', source_url: 'https://www.newadvent.org/fathers/02101.htm', citation: cite,
+    fields: { translator_display: 'William Wilson', volume: 2, publication_year: 1885, publisher: 'Christian Literature Publishing Co.', place: 'London' },
+  });
+  assert.deepEqual(Object.keys(ok).sort(), ['publication_year', 'publisher', 'translator_display', 'volume']);
+  assert.deepEqual(refused.map(r => r.field), ['place']);
+  assert.equal(checkSourcedEntry({ basis: 'source', citation: cite, fields: { volume: 2 } }).refused.length, 1, 'no source_url');
+  assert.equal(checkSourcedEntry({ basis: 'editor', fields: { volume: 4 } }).refused.length, 1, 'no note');
+  assert.deepEqual(checkSourcedEntry({ basis: 'editor', note: 'confirmed', fields: { volume: 4 } }).ok, { volume: 4 });
+});

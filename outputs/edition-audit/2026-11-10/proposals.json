@@ -1,7 +1,7 @@
 {
   "generated": "2026-11-10",
   "pass": "deterministic+llm",
-  "count": 556,
+  "count": 555,
   "proposals": [
     {
       "id": "9dd002af-8c77-4d7b-b9e2-c742e14baebb",
@@ -113,8 +113,8 @@
       "method": {
         "publisher": "pattern",
         "series_key": "pattern",
+        "volume": "editor",
         "series_raw": "llm",
-        "volume": "llm",
         "publication_year": "llm",
         "place": "llm"
       },
@@ -155,10 +155,17 @@
         "rejected": [],
         "applied": [
           "series_raw",
-          "volume",
           "publication_year",
           "place"
         ]
+      },
+      "sourced": {
+        "basis": "editor",
+        "source_url": null,
+        "citation": null,
+        "note": "Keith confirmed on 10 Nov 2026 that \"pp. 4: 1283-98\" in the provenance notes means volume 4 of The Works of John Jewel.",
+        "refused": [],
+        "superseded": {}
       },
       "raw": {
         "source_attribution": "https://archive.org/details/worksofjohnjewel04jewe/page/n51/mode/2up",
@@ -511,46 +518,6 @@
         "translation_notes": "ANF Vol. 3, trans. Peter Holmes, 1885, public domain — copyright pre-verified (author pre-1900; PD English translation identified).",
         "provenance_notes": "Text sourced from New Advent (newadvent.org). Accessed September 2026.",
         "source_url": "https://www.newadvent.org/fathers/0310.htm"
-      }
-    },
-    {
-      "id": "8d680c88-4b4c-44d1-ab30-5c8feda1a5c5",
-      "slug": "address-on-vainglory-and-how-to-bring-up-children",
-      "title": "Address on Vainglory and How to Bring Up Children",
-      "author": "John Chrysostom",
-      "author_death_year": 407,
-      "collection_slug": null,
-      "collection_order": null,
-      "published": true,
-      "is_translation": "unknown",
-      "translator_display": null,
-      "translators": [],
-      "translator_raw": null,
-      "series_key": null,
-      "series_raw": null,
-      "volume": null,
-      "publication_year": null,
-      "publisher": null,
-      "place": null,
-      "method": {},
-      "source_field": {},
-      "confidence": "low",
-      "resolved": false,
-      "reasons": [
-        "url_only",
-        "translator_missing"
-      ],
-      "notes": [],
-      "llm": {
-        "accepted": {},
-        "rejected": [],
-        "applied": []
-      },
-      "raw": {
-        "source_attribution": "https://archive.org/stream/StJohnChrysostomVaingloryAndChildren/St+John+Chrysostom--Vainglory_and_Children_djvu.txt",
-        "translation_notes": null,
-        "provenance_notes": null,
-        "source_url": null
       }
     },
     {
@@ -11079,27 +11046,44 @@
       "collection_slug": null,
       "collection_order": null,
       "published": true,
-      "is_translation": "unknown",
-      "translator_display": null,
-      "translators": [],
-      "translator_raw": null,
-      "series_key": null,
-      "series_raw": null,
-      "volume": null,
-      "publication_year": null,
-      "publisher": null,
-      "place": null,
-      "method": {},
-      "source_field": {},
-      "confidence": "low",
-      "resolved": false,
-      "reasons": [
-        "no_provenance_text"
+      "is_translation": true,
+      "translator_display": "George Prevost",
+      "translators": [
+        "George Prevost"
       ],
+      "translator_raw": "Translated by George Prevost",
+      "series_key": "NPNF1",
+      "series_raw": "Nicene and Post-Nicene Fathers",
+      "volume": 10,
+      "publication_year": 1888,
+      "publisher": "Christian Literature Publishing Co.",
+      "place": "Buffalo, NY",
+      "method": {
+        "series_key": "pattern",
+        "volume": "pattern",
+        "translators": "pattern",
+        "translator_display": "pattern",
+        "is_translation": "pattern",
+        "publisher": "pattern",
+        "place": "pattern",
+        "publication_year": "pattern"
+      },
+      "source_field": {
+        "series_key": "source_attribution",
+        "volume": "source_attribution",
+        "translators": "source_attribution",
+        "translator_display": "source_attribution",
+        "publisher": "source_attribution",
+        "place": "source_attribution",
+        "publication_year": "source_attribution"
+      },
+      "confidence": "high",
+      "resolved": true,
+      "reasons": [],
       "notes": [],
       "raw": {
-        "source_attribution": null,
-        "translation_notes": null,
+        "source_attribution": "Translated by George Prevost, revised by M. B. Riddle. Nicene and Post-Nicene Fathers, First Series, Vol. 10, ed. Philip Schaff (Buffalo, NY: Christian Literature Publishing Co., 1888).",
+        "translation_notes": "Backfilled 10 Nov 2026: homily body appears to be the NPNF1 Vol. 10 translation (public domain). Note: the opening scripture header (Matthew 14:23-24) is in NKJV wording, not the NPNF text; consider restoring the NPNF rendering. Editor to confirm.",
         "provenance_notes": null,
         "source_url": null
       }
@@ -11444,27 +11428,42 @@
       "collection_slug": null,
       "collection_order": null,
       "published": true,
-      "is_translation": "unknown",
-      "translator_display": null,
-      "translators": [],
-      "translator_raw": null,
-      "series_key": null,
+      "is_translation": true,
+      "translator_display": "Benjamin Thorpe",
+      "translators": [
+        "Benjamin Thorpe"
+      ],
+      "translator_raw": "Translated by Benjamin Thorpe",
+      "series_key": "OTHER",
       "series_raw": null,
       "volume": null,
-      "publication_year": null,
-      "publisher": null,
-      "place": null,
-      "method": {},
-      "source_field": {},
-      "confidence": "low",
-      "resolved": false,
-      "reasons": [
-        "no_provenance_text"
-      ],
+      "publication_year": 1840,
+      "publisher": "Record Commission",
+      "place": "London",
+      "method": {
+        "translators": "pattern",
+        "translator_display": "pattern",
+        "is_translation": "pattern",
+        "publisher": "pattern",
+        "place": "pattern",
+        "publication_year": "pattern",
+        "series_key": "pattern"
+      },
+      "source_field": {
+        "translators": "source_attribution",
+        "translator_display": "source_attribution",
+        "publisher": "source_attribution",
+        "place": "source_attribution",
+        "publication_year": "source_attribution",
+        "series_key": "source_attribution"
+      },
+      "confidence": "high",
+      "resolved": true,
+      "reasons": [],
       "notes": [],
       "raw": {
-        "source_attribution": null,
-        "translation_notes": null,
+        "source_attribution": "Translated by Benjamin Thorpe, in Ancient Laws and Institutes of England (London: Record Commission, 1840).",
+        "translation_notes": "Backfilled 10 Nov 2026: title and chapter headings match Thorpe's 1840 translation, the same volume as the Canons of Ælfric already in the library. Thorpe d. 1870; public domain. Editor to confirm.",
         "provenance_notes": null,
         "source_url": null
       }
@@ -12976,20 +12975,24 @@
       "series_key": null,
       "series_raw": null,
       "volume": null,
-      "publication_year": null,
+      "publication_year": 1880,
       "publisher": null,
       "place": null,
-      "method": {},
-      "source_field": {},
+      "method": {
+        "publication_year": "pattern"
+      },
+      "source_field": {
+        "publication_year": "source_attribution"
+      },
       "confidence": "low",
       "resolved": false,
       "reasons": [
-        "no_provenance_text"
+        "translator_missing"
       ],
       "notes": [],
       "raw": {
-        "source_attribution": null,
-        "translation_notes": null,
+        "source_attribution": "From F. D. Matthew (ed.), The English Works of Wyclif Hitherto Unprinted (Early English Text Society, 1880), from the manuscript in Corpus Christi College, Cambridge.",
+        "translation_notes": "Backfilled 10 Nov 2026: Middle English text by Wycliffe (d. 1384), probably from Matthew's 1880 EETS edition (same volume as How the Office of Curates is Ordained of God); spelling appears modernised by an unknown hand. Original public domain; confirm source of the modernisation. Editor to confirm.",
         "provenance_notes": null,
         "source_url": null
       }
@@ -18531,49 +18534,44 @@
       "collection_order": 7,
       "published": true,
       "is_translation": true,
-      "translator_display": null,
-      "translators": [],
+      "translator_display": "Alexander Roberts & James Donaldson",
+      "translators": [
+        "Alexander Roberts",
+        "James Donaldson"
+      ],
       "translator_raw": null,
       "series_key": "ANF",
       "series_raw": "Ante-Nicene Fathers",
       "volume": 1,
       "publication_year": 1885,
-      "publisher": null,
-      "place": null,
+      "publisher": "Christian Literature Publishing Co.",
+      "place": "Buffalo, NY",
       "method": {
         "series_key": "pattern",
-        "volume": "pattern",
+        "volume": "sourced",
         "is_translation": "inferred",
-        "publication_year": "pattern"
+        "publication_year": "sourced",
+        "translator_display": "sourced",
+        "translators": "sourced",
+        "publisher": "sourced",
+        "place": "sourced"
       },
       "source_field": {
         "series_key": "source_attribution",
         "volume": "source_attribution",
         "publication_year": "source_attribution"
       },
-      "confidence": "low",
-      "resolved": false,
-      "reasons": [
-        "translator_missing"
-      ],
+      "confidence": "high",
+      "resolved": true,
+      "reasons": [],
       "notes": [],
-      "llm": {
-        "accepted": {
-          "series_raw": {
-            "value": "Ante-Nicene Fathers",
-            "evidence": "Ante-Nicene Fathers"
-          },
-          "volume": {
-            "value": 1,
-            "evidence": "Vol. 1"
-          },
-          "publication_year": {
-            "value": 1885,
-            "evidence": "Vol. 1 (1885)"
-          }
-        },
-        "rejected": [],
-        "applied": []
+      "sourced": {
+        "basis": "source",
+        "source_url": "https://www.newadvent.org/fathers/0110.htm",
+        "citation": "Translated by Alexander Roberts and James Donaldson. From Ante-Nicene Fathers, Vol. 1. Edited by Alexander Roberts, James Donaldson, and A. Cleveland Coxe. (Buffalo, NY: Christian Literature Publishing Co., 1885.) Revised and edited for New Advent by Kevin Knight.",
+        "note": null,
+        "refused": [],
+        "superseded": {}
       },
       "raw": {
         "source_attribution": "Ante-Nicene Fathers, Vol. 1 (1885), revised for New Advent by Kevin Knight",
@@ -18592,49 +18590,44 @@
       "collection_order": 1,
       "published": true,
       "is_translation": true,
-      "translator_display": null,
-      "translators": [],
+      "translator_display": "Alexander Roberts & James Donaldson",
+      "translators": [
+        "Alexander Roberts",
+        "James Donaldson"
+      ],
       "translator_raw": null,
       "series_key": "ANF",
       "series_raw": "Ante-Nicene Fathers",
       "volume": 1,
       "publication_year": 1885,
-      "publisher": null,
-      "place": null,
+      "publisher": "Christian Literature Publishing Co.",
+      "place": "Buffalo, NY",
       "method": {
         "series_key": "pattern",
-        "volume": "pattern",
+        "volume": "sourced",
         "is_translation": "inferred",
-        "publication_year": "pattern"
+        "publication_year": "sourced",
+        "translator_display": "sourced",
+        "translators": "sourced",
+        "publisher": "sourced",
+        "place": "sourced"
       },
       "source_field": {
         "series_key": "source_attribution",
         "volume": "source_attribution",
         "publication_year": "source_attribution"
       },
-      "confidence": "low",
-      "resolved": false,
-      "reasons": [
-        "translator_missing"
-      ],
+      "confidence": "high",
+      "resolved": true,
+      "reasons": [],
       "notes": [],
-      "llm": {
-        "accepted": {
-          "series_raw": {
-            "value": "Ante-Nicene Fathers",
-            "evidence": "Ante-Nicene Fathers"
-          },
-          "volume": {
-            "value": 1,
-            "evidence": "Vol. 1"
-          },
-          "publication_year": {
-            "value": 1885,
-            "evidence": "Vol. 1 (1885)"
-          }
-        },
-        "rejected": [],
-        "applied": []
+      "sourced": {
+        "basis": "source",
+        "source_url": "https://www.newadvent.org/fathers/0104.htm",
+        "citation": "Translated by Alexander Roberts and James Donaldson. From Ante-Nicene Fathers, Vol. 1. Edited by Alexander Roberts, James Donaldson, and A. Cleveland Coxe. (Buffalo, NY: Christian Literature Publishing Co., 1885.) Revised and edited for New Advent by Kevin Knight.",
+        "note": null,
+        "refused": [],
+        "superseded": {}
       },
       "raw": {
         "source_attribution": "Ante-Nicene Fathers, Vol. 1 (1885), revised for New Advent by Kevin Knight",
@@ -18653,49 +18646,44 @@
       "collection_order": 2,
       "published": true,
       "is_translation": true,
-      "translator_display": null,
-      "translators": [],
+      "translator_display": "Alexander Roberts & James Donaldson",
+      "translators": [
+        "Alexander Roberts",
+        "James Donaldson"
+      ],
       "translator_raw": null,
       "series_key": "ANF",
       "series_raw": "Ante-Nicene Fathers",
       "volume": 1,
       "publication_year": 1885,
-      "publisher": null,
-      "place": null,
+      "publisher": "Christian Literature Publishing Co.",
+      "place": "Buffalo, NY",
       "method": {
         "series_key": "pattern",
-        "volume": "pattern",
+        "volume": "sourced",
         "is_translation": "inferred",
-        "publication_year": "pattern"
+        "publication_year": "sourced",
+        "translator_display": "sourced",
+        "translators": "sourced",
+        "publisher": "sourced",
+        "place": "sourced"
       },
       "source_field": {
         "series_key": "source_attribution",
         "volume": "source_attribution",
         "publication_year": "source_attribution"
       },
-      "confidence": "low",
-      "resolved": false,
-      "reasons": [
-        "translator_missing"
-      ],
+      "confidence": "high",
+      "resolved": true,
+      "reasons": [],
       "notes": [],
-      "llm": {
-        "accepted": {
-          "series_raw": {
-            "value": "Ante-Nicene Fathers",
-            "evidence": "Ante-Nicene Fathers"
-          },
-          "volume": {
-            "value": 1,
-            "evidence": "Vol. 1"
-          },
-          "publication_year": {
-            "value": 1885,
-            "evidence": "Vol. 1 (1885)"
-          }
-        },
-        "rejected": [],
-        "applied": []
+      "sourced": {
+        "basis": "source",
+        "source_url": "https://www.newadvent.org/fathers/0105.htm",
+        "citation": "Translated by Alexander Roberts and James Donaldson. From Ante-Nicene Fathers, Vol. 1. Edited by Alexander Roberts, James Donaldson, and A. Cleveland Coxe. (Buffalo, NY: Christian Literature Publishing Co., 1885.) Revised and edited for New Advent by Kevin Knight.",
+        "note": null,
+        "refused": [],
+        "superseded": {}
       },
       "raw": {
         "source_attribution": "Ante-Nicene Fathers, Vol. 1 (1885), revised for New Advent by Kevin Knight",
@@ -18714,49 +18702,44 @@
       "collection_order": 5,
       "published": true,
       "is_translation": true,
-      "translator_display": null,
-      "translators": [],
+      "translator_display": "Alexander Roberts & James Donaldson",
+      "translators": [
+        "Alexander Roberts",
+        "James Donaldson"
+      ],
       "translator_raw": null,
       "series_key": "ANF",
       "series_raw": "Ante-Nicene Fathers",
       "volume": 1,
       "publication_year": 1885,
-      "publisher": null,
-      "place": null,
+      "publisher": "Christian Literature Publishing Co.",
+      "place": "Buffalo, NY",
       "method": {
         "series_key": "pattern",
-        "volume": "pattern",
+        "volume": "sourced",
         "is_translation": "inferred",
-        "publication_year": "pattern"
+        "publication_year": "sourced",
+        "translator_display": "sourced",
+        "translators": "sourced",
+        "publisher": "sourced",
+        "place": "sourced"
       },
       "source_field": {
         "series_key": "source_attribution",
         "volume": "source_attribution",
         "publication_year": "source_attribution"
       },
-      "confidence": "low",
-      "resolved": false,
-      "reasons": [
-        "translator_missing"
-      ],
+      "confidence": "high",
+      "resolved": true,
+      "reasons": [],
       "notes": [],
-      "llm": {
-        "accepted": {
-          "series_raw": {
-            "value": "Ante-Nicene Fathers",
-            "evidence": "Ante-Nicene Fathers"
-          },
-          "volume": {
-            "value": 1,
-            "evidence": "Vol. 1"
-          },
-          "publication_year": {
-            "value": 1885,
-            "evidence": "Vol. 1 (1885)"
-          }
-        },
-        "rejected": [],
-        "applied": []
+      "sourced": {
+        "basis": "source",
+        "source_url": "https://www.newadvent.org/fathers/0108.htm",
+        "citation": "Translated by Alexander Roberts and James Donaldson. From Ante-Nicene Fathers, Vol. 1. Edited by Alexander Roberts, James Donaldson, and A. Cleveland Coxe. (Buffalo, NY: Christian Literature Publishing Co., 1885.) Revised and edited for New Advent by Kevin Knight.",
+        "note": null,
+        "refused": [],
+        "superseded": {}
       },
       "raw": {
         "source_attribution": "Ante-Nicene Fathers, Vol. 1 (1885), revised for New Advent by Kevin Knight",
@@ -18775,49 +18758,44 @@
       "collection_order": 4,
       "published": true,
       "is_translation": true,
-      "translator_display": null,
-      "translators": [],
+      "translator_display": "Alexander Roberts & James Donaldson",
+      "translators": [
+        "Alexander Roberts",
+        "James Donaldson"
+      ],
       "translator_raw": null,
       "series_key": "ANF",
       "series_raw": "Ante-Nicene Fathers",
       "volume": 1,
       "publication_year": 1885,
-      "publisher": null,
-      "place": null,
+      "publisher": "Christian Literature Publishing Co.",
+      "place": "Buffalo, NY",
       "method": {
         "series_key": "pattern",
-        "volume": "pattern",
+        "volume": "sourced",
         "is_translation": "inferred",
-        "publication_year": "pattern"
+        "publication_year": "sourced",
+        "translator_display": "sourced",
+        "translators": "sourced",
+        "publisher": "sourced",
+        "place": "sourced"
       },
       "source_field": {
         "series_key": "source_attribution",
         "volume": "source_attribution",
         "publication_year": "source_attribution"
       },
-      "confidence": "low",
-      "resolved": false,
-      "reasons": [
-        "translator_missing"
-      ],
+      "confidence": "high",
+      "resolved": true,
+      "reasons": [],
       "notes": [],
-      "llm": {
-        "accepted": {
-          "series_raw": {
-            "value": "Ante-Nicene Fathers",
-            "evidence": "Ante-Nicene Fathers"
-          },
-          "volume": {
-            "value": 1,
-            "evidence": "Vol. 1"
-          },
-          "publication_year": {
-            "value": 1885,
-            "evidence": "Vol. 1 (1885)"
-          }
-        },
-        "rejected": [],
-        "applied": []
+      "sourced": {
+        "basis": "source",
+        "source_url": "https://www.newadvent.org/fathers/0107.htm",
+        "citation": "Translated by Alexander Roberts and James Donaldson. From Ante-Nicene Fathers, Vol. 1. Edited by Alexander Roberts, James Donaldson, and A. Cleveland Coxe. (Buffalo, NY: Christian Literature Publishing Co., 1885.) Revised and edited for New Advent by Kevin Knight.",
+        "note": null,
+        "refused": [],
+        "superseded": {}
       },
       "raw": {
         "source_attribution": "Ante-Nicene Fathers, Vol. 1 (1885), revised for New Advent by Kevin Knight",
@@ -18836,49 +18814,44 @@
       "collection_order": 6,
       "published": true,
       "is_translation": true,
-      "translator_display": null,
-      "translators": [],
+      "translator_display": "Alexander Roberts & James Donaldson",
+      "translators": [
+        "Alexander Roberts",
+        "James Donaldson"
+      ],
       "translator_raw": null,
       "series_key": "ANF",
       "series_raw": "Ante-Nicene Fathers",
       "volume": 1,
       "publication_year": 1885,
-      "publisher": null,
-      "place": null,
+      "publisher": "Christian Literature Publishing Co.",
+      "place": "Buffalo, NY",
       "method": {
         "series_key": "pattern",
-        "volume": "pattern",
+        "volume": "sourced",
         "is_translation": "inferred",
-        "publication_year": "pattern"
+        "publication_year": "sourced",
+        "translator_display": "sourced",
+        "translators": "sourced",
+        "publisher": "sourced",
+        "place": "sourced"
       },
       "source_field": {
         "series_key": "source_attribution",
         "volume": "source_attribution",
         "publication_year": "source_attribution"
       },
-      "confidence": "low",
-      "resolved": false,
-      "reasons": [
-        "translator_missing"
-      ],
+      "confidence": "high",
+      "resolved": true,
+      "reasons": [],
       "notes": [],
-      "llm": {
-        "accepted": {
-          "series_raw": {
-            "value": "Ante-Nicene Fathers",
-            "evidence": "Ante-Nicene Fathers"
-          },
-          "volume": {
-            "value": 1,
-            "evidence": "Vol. 1"
-          },
-          "publication_year": {
-            "value": 1885,
-            "evidence": "Vol. 1 (1885)"
-          }
-        },
-        "rejected": [],
-        "applied": []
+      "sourced": {
+        "basis": "source",
+        "source_url": "https://www.newadvent.org/fathers/0109.htm",
+        "citation": "Translated by Alexander Roberts and James Donaldson. From Ante-Nicene Fathers, Vol. 1. Edited by Alexander Roberts, James Donaldson, and A. Cleveland Coxe. (Buffalo, NY: Christian Literature Publishing Co., 1885.) Revised and edited for New Advent by Kevin Knight.",
+        "note": null,
+        "refused": [],
+        "superseded": {}
       },
       "raw": {
         "source_attribution": "Ante-Nicene Fathers, Vol. 1 (1885), revised for New Advent by Kevin Knight",
@@ -18897,49 +18870,44 @@
       "collection_order": 3,
       "published": true,
       "is_translation": true,
-      "translator_display": null,
-      "translators": [],
+      "translator_display": "Alexander Roberts & James Donaldson",
+      "translators": [
+        "Alexander Roberts",
+        "James Donaldson"
+      ],
       "translator_raw": null,
       "series_key": "ANF",
       "series_raw": "Ante-Nicene Fathers",
       "volume": 1,
       "publication_year": 1885,
-      "publisher": null,
-      "place": null,
+      "publisher": "Christian Literature Publishing Co.",
+      "place": "Buffalo, NY",
       "method": {
         "series_key": "pattern",
-        "volume": "pattern",
+        "volume": "sourced",
         "is_translation": "inferred",
-        "publication_year": "pattern"
+        "publication_year": "sourced",
+        "translator_display": "sourced",
+        "translators": "sourced",
+        "publisher": "sourced",
+        "place": "sourced"
       },
       "source_field": {
         "series_key": "source_attribution",
         "volume": "source_attribution",
         "publication_year": "source_attribution"
       },
-      "confidence": "low",
-      "resolved": false,
-      "reasons": [
-        "translator_missing"
-      ],
+      "confidence": "high",
+      "resolved": true,
+      "reasons": [],
       "notes": [],
-      "llm": {
-        "accepted": {
-          "series_raw": {
-            "value": "Ante-Nicene Fathers",
-            "evidence": "Ante-Nicene Fathers"
-          },
-          "volume": {
-            "value": 1,
-            "evidence": "Vol. 1"
-          },
-          "publication_year": {
-            "value": 1885,
-            "evidence": "Vol. 1 (1885)"
-          }
-        },
-        "rejected": [],
-        "applied": []
+      "sourced": {
+        "basis": "source",
+        "source_url": "https://www.newadvent.org/fathers/0106.htm",
+        "citation": "Translated by Alexander Roberts and James Donaldson. From Ante-Nicene Fathers, Vol. 1. Edited by Alexander Roberts, James Donaldson, and A. Cleveland Coxe. (Buffalo, NY: Christian Literature Publishing Co., 1885.) Revised and edited for New Advent by Kevin Knight.",
+        "note": null,
+        "refused": [],
+        "superseded": {}
       },
       "raw": {
         "source_attribution": "Ante-Nicene Fathers, Vol. 1 (1885), revised for New Advent by Kevin Knight",
@@ -19092,27 +19060,45 @@
       "collection_slug": null,
       "collection_order": null,
       "published": true,
-      "is_translation": "unknown",
-      "translator_display": null,
-      "translators": [],
-      "translator_raw": null,
-      "series_key": null,
-      "series_raw": null,
-      "volume": null,
-      "publication_year": null,
-      "publisher": null,
-      "place": null,
-      "method": {},
-      "source_field": {},
-      "confidence": "low",
-      "resolved": false,
-      "reasons": [
-        "no_provenance_text"
+      "is_translation": true,
+      "translator_display": "Alexander Roberts & James Donaldson",
+      "translators": [
+        "Alexander Roberts",
+        "James Donaldson"
       ],
+      "translator_raw": "Translated by Alexander Roberts and James Donaldson",
+      "series_key": "ANF",
+      "series_raw": "Ante-Nicene Fathers",
+      "volume": 1,
+      "publication_year": 1885,
+      "publisher": "Christian Literature Publishing Co.",
+      "place": "Buffalo, NY",
+      "method": {
+        "series_key": "pattern",
+        "volume": "pattern",
+        "translators": "pattern",
+        "translator_display": "pattern",
+        "is_translation": "pattern",
+        "publisher": "pattern",
+        "place": "pattern",
+        "publication_year": "pattern"
+      },
+      "source_field": {
+        "series_key": "source_attribution",
+        "volume": "source_attribution",
+        "translators": "source_attribution",
+        "translator_display": "source_attribution",
+        "publisher": "source_attribution",
+        "place": "source_attribution",
+        "publication_year": "source_attribution"
+      },
+      "confidence": "high",
+      "resolved": true,
+      "reasons": [],
       "notes": [],
       "raw": {
-        "source_attribution": null,
-        "translation_notes": null,
+        "source_attribution": "Translated by Alexander Roberts and James Donaldson. Ante-Nicene Fathers, Vol. 1 (Buffalo, NY: Christian Literature Publishing Co., 1885).",
+        "translation_notes": "Backfilled 10 Nov 2026 by text match against the ANF Vol. 1 translation (opening: \"When Trajan, not long since, succeeded to the empire of the Romans\"). Public domain (published 1885). Editor to confirm.",
         "provenance_notes": null,
         "source_url": null
       }
@@ -19906,24 +19892,26 @@
       "collection_order": 1,
       "published": true,
       "is_translation": true,
-      "translator_display": "Alexander Roberts & James Donaldson",
+      "translator_display": "William Wilson",
       "translators": [
-        "Alexander Roberts",
-        "James Donaldson"
+        "William Wilson"
       ],
       "translator_raw": "Roberts-Donaldson translation",
       "series_key": "ANF",
       "series_raw": "Ante-Nicene Fathers",
-      "volume": null,
+      "volume": 2,
       "publication_year": 1885,
-      "publisher": null,
-      "place": null,
+      "publisher": "Christian Literature Publishing Co.",
+      "place": "Buffalo, NY",
       "method": {
         "series_key": "pattern",
-        "translators": "alias",
-        "translator_display": "alias",
+        "translators": "sourced",
+        "translator_display": "sourced",
         "is_translation": "pattern",
-        "publication_year": "pattern"
+        "publication_year": "sourced",
+        "volume": "sourced",
+        "publisher": "sourced",
+        "place": "sourced"
       },
       "source_field": {
         "series_key": "translation_notes",
@@ -19931,33 +19919,23 @@
         "translator_display": "source_attribution",
         "publication_year": "translation_notes"
       },
-      "confidence": "medium",
-      "resolved": false,
+      "confidence": "high",
+      "resolved": true,
       "reasons": [
-        "volume_missing"
+        "translator_is_editor"
       ],
-      "notes": [],
-      "llm": {
-        "accepted": {
-          "is_translation": {
-            "value": true,
-            "evidence": "Roberts-Donaldson translation"
-          },
-          "translator_display": {
-            "value": "Roberts-Donaldson",
-            "evidence": "Roberts-Donaldson translation"
-          },
-          "series_raw": {
-            "value": "Ante-Nicene Fathers",
-            "evidence": "Ante-Nicene Fathers series (1885)"
-          },
-          "publication_year": {
-            "value": 1885,
-            "evidence": "Ante-Nicene Fathers series (1885)"
-          }
-        },
-        "rejected": [],
-        "applied": []
+      "notes": [
+        "translator from notes (\"Alexander Roberts & James Donaldson\") replaced by the cited edition's (\"William Wilson\")"
+      ],
+      "sourced": {
+        "basis": "source",
+        "source_url": "https://www.newadvent.org/fathers/02101.htm",
+        "citation": "Translated by William Wilson. From Ante-Nicene Fathers, Vol. 2. Edited by Alexander Roberts, James Donaldson, and A. Cleveland Coxe. (Buffalo, NY: Christian Literature Publishing Co., 1885.) Revised and edited for New Advent by Kevin Knight.",
+        "note": "The row's notes credit \"Roberts-Donaldson\", the series editors; the citation names William Wilson as translator.",
+        "refused": [],
+        "superseded": {
+          "translator_display": "Alexander Roberts & James Donaldson"
+        }
       },
       "raw": {
         "source_attribution": "Roberts-Donaldson translation, revised. Via New Advent, Fathers of the Church (newadvent.org/fathers/02101.htm). Public domain.",
@@ -19976,24 +19954,26 @@
       "collection_order": 2,
       "published": true,
       "is_translation": true,
-      "translator_display": "Alexander Roberts & James Donaldson",
+      "translator_display": "William Wilson",
       "translators": [
-        "Alexander Roberts",
-        "James Donaldson"
+        "William Wilson"
       ],
       "translator_raw": "Roberts-Donaldson translation",
       "series_key": "ANF",
       "series_raw": "Ante-Nicene Fathers",
-      "volume": null,
+      "volume": 2,
       "publication_year": 1885,
-      "publisher": null,
-      "place": null,
+      "publisher": "Christian Literature Publishing Co.",
+      "place": "Buffalo, NY",
       "method": {
         "series_key": "pattern",
-        "translators": "alias",
-        "translator_display": "alias",
+        "translators": "sourced",
+        "translator_display": "sourced",
         "is_translation": "pattern",
-        "publication_year": "pattern"
+        "publication_year": "sourced",
+        "volume": "sourced",
+        "publisher": "sourced",
+        "place": "sourced"
       },
       "source_field": {
         "series_key": "translation_notes",
@@ -20001,33 +19981,23 @@
         "translator_display": "source_attribution",
         "publication_year": "translation_notes"
       },
-      "confidence": "medium",
-      "resolved": false,
+      "confidence": "high",
+      "resolved": true,
       "reasons": [
-        "volume_missing"
+        "translator_is_editor"
       ],
-      "notes": [],
-      "llm": {
-        "accepted": {
-          "is_translation": {
-            "value": true,
-            "evidence": "Roberts-Donaldson translation"
-          },
-          "translator_display": {
-            "value": "Roberts-Donaldson",
-            "evidence": "Roberts-Donaldson translation"
-          },
-          "series_raw": {
-            "value": "Ante-Nicene Fathers",
-            "evidence": "Ante-Nicene Fathers series (1885)"
-          },
-          "publication_year": {
-            "value": 1885,
-            "evidence": "Ante-Nicene Fathers series (1885)"
-          }
-        },
-        "rejected": [],
-        "applied": []
+      "notes": [
+        "translator from notes (\"Alexander Roberts & James Donaldson\") replaced by the cited edition's (\"William Wilson\")"
+      ],
+      "sourced": {
+        "basis": "source",
+        "source_url": "https://www.newadvent.org/fathers/02102.htm",
+        "citation": "Translated by William Wilson. From Ante-Nicene Fathers, Vol. 2. Edited by Alexander Roberts, James Donaldson, and A. Cleveland Coxe. (Buffalo, NY: Christian Literature Publishing Co., 1885.) Revised and edited for New Advent by Kevin Knight.",
+        "note": "The row's notes credit \"Roberts-Donaldson\", the series editors; the citation names William Wilson as translator.",
+        "refused": [],
+        "superseded": {
+          "translator_display": "Alexander Roberts & James Donaldson"
+        }
       },
       "raw": {
         "source_attribution": "Roberts-Donaldson translation. Via New Advent, Fathers of the Church (newadvent.org/fathers/02102.htm). Public domain.",
@@ -20051,14 +20021,17 @@
       "translator_raw": null,
       "series_key": "ANF",
       "series_raw": "Ante-Nicene Fathers",
-      "volume": null,
+      "volume": 2,
       "publication_year": 1885,
-      "publisher": null,
-      "place": null,
+      "publisher": "Christian Literature Publishing Co.",
+      "place": "Buffalo, NY",
       "method": {
         "series_key": "pattern",
         "is_translation": "pattern",
-        "publication_year": "inherited_from_collection"
+        "publication_year": "sourced",
+        "volume": "sourced",
+        "publisher": "sourced",
+        "place": "sourced"
       },
       "source_field": {
         "series_key": "source_attribution",
@@ -20066,12 +20039,18 @@
       },
       "confidence": "high",
       "resolved": true,
-      "reasons": [
-        "volume_missing"
-      ],
+      "reasons": [],
       "notes": [
         "printed untranslated, in the original language"
       ],
+      "sourced": {
+        "basis": "source",
+        "source_url": "https://www.newadvent.org/fathers/02103.htm",
+        "citation": "Translated by William Wilson. From Ante-Nicene Fathers, Vol. 2. Edited by Alexander Roberts, James Donaldson, and A. Cleveland Coxe. (Buffalo, NY: Christian Literature Publishing Co., 1885.) Revised and edited for New Advent by Kevin Knight.",
+        "note": "ANF printed Book III in Latin, untranslated; the page credits Wilson for the volume, not for this book, so only the volume and imprint are taken.",
+        "refused": [],
+        "superseded": {}
+      },
       "raw": {
         "source_attribution": "Latin text (untranslated in the Ante-Nicene Fathers). Via New Advent, Fathers of the Church (newadvent.org/fathers/02103.htm). Public domain.",
         "translation_notes": "No public-domain English translation exists; the ANF editors rendered Book III in Latin. The only complete English version (Oulton & Chadwick, 1954) is in copyright.",
@@ -20089,24 +20068,26 @@
       "collection_order": 4,
       "published": true,
       "is_translation": true,
-      "translator_display": "Alexander Roberts & James Donaldson",
+      "translator_display": "William Wilson",
       "translators": [
-        "Alexander Roberts",
-        "James Donaldson"
+        "William Wilson"
       ],
       "translator_raw": "Roberts-Donaldson translation",
       "series_key": "ANF",
       "series_raw": "Ante-Nicene Fathers",
-      "volume": null,
+      "volume": 2,
       "publication_year": 1885,
-      "publisher": null,
-      "place": null,
+      "publisher": "Christian Literature Publishing Co.",
+      "place": "Buffalo, NY",
       "method": {
         "series_key": "pattern",
-        "translators": "alias",
-        "translator_display": "alias",
+        "translators": "sourced",
+        "translator_display": "sourced",
         "is_translation": "pattern",
-        "publication_year": "pattern"
+        "publication_year": "sourced",
+        "volume": "sourced",
+        "publisher": "sourced",
+        "place": "sourced"
       },
       "source_field": {
         "series_key": "translation_notes",
@@ -20114,33 +20095,23 @@
         "translator_display": "source_attribution",
         "publication_year": "translation_notes"
       },
-      "confidence": "medium",
-      "resolved": false,
+      "confidence": "high",
+      "resolved": true,
       "reasons": [
-        "volume_missing"
+        "translator_is_editor"
       ],
-      "notes": [],
-      "llm": {
-        "accepted": {
-          "is_translation": {
-            "value": true,
-            "evidence": "Roberts-Donaldson translation"
-          },
-          "translator_display": {
-            "value": "Roberts-Donaldson",
-            "evidence": "Roberts-Donaldson translation"
-          },
-          "series_raw": {
-            "value": "Ante-Nicene Fathers",
-            "evidence": "Ante-Nicene Fathers series (1885)"
-          },
-          "publication_year": {
-            "value": 1885,
-            "evidence": "Ante-Nicene Fathers series (1885)"
-          }
-        },
-        "rejected": [],
-        "applied": []
+      "notes": [
+        "translator from notes (\"Alexander Roberts & James Donaldson\") replaced by the cited edition's (\"William Wilson\")"
+      ],
+      "sourced": {
+        "basis": "source",
+        "source_url": "https://www.newadvent.org/fathers/02104.htm",
+        "citation": "Translated by William Wilson. From Ante-Nicene Fathers, Vol. 2. Edited by Alexander Roberts, James Donaldson, and A. Cleveland Coxe. (Buffalo, NY: Christian Literature Publishing Co., 1885.) Revised and edited for New Advent by Kevin Knight.",
+        "note": "The row's notes credit \"Roberts-Donaldson\", the series editors; the citation names William Wilson as translator.",
+        "refused": [],
+        "superseded": {
+          "translator_display": "Alexander Roberts & James Donaldson"
+        }
       },
       "raw": {
         "source_attribution": "Roberts-Donaldson translation. Via New Advent, Fathers of the Church (newadvent.org/fathers/02104.htm). Public domain.",
@@ -20159,24 +20130,26 @@
       "collection_order": 5,
       "published": true,
       "is_translation": true,
-      "translator_display": "Alexander Roberts & James Donaldson",
+      "translator_display": "William Wilson",
       "translators": [
-        "Alexander Roberts",
-        "James Donaldson"
+        "William Wilson"
       ],
       "translator_raw": "Roberts-Donaldson translation",
       "series_key": "ANF",
       "series_raw": "Ante-Nicene Fathers",
-      "volume": null,
+      "volume": 2,
       "publication_year": 1885,
-      "publisher": null,
-      "place": null,
+      "publisher": "Christian Literature Publishing Co.",
+      "place": "Buffalo, NY",
       "method": {
         "series_key": "pattern",
-        "translators": "alias",
-        "translator_display": "alias",
+        "translators": "sourced",
+        "translator_display": "sourced",
         "is_translation": "pattern",
-        "publication_year": "pattern"
+        "publication_year": "sourced",
+        "volume": "sourced",
+        "publisher": "sourced",
+        "place": "sourced"
       },
       "source_field": {
         "series_key": "translation_notes",
@@ -20184,33 +20157,23 @@
         "translator_display": "source_attribution",
         "publication_year": "translation_notes"
       },
-      "confidence": "medium",
-      "resolved": false,
+      "confidence": "high",
+      "resolved": true,
       "reasons": [
-        "volume_missing"
+        "translator_is_editor"
       ],
-      "notes": [],
-      "llm": {
-        "accepted": {
-          "is_translation": {
-            "value": true,
-            "evidence": "Roberts-Donaldson translation"
-          },
-          "translator_display": {
-            "value": "Roberts-Donaldson",
-            "evidence": "Roberts-Donaldson translation"
-          },
-          "series_raw": {
-            "value": "Ante-Nicene Fathers",
-            "evidence": "Ante-Nicene Fathers series (1885)"
-          },
-          "publication_year": {
-            "value": 1885,
-            "evidence": "Ante-Nicene Fathers series (1885)"
-          }
-        },
-        "rejected": [],
-        "applied": []
+      "notes": [
+        "translator from notes (\"Alexander Roberts & James Donaldson\") replaced by the cited edition's (\"William Wilson\")"
+      ],
+      "sourced": {
+        "basis": "source",
+        "source_url": "https://www.newadvent.org/fathers/02105.htm",
+        "citation": "Translated by William Wilson. From Ante-Nicene Fathers, Vol. 2. Edited by Alexander Roberts, James Donaldson, and A. Cleveland Coxe. (Buffalo, NY: Christian Literature Publishing Co., 1885.) Revised and edited for New Advent by Kevin Knight.",
+        "note": "The row's notes credit \"Roberts-Donaldson\", the series editors; the citation names William Wilson as translator.",
+        "refused": [],
+        "superseded": {
+          "translator_display": "Alexander Roberts & James Donaldson"
+        }
       },
       "raw": {
         "source_attribution": "Roberts-Donaldson translation. Via New Advent, Fathers of the Church (newadvent.org/fathers/02105.htm). Public domain.",
@@ -20229,24 +20192,26 @@
       "collection_order": 6,
       "published": true,
       "is_translation": true,
-      "translator_display": "Alexander Roberts & James Donaldson",
+      "translator_display": "William Wilson",
       "translators": [
-        "Alexander Roberts",
-        "James Donaldson"
+        "William Wilson"
       ],
       "translator_raw": "Roberts-Donaldson translation",
       "series_key": "ANF",
       "series_raw": "Ante-Nicene Fathers",
-      "volume": null,
+      "volume": 2,
       "publication_year": 1885,
-      "publisher": null,
-      "place": null,
+      "publisher": "Christian Literature Publishing Co.",
+      "place": "Buffalo, NY",
       "method": {
         "series_key": "pattern",
-        "translators": "alias",
-        "translator_display": "alias",
+        "translators": "sourced",
+        "translator_display": "sourced",
         "is_translation": "pattern",
-        "publication_year": "pattern"
+        "publication_year": "sourced",
+        "volume": "sourced",
+        "publisher": "sourced",
+        "place": "sourced"
       },
       "source_field": {
         "series_key": "translation_notes",
@@ -20254,33 +20219,23 @@
         "translator_display": "source_attribution",
         "publication_year": "translation_notes"
       },
-      "confidence": "medium",
-      "resolved": false,
+      "confidence": "high",
+      "resolved": true,
       "reasons": [
-        "volume_missing"
+        "translator_is_editor"
       ],
-      "notes": [],
-      "llm": {
-        "accepted": {
-          "is_translation": {
-            "value": true,
-            "evidence": "Roberts-Donaldson translation"
-          },
-          "translator_display": {
-            "value": "Roberts-Donaldson",
-            "evidence": "Roberts-Donaldson translation"
-          },
-          "series_raw": {
-            "value": "Ante-Nicene Fathers",
-            "evidence": "Ante-Nicene Fathers series (1885)"
-          },
-          "publication_year": {
-            "value": 1885,
-            "evidence": "Ante-Nicene Fathers series (1885)"
-          }
-        },
-        "rejected": [],
-        "applied": []
+      "notes": [
+        "translator from notes (\"Alexander Roberts & James Donaldson\") replaced by the cited edition's (\"William Wilson\")"
+      ],
+      "sourced": {
+        "basis": "source",
+        "source_url": "https://www.newadvent.org/fathers/02106.htm",
+        "citation": "Translated by William Wilson. From Ante-Nicene Fathers, Vol. 2. Edited by Alexander Roberts, James Donaldson, and A. Cleveland Coxe. (Buffalo, NY: Christian Literature Publishing Co., 1885.) Revised and edited for New Advent by Kevin Knight.",
+        "note": "The row's notes credit \"Roberts-Donaldson\", the series editors; the citation names William Wilson as translator.",
+        "refused": [],
+        "superseded": {
+          "translator_display": "Alexander Roberts & James Donaldson"
+        }
       },
       "raw": {
         "source_attribution": "Roberts-Donaldson translation. Via New Advent, Fathers of the Church (newadvent.org/fathers/02106.htm). Public domain.",
@@ -20299,24 +20254,26 @@
       "collection_order": 7,
       "published": true,
       "is_translation": true,
-      "translator_display": "Alexander Roberts & James Donaldson",
+      "translator_display": "William Wilson",
       "translators": [
-        "Alexander Roberts",
-        "James Donaldson"
+        "William Wilson"
       ],
       "translator_raw": "Roberts-Donaldson translation",
       "series_key": "ANF",
       "series_raw": "Ante-Nicene Fathers",
-      "volume": null,
+      "volume": 2,
       "publication_year": 1885,
-      "publisher": null,
-      "place": null,
+      "publisher": "Christian Literature Publishing Co.",
+      "place": "Buffalo, NY",
       "method": {
         "series_key": "pattern",
-        "translators": "alias",
-        "translator_display": "alias",
+        "translators": "sourced",
+        "translator_display": "sourced",
         "is_translation": "pattern",
-        "publication_year": "pattern"
+        "publication_year": "sourced",
+        "volume": "sourced",
+        "publisher": "sourced",
+        "place": "sourced"
       },
       "source_field": {
         "series_key": "translation_notes",
@@ -20324,33 +20281,23 @@
         "translator_display": "source_attribution",
         "publication_year": "translation_notes"
       },
-      "confidence": "medium",
-      "resolved": false,
+      "confidence": "high",
+      "resolved": true,
       "reasons": [
-        "volume_missing"
+        "translator_is_editor"
       ],
-      "notes": [],
-      "llm": {
-        "accepted": {
-          "is_translation": {
-            "value": true,
-            "evidence": "Roberts-Donaldson translation"
-          },
-          "translator_display": {
-            "value": "Roberts-Donaldson",
-            "evidence": "Roberts-Donaldson translation"
-          },
-          "series_raw": {
-            "value": "Ante-Nicene Fathers",
-            "evidence": "Ante-Nicene Fathers series (1885)"
-          },
-          "publication_year": {
-            "value": 1885,
-            "evidence": "Ante-Nicene Fathers series (1885)"
-          }
-        },
-        "rejected": [],
-        "applied": []
+      "notes": [
+        "translator from notes (\"Alexander Roberts & James Donaldson\") replaced by the cited edition's (\"William Wilson\")"
+      ],
+      "sourced": {
+        "basis": "source",
+        "source_url": "https://www.newadvent.org/fathers/02107.htm",
+        "citation": "Translated by William Wilson. From Ante-Nicene Fathers, Vol. 2. Edited by Alexander Roberts, James Donaldson, and A. Cleveland Coxe. (Buffalo, NY: Christian Literature Publishing Co., 1885.) Revised and edited for New Advent by Kevin Knight.",
+        "note": "The row's notes credit \"Roberts-Donaldson\", the series editors; the citation names William Wilson as translator.",
+        "refused": [],
+        "superseded": {
+          "translator_display": "Alexander Roberts & James Donaldson"
+        }
       },
       "raw": {
         "source_attribution": "Roberts-Donaldson translation. Via New Advent, Fathers of the Church (newadvent.org/fathers/02107.htm). Public domain.",

@@ -43,7 +43,7 @@ import { fileURLToPath } from 'node:url';
 import { createClient } from '@supabase/supabase-js';
 import {
   proposeEdition, reconcileCollections, isResolved, acceptLlmFields, SERIES, REASONS,
-  PD_PUBLICATION_CUTOFF, nameKey, clean, readNames, compactInitials,
+  PD_PUBLICATION_CUTOFF, nameKey, clean, readNames, compactInitials, checkSourcedEntry, canonicaliseTranslators, displayTranslators,
 } from './lib/edition-parse.mjs';
 
 const root = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -67,6 +67,7 @@ const opts = {
   llmAnswers: flag('llm-answers'),
   input: flag('input'),
   out: flag('out'),
+  sourced: flag('sourced'),
 };
 const today = new Date().toISOString().slice(0, 10);
 
@@ -230,6 +231,60 @@ function applyLlmAnswersFile(items, file) {
   console.log(`Pass 2 (--llm-answers): applied ${applied} of ${targets.length} target rows from ${file}.`);
 }
 
+// ── Sourced and editor-confirmed fields ───────────────────────────────────────
+
+const DEFAULT_SOURCED = path.join(root, 'outputs', 'edition-audit', 'sourced-fields.json');
+
+/**
+ * Apply the curated file of fields looked up in an outside source or confirmed by
+ * the editor (default outputs/edition-audit/sourced-fields.json; `--sourced=<file>`
+ * for another, `--sourced=none` to skip). Unlike Pass 2 these OVERRIDE Pass 1,
+ * because they were checked against the edition itself; any value they replace is
+ * kept in `superseded` and noted, so the disagreement stays visible for review.
+ */
+function applySourcedFile(items) {
+  if (opts.sourced === 'none') return;
+  const file = typeof opts.sourced === 'string' ? path.resolve(opts.sourced) : DEFAULT_SOURCED;
+  if (!fs.existsSync(file)) return;
+  const entries = JSON.parse(fs.readFileSync(file, 'utf8'));
+  let applied = 0;
+  for (const it of items) {
+    const entry = entries[it.slug];
+    if (!entry) continue;
+    const { ok, refused } = checkSourcedEntry(entry);
+    const p = it.proposal;
+    const method = entry.basis === 'editor' ? 'editor' : 'sourced';
+    p.sourced = { basis: entry.basis, source_url: entry.source_url ?? null, citation: entry.citation ?? null, note: entry.note ?? null, refused, superseded: {} };
+    for (const [field, value] of Object.entries(ok)) {
+      if (field === 'translator_display') {
+        const names = canonicaliseTranslators(value.split(/\s*(?:&| and |,)\s*/).filter(Boolean)).names;
+        const display = displayTranslators(names);
+        if (p.translator_display && p.translator_display !== display) {
+          p.sourced.superseded.translator_display = p.translator_display;
+          p.notes.push(`translator from notes ("${p.translator_display}") replaced by the cited edition's ("${display}")`);
+          if (!p.reasons.includes('translator_is_editor')) p.reasons.push('translator_is_editor');
+        }
+        p.translators = names;
+        p.translator_display = display;
+        p.method.translators = p.method.translator_display = method;
+        p.reasons = p.reasons.filter(r => r !== 'translator_missing');
+        if (p.is_translation !== false) { p.is_translation = true; p.method.is_translation ??= method; }
+        continue;
+      }
+      if (p[field] !== null && p[field] !== undefined && p[field] !== value) {
+        p.sourced.superseded[field] = p[field];
+        p.notes.push(`${field} ${JSON.stringify(p[field])} replaced by ${JSON.stringify(value)} (${method})`);
+      }
+      p[field] = value;
+      p.method[field] = method;
+      if (field === 'volume') p.reasons = p.reasons.filter(r => r !== 'volume_missing');
+    }
+    p.confidence = method === 'sourced' && !refused.length ? (p.reasons.some(r => ['year_suspect', 'series_false_positive_suspect', 'ambiguous_series', 'url_only'].includes(r)) ? 'medium' : 'high') : 'medium';
+    applied++;
+  }
+  console.log(`Applied ${applied} sourced/editor entries from ${path.relative(root, file)}.`);
+}
+
 // ── Output ────────────────────────────────────────────────────────────────────
 
 const CSV_COLUMNS = [
@@ -273,6 +328,7 @@ function toRecord(it) {
     reasons: p.reasons,
     notes: p.notes,
     ...(p.llm ? { llm: p.llm } : {}),
+    ...(p.sourced ? { sourced: p.sourced } : {}),
     raw: {
       source_attribution: row.source_attribution ?? null,
       translation_notes: row.translation_notes ?? null,
@@ -348,6 +404,11 @@ function summarise(records, collectionReport) {
   if (asked.length) {
     const n = k => asked.reduce((t, r) => t + (Array.isArray(r.llm[k]) ? r.llm[k].length : Object.keys(r.llm[k]).length), 0);
     lines.push(`Pass 2 (LLM): ${asked.length} unresolved rows asked; ${n('accepted')} fields passed the verbatim-evidence guard, ${n('rejected')} were rejected, and ${n('applied')} filled a field Pass 1 had left blank (the rest restated what Pass 1 already had). ${asked.filter(r => r.resolved).length} of the asked rows are now resolved.`, '');
+  }
+  const src = records.filter(r => r.sourced);
+  if (src.length) {
+    const sup = src.filter(r => Object.keys(r.sourced.superseded).length);
+    lines.push(`Sourced and editor-confirmed fields (\`outputs/edition-audit/sourced-fields.json\`): ${src.filter(r => r.sourced.basis === 'source').length} rows checked against an outside citation, ${src.filter(r => r.sourced.basis === 'editor').length} confirmed by the editor. ${sup.length} of them corrected a value the notes gave${sup.length ? ` (${sup.map(r => `\`${r.slug}\``).join(', ')})` : ''}.`, '');
   }
   const methodCounts = countBy(records.flatMap(r => Object.values(r.method)), x => x);
   lines.push('Field values by method: ' + [...methodCounts].sort((a, b) => b[1] - a[1]).map(([k, v]) => `${k} ${v}`).join(' · '), '');
@@ -465,6 +526,7 @@ async function main() {
 
   const items = rows.map(row => ({ slug: row.slug, row, collection_slug: row.collection?.slug ?? null, proposal: proposeEdition(row) }));
   const collectionReport = reconcileCollections(items);
+  applySourcedFile(items);
   if (typeof opts.llmExport === 'string') exportLlmRequests(items, opts.llmExport);
   if (opts.llm) await runLlmPass(items);
   else if (typeof opts.llmAnswers === 'string') applyLlmAnswersFile(items, opts.llmAnswers);
