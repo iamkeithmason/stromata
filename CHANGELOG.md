@@ -45,7 +45,9 @@ publication year, publisher and place. Every field records the method that produ
   his Middle English, ed. Thomas Arnold (Clarendon, 1869, vol. III). **Pliny's letters to Trajan are not the
   Melmoth/Bosanquet translation the notes claim:** the Georgetown page names no translator, and its wording ("It is my
   practice, my lord…") differs from Melmoth's ("It is my invariable rule, Sir…", Gutenberg #2811). The translator
-  credit is withdrawn and the text stays on the copyright-review list. After both passes, 539 of 555 resolved (97.1%).
+  credit is withdrawn and the text stays on the copyright-review list. Every copy traced (Georgetown, Fordham, World
+  History Encyclopedia) leads back to James O'Donnell's 1990s Penn web file, which names no translator. Keith confirmed
+  the six Lady Jane Grey English-original readings. After both passes, 539 of 555 resolved (97.1%).
 - **First run, 556 published texts:** 516 resolved (92.8%); series + volume + translator for 419 (the SQL audit found
   ~410); 46 original-language works marked `is_translation: false`; 40 unresolved, each with a reason. Output in
   `outputs/edition-audit/2026-11-10/`, including a proposed `source_editions` seed and a copyright-review list.
