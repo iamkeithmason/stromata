@@ -4,6 +4,33 @@ The Stromata is a curated digital library of public-domain Christian theological
 
 ---
 
+## Daily operator commands — for Keith, on the laptop
+
+Start the site locally from the repo root (it needs `.env.local` with the Supabase keys and admin
+credentials; a sign-in or Supabase error usually means that file is missing):
+
+```bash
+npm run dev
+```
+
+Then sign in at **http://localhost:3000/admin**. Where to go depends on how far along a text is:
+
+| The text is… | Open | What you do there |
+|---|---|---|
+| fetched or staged, **not yet imported** (files on disk) | `/admin/pipeline` | **Review** → **Mark staged** → toolbar **Run import**. The one-click runners are dev-only, so this works on localhost and nowhere else. |
+| **imported**, awaiting publish (`published: false`) | `/admin/review` (phone-first batch queue) or `/admin/drafts` (one at a time) | Approve or edit, then publish. |
+| a long text needing sections or paragraph breaks | `/admin/review/sections`, `/admin/review/paragraphs` | Approve the editor's divisions. |
+
+To see where every prospect stands without opening the browser:
+
+```bash
+npm run pipeline:status
+```
+
+`stage-2-done` or `staged` means it is on its way to import; `imported` means it is already in Drafts.
+
+---
+
 ## Notion access — this workspace is on the free tier
 
 Any time you use the Notion MCP tools against this workspace (not just for the content pipeline —
