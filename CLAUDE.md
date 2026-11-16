@@ -740,6 +740,14 @@ body before writing code, and the PR link as soon as it exists. If you answer a 
 while a build is open, put the decision on that PR too. `/next-agent-card` steps 2 and 2a spell out
 the commands; `docs/research/2026-11-02-claim-the-work-before-you-build.md` has the reasoning.
 
+**A PR that builds a backlog card names the card by its exact title.** Put `Card: <exact Feature title>`
+on the first line of the PR description, and the same title in the CHANGELOG entry. Copy it from Notion
+rather than paraphrasing it: the weekly reconciliation flips `Planned` → `Built` only where a PR or
+CHANGELOG entry names the card, and it matches on the title. PR #183 removed the page-load `text-open`
+and went live on 9 Nov, but it never named "Remove the duplicate page-mount text-open emitter", so the
+card was still `Planned` a week later. One PR covering several cards gets one `Card:` line for each. A PR
+that builds no card leaves the line out.
+
 ---
 
 ## Research bank — capturing what we learn about working with AI
