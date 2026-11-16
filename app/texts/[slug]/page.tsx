@@ -218,11 +218,12 @@ export default async function TextPage({ params }: Props) {
   // ── Continue exploring — candidate pools for lib/read-next.ts ───────────────
   // Metadata only (never `body`); each pool is capped. Three small reads,
   // regenerated with the page, so the module costs nothing per view.
-  const CAND = 'id, title, slug, word_count, collection_id, author_id, accession_number, author:authors(name, death_year, tradition:traditions(slug))'
+  const CAND = 'id, title, slug, word_count, collection_id, author_id, accession_number, author:authors(name, death_year, tradition:traditions(slug)), genre:genres(name)'
   type CandRow = {
     id: string; title: string; slug: string; word_count: number | null
     collection_id: string | null; author_id: string | null; accession_number: number | null
     author: { name: string; death_year: number | null; tradition: { slug: string } | null } | null
+    genre: { name: string } | null
   }
   const toCand = (r: CandRow, themeSlugs?: string[]): ReadNextCandidate => ({
     id: r.id, title: r.title, slug: r.slug, word_count: r.word_count,
@@ -230,6 +231,7 @@ export default async function TextPage({ params }: Props) {
     authorName: r.author?.name ?? null, themeSlugs,
     accessionNumber: r.accession_number, deathYear: r.author?.death_year ?? null,
     traditionSlug: r.author?.tradition?.slug ?? null,
+    genreName: r.genre?.name ?? null,
   })
   const themeSlugList = themes.map(t => t.slug)
   const [editorialRow, authorRows, genreRows, themeRows] = await Promise.all([
@@ -376,6 +378,7 @@ export default async function TextPage({ params }: Props) {
                 deathYear={author?.death_year ?? null}
                 accessionNumber={text.accession_number ?? null}
                 traditionSlug={author?.tradition?.slug ?? null}
+                genre={genre?.name ?? null}
                 index={0}
               />
             </div>
@@ -770,6 +773,7 @@ export default async function TextPage({ params }: Props) {
         deathYear={author?.death_year ?? null}
         accessionNumber={text.accession_number ?? null}
         traditionSlug={author?.tradition?.slug ?? null}
+        genreName={genre?.name ?? null}
         readingMinutes={minutes}
       />
       <TrackTextSessionDepth slug={slug} />

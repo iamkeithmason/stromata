@@ -13,6 +13,7 @@
  *        generated from the genre, so the shelves read as kinds of writing.
  *   III. One plate per era — nine public-domain images, chosen once, for the
  *        eras rather than the texts. Not sourced yet; the frames say what to find.
+ *   IV.  The publisher's mark — the S wound through a cross, print and small cuts.
  *
  * Real published data throughout, metadata only (no `body`; see
  * lib/supabase/no-body-in-listings.test.ts). Colour comes from tokens.
@@ -24,6 +25,8 @@ import Link from 'next/link'
 import { createPublicClient } from '@/lib/supabase/public'
 import { traditionColor } from '@/lib/tradition-colors'
 import { SectionHeader } from '@/app/components/SectionHeader'
+import { HERBAL_ORNAMENTS } from '@/lib/genres/ornaments'
+import { PUBLISHER_MARK } from '@/lib/brand/mark'
 
 export const metadata: Metadata = {
   title: 'Making the library visual (exploration) — The Stromata',
@@ -198,7 +201,16 @@ const MOTIFS: Record<string, { name: string; draw: () => React.ReactNode }> = {
   </>) },
 }
 
+/** The traced herbal ornament where one exists (round 4), else the round-3 sketch. */
 function GenreOrnament({ genre, size = 26 }: { genre: string; size?: number }) {
+  const herbal = HERBAL_ORNAMENTS[genre]
+  if (herbal) {
+    return (
+      <svg width={size} height={size} viewBox="0 0 100 100" aria-hidden="true" style={{ display: 'block' }}>
+        <path d={herbal.d} fillRule="evenodd" fill="var(--gold-ink)" />
+      </svg>
+    )
+  }
   const m = MOTIFS[genre]
   if (!m) return null
   return (
@@ -315,8 +327,9 @@ export default async function VisualExploration() {
           Round 3: things, not signs. Round 1 varied one star (too alike); round 2 used abstract motifs
           (distinct, but modern, and the two &ldquo;voices&rdquo; too close). Following the chapter ornaments
           of an illuminated bible, each genre is now an object chosen for its meaning (a fish for sermons, a
-          quill for letters, a beehive for rules), cut like a woodcut. These are hand-drawn sketches of the
-          direction, not finished art. One recent text per genre:
+          quill for letters, a beehive for rules), cut like a woodcut. Round 4 replaces the sketches with
+          ornaments traced from real woodcuts and prints made before 1600, most from one herbal, <em>Ortus
+          sanitatis</em> (Strasbourg, 1499). All seventeen are done. One recent text per genre:
         </p>
         <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-4 mb-6">
           {shelf.map(t => (
@@ -342,7 +355,9 @@ export default async function VisualExploration() {
               <GenreOrnament genre={g} size={40} />
               <span>
                 <span className="block font-serif" style={{ color: 'var(--ink)' }}>{g}</span>
-                <span className="block caption" style={{ color: 'var(--ink-faint)' }}>{MOTIFS[g]?.name}</span>
+                <span className="block caption" style={{ color: 'var(--ink-faint)' }}>
+                  {HERBAL_ORNAMENTS[g] ? `${HERBAL_ORNAMENTS[g].name} · traced` : `${MOTIFS[g]?.name} · sketch`}
+                </span>
               </span>
             </div>
           ))}
@@ -379,6 +394,33 @@ export default async function VisualExploration() {
               </figcaption>
             </figure>
           ))}
+        </div>
+
+        {/* ── IV ── */}
+        <SectionHeader title="IV. The publisher&rsquo;s mark" aside="two cuts" />
+        <p className="font-serif mb-6" style={{ color: 'var(--ink-soft)', maxWidth: '60ch', lineHeight: 1.6 }}>
+          The S wound through a cross, after the bronze serpent lifted up (Numbers 21; John 3:14&ndash;15),
+          from Keith&rsquo;s inked sketch. The cross reads first; to a casual reader it is an S. The print
+          cut is a woodcut in the ornaments&rsquo; hand, for printed books and large sizes. The small cut is a
+          solid silhouette drawn for its size, and replaces the plain S in every cover&rsquo;s bottom band.
+        </p>
+        <div className="flex flex-wrap items-end gap-6 mb-16">
+          {([['print', 240, 'Print cut, 240px'], ['small', 64, 'Small cut, 64px'], ['small', 14, 'Small cut, 14px']] as const).map(([cut, size, label]) => (
+            <figure key={label} style={{ margin: 0 }}>
+              <div style={{ background: 'var(--hero-ground)', padding: size > 100 ? 24 : 12, display: 'inline-block' }}>
+                <svg width={size} height={size} viewBox="0 0 100 100" role="img" aria-label={`The publisher's mark, ${cut} cut`} style={{ display: 'block' }}>
+                  <path d={PUBLISHER_MARK[cut].d} fillRule="evenodd" fill="var(--on-dark-soft)" />
+                </svg>
+              </div>
+              <figcaption className="caption mt-2" style={{ color: 'var(--ink-faint)' }}>{label}</figcaption>
+            </figure>
+          ))}
+          <figure style={{ margin: 0 }}>
+            <svg width={240} height={240} viewBox="0 0 100 100" role="img" aria-label="The publisher's mark, print cut, in ink" style={{ display: 'block' }}>
+              <path d={PUBLISHER_MARK.print.d} fillRule="evenodd" fill="var(--ink)" />
+            </svg>
+            <figcaption className="caption mt-2" style={{ color: 'var(--ink-faint)' }}>Print cut in ink, as it would print</figcaption>
+          </figure>
         </div>
 
         <p className="caption" style={{ color: 'var(--ink-faint)', maxWidth: '60ch' }}>

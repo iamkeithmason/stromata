@@ -1,0 +1,83 @@
+{
+ "holder": "Rijksmuseum, Amsterdam",
+ "linked_art_id": "https://id.rijksmuseum.nl/200137189",
+ "object_number": [
+  "RP-P-OB-21.802"
+ ],
+ "titles": [
+  "Letter V: de oprichting van de koperen slang",
+  "Versierde initialen"
+ ],
+ "production_dates": [
+  "1556"
+ ],
+ "descriptions": [
+  "Prent afkomstig uit: Bibel, die gantze, das ist alle Bücher alts und news Testaments (...). Zürich: Johann Froschauer, 1556.",
+  "houtsnede en tekst in boekdruk op verso",
+  "blad: hoogte 47 mm x breedte 47 mm",
+  "height 47 mm x width 47 mm"
+ ],
+ "object_page": "https://www.rijksmuseum.nl/nl/collectie/object/RP-P-OB-21.802--6e0ede67e2f6581fa22816b5372b9c30",
+ "image_access_point": "https://iiif.micr.io/bGAyR/full/max/0/default.jpg",
+ "rights_in_record": [
+  "https://creativecommons.org/publicdomain/mark/1.0/",
+  "https://creativecommons.org/publicdomain/zero/1.0/"
+ ],
+ "rights_snippet": [
+  {
+   "type": "LinguisticObject",
+   "digitally_carried_by": [
+    {
+     "type": "DigitalObject",
+     "access_point": [
+      {
+       "id": "https://iiif.micr.io/bGAyR/full/max/0/default.jpg",
+       "type": "DigitalObject"
+      }
+     ],
+     "referred_to_by": [
+      {
+       "type": "LinguisticObject",
+       "_label": "Public Domain",
+       "classified_as": [
+        {
+         "id": "https://vocab.getty.edu/aat/300460240",
+         "type": "Type"
+        }
+       ],
+       "content": "https://creativecommons.org/publicdomain/mark/1.0/"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "https://data.rijksmuseum.nl/200137189",
+   "type": "LinguisticObject",
+   "classified_as": [
+    {
+     "id": "http://vocab.getty.edu/aat/300379475",
+     "type": "Type"
+    }
+   ],
+   "subject_to": [
+    {
+     "type": "Right",
+     "classified_as": [
+      {
+       "id": "https://creativecommons.org/publicdomain/zero/1.0/",
+       "type": "Type"
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "fetched": "2026-11-09",
+ "makers": [
+  "attrib./after: Hans Holbein (II)",
+  "attrib./after: Hans Holbein (II)",
+  "anoniem",
+  "Johann Froschauer"
+ ]
+}

@@ -8,6 +8,10 @@
  * linked, not merely named.
  */
 export const LICENSES: Record<string, { name: string; url: string }> = {
+  'cc-by-4.0': {
+    name: 'CC BY 4.0',
+    url: 'https://creativecommons.org/licenses/by/4.0/',
+  },
   'cc-by-sa-4.0': {
     name: 'CC BY-SA 4.0',
     url: 'https://creativecommons.org/licenses/by-sa/4.0/',

@@ -33,4 +33,6 @@ scripts/ingestion/work/*/pages/
 # Screens reference — the per-shot JPEGs (`npm run screens --png`). The PDF beside
 # them IS committed; these are a by-product, regenerated on every run.
 docs/screens/png/
+# The site canvas (`npm run screens:canvas`) embeds those shots; regenerate rather than commit.
+docs/screens/canvas/
 data/concept-pilot/

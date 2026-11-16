@@ -93,6 +93,7 @@
   --on-dark-gold-soft: rgba(224, 200, 134, 0.55);  /* faint reversed gold (underlines) */
 
   --cover-mid:  #F5F0E6;   /* book-cover inner panel — a stable cream, NOT theme-flipped */
+  --cover-ornament: #8A5F1E; /* genre ornament on the cover panel. --gold-ink's value, but NOT theme-flipped: covers stay cream in the reader dark theme */
   --cover-stack-back: rgba(10, 8, 5, 0.50);   /* collection stack: rearmost spine behind a cover */
   --cover-stack-mid:  rgba(10, 8, 5, 0.28);   /* collection stack: middle spine */
 
@@ -168,6 +169,10 @@
      the reader dark theme (which flips --ink to a light value) leaves the hero
      dark. Light value is the current --ink. */
   --hero-ground: #1E2D3D;
+  /* Era plate header: darkens the foot of the band so the era's name (in
+     --on-dark) reads over any image. Sits on its own image, so it is not
+     flipped by the reader dark theme. */
+  --plate-scrim: linear-gradient(to top, rgba(14, 20, 28, 0.82) 0%, rgba(14, 20, 28, 0.45) 38%, rgba(14, 20, 28, 0) 70%);
 
   /* Celestial hero study — original illuminated-cosmos palette. */
   --cosmos-deep:       #091D34;
@@ -417,42 +422,6 @@
   color: var(--on-dark-soft);
 }
 
-/* The season's pick, in the sky on phones (app/page.tsx). From 641px the
-   seasonal panel below carries it, and "Start with" returns in its place. */
-.celestial-pick {
-  margin-top: 1.4rem;
-  font-family: var(--serif);
-  color: var(--on-dark-soft);
-}
-
-.celestial-pick-label {
-  display: block;
-  font-family: var(--serif-smallcaps);
-  font-feature-settings: "smcp" 1;
-  letter-spacing: 0.08em;
-  color: var(--on-dark-gold);
-}
-
-.celestial-pick a {
-  display: inline-flex;
-  align-items: center;
-  min-height: 44px;
-  font-size: var(--text-prose);
-  color: var(--on-dark);
-  text-decoration: underline;
-  text-underline-offset: 3px;
-  text-decoration-color: var(--on-dark-gold-soft);
-}
-
-.celestial-pick-author {
-  display: block;
-  font-size: var(--text-base);
-}
-
-.celestial-authors.celestial-authors--after-pick {
-  display: none;
-}
-
 @media (min-width: 641px) {
   .celestial-hero {
     min-height: 650px;
@@ -471,14 +440,6 @@
 
   .celestial-description {
     display: block;
-  }
-
-  .celestial-pick {
-    display: none;
-  }
-
-  .celestial-authors.celestial-authors--after-pick {
-    display: flex;
   }
 }
 
@@ -604,8 +565,9 @@
   }
 }
 
-/* A small cover (the two-up phone grid) has room for three title lines, not four:
-   the fourth was cut through the middle. The inline clamp is 4, hence !important.
+/* A small cover (the two-up phone grid) holds five title lines like a full one since
+   both bands were slimmed (re-measured 9 Nov 2026); the clamp is restated here,
+   hence !important.
    The inline bottom padding becomes margin so the clip edge sits at the end of the
    third line and no sliver of the hidden fourth shows through. */
 /* Title size, by length (BookCover's lengthClass). A long title steps down a
@@ -616,7 +578,7 @@
 
 @container (max-width: 200px) {
   .book-cover-title {
-    -webkit-line-clamp: 3 !important;
+    -webkit-line-clamp: 5 !important;
     padding-bottom: 0 !important;
     margin-bottom: 0.2em !important;
   }

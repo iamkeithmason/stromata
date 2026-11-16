@@ -7,6 +7,356 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-11-10 — Editorial paragraph breaks for walls of text: flag at import, Claude proposes, Keith approves
+
+Many published texts keep their source's typesetting, where a chapter is one paragraph; on a phone that is
+several screens of unbroken type. Keith ruled on 10 Nov that adding paragraph breaks is a legitimate editorial
+act if no word changes and the breaks are recorded as the editor's, with the flag at 800 words. This builds the
+habit, on the pattern of editor's sections.
+
+`scripts/lib/paragraphs.mjs` holds all of it, pure and unit-tested: the detector (split at blank lines, drop
+heading lines, count words: the 10 Nov measurement), the tiers, a sentence splitter that will not end a
+sentence after an abbreviation, an initial or a scripture reference, nor inside a quotation or a bracket, and
+the anchors. A proposal is stored in the new `texts.paragraphs_draft` as anchors (the closing words of the
+sentence a break follows, lengthened until unique), never as a body. Only prose paragraphs can take breaks;
+verse, lists, blockquotes, headings and footnotes are left alone. `applyBreaks` inserts a blank line at each
+anchor and refuses, changing nothing, unless the result has exactly the same words and exactly one new
+paragraph break per anchor.
+
+- **Import**: `pipeline-import.mjs` warns when a text has a prose paragraph of 800+ words (flag-only, like verse).
+- **Drafting**: `npm run generate:review-drafts -- --paragraphs` (`--tier=2|3`, `--slug=`, `--dry-run`,
+  `--force`, prints its token cost). The model reads one long paragraph at a time as numbered sentences and
+  names the sentences after which the argument turns; a deterministic step drops anything out of range or
+  crowded and turns the rest into anchors. Selection runs in the database through a new SQL function,
+  `paragraph_wall_stats`, so choosing texts downloads no bodies. Published texts go in tier order (Tier 1 by
+  default); unpublished drafts are drafted whatever their tier. The plain `generate:review-drafts` run includes
+  this step too, as it does sections.
+- **Review**: `/admin/review/paragraphs`, linked from the review queue. Each break shows the end of the sentence
+  before and the start of the one after; move it a sentence either way, remove it, add one inside a long piece,
+  read the paragraph as it would be, then Save, Hold or Approve. Approve writes the body, appends "Paragraph
+  breaks added by the editor for reading; the source prints this as continuous text." to `provenance_notes`, and
+  refreshes only that text's page. It never touches `published`. It is refused if the text was edited after the
+  page loaded (the breaks are placed by sentence number, so on an edited body they could land where Keith never
+  looked), and if a break would stop one of the text's editor's sections from finding its paragraph. Saving with
+  every break removed holds the text as reading fine. A text Claude finds no turn in is stored as held with a
+  note, so later runs do not pay to read it again; `--force` redrafts only pending proposals, and only when
+  `--paragraphs` is named, so a forced summaries run cannot undo a hold.
+
+Migration `038_paragraph_breaks.sql` adds the column, its shape check and the function (service role only). It
+also points `texts_updated_at` at a new `texts_touch_updated_at()`, so a write to `paragraphs_draft` alone no
+longer moves `updated_at`. That is a function rather than a trigger `WHEN` clause because Postgres refuses a
+whole-row `WHEN` on a table with generated columns. It ignores `word_count` and `body_tsv`, which follow `body`.
+**Applied to production on 10 Nov 2026**, with Keith's go-ahead, and checked there: 151 / 25 / 2 from the
+function; a draft-only write keeps `updated_at`; a real edit moves it; the shape check rejects a malformed
+document; anon can neither call the function nor read the column. Migration `039_paragraph_wall_stats_paged.sql`
+(also applied 10 Nov) makes the function take a page of texts at a time. In one call over the whole corpus it
+took 15–16 s, past the API's 8 s statement timeout, so the first real dry run failed. The connector checks had
+passed because they run as `postgres`, with no timeout. Pages of 60 run in 0.8–2.3 s, with the same 153 rows.
+`updated_at` is the sitemap's lastModified,
+so without the trigger change, drafting proposals for 25 published texts would advertise them as changed and
+invite crawler re-renders of unchanged pages.
+
+**First drafting run, 10 Nov 2026** (Keith's laptop): 26 texts got proposals and 1 was held (no turn found),
+with 1,265 breaks in all. *De Principiis* II failed on the first pass and succeeded on a retry by slug. Reading
+a sample turned up a pattern: 127 breaks fell before a sentence opening with "For", which nearly always gives
+the reason for the sentence before it, so a break there separates a claim from its grounds. The prompt already
+asked the model to avoid this. `tidyBreaks` now drops such breaks deterministically (`opensWithFor`), and with
+Keith's go-ahead the 127 were removed from the stored proposals in SQL before his review. That leaves 1,138
+breaks across 26 texts. Removing a break only merges pieces, so no paragraph fell under the 60-word minimum.
+Every anchor still occurs exactly once, and no `updated_at` moved.
+
+Measured the same day with that function's SQL: 151 published texts have an 800+ word paragraph (Tier 1: 25, Tier 2: 72, Tier 3: 54), plus 2 unpublished drafts. The card recorded Tier 1 as 27
+and Tier 2 as 70; the totals match exactly, and the recorded definition gives 25 today, so the 10 Nov query
+differed in some detail that was not written down. JS and SQL figures agree exactly on the two bodies checked
+(Country Parson, On Repentance).
+
+---
+
+## 2026-11-10 — Edition provenance audit, Step 1: a read-only script that proposes edition fields
+
+`scripts/propose-edition-metadata.mjs` reads `source_attribution`, `translation_notes` and `provenance_notes` on every
+published text and proposes structured edition fields: `is_translation` (true / false / unknown), translator(s), series
+(`ANF`, `NPNF1`, `NPNF2`, `LIB_FATHERS`, `LUTHER_PHILA`, `PARKER`, `SCHAFF_CREEDS`, `TCL_SPCK`, `OTHER`), volume,
+publication year, publisher and place. Every field records the method that produced it (`pattern`, `alias`,
+`inferred`, `llm`, `inherited_from_collection`) and every doubt a reason code. It writes nothing to the database; Step 2
+(migration + an apply script for editor-approved rows) will read the CSV's `editor_decision` column.
+
+- **Read-only by construction.** It takes the anon/publishable key or a SELECT-only role and refuses a `service_role`
+  JWT or an `sb_secret_` key outright. Selects metadata columns only, never `body`: about 0.5 MB of egress a run.
+- **Pass 1 is deterministic** (`scripts/lib/edition-parse.mjs`, pure, 25 tests built from the 10 Nov audit's known
+  cases). Translator parsing is token-aware JS, because the earlier Postgres regex could not tell an initial ("S.
+  Thelwall") from a sentence end. NPNF with no series number is inferred from the author (Series 1 is only Augustine
+  and Chrysostom). A series named only to rule it out (Psychomachia's "appears in neither the Ante-Nicene nor the
+  Nicene and Post-Nicene Fathers") is flagged, not taken.
+- **Pass 2 (`--llm`, off by default)** sends only unresolved rows to the model and keeps a field only when its evidence
+  is a verbatim substring of the row's own notes and contains the value. Without an API key, `--llm-export` writes the
+  requests for any model to answer and `--llm-answers` applies the answers through the same guard. The first Pass 2 was
+  answered by a subagent (answers committed as `llm-answers.json`): 36 rows asked, 96 fields passed the guard, none
+  rejected, 25 filled a blank (Jewel vol. 4, 1845; Wyclif vol. III; the Bullinger letters marked as translations; the
+  Lady Jane Grey and Concordia Triglotta source titles). No row became resolved: what is missing there (a translator,
+  the *Stromata*'s ANF volume) is not in the notes, and the guard will not let a model supply it.
+- **Sourced and editor-confirmed fields** live in a committed file, `outputs/edition-audit/sourced-fields.json`, which
+  the script applies after Pass 1. A `source` entry carries a verbatim citation and its URL, and every value must
+  appear in that citation; an `editor` entry carries a note of who confirmed it. These override Pass 1 and keep what
+  they replaced. First entries, from New Advent's own citations: the 7 Ignatius letters (Alexander Roberts & James
+  Donaldson, ANF 1, 1885) and the 7 *Stromata* parts (ANF 2, 1885). The *Stromata* notes credit "Roberts-Donaldson",
+  who edited the series; the citation names **William Wilson** as translator, so 6 parts now carry Wilson and a
+  `translator_is_editor` flag for the notes to be corrected in Step 2 (Book III is printed in Latin, so it takes the
+  volume only). Keith confirmed Jewel's *Paper on Usury* as vol. 4.
+- **Second sourcing pass:** Damasus's *Confession* is Blomfield Jackson's translation (NPNF2 3, 1892, Theodoret
+  *EH* V.11). The Lady Jane Grey parts come from Nicolas's *Memoirs and Remains of Lady Jane Grey* (London: Colburn &
+  Bentley, 1831): the three Bullinger letters are Latin, translated without a named translator, and six other parts
+  are her own English (the Tower inscriptions part stays open, as some are Latin). Wycliffe's *Short Rule of Life* is
+  his Middle English, ed. Thomas Arnold (Clarendon, 1869, vol. III). **Pliny's letters to Trajan are not the
+  Melmoth/Bosanquet translation the notes claim:** the Georgetown page names no translator, and its wording ("It is my
+  practice, my lord…") differs from Melmoth's ("It is my invariable rule, Sir…", Gutenberg #2811). The translator
+  credit is withdrawn and the text stays on the copyright-review list. Every copy traced (Georgetown, Fordham, World
+  History Encyclopedia) leads back to James O'Donnell's 1990s Penn web file, which names no translator. Keith confirmed
+  the six Lady Jane Grey English-original readings. After both passes, 539 of 555 resolved (97.1%).
+- **First run, 556 published texts:** 516 resolved (92.8%); series + volume + translator for 419 (the SQL audit found
+  ~410); 46 original-language works marked `is_translation: false`; 40 unresolved, each with a reason. Output in
+  `outputs/edition-audit/2026-11-10/`, including a proposed `source_editions` seed and a copyright-review list.
+- **Found on the way:** four of the audit's blank-provenance fixtures (`treatise-on-the-practical-life`,
+  `on-the-thoughts`, `confession`, `sermon-of-the-wolf-to-the-english`) are now drafts, so a published-only run no
+  longer sees them; the 7 *Stromata* parts all cite ANF with no volume; all 10 Lady Jane Grey parts carry a bare
+  Archive.org URL as their attribution.
+
+---
+
+## 2026-11-10 — Replace a held text's body in place: `replace-text-body.mjs`
+
+Three texts unpublished on 10 Nov for copyright or provenance (Praktikos, Patrick's Confession, Sermo Lupi)
+have cleared translations. `pipeline-import.mjs` only inserts and skips an existing slug, so nothing could
+put a new body into the existing row, and a new row would have cost the permanent accession number and the
+old URL. `scripts/replace-text-body.mjs` does it: it reads staged files from
+`scripts/ingestion/output/replacements/`, guards on id + slug + accession number + `published = false`,
+writes body and provenance fields, sets `review_state` to `pending`, clears `sections`, rebuilds
+`text_scripture_references`, and never touches `published`, `editorial_introduction` or `note_draft`.
+Dry run by default (old/new word counts, first and last 300 characters); `--apply` writes with the service
+key; `--sql=<file>` emits one guarded transaction per text for a session that only has the Supabase MCP.
+`lib/licenses.ts` gains `cc-by-4.0` for the Dysinger Praktikos transcription. Two `archive-ocr-config.mjs`
+entries stage White's Patrick and the Cook & Tinker Wulfstan. Details and the OCR readings for the editor:
+`scripts/ingestion/run-log/2026-11-10-replacements.md`.
+
+---
+
+## 2026-11-09 — The publisher's mark on every cover
+
+The plain S in each book cover's bottom band is now the publisher's mark: an S wound through a cross, after the
+bronze serpent lifted up (Numbers 21:4–9; John 3:14–15). Keith designed and inked it in April 2026; on 9 Nov it was
+cut in the hand of the genre ornaments over four rounds (logged on the Notion card "Woodcut publisher's mark: the S
+woven with a cross"). The cross reads first, so the serpent reads as redemptive; to a casual reader it is an S. The
+S is a letterform, with no head or scales.
+
+- **Two cuts, one module.** `lib/brand/mark.ts` holds both as evenodd paths on a 0 0 100 100 box. The **print** cut
+  is a woodcut (knife strokes that overshoot at the corners, hatching on the shadow side, the S as two outlines) in
+  smooth cubic curves, checked at 60mm and 300 dpi, for printed books and large sizes. The **small** cut is a solid
+  silhouette drawn for its size, for the cover band (about 10–14px) and the reader frontispiece (about 6px).
+- **What the rounds settled.** Round 1 followed the sketch's weights and read as "$" at cover size: an S with a bar
+  above and below is the dollar sign. Long arms reaching past the S, a round boss and no bar below fixed it. Gaps in
+  the weave do not survive small, so the small cut merges cross and S into one shape.
+- **On covers** the mark is drawn from `public/mark/small.svg` as a CSS mask, like the genre ornaments, in
+  `--on-dark-soft`, and takes the old S's line box (7cqi, capped at 0.875rem), so the band keeps the height it was
+  matched to. `lib/brand/mark-url.ts` keeps the URL apart from the path data, because the cover also renders in a
+  client component. `npm run mark:svg` writes the files; `lib/brand/mark.test.ts` fails if they drift from the
+  module, or if the print cut stops being curves.
+- **`/design/visual`** gains a fourth study showing both cuts.
+- **The drawing is in the repo:** `scripts/design/publisher-mark/` holds the scripts, Keith's sketch, the period
+  references studied (Froben, Holbein, Solis, Beham, Bolswert and others, with each holder's licence record), and
+  `build.py`, which rebuilds both cuts and checks them against `lib/brand/mark.ts` byte for byte. Changing one
+  number in the stored small path made it report the difference and exit 1.
+
+Checked locally against live data at 390px and 1440px on the homepage, search, a text page and `/design/visual`:
+no sideways scroll, and the band heights are unchanged.
+
+## 2026-11-09 — The authors index is an arch grid; filter tags match the homepage
+
+Keith asked for two things on `/authors`: tradition and era filters that look like the homepage's tags, and the
+authors shown as a grid like the homepage's featured band.
+
+- **One author card for both grids.** The featured band's arch-and-caption markup moved out of
+  `FeaturedAuthors.tsx` into **`app/components/AuthorCard.tsx`**, and `/authors` now renders the same card in a
+  grid (2 columns on phones, 3 from `sm`, 4 from `md`). The index adds a text count under the tradition. Authors
+  without a portrait show their initial in the arch, as `LancetArch` already did. The whole card is one link, so the
+  phone tap target is the portrait plus caption. The small tradition link that sat at the right of each list row is
+  gone (a link cannot sit inside a link); the tradition filter does that job on this page.
+- **Filter tags are cut-corner catalogue tags.** `FilterPill` (shared by `/authors` and `/texts`) now draws the same
+  `.chip-tag` as `ThemeChip`: filled `--paper-deep`, no outline. Selected, it fills with `--ink-soft` and the label
+  turns `--paper`. The button is a 44px tap target with the tag drawn on an inner span, the same arrangement as
+  `ThemeChip`; before, the pill was about 22px tall. The filter rows drop their vertical gap, since the tap target
+  now supplies it.
+- **On phones the filters wait behind a Filter button.** At 390px the tradition and era tags ran to nine rows and
+  pushed the first author below the first screen. Below `sm` they now sit behind a **Filter ▾** toggle
+  (`aria-expanded`), which shows how many filters are on (e.g. "1 on") so a filtered list never looks unfiltered.
+  Sort and "Clear filters" stay visible. From `sm` up nothing changes: the tags are always shown. The first author
+  now starts about 340px down on a phone instead of about 780px.
+- **`/texts` uses the same button.** It already hid its filters behind a `<details>` line ("Filter by tradition, era
+  or genre"). That line is now the shared **`FilterToggle`** (`app/components/FilterToggle.tsx`), so both indexes
+  show the same "Filter ▾ · n on" control with a 44px tap target. `/texts` keeps one existing rule: the button
+  shows at every width (it has three facets, thirty-odd tags). It no longer opens by itself when the page loads
+  already filtered: Keith ruled (9 Nov) that both indexes stay closed and show the gold count, so the list stays on
+  the first screen.
+- **Portraits after the first row load lazily.** `LancetArch` takes a `lazy` prop (`loading="lazy"`). The old list
+  fetched every portrait on every view, so a reader who never scrolls now costs less Storage egress than before.
+  The homepage band and seasonal panel stay eager.
+
+Analytics unchanged: each card still fires `author-open` with `from="authors-index"` (or `featured-band`) and the
+author's name. Checked at 1440 and 390 from a local build against live data; no sideways scroll at 390.
+
+## 2026-11-09 — The ornament tracing scripts are in the repo
+
+The seventeen genre ornaments were made in a cloud scratchpad, so the stroke library and tracing scripts would
+have died with the session. They now live in `scripts/design/ornaments/`:
+
+- **`lib.py`** (the stroke builder: swelling lines, shadow-side weight, chiselled ends, wedge hatches, cream
+  cuts) and **`extra.py`** (lens leaves for the herbal plants).
+- **`genres/`**: one script per genre, copied unchanged from the pass that produced the accepted version.
+- **`build.py`** rebuilds every ornament in a scratch directory and checks its path against
+  `lib/genres/ornaments.ts` byte for byte. All seventeen match. A one-number change to the key's shank made it
+  report the key as different and exit 1; restoring the number made it pass again.
+- **`sources/`**: each source crop downscaled to 1200px (2.3 MB in all; the full scans stay out), and every
+  holder's licence record.
+- **`README.md`**: how to rebuild, change or add one, the source and licence table, and what Keith accepted and
+  turned down, so the next ornament is briefed with the rejections as well as the target.
+
+`lib/genres/ornaments.ts` now points to the folder instead of saying the scripts are not in the repo. Nothing the
+site builds reads the folder, so nothing on the site changes.
+
+## 2026-11-09 — Genre ornaments on the book covers
+
+Every book cover now shows its genre's woodcut ornament (a fish for a sermon, a quill for a letter, a key for
+exegesis) in place of the short hairline between title and author. Keith chose the covers as the first live
+surface on 9 Nov; the seventeen ornaments were traced from pre-1600 woodcuts in PR #202 and lived only on
+`/design/visual` until now. A cover whose genre is unknown keeps the rule.
+
+- **Shared module.** The path data moved from `app/design/visual/herbal-ornaments.ts` to
+  `lib/genres/ornaments.ts`, with each ornament's source and licence. `/design/visual` imports it from there.
+- **Not inlined.** All seventeen paths come to about 85 KB, and a grid repeats them. Covers draw
+  `public/ornaments/<genre>.svg` as a CSS mask instead, so each shape is fetched once and cached; a cover adds
+  about 450 bytes of markup. `npm run ornaments:svg` regenerates the files, and `lib/genres/ornaments.test.ts`
+  fails if they drift from the module or a vocabulary genre lacks an ornament.
+- **New token `--cover-ornament`.** It is `--gold-ink`'s value, but kept out of the reader-dark override:
+  `--gold-ink` flips there, and the cover panel stays cream. Swatch on `/design`.
+- **Sized to the panel's slack, measured.** At the first size tried (16cqi plus 8cqi of margin), 53 of the 106
+  published titles over 40 characters lost their descenders, by up to 8px, at every cover width (84, 148 and
+  200px). The title lines were all still there, but the title box was squeezed. At 14cqi plus 4cqi of margin
+  (18cqi against the rule's 16) none do. Re-measure before making it bigger; the note is in `BookCover.tsx`.
+- **Genre threaded to every cover:** homepage (texts, and collections via their representative text), search,
+  the reader frontispiece, the read-next module (the candidate query now selects `genre:genres(name)`) and
+  reading history. Reading history lives in the browser, so it stores the genre from now on; entries saved
+  before this release show the rule until the text is visited again.
+
+**Slimmer, matching bands; every title whole** (Keith's review, same day). Seen beside the alternatives
+(ornament under the author, or in place of the S), the ornament stays between title and author: that is where
+a title-page vignette sat, and the S stays as the house mark. But the S band weighed as much as the title
+panel, so it is slimmer (S at 7cqi, not 10; padding 4.8cqi, not 8), and the top band now matches its height
+(padding 5.2cqi, not 12), so the two frame the panel evenly. The panel takes the height: titles get five lines
+on every cover (were four, and three on small covers). Measured on all 191 published titles over 30 characters
+at 84, 148, 200 and 224px: nothing clipped and **no title shortened** (phone covers shortened 33 before),
+the longest, at 101 characters, included. Word-boundary shortening stays as a guard above 101 characters.
+
+No analytics: the ornament is decorative and not a link. Public routes unchanged in the build table (`/` and
+the `[slug]` pages ○/●). Author-page genre headings get the ornaments later, with author-page Phase A.
+
+---
+
+## 2026-11-09 — Ranked search applied, and made as fast as it was measured to be (migration 037)
+
+Migrations 036 and 037 are **applied to production** (Keith asked for it on 9 Nov), so `/search` now uses
+the ranked, whole-word body search instead of the fallback.
+
+Timed through the public API right after 036 was applied, the function took 1.5 s for "alms" and 2.7 s for
+"god". The 0.39 s quoted in #213 came from a plain query on a temporary copy, not the function. There were
+two causes. Postgres inlined the CTE that builds the excerpt into a select that names it three times, so
+every `ts_headline` ran three times. And the has-before and has-after flags used `strpos` across 52 KB
+bodies. Migration 037 marks the CTEs `materialized` and replaces `strpos` with `starts_with`/`right`. The
+flags matched the old ones on all 50 test rows, and results are unchanged. Now 0.19–0.60 s in the database
+and 0.85–1.3 s through the API, of which about 0.5 s is the API's own floor. Write-up:
+`docs/research/2026-11-09-time-what-you-ship-not-a-replica.md`.
+
+---
+
+## 2026-11-09 — Search matches whole words, ranks body hits, and reads multi-word queries word by word
+
+Two backlog cards in one PR, because both change the same query code in `app/search/page.tsx`:
+"Search: whole-word body matching with relevance ranking (backend)", and the word-by-word step Keith added
+to "Search: word-based full-text, topic words and autocomplete" on 9 Nov. No markup changes, apart from one
+line of copy for a failed search.
+
+- **Body search is by word, ranked (migration 036, not yet applied).** `search_texts_body` uses a stored
+  `tsvector` and a GIN index, matches English words with stemming, ranks with `ts_rank_cd`, and returns a
+  `ts_headline` excerpt. Measured on production inside rolled-back transactions: no false "alms" hits (the
+  substring search had 117 of 200 inside realms and psalms), and 0.39 s for "alms" against 0.37 s for the old
+  ilike. The card proposed an expression index only. That version took 2.8 s, because ranking re-parsed every
+  matching body, so the vector is stored instead: about 11 MB plus a 3.5 MB index (database 34 MB to about
+  49 MB of 500 MB). The function is `SECURITY DEFINER`, unlike `text_excerpts`, so anon never needs a grant
+  on the vector column. `INTERNAL_TEXT_COLUMNS` in `public-columns.ts` and its test keep that column out of the
+  public select.
+- **Until the migration is applied, nothing changes for readers.** `lib/search/body-matches.ts` falls back to
+  the old substring search if the function is missing or errors. It is tested without a database.
+- **Multi-word queries.** Titles and author names also match when they contain every content word.
+  Themes, genres, traditions and eras match on any content word, because a label is only one or two words.
+  "on the providence of god" went from no results to 20, and "herbert george" now finds George Herbert.
+  Single-word queries behave as before. Logic in `lib/search/query.ts`.
+- **Ordering.** Title, theme, genre, tradition, era and author matches still come first, alphabetically.
+  Body matches follow in relevance order, so the 10-result alphabetical cap no longer hides the best ones.
+- **A failed search no longer reads as "No results".** If every query fails, the page says search is
+  unavailable and does not fire `search-no-results`.
+
+---
+
+## 2026-11-09 — Site canvas: theme, location and search pages join the board
+
+Nine pages now, up from six. The theme page, a location page (England, new to the screens manifest, so the PDF
+gains it too) and search results are on the canvas, along with the routes into and out of them. Two links
+needed more than the `from` model:
+
+- **`theme-click` predates the `from` rule** and records its surface as `source` (`homepage`, `featured-lead`,
+  `text-page`). A link can now name `property: "source"`. Only `from` values are checked against the
+  vocabulary, since the legacy values were never part of it. The adapter reads each (event, property) pair it
+  needs: six Umami calls a run.
+- **`search-chip` is not on the search page.** It is the homepage hero's "Start with" author chips, so its line
+  runs from Home to Author.
+
+What the 90 days to 9 Nov show: the search results page sent **no** clicks to texts or authors, against 5
+searches submitted. Every theme visit that left a trace came from a text page (10 of 10 `theme-click`), and
+the theme page then sent 4 clicks on to texts. Location pages are near-silent (1 click in, 1 out).
+
+---
+
+## 2026-11-09 — Site canvas trial: key pages on one board, linked by reader clicks
+
+A trial of the backlog card "Site canvas: zoomable map of key pages, linked by real reader clicks". `npm run
+screens:canvas` lays the screens shots of six pages (home, library and authors indexes, an author, a collection,
+the reader) on a pan-and-zoom board and draws a line for each route between them. Each line is weighted by the
+Umami clicks whose `from` value says they took that route. The pages and routes live in
+`scripts/screens/manifest.json` (`canvas`, `links`). The output is one self-contained HTML file (gitignored) that
+also publishes as a claude.ai artifact (`--fragment`). It reads Umami only, and reuses the PNGs from
+`npm run screens -- --png`, so it adds no Supabase reads.
+
+- **The `from` vocabulary is now code as well as prose:** `scripts/lib/from-surfaces.mjs`. Its test fails if the
+  list and the CLAUDE.md row drift apart. The canvas refuses a link whose `from` value is not on it, and refuses
+  a click counted on two lines.
+- **Split for reuse:** `scripts/lib/site-canvas.mjs` (graph and checks, tested) and `site-canvas-html.mjs`
+  (drawing) know nothing about Stromata; `scripts/screens/canvas.mjs` is the adapter (palette, Umami, notes).
+- **What the first run showed (90 days to 9 Nov):** author pages and collection pages send the most readers
+  into texts (40 and 26 clicks); the authors index is the main way into author pages (18). Readers move from a
+  text to its author (16) far more than to a next text through Read next (3). The library index sent 3 clicks to
+  texts. Only 92 of 882 `text-open` events carry a `from`, which is the on-load firing removed after 2 Nov, not
+  missing attribution. In the 30-day window, the homepage sent no `text-open` clicks at all.
+
+---
+
+## 2026-11-09 — Switch-over finished: `release` is production
+
+The last old-style release (#206, `release` → `main`) merged and built on 9 Nov. `release` was recreated from `main`,
+and Keith set Vercel's Production Branch to `release` (the setting now lives under Settings → Environments →
+Production → Branch Tracking, not the Git page). This PR finishes the switch: `main` comes off
+`git.deploymentEnabled` in `vercel.json` (and its test), so a merge into `main` makes no deployment at all, and the
+one-off "Switch-over" block is removed from CLAUDE.md. The Monday release routine now opens `main` → `release`.
+
+---
+
 ## 2026-11-06 — `main` is where work lands, `release` is what is live
 
 **Usage check first.** The Fluid Active CPU 30-day total read **3h 47m** on 6 Nov (4h allowance), down from 4h 19m
@@ -27,6 +377,61 @@ so removing `main` from `deploymentEnabled` before Keith has flipped the Product
 old-style release from building. Order: merge the last old-style release, recreate `release` from `main`, Keith sets
 the Production Branch to `release`, a follow-up removes `main` from `deploymentEnabled` and the Monday routine's prompt
 is flipped.
+
+---
+
+## 2026-11-04 — Era plates: a picture of each era's world, with an admin override; the season's pick in the panel only
+
+**Era plates.** Each era page now opens with a full-bleed band showing a public-domain image of its world: the
+era's name and dates over the foot of the image, and a credit line beneath. The band is 16:9 on phones (about
+220px) and 3:1 from 640px, capped at 420px. Keith asked for people where possible, to humanise the eras. All
+nine eras have a default plate, committed at `public/plates/eras/` (2000×1000 crops, 280–590 KB) and listed with
+credits in `lib/eras/plates.ts`:
+
+- **Apostolic:** *Six Apostles*, a Spanish retable panel c. 1500, Peter and Paul at the centre (Met, CC0)
+- **Ante-Nicene:** the Dura-Europos procession of women (Yale, CC0)
+- **Nicene & Post-Nicene:** Justinian and Bishop Maximian at San Vitale, Ravenna, c. 547, in an Alinari print (Rijksmuseum, PD)
+- **Early Medieval:** a Carolingian ivory of Emmaus (Met, CC0)
+- **High Medieval:** a Royal Psalter Last Supper, cropped to keep Christ's head whole (Met, CC0)
+- **Late Medieval:** a detail of Campin's Merode Altarpiece (Met, CC0)
+- **Reformation:** *Impressio librorum*, a printing house c. 1590 (Rijksmuseum, PD)
+- **Post-Reformation:** the Leiden University Library, 1610 (Rijksmuseum, PD)
+- **Modern:** the Christ Church library, Oxford, 1814 (Rijksmuseum, PD)
+
+Each licence was checked at the holder's own source (the Met API's `isPublicDomain`, Yale's IIIF manifest, the
+Rijksmuseum page's Public Domain mark). The Apostolic and Nicene plates replace first picks on Wikimedia
+Commons, which this cloud session cannot reach.
+
+**Changing a plate without a deploy.** Migration `035_era_plates.sql` adds `eras.plate_url`, `plate_credit`
+and `plate_focus_y`, and a public `plates` bucket. The admin era form gains a plate section. You can upload a
+replacement, which `/api/admin/eras/plate` stores at 2000px wide, add its credit line (required), set the crop
+focus with a slider, or go back to the default. Saving revalidates the era page as before. The migration was
+applied to production on 4 Nov, so nothing needs running before the release. The public page reads the plate columns in a separate,
+fault-tolerant query, so era pages render with their defaults whether or not it has run (checked locally
+against the live database without it).
+
+**Traced genre ornaments.** `/design/visual` (noindex, not linked) now shows all seventeen genre ornaments, traced from
+woodcuts and prints made before 1600. Seven come from one herbal, *Ortus sanitatis* (Strasbourg, 1499; Internet
+Archive, Public Domain Mark): fish (Sermon), lily (Meditation), rose (Poem), spelt (Catechesis), olive (Essay),
+vine (Commentary) and pomegranate (Dialogue). Objects the herbal lacks come from Met Open Access prints: a loaf
+from Dürer's *Last Supper* (Homily), a candle after Zündt (Prayer), St Peter's key after Baldung (Exegesis) and a
+harp after Cranach (Hymn). Five more followed a second round: a straw skep after Gheeraerts, 1567 (Rule), a
+battlemented tower and an open book from the Nuremberg Chronicle, 1493 (Apology, Treatise; the book replaces a
+column that turned to a stick at small sizes), Augustine's arrow-pierced heart after Cranach (Confession) and a
+quill after Palatino's writing manual, 1548 (Letter). They are cut rather than drawn: lines swell and thin, end blunt or chiselled, with a
+few hatch cuts. Keith turned down solid silhouettes (lumpy) and even-weight line art (read as modern UI icons)
+before accepting these. Each entry in `app/design/visual/herbal-ornaments.ts` records its source and licence.
+The last, a martyr's palm after Schongauer's *Saint Agnes* (Met, public domain), completes all seventeen. Nothing outside the exploration page uses them yet.
+
+The era page also moves onto tokens (`--ink`, `--ink-mute`, `--ink-faint`, `--rule-soft`) and comes off the
+`legacyRawColour` list. A new token, `--plate-scrim`, darkens the foot of the band.
+
+**The season's pick: panel only.** On phones the hero no longer repeats the season's pick, and "Start with"
+returns. Keith preferred the pick to be named once, in the panel. The hero stays tight. The `hero-pick`
+analytics surface added by PR #201 is withdrawn before it ever shipped: it is gone from CLAUDE.md's vocabulary
+and from `verify-analytics.mjs`, and the Events Register records the withdrawal.
+
+---
 
 ## 2026-11-04 — The first phone screen names a text; making the library visual (exploration)
 
