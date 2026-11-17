@@ -7,6 +7,24 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-11-17 — Authors index: duplicates merged, empty authors hidden
+
+The new authors page showed two Athanasiuses, two Clements of Rome and authors with nothing to read. Keith ruled
+to merge near-duplicates for simplicity, even where the split was scholarly ("Attributed"), and to hide authors
+with no live text.
+
+- **Data (applied directly in Supabase, nothing deleted).** Texts moved to the main record, and the duplicate
+  set to `draft: true`, which hides it and makes its page 404: `athanasius-traditional-attribution` →
+  `athanasius-of-alexandria` (the unpublished Athanasian Creed); `clement-of-rome-attributed` →
+  `clement-of-rome` (the published Second Epistle of Clement); `church-of-england-thomas-cranmer-et-al` →
+  `thomas-cranmer` (the unpublished Thirty-Nine Articles; a second record with the identical name). To undo
+  one, move its text back and clear `draft` in the author edit form.
+- **`/authors`** lists only authors with at least one published text. Their pages still answer by URL.
+- **Sitemap** lists the same set, so search engines are not pointed at empty author pages.
+- **Search** author results use the same rule: an inner join on published texts (`texts!inner(id)`, since anon
+  has column grants only on `texts`, an empty embed is refused) drops authors with nothing live.
+- **Redirects** (`next.config.ts`, permanent) send the three retired slugs to the merged author.
+
 ## 2026-11-17 — A favicon from the publisher's mark
 
 The site had no favicon, so browser tabs, bookmarks and search results showed a blank page icon. It now uses the

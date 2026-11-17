@@ -14,6 +14,19 @@ const nextConfig: NextConfig = {
     '/texts/[slug]/download/pdf': ['./node_modules/pdfkit/js/standard-fonts/**'],
     '/collections/[slug]/download/pdf': ['./node_modules/pdfkit/js/standard-fonts/**'],
   },
+  // Duplicate author records merged on 17 Nov 2026; the retired slugs point at
+  // the author that now carries their texts.
+  async redirects() {
+    return [
+      ['athanasius-traditional-attribution', 'athanasius-of-alexandria'],
+      ['clement-of-rome-attributed', 'clement-of-rome'],
+      ['church-of-england-thomas-cranmer-et-al', 'thomas-cranmer'],
+    ].map(([from, to]) => ({
+      source: `/authors/${from}`,
+      destination: `/authors/${to}`,
+      permanent: true,
+    }))
+  },
 }
 
 export default nextConfig
