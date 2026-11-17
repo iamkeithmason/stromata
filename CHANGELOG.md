@@ -21,6 +21,8 @@ text on the same ground did not ship in the 16 Nov release, so the URL has answe
 - Content side of the same ticket (Homilies 20 and 21: NPNF headers, provenance, summary drafts) is in
   `scripts/ingestion/run-log/2026-11-17.md`.
 
+---
+
 ## 2026-11-17 — Authors index: duplicates merged, empty authors hidden
 
 The new authors page showed two Athanasiuses, two Clements of Rome and authors with nothing to read. Keith ruled
