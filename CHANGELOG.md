@@ -21,6 +21,8 @@ with no live text.
   one, move its text back and clear `draft` in the author edit form.
 - **`/authors`** lists only authors with at least one published text. Their pages still answer by URL.
 - **Sitemap** lists the same set, so search engines are not pointed at empty author pages.
+- **Search** author results use the same rule: an inner join on published texts (`texts!inner(id)`, since anon
+  has column grants only on `texts`, an empty embed is refused) drops authors with nothing live.
 - **Redirects** (`next.config.ts`, permanent) send the three retired slugs to the merged author.
 
 ## 2026-11-17 — A favicon from the publisher's mark
