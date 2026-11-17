@@ -7,6 +7,20 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-11-17 — Vainglory redirects to Homily 21 on Ephesians
+
+*Address on Vainglory and How to Bring Up Children* (accession 1, the top landing page) was unpublished on
+10 Nov because its translation is in copyright. The redirect meant to carry its readers to a public-domain
+text on the same ground did not ship in the 16 Nov release, so the URL has answered not-found since.
+
+- **Redirect** (`next.config.ts`, permanent): `/texts/address-on-vainglory-and-how-to-bring-up-children` →
+  `/texts/homily-21-on-ephesians-on-children-and-parents`. It sits in a separate `texts` list beside the
+  author redirects, for any later withdrawn text.
+- **Ships with the weekly release, and Homily 21 must be published first** (it is a draft, `review_state =
+  'pending'`, at the time of writing), or the redirect lands readers on another not-found page.
+- Content side of the same ticket (Homilies 20 and 21: NPNF headers, provenance, summary drafts) is in
+  `scripts/ingestion/run-log/2026-11-17.md`.
+
 ## 2026-11-17 — Authors index: duplicates merged, empty authors hidden
 
 The new authors page showed two Athanasiuses, two Clements of Rome and authors with nothing to read. Keith ruled
