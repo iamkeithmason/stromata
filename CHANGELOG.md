@@ -7,6 +7,40 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-11-17 — Authors index: duplicates merged, empty authors hidden
+
+The new authors page showed two Athanasiuses, two Clements of Rome and authors with nothing to read. Keith ruled
+to merge near-duplicates for simplicity, even where the split was scholarly ("Attributed"), and to hide authors
+with no live text.
+
+- **Data (applied directly in Supabase, nothing deleted).** Texts moved to the main record, and the duplicate
+  set to `draft: true`, which hides it and makes its page 404: `athanasius-traditional-attribution` →
+  `athanasius-of-alexandria` (the unpublished Athanasian Creed); `clement-of-rome-attributed` →
+  `clement-of-rome` (the published Second Epistle of Clement); `church-of-england-thomas-cranmer-et-al` →
+  `thomas-cranmer` (the unpublished Thirty-Nine Articles; a second record with the identical name). To undo
+  one, move its text back and clear `draft` in the author edit form.
+- **`/authors`** lists only authors with at least one published text. Their pages still answer by URL.
+- **Sitemap** lists the same set, so search engines are not pointed at empty author pages.
+- **Search** author results use the same rule: an inner join on published texts (`texts!inner(id)`, since anon
+  has column grants only on `texts`, an empty embed is refused) drops authors with nothing live.
+- **Redirects** (`next.config.ts`, permanent) send the three retired slugs to the merged author.
+
+## 2026-11-17 — A favicon from the publisher's mark
+
+The site had no favicon, so browser tabs, bookmarks and search results showed a blank page icon. It now uses the
+small cut of the publisher's mark in paper cream on the ink ground (`#F5F0E6` on `#1E2D3D`, the `--paper` and
+`--hero-ground` values), which holds its shape at 16px where the woodcut print cut would turn to mush.
+
+- **Next's file conventions, no metadata code.** `app/icon.svg` (modern browsers), `app/favicon.ico` (16, 32 and
+  48px, for older browsers and search results) and `app/apple-icon.png` (180px, full-bleed because iOS rounds it
+  itself). Checked against `next dev`: all three serve 200 and the `<head>` carries the three `<link>` tags.
+- **One source, as before.** `markIconSvg()` in `lib/brand/mark.ts` builds the icon from the stored path;
+  `npm run mark:svg` now writes `app/icon.svg` beside the mark files, and `lib/brand/mark.test.ts` fails if it drifts.
+  `npm run mark:icons` renders the .ico and PNG from the same SVG with Playwright; `-- --large=<dir>` also writes
+  1024px exports for use as a workspace icon.
+
+---
+
 ## 2026-11-16 — PRs name their backlog card by exact title
 
 CLAUDE.md ("Keeping the record current") now asks every PR that builds a backlog card to carry
