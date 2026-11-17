@@ -7,7 +7,7 @@ themes: [marriage, virtue, community, christology, poverty]
 collection: "homily-20-ephesians-chrysostom"
 collection_order: 1
 source_attribution: "Nicene and Post-Nicene Fathers, Series I, Vol. XIII, trans. Gross Alexander, revising W. J. Copeland (Christian Literature Publishing Co., 1889)."
-provenance_notes: "Text sourced from New Advent (newadvent.org). Accessed November 2026."
+provenance_notes: "Text sourced from New Advent (newadvent.org); revised and edited for New Advent by Kevin Knight. Accessed November 2026. The opening scripture header (Ephesians 5:22–24) was checked on 17 Nov 2026 against the NPNF I/13 rendering in the CCEL text of the volume and already matched it, so it was left unchanged."
 translation_notes: "Gross Alexander (1852–1915), revising the Oxford Library of the Fathers translation of W. J. Copeland (1804–1885). NPNF I/13, 1889 — public domain by publication date."
 ocr_quality: "high"
 published: false
