@@ -7,7 +7,7 @@ themes: [obedience, vocation, virtue, community, marriage]
 collection: "homily-21-ephesians-chrysostom"
 collection_order: 1
 source_attribution: "Nicene and Post-Nicene Fathers, Series I, Vol. XIII, trans. Gross Alexander, revising W. J. Copeland (Christian Literature Publishing Co., 1889)."
-provenance_notes: "Text sourced from New Advent (newadvent.org). Accessed November 2026."
+provenance_notes: "Text sourced from New Advent (newadvent.org); revised and edited for New Advent by Kevin Knight. Accessed November 2026. The opening scripture header (Ephesians 6:1–3) was restored on 17 Nov 2026 from New Advent's modernised wording to the NPNF I/13 rendering, checked against the CCEL text of the volume."
 translation_notes: "Gross Alexander (1852–1915), revising the Oxford Library of the Fathers translation of W. J. Copeland (1804–1885). NPNF I/13, 1889 — public domain by publication date."
 ocr_quality: "high"
 published: false
@@ -23,7 +23,7 @@ note_draft: "\"Never say, this is the business of monks.\" Chrysostom's answer t
 
 Ephesians 6:1-3
 
-Children, obey your parents in the Lord, for this is right. Honor your father and mother (which is the first commandment with promise), that it may be well with you, and you may live long on the earth.
+Children, obey your parents in the Lord, for this is right. Honor thy father and mother (which is the first commandment with promise), that it may be well with thee, and thou mayest live long on the earth.
 
 As a man in forming a body, places the head first, after that the neck, then the feet, so does the blessed Paul proceed in his discourse. He has spoken of the husband, he has spoken of the wife, who is second in authority, he now goes on by gradual advances to the third rank — which is that of children. For the husband has authority over the wife, and the husband and the wife over the children. Now then mark what he is saying.
 
