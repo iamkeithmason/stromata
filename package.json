@@ -34,7 +34,8 @@
     "screens:canvas": "node scripts/screens/canvas.mjs",
     "ornaments:svg": "tsx scripts/design/write-ornament-svgs.ts",
     "mark:svg": "tsx scripts/design/write-mark-svgs.ts",
-    "mark:icons": "tsx scripts/design/render-icons.mjs"
+    "mark:icons": "tsx scripts/design/render-icons.mjs",
+    "check:cards": "node scripts/check-card-names.mjs"
   },
   "dependencies": {
     "@react-pdf/renderer": "^4.9.0",
