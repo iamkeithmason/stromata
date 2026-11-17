@@ -39,6 +39,18 @@ small cut of the publisher's mark in paper cream on the ink ground (`#F5F0E6` on
   `npm run mark:icons` renders the .ico and PNG from the same SVG with Playwright; `-- --large=<dir>` also writes
   1024px exports for use as a workspace icon.
 
+---
+
+## 2026-11-16 — PRs name their backlog card by exact title
+
+CLAUDE.md ("Keeping the record current") now asks every PR that builds a backlog card to carry
+`Card: <exact Feature title>` on the first line of its description, with the same title in its
+CHANGELOG entry. The weekly reconciliation routine flips a card to `Built` only when a PR or entry
+names it. PR #183 shipped the "Remove the duplicate page-mount text-open emitter" card without naming
+it, so the card still read `Planned` a week after it went live. Docs only; deploys nothing.
+
+---
+
 ## 2026-11-10 — Editorial paragraph breaks for walls of text: flag at import, Claude proposes, Keith approves
 
 Many published texts keep their source's typesetting, where a chapter is one paragraph; on a phone that is
