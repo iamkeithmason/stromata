@@ -748,6 +748,13 @@ and went live on 9 Nov, but it never named "Remove the duplicate page-mount text
 card was still `Planned` a week later. One PR covering several cards gets one `Card:` line for each. A PR
 that builds no card leaves the line out.
 
+**A PR that needs something done before it goes live says so in a `Before release:` line** (Keith, 17 Nov
+2026). One line per step, in the PR description, e.g. `Before release: publish <slug> in /admin/review`.
+The Monday release task copies every such line from the PRs a release carries into a "Before you merge"
+checklist at the top of the release PR, beside any migrations to apply. Use it for anything the code
+depends on that a merge cannot do: a text to publish, a setting to change, a migration. PR #234 was the
+first: its Vainglory redirect points at a text that was still a draft.
+
 ---
 
 ## Research bank — capturing what we learn about working with AI
