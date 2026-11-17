@@ -7,6 +7,20 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-11-17 — A favicon from the publisher's mark
+
+The site had no favicon, so browser tabs, bookmarks and search results showed a blank page icon. It now uses the
+small cut of the publisher's mark in paper cream on the ink ground (`#F5F0E6` on `#1E2D3D`, the `--paper` and
+`--hero-ground` values), which holds its shape at 16px where the woodcut print cut would turn to mush.
+
+- **Next's file conventions, no metadata code.** `app/icon.svg` (modern browsers), `app/favicon.ico` (16, 32 and
+  48px, for older browsers and search results) and `app/apple-icon.png` (180px, full-bleed because iOS rounds it
+  itself). Checked against `next dev`: all three serve 200 and the `<head>` carries the three `<link>` tags.
+- **One source, as before.** `markIconSvg()` in `lib/brand/mark.ts` builds the icon from the stored path;
+  `npm run mark:svg` now writes `app/icon.svg` beside the mark files, and `lib/brand/mark.test.ts` fails if it drifts.
+  `npm run mark:icons` renders the .ico and PNG from the same SVG with Playwright; `-- --large=<dir>` also writes
+  1024px exports for use as a workspace icon.
+
 ## 2026-11-10 — Editorial paragraph breaks for walls of text: flag at import, Claude proposes, Keith approves
 
 Many published texts keep their source's typesetting, where a chapter is one paragraph; on a phone that is
