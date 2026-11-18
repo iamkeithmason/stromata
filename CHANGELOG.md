@@ -34,6 +34,8 @@ God), on every CDN miss and again after every deploy.
   admin routes, and a batch publish builds its collection once. An unpublished or renamed collection's old
   file is removed. Not covered: CLI scripts that name only text pages; run the backfill after them.
 - **Backfill:** `npm run build:collection-pdfs` (dry run; `--write`, `--slug=`), via tsx, run locally.
+- **Also:** `npm run pipeline:status` read the queue with an `assert` import attribute, which Node 22+ refuses
+  (`ERR_IMPORT_ATTRIBUTE_MISSING`; found on Keith's Node 24). It now reads the file with `fs`, on any version.
 
 Storage, compared before choosing: collection PDFs measured ~1.45× their body text, 49 KB (Small Catechism)
 to 3.5 MB (City of God), ~32 MB for all 41. **Supabase Storage** needs no setup, but every download is egress

@@ -15,7 +15,7 @@
     "backfill:author-images": "node scripts/backfill-author-images.mjs",
     "repair:summaries": "node scripts/repair-summaries.mjs",
     "strip:source-chrome": "node scripts/strip-source-chrome.mjs",
-    "pipeline:status": "node -e \"import('./scripts/ingestion/prospect-queue.json', {assert:{type:'json'}}).then(m=>m.default.prospects.forEach(p=>console.log(p.status.padEnd(16), p.id)))\"",
+    "pipeline:status": "node -e \"JSON.parse(require('fs').readFileSync('scripts/ingestion/prospect-queue.json','utf8')).prospects.forEach(p=>console.log(p.status.padEnd(16), p.id))\"",
     "pipeline:import": "node scripts/pipeline-import.mjs && tsx scripts/backfill-scripture-refs.ts",
     "backfill:scripture": "tsx scripts/backfill-scripture-refs.ts",
     "build:collection-pdfs": "tsx scripts/build-collection-pdfs.ts",
