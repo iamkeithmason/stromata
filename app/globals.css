@@ -296,7 +296,6 @@
 .celestial-hero {
   position: relative;
   isolation: isolate;
-<<<<<<< Updated upstream
   /* Phone first: a band, not a full screen, so the first screen on a phone
      reaches something to read (4 Nov critique). The tall sky is from 641px. */
   min-height: 0;
@@ -304,19 +303,11 @@
   display: grid;
   place-items: center;
   padding: 2.75rem 1.5rem 2.5rem;
-=======
-  min-height: 650px;
-  overflow: hidden;
-  display: grid;
-  place-items: center;
-  padding: 5.5rem 1.5rem 5rem;
->>>>>>> Stashed changes
   background:
     radial-gradient(circle at 52% 42%, rgba(57, 103, 157, 0.9) 0%, rgba(29, 69, 113, 0.78) 42%, transparent 70%),
     linear-gradient(145deg, var(--cosmos-mid) 0%, var(--cosmos-mid-deep) 58%, var(--cosmos-deep) 100%);
 }
 
-<<<<<<< Updated upstream
 .celestial-hero--nocturne {
   --cosmos-gold: #ae885a;
   --cosmos-gold-light: #d6bc89;
@@ -334,8 +325,6 @@
   background: radial-gradient(circle at 56% 40%, #263e52 0%, #172c42 49%, #0b1b2d 100%);
 }
 
-=======
->>>>>>> Stashed changes
 .celestial-field,
 .celestial-vignette,
 .celestial-paper-grain {
@@ -372,13 +361,10 @@
   height: 100%;
 }
 
-<<<<<<< Updated upstream
 .celestial-hero--nocturne .celestial-orbit {
   opacity: 0.73;
 }
 
-=======
->>>>>>> Stashed changes
 .celestial-vignette {
   z-index: 1;
   background:
@@ -386,15 +372,12 @@
     linear-gradient(180deg, rgba(4, 18, 33, 0.34) 0%, transparent 25%, transparent 65%, rgba(4, 17, 31, 0.58) 100%);
 }
 
-<<<<<<< Updated upstream
 .celestial-hero--nocturne .celestial-vignette {
   background:
     linear-gradient(90deg, rgba(6, 15, 26, 0.56), rgba(6, 15, 26, 0.28) 50%, rgba(6, 15, 26, 0.38)),
     linear-gradient(180deg, rgba(4, 11, 21, 0.28), transparent 29%, transparent 64%, rgba(4, 11, 21, 0.65));
 }
 
-=======
->>>>>>> Stashed changes
 .celestial-paper-grain {
   z-index: 2;
   opacity: 0.12;
@@ -411,7 +394,6 @@
   text-shadow: 0 1px 22px rgba(7, 23, 41, 0.28);
 }
 
-<<<<<<< Updated upstream
 .celestial-hero--nocturne .celestial-hero-content::before {
   content: '';
   position: absolute;
@@ -436,41 +418,20 @@
   margin: 0 0 0.5rem;
   font-family: var(--serif-display);
   font-size: 2.9rem;
-=======
-.celestial-description,
-.celestial-authors-label {
-  font-family: var(--serif);
-  font-size: var(--text-sm);
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-}
-
-.celestial-hero-content h1 {
-  margin: 0 0 0.7rem;
-  font-family: var(--serif-display);
-  font-size: clamp(3.7rem, 8vw, 6.5rem);
->>>>>>> Stashed changes
   font-weight: 400;
   line-height: 0.98;
   letter-spacing: -0.025em;
 }
 
 .celestial-byline {
-<<<<<<< Updated upstream
   margin-bottom: 1.5rem;
   font-family: var(--serif);
   font-size: 1.15rem;
-=======
-  margin-bottom: 2.7rem;
-  font-family: var(--serif-cormorant);
-  font-size: clamp(1.25rem, 2.4vw, 1.65rem);
->>>>>>> Stashed changes
   font-style: italic;
   color: var(--on-dark-body);
 }
 
 .celestial-description {
-<<<<<<< Updated upstream
   /* Phone: the byline already says what the place is. */
   display: none;
   margin-bottom: 1rem;
@@ -496,11 +457,6 @@
   .celestial-description {
     display: block;
   }
-=======
-  margin-bottom: 1rem;
-  color: var(--on-dark-soft);
-  letter-spacing: 0.14em;
->>>>>>> Stashed changes
 }
 
 .search-bar-celestial input::placeholder {
@@ -546,20 +502,12 @@
   flex-wrap: wrap;
   gap: 0.55rem;
   margin-top: 1.5rem;
-<<<<<<< Updated upstream
   font-family: var(--serif);
-=======
-  font-family: var(--serif-cormorant);
->>>>>>> Stashed changes
   color: var(--on-dark-body);
 }
 
 .celestial-authors-label {
   color: var(--on-dark-gold);
-<<<<<<< Updated upstream
-=======
-  letter-spacing: 0.16em;
->>>>>>> Stashed changes
 }
 
 .celestial-authors-rule {
@@ -602,15 +550,6 @@
 }
 
 @media (max-width: 640px) {
-<<<<<<< Updated upstream
-=======
-  .celestial-hero {
-    min-height: 620px;
-    padding-top: 4.25rem;
-    padding-bottom: 4rem;
-  }
-
->>>>>>> Stashed changes
   .celestial-orbit {
     width: 2660px;
     left: 108%;
@@ -618,17 +557,6 @@
     opacity: 0.8;
   }
 
-<<<<<<< Updated upstream
-=======
-  .celestial-hero-content h1 {
-    font-size: clamp(3.25rem, 17vw, 4.5rem);
-  }
-
-  .celestial-byline {
-    margin-bottom: 2.3rem;
-  }
-
->>>>>>> Stashed changes
   .celestial-description {
     line-height: 1.5;
   }
@@ -653,7 +581,6 @@
   }
 }
 
-<<<<<<< Updated upstream
 /* A small cover (the two-up phone grid) holds five title lines like a full one since
    both bands were slimmed (re-measured 9 Nov 2026); the clamp is restated here,
    hence !important.
@@ -680,7 +607,8 @@
     clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap;
   }
   .book-cover-title-short { display: inline; }
-=======
+}
+
 /* Celestial treatments share one geometry and motion system. The selected
    Nocturne palette is also used on the homepage. */
 .celestial-study[data-treatment="illuminated"] {
@@ -910,7 +838,6 @@
   .celestial-study-option {
     flex: 1 1 calc(50% - 0.55rem);
   }
->>>>>>> Stashed changes
 }
 
 /* Offset anchor-link scroll targets to clear the fixed site header (4rem)
