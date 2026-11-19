@@ -575,8 +575,8 @@ function EditorsLine({ note }: { note: string }) {
       className="font-serif"
       style={{ margin: '0 0 1rem', paddingLeft: '1rem', borderLeft: '2px solid var(--gold-rule)' }}
     >
-      <EditorNote note={note} style={{ fontSize: 'var(--text-base)', lineHeight: 1.55, fontStyle: 'italic', color: 'var(--ink)' }} />
-      <footer style={{ fontSize: 'var(--text-sm)', color: 'var(--ink-mute)', marginTop: '0.35rem' }}>— the editor</footer>
+      <EditorNote note={note} style={{ fontSize: 'var(--text-prose)', lineHeight: 1.6, color: 'var(--ink)' }} />
+      <footer style={{ fontSize: 'var(--text-label)', fontStyle: 'italic', color: 'var(--ink-mute)', marginTop: '0.5rem' }}>— the editor</footer>
     </blockquote>
   )
 }
