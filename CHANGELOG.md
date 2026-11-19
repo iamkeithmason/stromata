@@ -89,6 +89,37 @@ text on the same ground did not ship in the 16 Nov release, so the URL has answe
 - Content side of the same ticket (Homilies 20 and 21: NPNF headers, provenance, summary drafts) is in
   `scripts/ingestion/run-log/2026-11-17.md`.
 
+## 2026-11-17 — A check for PRs that name no card; pipeline runs close or update the earlier run PRs
+
+Card: none
+
+**Why.** The weekly review on 17 Nov found Planned cards whose work was live but whose PRs named no card
+(#224, the paragraph-breaks work), and three pipeline-run PRs piled up as drafts (#174, #205, #229), each
+changing `prospect-queue.json`. Keith asked for both to be routine rather than remembered.
+
+- **`Card: none`.** A PR that builds no card now says so on its `Card:` line instead of leaving the line
+  out (CLAUDE.md, "Keeping the record current"). The rule was written on 16 Nov (#228) with "leaves the
+  line out", which made a missing line mean either "no card" or "forgot", and no check can fail on that.
+- **`npm run check:cards`** (`scripts/check-card-names.mjs`): lists PRs merged into `main` since `release`
+  last moved and exits 1 on any without `Card: <exact title>` or `Card: none`. Routine PRs are exempt by title,
+  and PRs merged before 18 Nov predate the rule. It reads PR bodies through `gh api search/issues`, one or two
+  calls, no Supabase or Vercel meter. If GitHub can't be asked it exits 2, which reports as "not checked",
+  never as a pass. The judgement half is `scripts/lib/card-names.mjs`, with 8 tests on real PR titles. A
+  routine-title exemption is tested on all five routine shapes, and a body that only *mentions* `Card:`
+  mid-sentence (as #230's did) counts as missing.
+- **The Monday release routine runs it** before opening the promotion PR and lists what it finds (CLAUDE.md,
+  "Standing rule"). It reports; it does not block the promotion.
+- **Pipeline runs deal with earlier run PRs** (CLAUDE.md, "Run Log"). Close a run PR this run covers, with
+  `Supersedes #N`. Otherwise merge `main` into it (never a rebase or force-push), keep both sides' prospects,
+  and list it as still open. Applied by hand today: #229 merged, #174 closed (Ken's manual, its only
+  prospect, was imported in #229). #205 stays open because its three prospects (Interior Castle, Neale's
+  *Hymns of the Eastern Church*, Rogers' *Catholic Doctrine*) are in no other run.
+- **Usage reading, 17 Nov (Keith):** the Vercel 30-day Fluid Active CPU total is **3h 22m**, against 3h 47m on 6
+  Nov and the 4h Hobby allowance.
+
+Docs and scripts only: no public route, nothing deploys.
+
+
 ---
 
 ## 2026-11-17 — Authors index: duplicates merged, empty authors hidden
@@ -505,6 +536,18 @@ so removing `main` from `deploymentEnabled` before Keith has flipped the Product
 old-style release from building. Order: merge the last old-style release, recreate `release` from `main`, Keith sets
 the Production Branch to `release`, a follow-up removes `main` from `deploymentEnabled` and the Monday routine's prompt
 is flipped.
+
+---
+
+## 2026-11-05 — Scripture citation quality: audited, with a plan (docs only)
+
+Backlog card *Scripture citation clustering & normalization quality*. A read-only audit of 193
+citations of Matthew 6, John 6, 1 Corinthians 11 and Romans 13 in `text_scripture_references`. Verse
+starts were right in every row; the one real loss is that a comma list ("11:20, 21") keeps the correct
+`osis` but a NULL `verse_end` (5 rows, 2.6%), because `parseReferences` fills `verseEnd` only for bcv
+`range` entities. Chapter-only citations are 8% of rows and should never merge verse-level ones. The
+write-up, deterministic clustering rules and a five-step bounded plan are in
+`docs/research/2026-11-05-scripture-citation-quality.md`. No code, schema or data changed.
 
 ---
 
