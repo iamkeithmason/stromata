@@ -16,11 +16,14 @@ export function SectionHeader({
   title,
   aside,
   asideHref,
+  asideEvent,
   level = 'section',
 }: {
   title: string
   aside?: string
   asideHref?: string
+  /** Umami `data-umami-event*` attributes for the aside link. */
+  asideEvent?: Record<`data-umami-event${string}`, string>
   level?: 'section' | 'page'
 }) {
   const page = level === 'page'
@@ -40,6 +43,7 @@ export function SectionHeader({
               href={asideHref}
               className={`${asideClass} transition-opacity hover:opacity-70`}
               style={{ ...asideStyle, textDecoration: 'none' }}
+              {...asideEvent}
             >
               {aside}
             </Link>

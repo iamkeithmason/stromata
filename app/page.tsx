@@ -14,12 +14,16 @@ import { resolveSeason } from '@/lib/liturgical/year'
 import { readingMinutes } from '@/lib/reading-time'
 import { ThemeChip } from './components/ThemeChip'
 import { SectionHeader } from './components/SectionHeader'
+import { MIN_WORDS, TEN_MINUTES, rankTenMinuteTexts, variedRow, type TenMinuteText } from '@/lib/ten-minutes'
 import { feastKey, pickEditorial } from '@/lib/featured'
 import { EditorNote } from './components/EditorNote'
 
 // Incremental Static Regeneration: cache the rendered home page and revalidate
 // hourly. Safe given the manual publish cadence — newly published texts appear
 // within the window rather than requiring a redeploy.
+/** How many short reads the homepage row holds: a full row at the widest grid. */
+const SHORT_READS_ROW = 4
+
 export const revalidate = 3600
 
 // ── Types ──────────────────────────────────────────────────────────────────
@@ -173,6 +177,28 @@ export default async function Home() {
         today,
       })
 
+  // ── Short reads — the homepage row for /ten-minutes ───────────────────
+  // Same rule as the page (lib/ten-minutes.ts), first row only. Optional
+  // furniture: a failure here hides the row rather than taking the page down.
+  const { data: shortRaw, error: shortError } = await supabase
+    .from('texts')
+    .select(`
+      id, title, slug, word_count, summary, editorial_introduction, accession_number,
+      author:authors(name, slug, death_year, tradition:traditions(slug)),
+      genre:genres(name),
+      text_themes(theme:themes(name, slug))
+    `)
+    .eq('published', true)
+    .gte('word_count', MIN_WORDS)
+    .lte('word_count', TEN_MINUTES * 200)
+  const shortReads = shortError
+    ? []
+    : variedRow(
+        rankTenMinuteTexts((shortRaw ?? []) as unknown as (TextRow & TenMinuteText)[]),
+        SHORT_READS_ROW,
+        t => t.author?.slug ?? t.author?.name,
+      )
+
   // Tally per-collection: text count + accession number range (from batch)
   const collectionStats: Record<string, { count: number; minAcc: number | null; maxAcc: number | null }> = {}
   for (const t of allTexts) {
@@ -273,7 +299,7 @@ export default async function Home() {
       </section>
 
       {/* ── Seasonal panel ───────────────────────────────────────────────── */}
-      <div className="pt-10 sm:pt-14">
+      <div className="pt-8">
         <SeasonalPanel season={season} />
       </div>
 
@@ -297,6 +323,27 @@ export default async function Home() {
             kicker={editorialPick.kind === 'feast' ? 'On the author\u2019s feast' : 'Editor\u2019s pick'}
             note={editorialPick.text.featured_note}
           />
+        </section>
+      )}
+
+      {/* ── Short reads ──────────────────────────────────────────────────── */}
+      {/* One row of the texts /ten-minutes offers: two covers on phones, three,
+          then four, matching the grid below. The full list is one click on. */}
+      {shortReads.length > 0 && (
+        <section className="content-shell pb-20">
+          <SectionHeader
+            title="Short reads"
+            aside="Under 10 min · All →"
+            asideHref="/ten-minutes"
+            asideEvent={{ 'data-umami-event': 'ten-minutes-open', 'data-umami-event-from': 'short-reads' }}
+          />
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-4 gap-y-6 sm:gap-6">
+            {shortReads.map((text, i) => (
+              <div key={text.id} className={i === 2 ? 'hidden md:block' : i === 3 ? 'hidden lg:block' : undefined}>
+                <ShortReadCard text={text} index={i} />
+              </div>
+            ))}
+          </div>
         </section>
       )}
 
@@ -586,6 +633,35 @@ function LeadPara({ children }: { children: React.ReactNode }) {
     <p className="font-serif" style={{ fontSize: 'var(--text-base)', lineHeight: 1.65, color: 'var(--ink-soft)', maxWidth: '52ch', marginBottom: '1.25rem' }}>
       {children}
     </p>
+  )
+}
+
+/** A short read: the cover and its reading time, as in the grid below, without the chips. */
+function ShortReadCard({ text, index }: { text: TextRow; index: number }) {
+  const author = text.author
+  return (
+    <div className="w-full">
+      <Link
+        href={`/texts/${text.slug}`}
+        className="group block"
+        data-umami-event="text-open"
+        data-umami-event-from="short-reads"
+        data-umami-event-text={text.slug}
+      >
+        <BookCover
+          title={text.title}
+          authorName={author?.name ?? null}
+          deathYear={author?.death_year ?? null}
+          accessionNumber={text.accession_number}
+          traditionSlug={author?.tradition?.slug ?? null}
+          genre={text.genre?.name ?? null}
+          index={index}
+        />
+      </Link>
+      <div className="px-0.5 mt-3">
+        <p className="caption">~ {readingMinutes(text.word_count)} min</p>
+      </div>
+    </div>
   )
 }
 

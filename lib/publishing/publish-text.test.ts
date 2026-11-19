@@ -27,6 +27,7 @@ test('covers every ISR surface that renders a published text', () => {
     '/',
     '/texts',
     '/authors',
+    '/ten-minutes',
     '/texts/on-the-priesthood',
     '/authors/john-chrysostom',
     '/collections/on-the-priesthood-chrysostom',
@@ -54,7 +55,7 @@ test('includes the four surfaces the old inline revalidation missed', () => {
 
 test('omits optional surfaces rather than emitting /undefined paths', () => {
   const paths = textPaths({ slug: 'standalone' })
-  assert.deepEqual(paths, ['/', '/texts', '/authors', '/texts/standalone', '/scripture'])
+  assert.deepEqual(paths, ['/', '/texts', '/authors', '/ten-minutes', '/texts/standalone', '/scripture'])
   assert.ok(!paths.some(p => p.includes('undefined') || p.includes('null')))
 })
 

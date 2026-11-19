@@ -9,14 +9,14 @@ export const FROM_SURFACES = Object.freeze([
   // Homepage ('featured-lead' is the pre-2026-11-09 name of 'recency-lead', kept so
   // older Umami data still checks)
   'seasonal-panel', 'recency-lead', 'featured-lead', 'editorial-pick', 'homepage-grid',
-  'featured-band', 'reading-history',
+  'featured-band', 'reading-history', 'short-reads',
   // Reader
   'text-reader', 'text-page', 'related-figures', 'read-next',
   // Reader: phone header and its sheet (PR #187)
   'text-hero-contents', 'text-running-head', 'text-sheet-contents', 'text-sheet-next',
   'text-sheet-read-next', 'text-sheet-prev', 'text-sheet',
   // Browse and index
-  'texts-index', 'authors-index', 'locations-index', 'search-results', 'search-chip',
+  'ten-minutes', 'texts-index', 'authors-index', 'locations-index', 'search-results', 'search-chip',
   // Entity pages
   'author-page', 'collection-page', 'theme-page', 'era-page', 'tradition-page',
   'scripture-page', 'location-page',
