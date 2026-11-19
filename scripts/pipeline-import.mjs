@@ -62,20 +62,25 @@ function slugify(str) {
 }
 
 async function resolveAuthor(prospect) {
-  const { data: existing } = await supabase
+  const { data: existing, error: authorError } = await supabase
     .from('authors')
     .select('id, slug')
     .ilike('name', prospect.author)
     .maybeSingle();
 
+  // A failed query also returns no data. Without this check, a database or
+  // credentials error looked like "author not found", then fell through to a
+  // misleading "Unknown tradition slug" (17 Nov 2026, on three real authors).
+  if (authorError) throw new Error(`Author lookup failed: ${authorError.message}`);
   if (existing) return existing.id;
 
-  const { data: tradition } = await supabase
+  const { data: tradition, error: traditionError } = await supabase
     .from('traditions')
     .select('id')
     .eq('slug', prospect.tradition)
-    .single();
+    .maybeSingle();
 
+  if (traditionError) throw new Error(`Tradition lookup failed: ${traditionError.message}`);
   if (!tradition) {
     throw new Error(`Unknown tradition slug "${prospect.tradition}" — check controlled vocabulary.`);
   }
@@ -425,6 +430,16 @@ async function main() {
   }
 
   console.log(`Found ${staged.length} staged prospect(s).\n`);
+
+  // Preflight: one cheap read proves the URL and service-role key work before
+  // any prospect is touched, so a bad .env.local fails once and says so.
+  const { error: preflightError } = await supabase.from('traditions').select('id').limit(1);
+  if (preflightError) {
+    console.error(`✗ Cannot read Supabase: ${preflightError.message}`);
+    console.error('  Check NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY in .env.local.');
+    console.error('  Nothing was imported and the queue is unchanged.');
+    process.exit(1);
+  }
 
   for (const prospect of staged) {
     console.log(`${prospect.id}`);

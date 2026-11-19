@@ -24,6 +24,21 @@ npm's own metadata (`"dev": true` dropped from optional packages) and is left as
 types, 746 tests, and a local render of `/` and `/design/celestial-hero` at 390px and 1440px with no
 console errors.
 
+## 2026-11-19 — The import says when it cannot reach Supabase
+
+Card: none
+
+Keith's import of the three Fathers on Education texts printed `Unknown tradition slug "patristic"` for all
+three, though `patristic` is in `traditions` and all three authors (Jerome, Augustine of Hippo, John
+Chrysostom) already exist. Every lookup had come back empty because the queries themselves failed:
+`resolveAuthor` ignored the `error` that supabase-js returns beside `data`, read "no author", tried to
+create one, and then read "no tradition". The queue was left at `staged`, so nothing was damaged.
+`pipeline-import.mjs` now reads one row of `traditions` before touching any prospect and stops with the
+database's own message (e.g. `Invalid API key`) and a pointer to `.env.local`, and both author-side
+lookups throw on a query error instead of treating it as a miss. Checked with a deliberately bad key: it
+prints `Invalid API key`, exits 1, and leaves the queue byte-for-byte unchanged.
+
+
 ## 2026-11-19 — Weekly digest: the second-text rate and read-next clicks by pick
 
 Card: Weekly digest: track the second-text rate and read-next clicks by pick
