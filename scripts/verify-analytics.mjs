@@ -426,12 +426,15 @@ function navSurfaces(site) {
     ['text-open', 'scripture-page', site.scripture],
     // End-of-text "Continue exploring" (PR #150). Release prediction 2 counts these.
     ['text-open', 'read-next', site.texts],
+    // The homepage leads: the newest text, and the editor's pick (needs a featured text or a feast day today).
+    ['text-open', 'recency-lead', ['/']],
+    ['text-open', 'editorial-pick', ['/']],
     // author-open
     ['author-open', 'authors-index', ['/authors']],
     ['author-open', 'search-results', ['/search?q=augustine']],
     ['author-open', 'collection-page', site.collections],
     ['author-open', 'text-reader', site.texts],
-    ['author-open', 'featured-lead', ['/']],
+    ['author-open', 'recency-lead', ['/']],
     // collection-open — the two surfaces the brief names.
     ['collection-open', 'theme-page', site.themes],
     ['collection-open', 'scripture-page', site.scripture],

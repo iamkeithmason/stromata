@@ -269,7 +269,7 @@ Two traps worth knowing:
 
 | Property | Meaning | Value form |
 |---|---|---|
-| `from` | the surface the click originated on | kebab-case surface name. Homepage: `seasonal-panel`, `featured-lead`, `homepage-grid`, `featured-band`, `reading-history`, `short-reads`. Reader: `text-reader`, `text-page`, `related-figures`, `read-next`; the phone reading header and its sheet (PR #187): `text-hero-contents`, `text-running-head`, `text-sheet-contents`, `text-sheet-next`, `text-sheet-read-next`, `text-sheet-prev`, `text-sheet`. Browse and index: `ten-minutes`, `texts-index`, `authors-index`, `locations-index`, `search-results`, `search-chip`. Entity pages: `author-page`, `collection-page`, `theme-page`, `era-page`, `tradition-page`, `scripture-page`, `location-page`. **The list is the vocabulary — a new surface gets a new value here, in the Events Register, and nowhere else.** |
+| `from` | the surface the click originated on | kebab-case surface name. Homepage: `seasonal-panel`, `recency-lead` (the newest text or collection; was `featured-lead` until 2026-11-09), `editorial-pick` (the editor's featured text or the author's feast day), `homepage-grid`, `featured-band`, `reading-history`, `short-reads`. Reader: `text-reader`, `text-page`, `related-figures`, `read-next`; the phone reading header and its sheet (PR #187): `text-hero-contents`, `text-running-head`, `text-sheet-contents`, `text-sheet-next`, `text-sheet-read-next`, `text-sheet-prev`, `text-sheet`. Browse and index: `ten-minutes`, `texts-index`, `authors-index`, `locations-index`, `search-results`, `search-chip`. Entity pages: `author-page`, `collection-page`, `theme-page`, `era-page`, `tradition-page`, `scripture-page`, `location-page`. **The list is the vocabulary — a new surface gets a new value here, in the Events Register, and nowhere else.** |
 | `text` | which text was opened | **slug**, never the title |
 | `collection` | which collection was opened | **slug** |
 | `author` | which author | display name (matches `authors.name`) |
@@ -332,6 +332,7 @@ cleared from the admin header), so the founder's own browsing never inflates the
   this date `text-read` values are titles and don't join to Supabase; after, they're slugs — the two
   spans aren't directly comparable. Surfaced by the `stromata-analytics` digest's Events Register
   reconciliation on its first run.
+- On **2026-11-09** the homepage lead's `from` value changed from `featured-lead` to **`recency-lead`**. The slot is simply the most recently added text or collection; the old name implied an editorial choice. The editorial slot (`texts.featured`, or an author's feast day) takes its own value, `editorial-pick`, so the two series are never merged. Keith approved the rename (backlog card "Wire up the featured text slot"). Counts under `featured-lead` before the date and `recency-lead` after are the same surface and are not directly comparable by name; `theme-click` from the lead sends the same value as its `source`.
 - From the **release after 2 Nov 2026** (the first one carrying this change), `text-open` counts
   **clicks only**. Until then every text page also sent a `text-open` on load, with no `from`, beside
   `text-view` carrying the same data, so `text-open` mixed page views into its click count and left a
@@ -558,7 +559,10 @@ The Production Branch is set in Vercel → Settings → **Environments** → Pro
   single production deploy. GitHub does not delete `main` when it is a PR's head, so there is no branch to
   recreate (the old direction deleted `release` each week). **Release day is Monday morning** (Keith,
   2026-10-10): a weekly routine opens the draft promotion PR then, only if `main` is ahead of `release` with
-  changes that touch the site; Keith merges it.
+  changes that touch the site; Keith merges it. **Before opening it, the routine runs `npm run
+  check:cards`** and lists, in the promotion PR and its report, every PR the check names as missing a
+  `Card:` line, so the card can be named before the release ships. A failing check does not stop the
+  promotion; exit 2 (GitHub could not be asked) is reported as "not checked", never as a pass.
 - **Never merge the promotion PR yourself** — leave it open, say what it carries, and let Keith merge it.
 - **The 100-deployments-a-day cap is shared with Paideia — check the release actually built.** Vercel's
   Hobby plan allows 100 deployments per day per *account*, and Stromata and Paideia share the account. Every
@@ -746,7 +750,11 @@ rather than paraphrasing it: the weekly reconciliation flips `Planned` → `Buil
 CHANGELOG entry names the card, and it matches on the title. PR #183 removed the page-load `text-open`
 and went live on 9 Nov, but it never named "Remove the duplicate page-mount text-open emitter", so the
 card was still `Planned` a week later. One PR covering several cards gets one `Card:` line for each. A PR
-that builds no card leaves the line out.
+that builds no card says **`Card: none`** on that line instead of leaving it out (Keith, 17 Nov 2026): a
+missing line is then always a gap, never a pass. `npm run check:cards` (`scripts/check-card-names.mjs`) lists
+every PR merged into `main` since `release` last moved and exits 1 on any with neither. Routine PRs
+(Release, Analytics digest, Pipeline run, Sourcer, Screens reference) are exempt by title, and PRs merged
+before 18 Nov predate the rule. The judgement half is `scripts/lib/card-names.mjs`, unit-tested.
 
 **A PR that needs something done before it goes live says so in a `Before release:` line** (Keith, 17 Nov
 2026). One line per step, in the PR description, e.g. `Before release: publish <slug> in /admin/review`.
@@ -1095,6 +1103,17 @@ Keith will:
 ---
 
 ## Run Log
+
+**Before opening a pipeline-run PR, deal with the earlier ones** (Keith, 17 Nov 2026; three run PRs had piled
+up as drafts, each changing `prospect-queue.json`). List open PRs titled `Pipeline run …`. For each one:
+
+- **If this run covers it** (every prospect it adds or advances is in this run's queue at the same or a later
+  status), close it. In this run's PR body and run log, say `Supersedes #N` and why.
+- **If it does not**, bring it up to date: merge `main` into its branch (a merge commit, never a rebase or
+  force-push), resolve `prospect-queue.json` by keeping both sides' prospects, and push. Then list it in this
+  run's PR body as still open, with the prospects only it carries, so Keith can merge it first.
+
+Never fold another run's prospects into this run's commit: each run's record stays in its own PR and log.
 
 After each run, append a log entry to `scripts/ingestion/run-log/`:
 

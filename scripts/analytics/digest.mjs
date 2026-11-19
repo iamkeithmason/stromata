@@ -13,6 +13,10 @@
  *
  * Usage:
  *   node scripts/analytics/digest.mjs [--range=30d] [--limit=15] [--json]
+ *   node scripts/analytics/digest.mjs --from=2026-11-09T17:37Z --to=2026-11-16T17:37Z
+ *
+ * --from/--to (any Date.parse-able time) pin an exact window instead of a range
+ * ending now, so a past week's numbers can be reproduced and checked.
  */
 
 import dotenv from 'dotenv';
@@ -21,6 +25,7 @@ import path from 'path';
 import { createClient } from '@supabase/supabase-js';
 import { createUmamiClient, rangeToWindow } from '../lib/umami.mjs';
 import { buildDigest } from './aggregate.mjs';
+import { buildReadingDepth, READ_NEXT_SURFACES } from './reading-depth.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 dotenv.config({ path: path.join(__dirname, '..', '..', '.env.local'), quiet: true });
@@ -116,12 +121,34 @@ function list(title, ranked, { max = LIMIT, unit = 'opens' } = {}) {
   return out.join('\n');
 }
 
-function render(digest, { stats, eventCounts, window }) {
+function readingDepthSection(rd) {
+  const out = ['## Reading depth'];
+  out.push('_Do readers go on to a second text? The leading indicator for onward-reading work (read-next, curated next reads)._');
+  out.push('');
+  const st = rd.secondTextRate;
+  out.push(
+    `**Second-text rate:** ${st.percent == null ? 'n/a' : `${st.percent.toFixed(1)}%`} ` +
+      `(${n(st.depth2)} sessions reached a 2nd distinct text ÷ ${n(st.depth1)} that reached a 1st; \`text-session-depth\`)`
+  );
+  const rn = rd.readNext;
+  const surfaces = READ_NEXT_SURFACES.map((s) => `${s} ${n(rn.surfaces[s])}`).join(' · ');
+  out.push(`**Read-next clicks:** ${n(rn.total)} (${surfaces})`);
+  const picks = Object.entries(rn.byPick).map(([k, v]) => `${k} ${n(v)}`);
+  for (const [k, v] of Object.entries(rn.unknownPicks)) picks.push(`⚠ ${k} ${n(v)}`);
+  out.push(`**By pick:** ${picks.join(' · ')}`);
+  if (!rn.reconciles) {
+    out.push(`⚠ Picks sum to ${n(rn.pickTotal)} but the two surfaces logged ${n(rn.total)} clicks: some read-next \`text-open\` went out without a \`pick\` (or another surface sent one). Check the wire.`);
+  }
+  out.push('');
+  return out.join('\n');
+}
+
+function render(digest, { stats, eventCounts, window, readingDepth }) {
   const s = (k) => (stats?.[k] && typeof stats[k] === 'object' ? stats[k].value : stats?.[k]);
   const t = digest.totals;
   const lines = [];
   lines.push(`# The Stromata — analytics digest`);
-  lines.push(`_Window: ${fmtDate(window.startAt)} → ${fmtDate(window.endAt)} (${RANGE}). Generated ${new Date().toISOString().slice(0, 16).replace('T', ' ')}Z._`);
+  lines.push(`_Window: ${fmtDate(window.startAt)} → ${fmtDate(window.endAt)} (${window.label}). Generated ${new Date().toISOString().slice(0, 16).replace('T', ' ')}Z._`);
   lines.push('');
   lines.push(`**Traffic:** ${n(s('visitors'))} visitors · ${n(s('visits'))} visits · ${n(s('pageviews'))} pageviews · ${n(s('bounces'))} bounces`);
   lines.push(`**Reading:** ${n(t.totalTextOpens)} text-opens across ${n(t.distinctTextsOpened)} texts` +
@@ -151,6 +178,8 @@ function render(digest, { stats, eventCounts, window }) {
     for (const c of digest.collections.slice(0, LIMIT)) lines.push(`- \`${n(c.count)}\`  ${c.name}  \`${c.slug}\``);
     lines.push('');
   }
+
+  lines.push(readingDepthSection(readingDepth));
 
   lines.push('## Reading entry points (`from`)');
   lines.push('_Which surfaces drive people into texts — where UI work has leverage._');
@@ -184,18 +213,32 @@ function render(digest, { stats, eventCounts, window }) {
 // ---------------------------------------------------------------------------
 
 async function main() {
-  const window = rangeToWindow(RANGE);
-  if (!window) die(`Unknown --range "${RANGE}" (use 24h|today|7d|30d|90d|all).`);
+  let window;
+  if (flags.from || flags.to) {
+    const startAt = Date.parse(flags.from);
+    const endAt = flags.to ? Date.parse(flags.to) : Date.now();
+    if (!Number.isFinite(startAt) || !Number.isFinite(endAt) || endAt <= startAt) {
+      die('--from/--to must be parseable times with --from before --to (e.g. --from=2026-11-09T17:37Z).');
+    }
+    window = { startAt, endAt, label: `${new Date(startAt).toISOString()} → ${new Date(endAt).toISOString()}` };
+  } else {
+    window = rangeToWindow(RANGE);
+    if (!window) die(`Unknown --range "${RANGE}" (use 24h|today|7d|30d|90d|all).`);
+    window.label = RANGE;
+  }
   const range = { startAt: window.startAt, endAt: window.endAt };
 
   const umami = await createUmamiClient();
-  const [stats, textVals, collectionVals, fromVals, eventMetrics] = await Promise.all([
+  const [stats, textVals, collectionVals, fromVals, eventMetrics, depthVals, pickVals] = await Promise.all([
     umami.get('websites/{id}/stats', range),
     umami.get('websites/{id}/event-data/values', { ...range, eventName: 'text-open', propertyName: 'text' }),
     umami.get('websites/{id}/event-data/values', { ...range, eventName: 'collection-open', propertyName: 'collection' }),
     umami.get('websites/{id}/event-data/values', { ...range, eventName: 'text-open', propertyName: 'from' }),
     umami.get('websites/{id}/metrics', { ...range, type: 'event', limit: 100 }),
+    umami.get('websites/{id}/event-data/values', { ...range, eventName: 'text-session-depth', propertyName: 'depth' }),
+    umami.get('websites/{id}/event-data/values', { ...range, eventName: 'text-open', propertyName: 'pick' }),
   ]);
+  const readingDepth = buildReadingDepth({ depthValues: depthVals, fromValues: fromVals, pickValues: pickVals });
 
   const db = await loadCorpus(supabaseClient());
   const digest = buildDigest({
@@ -207,10 +250,10 @@ async function main() {
   const eventCounts = rows(eventMetrics, 'key').sort((a, b) => b.count - a.count);
 
   if (flags.json) {
-    console.log(JSON.stringify({ window, stats, digest, eventCounts }, null, 2));
+    console.log(JSON.stringify({ window, stats, digest, readingDepth, eventCounts }, null, 2));
     return;
   }
-  console.log(render(digest, { stats, eventCounts, window }));
+  console.log(render(digest, { stats, eventCounts, window, readingDepth }));
 }
 
 main().catch((err) => die(err.message || String(err)));

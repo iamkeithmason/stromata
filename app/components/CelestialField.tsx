@@ -38,6 +38,7 @@ function ManuscriptStar({
   return (
     <g transform={`translate(${x} ${y}) rotate(${rotation}) scale(${scale})`}>
       <path
+        className="celestial-star-shape"
         d="M0-20 3.8-5.5 14-14 5.8-3.2 21 0 5.5 3.7 14 15 3.2 6 0 22-3.5 6-15 15-6 3.3-21 0-5.8-3.6-14-14-3.6-5.6Z"
         fill="url(#celestial-gold)"
         stroke="var(--cosmos-gold-light)"
@@ -76,6 +77,7 @@ export function CelestialField() {
               {[720, 648, 576, 504, 432, 360, 288, 216, 144, 72].map((radius, index) => (
                 <g key={radius}>
                   <circle
+                    className="celestial-ring-band"
                     cx="600"
                     cy="540"
                     r={radius}
@@ -83,8 +85,8 @@ export function CelestialField() {
                     strokeWidth="48"
                     opacity={index % 2 === 0 ? 0.22 : 0.14}
                   />
-                  <circle cx="600" cy="540" r={radius + 24} stroke="var(--cosmos-night)" strokeWidth="4.5" opacity="0.84" />
-                  <circle cx="600" cy="540" r={radius - 24} stroke="var(--cosmos-gold-light)" strokeWidth="1.4" opacity="0.48" />
+                  <circle className="celestial-ring-outer" cx="600" cy="540" r={radius + 24} stroke="var(--cosmos-night)" strokeWidth="4.5" opacity="0.84" />
+                  <circle className="celestial-ring-inner" cx="600" cy="540" r={radius - 24} stroke="var(--cosmos-gold-light)" strokeWidth="1.4" opacity="0.48" />
                 </g>
               ))}
             </g>
@@ -92,8 +94,9 @@ export function CelestialField() {
             <g opacity="0.9">
               {ORBITING_STARS.map(([radius, angle, scale, rotation]) => {
                 const radians = angle * Math.PI / 180
-                const x = 600 + Math.cos(radians) * radius
-                const y = 540 + Math.sin(radians) * radius
+                // Stable SVG attributes across server and browser rendering.
+                const x = Number((600 + Math.cos(radians) * radius).toFixed(3))
+                const y = Number((540 + Math.sin(radians) * radius).toFixed(3))
                 return (
                   <ManuscriptStar
                     key={`${radius}-${angle}`}

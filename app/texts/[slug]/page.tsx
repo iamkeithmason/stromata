@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { EditorNote } from '@/app/components/EditorNote'
 import { notFound } from 'next/navigation'
 import { createPublicClient } from '@/lib/supabase/public'
 import { orThrow } from '@/lib/supabase/query'
@@ -163,6 +164,7 @@ export default async function TextPage({ params }: Props) {
 
   const body = text.body as string
   const summary = text.summary as string | null
+  const featuredNote = (text.featured_note as string | null)?.trim() || null
   const editorialIntro = text.editorial_introduction as string | null
 
   // Era label without the parenthetical span, e.g. "Nicene & Post-Nicene".
@@ -416,6 +418,18 @@ export default async function TextPage({ params }: Props) {
               >
                 {text.title}
               </h1>
+              {text.featured && featuredNote && (
+                // The editor's line sits above the summary and is attributed, so a
+                // reader who arrives from search sees the pick as a note to them
+                // and does not mistake it for the generated summary below.
+                <blockquote
+                  className="font-serif"
+                  style={{ margin: 0, paddingLeft: '1rem', borderLeft: '2px solid var(--on-dark-gold-soft)', maxWidth: '30rem' }}
+                >
+                  <EditorNote note={featuredNote} linkColor="var(--on-dark-gold)" style={{ fontSize: 'var(--text-prose)', lineHeight: 1.6, color: 'var(--on-dark-body)' }} />
+                  <footer style={{ fontSize: 'var(--text-label)', fontStyle: 'italic', color: 'var(--on-dark-mute)', marginTop: '0.5rem' }}>— the editor</footer>
+                </blockquote>
+              )}
               {summary && (
                 <p
                   // On phones the introduction follows at once and says more,
