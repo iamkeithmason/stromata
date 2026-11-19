@@ -14,6 +14,64 @@
 export const DEFAULT_FOOTNOTE_MARKERS = ['^', '*', '†', '‡', '§', '¶'];
 export const STRIP_FOOTNOTE_MARKERS = true;
 
+// White's 1918 Patrick (Texts for Students No. 5). The page-bottom apparatus is a
+// list of scripture references keyed by section number; it is removed here and
+// re-attached as markdown footnotes by hand (see run-log 2026-11-10).
+const PATRICK_CONFESSION_WHITE = {
+  sourceFile: 'scripts/ingestion/sources/confession-white-patrick-raw.txt',
+  startLandmark: '1.  I,  Patrick  the  sinner',
+  endLandmark: 'THE  LETTER',
+  slug: 'confession-white-patrick',
+  title: 'Confession',
+  author: 'Patrick of Ireland',
+  genre: 'Confession',
+  sourceAttribution: 'Translated by Newport J. D. White, A Translation of the Latin Writings of St. Patrick (London: SPCK, 1918), Texts for Students No. 5.',
+  provenanceNotes: 'Text sourced from the Archive.org scan translationoflat00patrrich (djvu.txt OCR). Accessed November 2026.',
+  translationNotes: 'Newport J. D. White (1860–1936), translation published 1918.',
+  editorialNotes: '',
+  manualCorrections: {},
+  regexCorrections: [
+    // Page-bottom scripture apparatus: "4.  Rom.  viii.  16,  17." and its OCR-garbled kin.
+    ['^\\s*(\\d{1,2}|ao|n-)\\.?\\s+(\\d\\s+)?(Is|Acta|Acts|Luke|Joel|Ps|Pa|Fs|Col|Rom|Eph|Ecclus|Rev|Dan|Matt|John|Jer|Prov|Gal|Mark|Zech|Tim|Cor|Pet|Thess|Heb|Sam|Exod|Tob|Wisd|Phil|Pliil|Tit|Mal)\\b[^\\n]*$', '', 'gm'],
+    ['^\\s*(vii\\.\\s+18;|Rom\\.\\s+xii\\.\\s+1 ;|Ps\\.\\s+xxxiv\\.\\s+6;\\s+2\\s+Sam\\.|Actsii\\.\\s+17\\.|Acta\\s+xiii\\.\\s+47\\s+;\\s+Ecclus\\.\\s+vii\\.\\s+16,|25,\\s+26\\.\\s+41\\.\\s+Luke\\s+i\\.\\s+17\\.)\\s*$', '', 'gm'],
+    ['^1\\s+In\\s+Co\\.\\s+Mayo\\.\\s*$', '', 'gm'],
+    ['^\\s*\\d+\\s*$', '', 'gm'],
+  ],
+  pageHeaderPatterns: ["CONF.*SSION\\s+AND\\s+LETTER", '^THE CONFESSION( \\d+)?$'],
+  keptHeadings: [],
+};
+
+// Wulfstan's Sermo Lupi in Cook & Tinker (eds), Select Translations from Old
+// English Prose (Ginn, 1908), pp. 194–9. Translation signed Elizabeth W. Manwaring.
+const WULFSTAN_SERMO_LUPI_COOK = {
+  sourceFile: 'scripts/ingestion/sources/sermon-of-the-wolf-cook-tinker-raw.txt',
+  startLandmark: 'Dearly  beloved,  understand  the  truth',
+  endLandmark: 'Elizabeth  W.',
+  slug: 'sermon-of-the-wolf-cook-tinker',
+  title: 'Sermon of the Wolf to the English',
+  author: 'Wulfstan the Homilist',
+  genre: 'Sermon',
+  sourceAttribution: 'Translated by Elizabeth W. Manwaring, in Albert S. Cook and Chauncey B. Tinker (eds), Select Translations from Old English Prose (Boston: Ginn & Company, 1908), pp. 194–9.',
+  provenanceNotes: 'Text sourced from the Archive.org scan selecttranslatio00cook (djvu.txt OCR). Accessed November 2026.',
+  translationNotes: '',
+  editorialNotes: '',
+  // Each a letter-level misread with one possible reading; listed in the run log.
+  manualCorrections: {
+    'mjus-': 'injus-', 'tliese': 'these', 'dihgence': 'diligence',
+    'tilings': 'things', 'appomted': 'appointed',
+    'tliis': 'this', 'livxig': 'living', 'wliich': 'which', 'hatmg': 'hating', 'wlierein': 'wherein',
+    'if  he  might  I  Here': 'if  he  might !  Here', 'together  I  Let': 'together !  Let',
+    'disease. .': 'disease.', "shame- '": 'shame-',
+    'God- \nfearing': 'God-fearing \n', '^thelred': 'Æthelred',
+  },
+  regexCorrections: [
+    // OCR sets a space before ; : ! ? (the printer's thin space). Close it up.
+    [' +([;:!?])', '$1', 'g'],
+  ],
+  pageHeaderPatterns: ['^WULFSTAN \\d+$', 'HOMIL[IT]+STS$'],
+  keptHeadings: [],
+};
+
 const ANSELM_PROSLOGION = {
   sourceFile: 'scripts/ingestion/sources/anselm-proslogium-1903.md',
   startLandmark: "ANSELM'S  PROSLOGIUM",
@@ -434,6 +492,8 @@ export default {
   'chrysostom-on-the-priesthood': CHRYSOSTOM_ON_THE_PRIESTHOOD,
   'gregory-pastoral-rule': GREGORY_PASTORAL_RULE,
   'john-of-damascus-exposition': JOHN_OF_DAMASCUS_EXPOSITION,
+  'patrick-confession-white': PATRICK_CONFESSION_WHITE,
+  'wulfstan-sermo-lupi-cook': WULFSTAN_SERMO_LUPI_COOK,
 
   // Template for new entries:
   // 'new-text-key': {

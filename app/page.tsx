@@ -13,6 +13,7 @@ import { ChurchYearRow } from './components/ChurchYearRow'
 import { resolveSeason } from '@/lib/liturgical/year'
 import { readingMinutes } from '@/lib/reading-time'
 import { ThemeChip } from './components/ThemeChip'
+import { SectionHeader } from './components/SectionHeader'
 
 // Incremental Static Regeneration: cache the rendered home page and revalidate
 // hourly. Safe given the manual publish cadence — newly published texts appear
@@ -90,36 +91,6 @@ export const metadata = {
 
 
 // ── Section header ─────────────────────────────────────────────────────────
-function SectionHeader({
-  title,
-  aside,
-  asideHref,
-}: {
-  title: string
-  aside?: string
-  asideHref?: string
-}) {
-  return (
-    <div className="mb-8">
-      <div className="flex items-baseline justify-between mb-3">
-        <h2 className="font-serif italic text-xl" style={{ color: 'var(--ink)' }}>
-          {title}
-        </h2>
-        {aside && (
-          asideHref ? (
-            <Link href={asideHref} className="kicker transition-opacity hover:opacity-70" style={{ textDecoration: 'none' }}>
-              {aside}
-            </Link>
-          ) : (
-            <span className="kicker">{aside}</span>
-          )
-        )}
-      </div>
-      <hr className="rule-gold" />
-    </div>
-  )
-}
-
 export default async function Home() {
   const supabase = createPublicClient()
 
@@ -245,6 +216,7 @@ export default async function Home() {
 
           <SearchBar tone="celestial" />
 
+
           {authorChips.length > 0 && (
             <nav className="celestial-authors" aria-label="Recommended authors">
               <span className="celestial-authors-label">Start with</span>
@@ -252,7 +224,6 @@ export default async function Home() {
               <span className="celestial-authors-links">
                 {authorChips.map((author, index) => (
                   <span key={author.slug}>
-                    {index > 0 && <span className="celestial-author-dot" aria-hidden="true">·</span>}
                     <Link
                       href={`/authors/${author.slug}`}
                       data-umami-event="author-open"
@@ -261,6 +232,9 @@ export default async function Home() {
                     >
                       {author.name}
                     </Link>
+                    {/* After the name, not before: a wrapped line then ends on a dot
+                        rather than starting with one. */}
+                    {index < authorChips.length - 1 && <span className="celestial-author-dot" aria-hidden="true">·</span>}
                   </span>
                 ))}
               </span>
@@ -295,17 +269,12 @@ export default async function Home() {
         <ChurchYearRow currentSeason={season} />
       </div>
 
-      {/* ── Featured authors ─────────────────────────────────────────────── */}
-      <div className="pt-6">
-        <FeaturedAuthors />
-      </div>
-
       {/* ── Reading history ──────────────────────────────────────────────── */}
       <ReadingHistorySection />
 
       {/* ── Recently added ───────────────────────────────────────────────── */}
       {feed.length > 0 && (
-        <section className="content-shell pb-24">
+        <section className="content-shell pb-20">
           <SectionHeader
             title="Recently added"
             aside="All texts →"
@@ -317,7 +286,9 @@ export default async function Home() {
 
           {/* ── Grid ── */}
           {gridEntries.length > 0 && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            // Two per row on phones too: one full-width cover per row made this section
+            // about a screen per book (26 Oct critique).
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-4 gap-y-6 sm:gap-6">
               {gridEntries.map((entry, i) => (
                 <FeedGridCard key={entry.kind === 'text' ? entry.text.id : entry.collection.id} entry={entry} index={i + 1} />
               ))}
@@ -325,6 +296,11 @@ export default async function Home() {
           )}
         </section>
       )}
+
+      {/* ── Featured authors ─────────────────────────────────────────────── */}
+      {/* After the texts, not before (4 Nov critique): the homepage's job is the
+          next text, and authors are a way to browse, not the first thing to find. */}
+      <FeaturedAuthors />
 
       {/* ── Browse by theme ──────────────────────────────────────────────── */}
       <section className="content-shell pb-20">
@@ -338,29 +314,9 @@ export default async function Home() {
               >
                 {cluster.cluster}
               </p>
-              <div className="flex flex-col gap-1.5 items-start">
+              <div className="flex flex-col items-start">
                 {cluster.themes.map(theme => (
-                  <Link
-                    key={theme.slug}
-                    href={`/themes/${theme.slug}`}
-                    className="inline-flex items-center transition-opacity hover:opacity-70"
-                    style={{
-                      color: 'var(--ink-mute)',
-                      border: '1px solid var(--rule)',
-                      background: 'transparent',
-                      fontFamily: 'var(--serif-smallcaps)',
-      fontFeatureSettings: '"smcp" 1',
-                      fontSize: 'var(--text-sm)',
-                      letterSpacing: '0.08em',
-                      padding: '3px 10px',
-                      textDecoration: 'none',
-                    }}
-                    data-umami-event="theme-click"
-                    data-umami-event-theme={theme.name}
-                    data-umami-event-source="homepage"
-                  >
-                    {theme.name}
-                  </Link>
+                  <ThemeChip key={theme.slug} href={`/themes/${theme.slug}`} name={theme.name} source="homepage" />
                 ))}
               </div>
             </div>
@@ -380,7 +336,7 @@ export default async function Home() {
               marginBottom: '3rem',
             }}
           >
-            <span style={{ flex: 1, height: 1, background: 'rgba(201,148,58,0.3)' }} />
+            <span style={{ flex: 1, height: 1, background: 'var(--gold-border)' }} />
             <span
               style={{
                 fontFamily: 'var(--serif-display)',
@@ -392,7 +348,7 @@ export default async function Home() {
             >
               §
             </span>
-            <span style={{ flex: 1, height: 1, background: 'rgba(201,148,58,0.3)' }} />
+            <span style={{ flex: 1, height: 1, background: 'var(--gold-border)' }} />
           </div>
 
           <div
@@ -405,7 +361,7 @@ export default async function Home() {
               </div>
               {[{ label: 'About', href: '/about' }, { label: 'Colophon', href: '/colophon' }, { label: 'Authors', href: '/authors' }, { label: 'RSS feed', href: '/rss' }].map(({ label, href }) => (
                 <div key={label}>
-                  <Link href={href} className="transition-opacity hover:opacity-70" style={{ color: 'rgba(245,240,230,0.65)', textDecoration: 'none' }}>{label}</Link>
+                  <Link href={href} className="inline-flex items-center min-h-[44px] transition-opacity hover:opacity-70" style={{ color: 'var(--on-dark-soft)', textDecoration: 'none' }}>{label}</Link>
                 </div>
               ))}
             </div>
@@ -415,13 +371,13 @@ export default async function Home() {
               </div>
               {[{ label: 'Library', href: '/texts' }, { label: 'Search', href: '/search' }].map(({ label, href }) => (
                 <div key={label}>
-                  <Link href={href} className="transition-opacity hover:opacity-70" style={{ color: 'rgba(245,240,230,0.65)', textDecoration: 'none' }}>{label}</Link>
+                  <Link href={href} className="inline-flex items-center min-h-[44px] transition-opacity hover:opacity-70" style={{ color: 'var(--on-dark-soft)', textDecoration: 'none' }}>{label}</Link>
                 </div>
               ))}
             </div>
-            <div style={{ fontStyle: 'italic', color: 'rgba(245,240,230,0.5)', maxWidth: '44ch', lineHeight: 1.65, fontSize: 'var(--text-label)' }}>
+            <div style={{ fontStyle: 'italic', color: 'var(--on-dark-mute)', maxWidth: '44ch', lineHeight: 1.65, fontSize: 'var(--text-label)' }}>
               Public-domain texts, edited for legibility. Stromata has no investors and no advertising. If the texts here have been useful to you,{' '}
-              <a href="https://ko-fi.com/stromata" target="_blank" rel="noopener noreferrer" className="transition-opacity hover:opacity-70" style={{ color: 'rgba(201,148,58,0.85)', textDecoration: 'none' }} data-umami-event="ko-fi-click" data-umami-event-source="homepage">
+              <a href="https://ko-fi.com/stromata" target="_blank" rel="noopener noreferrer" className="transition-opacity hover:opacity-70" style={{ color: 'var(--gold)', textDecoration: 'none' }} data-umami-event="ko-fi-click" data-umami-event-source="homepage">
                 a small contribution helps keep the lights on →
               </a>
             </div>
@@ -456,6 +412,7 @@ function TextLead({ text }: { text: TextRow }) {
             deathYear={author?.death_year ?? null}
             accessionNumber={text.accession_number}
             traditionSlug={author?.tradition?.slug ?? null}
+            genre={text.genre?.name ?? null}
             index={0}
           />
         </Link>
@@ -479,7 +436,7 @@ function TextLead({ text }: { text: TextRow }) {
           </span>
         </div>
         {themes.length > 0 && (
-          <div className="flex flex-wrap gap-1.5 mt-4">
+          <div className="flex flex-wrap gap-x-1.5 mt-4">
             {themes.map(t => (
               <ThemeChip key={t.slug} href={`/themes/${t.slug}`} name={t.name} source="featured-lead" />
             ))}
@@ -509,6 +466,7 @@ function CollectionLead({ entry }: { entry: Extract<FeedEntry, { kind: 'collecti
               accessionNumber={null}
               accessionDisplay={accessionDisplay}
               traditionSlug={author?.tradition?.slug ?? null}
+              genre={representative.genre?.name ?? null}
               index={0}
             />
           </StackedCover>
@@ -585,7 +543,7 @@ function FeedGridCard({ entry, index }: { entry: FeedEntry; index: number }) {
       ? `№ ${accessionRange.min}–${accessionRange.max}`
       : null
     return (
-      <div className="w-2/3 mx-auto sm:w-full">
+      <div className="w-full">
         <Link
           href={`/collections/${collection.slug}`}
           className="group block"
@@ -601,6 +559,7 @@ function FeedGridCard({ entry, index }: { entry: FeedEntry; index: number }) {
               accessionNumber={null}
               accessionDisplay={accessionDisplay}
               traditionSlug={author?.tradition?.slug ?? null}
+              genre={representative.genre?.name ?? null}
               index={index}
             />
           </StackedCover>
@@ -617,7 +576,7 @@ function FeedGridCard({ entry, index }: { entry: FeedEntry; index: number }) {
   const themes = text.text_themes.map(tt => tt.theme).filter(Boolean) as { name: string; slug: string }[]
 
   return (
-    <div className="w-2/3 mx-auto sm:w-full">
+    <div className="w-full">
       <Link
         href={`/texts/${text.slug}`}
         className="group block"
@@ -631,13 +590,15 @@ function FeedGridCard({ entry, index }: { entry: FeedEntry; index: number }) {
           deathYear={author?.death_year ?? null}
           accessionNumber={text.accession_number}
           traditionSlug={author?.tradition?.slug ?? null}
+          genre={text.genre?.name ?? null}
           index={index}
         />
       </Link>
       <div className="px-0.5 mt-3">
         <p className="caption mb-2">~ {readingMinutes(text.word_count)} min</p>
+        {/* Chips are hidden in the two-up phone grid: at half width they stacked one per line. */}
         {themes.length > 0 && (
-          <div className="flex flex-wrap gap-1">
+          <div className="hidden sm:flex flex-wrap gap-x-1">
             {themes.map(t => (
               <ThemeChip key={t.slug} href={`/themes/${t.slug}`} name={t.name} source="homepage" />
             ))}
@@ -671,7 +632,7 @@ function StackedCover({ children }: { children: React.ReactNode }) {
           height: '100%',
           top: 5,
           left: 8,
-          background: 'rgba(10, 8, 5, 0.50)',
+          background: 'var(--cover-stack-back)',
         }}
       />
       {/* Spine layer 1 — middle (z-index:auto = 0) */}
@@ -683,7 +644,7 @@ function StackedCover({ children }: { children: React.ReactNode }) {
           height: '100%',
           top: 2.5,
           left: 4,
-          background: 'rgba(10, 8, 5, 0.28)',
+          background: 'var(--cover-stack-mid)',
         }}
       />
       {/* Cover — z-index:1 lifts it above the auto spine layers */}

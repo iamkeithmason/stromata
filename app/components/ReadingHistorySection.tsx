@@ -4,20 +4,7 @@ import Link from 'next/link'
 import { getHistory, type ReadingHistoryEntry } from '@/lib/reading-history'
 import { PROGRESS_NOT_STARTED, PROGRESS_FINISHED } from './ReadingProgressBar'
 import { BookCover } from './BookCover'
-
-function SectionHeader({ title, aside }: { title: string; aside?: string }) {
-  return (
-    <div className="mb-8">
-      <div className="flex items-baseline justify-between mb-3">
-        <h2 className="font-serif italic text-xl" style={{ color: 'var(--ink)' }}>
-          {title}
-        </h2>
-        {aside && <span className="kicker">{aside}</span>}
-      </div>
-      <hr className="rule-gold" />
-    </div>
-  )
-}
+import { SectionHeader } from './SectionHeader'
 
 function progressLabel(entry: ReadingHistoryEntry): string | null {
   const p = entry.progress ?? 0
@@ -39,7 +26,8 @@ export function ReadingHistorySection() {
   return (
     <section className="content-shell pb-20">
       <SectionHeader title="Reading history" aside="Recently read" />
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+      {/* Two per row on phones, matching "Recently added" (Keith, 26 Oct). */}
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-4 gap-y-6 sm:gap-6">
         {history.map((entry, i) => {
           const p = entry.progress ?? 0
           const finished = p >= PROGRESS_FINISHED
@@ -52,7 +40,7 @@ export function ReadingHistorySection() {
             : {}
 
           return (
-            <div key={entry.slug} className="w-2/3 mx-auto sm:w-full">
+            <div key={entry.slug} className="w-full">
               <Link
                 href={`/texts/${entry.slug}`}
                 className="group block"
@@ -67,6 +55,7 @@ export function ReadingHistorySection() {
                   deathYear={entry.deathYear}
                   accessionNumber={entry.accessionNumber}
                   traditionSlug={entry.traditionSlug}
+                  genre={entry.genreName ?? null}
                   index={i}
                 />
               </Link>

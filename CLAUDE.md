@@ -4,6 +4,33 @@ The Stromata is a curated digital library of public-domain Christian theological
 
 ---
 
+## Daily operator commands — for Keith, on the laptop
+
+Start the site locally from the repo root (it needs `.env.local` with the Supabase keys and admin
+credentials; a sign-in or Supabase error usually means that file is missing):
+
+```bash
+npm run dev
+```
+
+Then sign in at **http://localhost:3000/admin**. Where to go depends on how far along a text is:
+
+| The text is… | Open | What you do there |
+|---|---|---|
+| fetched or staged, **not yet imported** (files on disk) | `/admin/pipeline` | **Review** → **Mark staged** → toolbar **Run import**. The one-click runners are dev-only, so this works on localhost and nowhere else. |
+| **imported**, awaiting publish (`published: false`) | `/admin/review` (phone-first batch queue) or `/admin/drafts` (one at a time) | Approve or edit, then publish. |
+| a long text needing sections or paragraph breaks | `/admin/review/sections`, `/admin/review/paragraphs` | Approve the editor's divisions. |
+
+To see where every prospect stands without opening the browser:
+
+```bash
+npm run pipeline:status
+```
+
+`stage-2-done` or `staged` means it is on its way to import; `imported` means it is already in Drafts.
+
+---
+
 ## Notion access — this workspace is on the free tier
 
 Any time you use the Notion MCP tools against this workspace (not just for the content pipeline —
@@ -35,8 +62,14 @@ and get page ids in the same query you read fields with, so you don't pay twice 
 When the budget is gone, **`notion-search` and `notion-fetch` still work and are not metered** —
 slower and page-at-a-time, but enough to finish a job you have already planned.
 
-**Still gated:** `notion-query-database-view` / view mode. `notion-search` + `notion-fetch` remain
-the right tool for *finding* a page by keyword and for reading one page's full properties and body.
+**View mode works and is not metered — verified 2026-10-27.** `notion-query-data-sources` with
+`mode: "view"` and a `view://…` URL ran the Feature Backlog's *Agent queue, approved* view
+(`view://3d2d9194-805d-8188-9ddb-000c4cbc0eba`) with its saved filter and sort, and the tool states
+view mode has no plan quota. This file called it gated until that date. Prefer a saved view over SQL
+whenever one already answers the question; `/next-agent-card` step 1 now does. Formula columns come
+back as `formulaResult://…` references rather than values, and rows arrive whole, so keep
+`page_size` small. `notion-search` + `notion-fetch` remain the right tools for *finding* a page by
+keyword and for reading one page's full properties and body.
 
 Two footguns when reading this database with SQL:
 
@@ -83,6 +116,24 @@ approved until you do), approve the description, edit + Approve/Hold each card (
 queue reopens at the first pending card), then "Publish N approved". Every publish goes through
 `lib/publishing/publish-text.ts` — the one publish path, which the admin edit form now shares; never
 add a second one.
+
+**Sections** (`/admin/review/sections`, linked from the queue) are reviewed separately, because their texts
+are mostly already published. A long text with no contents list (9,000+ words and fewer than three
+headings, `needsSections` in `scripts/lib/sections.mjs`; 33 texts on 2 Nov 2026) gets an editor's division
+into labelled sections. `npm run generate:review-drafts -- --sections` (`--slug=`, `--dry-run`, `--force`)
+drafts them into `texts.sections_draft`; Keith edits and approves each, which copies it to `texts.sections`
+and refreshes the page. Sections are editorial, **not part of the original text**, and are stored as
+`{source: "editorial", sections: [{label, starts_with}]}` so the reader can mark them as the editor's.
+`starts_with` is derived from the body, never typed; keep every caller on the shared functions.
+
+**Paragraph breaks** (`/admin/review/paragraphs`, linked from the queue) are the other editorial layer for long
+texts: sections solve navigation, these solve reading, and a text can need both. Any prose paragraph of 800+
+words is flagged (Keith, 10 Nov 2026), at import and by `paragraph_wall_stats` in the database.
+`npm run generate:review-drafts -- --paragraphs` (`--tier=1|2|3`, default 1; `--slug=`, `--dry-run` prints the
+tier report, `--force`) has Claude propose breaks into `texts.paragraphs_draft` as anchors, never a body.
+Approve inserts them into `body`, and `applyBreaks` refuses unless every word is unchanged; it appends the
+editor's line to `provenance_notes` and refreshes only that text's page. Verse, lists, blockquotes, headings
+and footnotes are never broken. All of it lives in `scripts/lib/paragraphs.mjs`; keep every caller there.
 
 ## Pipeline GUI — `/admin/pipeline` (local operator UI, for Keith not Claude)
 
@@ -162,7 +213,7 @@ weeks of unusable data. Adding an attribute and reasoning that it "should" fire 
 failure mode.
 
 **The sweep is a command now: `node scripts/verify-analytics.mjs --url=<preview>`.** (Previews are
-opt-in — ask Keith before tagging a commit `[preview]`; see "Vercel usage" below.) It drives a
+opt-in — ask Keith before pushing a `preview/` branch; see "Vercel usage" below.) It drives a
 real browser over a real deployment, intercepts every request to Umami's collection endpoint,
 records the payload and then **aborts** it — so a verification run never lands a synthetic event in
 the dataset. It prints a pass/fail table and exits non-zero on any failure. `--only=a,b` narrows it;
@@ -172,7 +223,13 @@ rather than the site: pass `--bypass-token=<automation bypass secret>` (Vercel �
 Deployment Protection → Protection Bypass for Automation), or set
 `VERCEL_AUTOMATION_BYPASS_SECRET`. Behind a TLS-inspecting proxy, where Chromium rejects the
 re-signed certificate, `--via-node` routes each request through Playwright's Node-side stack
-instead — certificates are still verified, just by Node. The assertion half lives in
+instead — certificates are still verified, just by Node. **Production sweeps run from Keith's
+laptop, not a cloud session** (Keith, 2 Nov 2026): Vercel's bot checkpoint answers a cloud browser
+in place of the site, and that is not to be bypassed. A cloud session verifies against a local
+build instead (`next dev` with the throwaway `.env.local` described under "Screens reference",
+then `--url=http://localhost:3000`). On 2 Nov a cloud `--prod --via-node` run reported a reader
+control "not found" that was really this, so the sweep now stops on the checkpoint page, and a
+control every text page renders fails rather than skips when absent. The assertion half lives in
 `scripts/lib/wire-check.mjs` and is unit-tested, so the sweep cannot go green by looking in the
 wrong place. Two things it deliberately does not do: block the tracker script (that would leave
 `window.umami` undefined and every check would "pass" by firing nothing) and treat a page that
@@ -212,12 +269,13 @@ Two traps worth knowing:
 
 | Property | Meaning | Value form |
 |---|---|---|
-| `from` | the surface the click originated on | kebab-case surface name. Homepage: `seasonal-panel`, `featured-lead`, `homepage-grid`, `featured-band`, `reading-history`, `homepage-entrance`. Reader: `text-reader`, `text-page`, `related-figures`. Browse and index: `ten-minutes`, `texts-index`, `authors-index`, `locations-index`, `search-results`, `search-chip`. Entity pages: `author-page`, `collection-page`, `theme-page`, `era-page`, `tradition-page`, `scripture-page`, `location-page`. **The list is the vocabulary — a new surface gets a new value here, in the Events Register, and nowhere else.** |
+| `from` | the surface the click originated on | kebab-case surface name. Homepage: `seasonal-panel`, `featured-lead`, `homepage-grid`, `featured-band`, `reading-history`, `homepage-entrance`. Reader: `text-reader`, `text-page`, `related-figures`, `read-next`; the phone reading header and its sheet (PR #187): `text-hero-contents`, `text-running-head`, `text-sheet-contents`, `text-sheet-next`, `text-sheet-read-next`, `text-sheet-prev`, `text-sheet`. Browse and index: `ten-minutes`, `texts-index`, `authors-index`, `locations-index`, `search-results`, `search-chip`. Entity pages: `author-page`, `collection-page`, `theme-page`, `era-page`, `tradition-page`, `scripture-page`, `location-page`. **The list is the vocabulary — a new surface gets a new value here, in the Events Register, and nowhere else.** |
 | `text` | which text was opened | **slug**, never the title |
 | `collection` | which collection was opened | **slug** |
 | `author` | which author | display name (matches `authors.name`) |
 | `country` | which location | display name |
 | `depth` | how many distinct texts this session has reached | integer, `1` or `2` only (`text-session-depth`) |
+| `pick` | which rule chose a `read-next` pick, or the editor | `editorial` \| `author` \| `theme` \| `genre` (on `text-open` from `read-next` and `text-sheet-read-next` only) |
 | `state`, `direction` | qualifiers | short enum-ish string |
 
 Rules:
@@ -274,6 +332,13 @@ cleared from the admin header), so the founder's own browsing never inflates the
   this date `text-read` values are titles and don't join to Supabase; after, they're slugs — the two
   spans aren't directly comparable. Surfaced by the `stromata-analytics` digest's Events Register
   reconciliation on its first run.
+- From the **release after 2 Nov 2026** (the first one carrying this change), `text-open` counts
+  **clicks only**. Until then every text page also sent a `text-open` on load, with no `from`, beside
+  `text-view` carrying the same data, so `text-open` mixed page views into its click count and left a
+  large unattributed bucket in any `from` breakdown. Keith ruled to remove it on 2 Nov; `text-view`
+  still counts page views. Before the release, total `text-open` ≈ clicks + text-page views; after,
+  clicks alone. Compare `from`-attributed counts across the date, never totals. The sweep's
+  "none on page load" row guards it.
 
 ---
 
@@ -375,41 +440,154 @@ example (a NOINDEX exploration, not linked in nav).
 
 ---
 
+## Screens reference — look at the site before changing it
+
+**`docs/screens/stromata-screens.pdf`** holds the key public pages as they currently look, at phone (390px) and
+desktop (1440px): home, the reader (top landing text, its end-of-text module, dark theme, a short text), the
+library, authors and an author page, a collection, a theme, an era, a tradition, Scripture, search and the 404.
+The cover says when it was rendered and from which code. **Any session doing UI work reads it first**, so
+changes start from how the site actually looks rather than from the code alone. A copy sits in the claude.ai
+project "3 - Stromata", so ordinary chats can review the interface too (the practice Paideia uses).
+
+- **Regenerate it after each release:** `npm run screens -- --png`. The pages come from `scripts/screens/manifest.json`,
+  where you can add a page or an extra shot further down one. The PDF commit is docs-only (`docs/screens/` is on
+  `SITE_IRRELEVANT`), so it goes straight to `main` and deploys nothing. Then replace the copy in the claude.ai
+  project, **and rebuild the site canvas in the same run** (Keith, 9 Nov 2026): `npm run screens:canvas --
+  --range=90d --fragment --out=<scratch>/stromata-canvas.html`, then republish it to its existing artifact,
+  **https://claude.ai/artifact/TgviXk8oitdXmjDgfy5P46** (Artifact tool, pass that `url`; never create a new one, the
+  link is pinned in Keith's sidebar). The canvas reuses this run's PNGs, so it costs only a few Umami calls.
+- **From a cloud session, render the code, not the live site.** Vercel's bot checkpoint stops a cloud browser on
+  thestromata.com and on previews, and that protection is not to be bypassed. Check out the code, write a
+  throwaway `.env.local` with the public anon key (Supabase MCP `get_publishable_keys`) plus dummy `ADMIN_*`
+  values, run `next dev`, then `npm run screens -- --url=http://localhost:3000`. Delete `.env.local` afterwards.
+  From Keith's laptop, plain `npm run screens` renders production.
+- **Meters:** one run is about 30 shots against the live database, a few MB of Supabase egress (and, against
+  production, a little Fluid CPU). Once per release; don't re-run it for polish.
+- `--png` also writes each shot to `docs/screens/png/` (gitignored); `--only=<name>` renders a subset.
+- **The site canvas** (`npm run screens:canvas`, after a `--png` run) puts the manifest pages that carry
+  `canvas`/`links` on one zoomable board, with a line per route weighted by Umami clicks (`--range=`, default
+  30d; `--fragment` to publish as an artifact). A link's `from` values must be on `scripts/lib/from-surfaces.mjs`,
+  which a test keeps in step with the `from` row of the property vocabulary below. Add a surface in both places.
+  A legacy event that records its surface under another name sets `property` on the link (`theme-click` uses
+  `"source"`); those values are not vocabulary-checked.
+
+---
+
+## Mobile-first — design at 390px, then add width
+
+Adopted by Keith on 27 Oct 2026. The site was built desktop-first and adapted for phones afterwards, and
+every phone fix since has been found by accident or a one-off audit. About a third of readers are on
+phones, and most arrive from search straight onto a text, so **new public UI starts at 390px** and widens
+from there.
+
+- **Write the phone layout first.** Unprefixed Tailwind classes and base CSS are the phone; `md:`/`lg:` and
+  `min-width` media queries add the wider tiers. A `max-width` override to rescue a desktop layout on
+  phones (as `.frontispiece` had to do in PR #167) is a sign the work started at the wrong end.
+- **The checklist every public change meets at 390px:** the first screen shows what the reader came for
+  (on a text, the text); tap targets are at least 44px; nothing scrolls sideways (long URLs and slugs
+  wrap); furniture collapses before content does; text reads without zoom; nothing fixed covers content.
+- **Look at it before calling it done.** Render the changed pages at 390px as well as 1440px, from a local
+  build against the live data (`npm run screens -- --url=http://localhost:3000 --only=<page>`, see
+  "Screens reference" above), and put the phone shot in the PR. A new page added to
+  `scripts/screens/manifest.json` gets both widths.
+- **Existing pages** are being brought up to this standard by the backlog card "Mobile-first audit: bring
+  every public page up to phone-first standard". Until a page has been through it, don't assume its phone
+  layout was designed; check it.
+
+---
+
 ## Vercel usage — previews are opt-in, and batch small changes
 
 Stromata is on Vercel's **Hobby (free) tier**, and in Sept 2026 it went over the Fluid Active CPU
 allowance (see CHANGELOG 2026-09-29 and 2026-10-04). A few habits keep it under, and all apply to
 every session:
 
-**1. Previews only build when asked.** `vercel.json` → `scripts/vercel-ignore-build.sh` skips every
-preview build unless the pushed head commit's message contains **`[preview]`**. Production (merges
-to `main`) always builds. So by default a pushed branch gets **no preview URL** — don't tell Keith to
-"check the preview" unless one was requested.
+**1. Previews only build when asked, and an unasked push creates no deployment at all.** Since
+2026-11-04 `vercel.json` sets `git.deploymentEnabled` to the production branch and `preview/**` only
+(`release` and `preview/**`, since 9 Nov 2026). A push to any other branch (`main`, `claude/*`, …) makes **no Vercel deployment**, not even a cancelled one.
+That matters because the 2 Nov 2026 measurement showed cancelled deployments counting towards
+Hobby's 100-a-day cap, which Stromata shares with Paideia (2 Nov: 137 deployments across the two
+projects, only about 38 of them real builds). Production (pushes to `release`)
+always builds. By default a pushed branch gets **no preview URL** — don't tell Keith to "check the
+preview" unless one was requested.
 
-- **When a preview would genuinely help, ask Keith first — don't add `[preview]` on your own.**
-  Good reasons: a visual or layout change he should eyeball, or an analytics change that the
+- **When a preview would genuinely help, ask Keith first — don't create a `preview/` branch on your
+  own.** Good reasons: a visual or layout change he should eyeball, or an analytics change that the
   verification rule says must be observed on the wire (`verify-analytics.mjs` needs a deployment).
   Say why in one line and prompt him to ask for it explicitly, e.g. *"This changes the reader
   header — want a preview to check it on your phone? If so, say 'build a preview'."*
-- **When he says yes,** put `[preview]` in the message of the next commit you push (a real change,
-  or the commit that carries his requested tweak). Only the head commit of a push counts, so a later
-  push without the tag builds nothing — tag again if he wants the preview refreshed.
-- **The tag matches anywhere in the head commit's message, body included** — a commit that merely
-  *mentions* it builds a preview (this happened on #136). When you are not asking for a preview, don't
-  write the literal string in a commit message; say "the preview tag" instead.
+- **When he says yes,** push the same commit to a branch named `preview/<short-name>`:
+  `git push origin HEAD:refs/heads/preview/<short-name>`. That push builds a preview; each further
+  push to that branch builds again, and every one spends a cap slot, so push to it deliberately.
+  **Push the preview branch before the working branch, or it may not build.** On 9 Nov 2026 a commit
+  pushed to `claude/cover-ornaments` and then, seconds later, to `preview/cover-ornaments` got no
+  deployment at all, apparently because Vercel had already seen (and skipped) that SHA on the
+  non-deploying branch. An empty commit on the preview branch alone (`git commit --allow-empty`) built
+  at once.
+  Delete the branch when he is done (`git push origin --delete preview/<short-name>`). The working
+  branch and its PR are unchanged, and there is no commit-message tag any more.
+- **The ignore step is the second gate.** `scripts/vercel-ignore-build.sh` skips any non-production
+  build whose branch does not start with `preview/`, so a misconfigured `deploymentEnabled` degrades
+  to the old cancelled-deployment behaviour rather than to building every push.
 
-**2. Group small, related changes into one PR.** Every merge to `main` is a production deploy, and
+**2. Group small, related changes into one PR.** Every push to `release` is a production deploy, and
 every deploy starts with an empty page cache, so crawlers re-render the site after each one — merge
 frequency, not reader traffic, drove the Sept 2026 spike (17 merges in 1–19 Sep, 37 in 20–29 Sep).
 If a session turns up several small related fixes, ship them together in one PR rather than one PR
 each; if Keith asks for a follow-up to a PR that is still open, add it to that PR. (Unrelated
 changes still get separate PRs — this is about not splitting one piece of work into many.)
 
+**Standing rule — `main` is where work lands, `release` is what is live, and `release` moves once a week
+(agreed with Keith 2026-10-10; direction reversed 2026-11-06, Keith's preference from his portfolio).**
+Vercel's **Production Branch is `release`**, not `main`. Every deploy empties the page cache, so the live
+site changes only when `release` moves. **Permanent** (Keith, 2026-10-26): the weekly promotion stays after
+the Usage page's 30-day Fluid Active CPU total is back under the 4h Hobby allowance (3h 47m on 6 Nov 2026, so
+it is: the margin is about 13 minutes, which is why it stays). The Monday release task reports every week,
+even when there is nothing to ship.
+
+The Production Branch is set in Vercel → Settings → **Environments** → Production → **Branch Tracking**
+(moved there from the Git page; switched to `release` by Keith on 9 Nov 2026).
+
+- **Every PR opens with base `main`** — features, docs, content and `/next-agent-card` alike. `main` is not
+  production, so a merge into it deploys nothing and costs none of the weekly slot; merge as often as is
+  useful. There is no longer a "is this site-changing?" decision to get wrong. Merge into `main` only when
+  Keith has said to; otherwise leave the PR open and tell him what is queued.
+- **The weekly promotion is the one slot.** Open **one** PR with base `release` and head `main`, titled
+  "Release YYYY-MM-DD", listing the PRs it carries and any Supabase migration that must be applied before it
+  ships (never assume one has run). Merge it with a **merge commit**, not a squash. That merge is the week's
+  single production deploy. GitHub does not delete `main` when it is a PR's head, so there is no branch to
+  recreate (the old direction deleted `release` each week). **Release day is Monday morning** (Keith,
+  2026-10-10): a weekly routine opens the draft promotion PR then, only if `main` is ahead of `release` with
+  changes that touch the site; Keith merges it.
+- **Never merge the promotion PR yourself** — leave it open, say what it carries, and let Keith merge it.
+- **The 100-deployments-a-day cap is shared with Paideia — check the release actually built.** Vercel's
+  Hobby plan allows 100 deployments per day per *account*, and Stromata and Paideia share the account. Every
+  push counts, **including the ones `vercel-ignore-build.sh` cancels**: skipping a build saves build minutes,
+  not cap slots. On 2 Nov 2026 the cap was spent between 09:05 and 12:36 UTC, 86 of the 100 by Paideia
+  (about ten Claude branches plus `main`, the morning GitHub Actions minutes reset), and a Stromata push then
+  got `Resource is limited - try again in 24 hours (api-deployments-free-per-day)`. A promotion in that
+  window would not deploy. So after the promotion PR merges, confirm a production deployment for its merge
+  commit reached `READY` (Vercel MCP `list_deployments` with `target: production`, or the dashboard). If it
+  was refused, wait for the window to roll over and redeploy that commit from the Vercel dashboard rather
+  than pushing again, since another push only spends another slot.
+- **A broken site or a security fix is the exception:** open its PR with base `release` (it goes live on
+  merge; tell Keith), then merge `release` back into `main` so the branches don't diverge.
+- Publishing texts is fine in a batch (about 4 min of CPU once per sitting; batch it, don't trickle it).
+
+Evidence for the rule: 6–9 Oct ran at roughly 4–6 min/day (target ≤ 8) after two real deploys in six days,
+against 37 merges between 20 and 29 Sep; the 30-day total read 3h 47m on 6 Nov against the 4h allowance. The
+weekly promotion is a guard against sliding back, not a claim that one more deploy would hurt today.
+
+**A backlog card counts as `Built` once its change is on `release`** (Keith, 2026-10-10; branch renamed
+2026-11-06) — not when its PR merges into `main`. A card whose PR sits in `main` waiting for the weekly
+promotion is still `Planned`. Shipping is the promotion PR's merge, so the reconciliation sweep checks that
+the PR's merge commit is reachable from `release`. The `/next-agent-card` command follows this section.
+
 **Docs-only and content-only production commits don't deploy.** The same script skips a *production*
-build when every file in the commit is on `SITE_IRRELEVANT` at the top of `scripts/vercel-ignore-build.sh`:
+(`release`) build when every file in the commit is on `SITE_IRRELEVANT` at the top of `scripts/vercel-ignore-build.sh`:
 `CHANGELOG.md`, `CLAUDE.md`, `scripts/analytics/reports/`, and the content pipeline's own files —
 `scripts/ingestion/run-log/`, `scripts/ingestion/prospect-queue.json`, `scripts/ingestion/output/` — chiefly so
-the Monday analytics-digest commit and a pipeline run stop wiping the page cache. Rules: **a path goes on that
+a promotion that carries only the analytics digest, pipeline runs and docs deploys nothing. Rules: **a path goes on that
 list only if nothing the *public* site builds or serves reads it — grep `app/` and `lib/` first**
 (`scripts/analytics/aggregate.mjs` is *not* listed: `lib/analytics/dashboard.ts` imports it; nor is the code
 in `scripts/ingestion/*.mjs`, which an admin route imports). **The accepted exception:** the admin pipeline and
@@ -417,7 +595,7 @@ sourcer screens read the queue, staged output and run logs from the filesystem, 
 show data as of the last *real* deploy — they are local operator tools, and Keith agreed to this on 2026-10-04.
 Don't add anything else the admin side reads without asking. Every doubt builds (no parent commit, empty diff,
 git error, a path not listed). To force a build of a docs-only commit, put the force-deploy tag in its
-message — the literal string is `[deploy]`, and like the preview tag it matches anywhere in the message, so
+message — the literal string is `[deploy]`, and like the old preview tag it matches anywhere in the message, so
 don't write it unless you mean it. A known blind spot: a push of several commits at once relies on Vercel
 supplying `VERCEL_GIT_PREVIOUS_SHA` to catch an earlier site change behind a final skippable commit (PR
 merges and the digest are single commits, so this does not arise today). Tests:
@@ -433,13 +611,95 @@ comes from saves calling `revalidatePath`:
 - Text publish/edit → `lib/publishing/publish-text.ts`; author saves → `lib/authors/revalidate.ts`;
   era/tradition/theme/location/collection saves → `revalidateEntity` in
   `lib/publishing/revalidate-entities.ts`.
-- **Any new admin route or script that changes something the public site renders must call one of
-  these** (or add an entity to `entitySurfaces`, with a test). A route that doesn't looks fine for an
-  hour under the old window and silently stale for a week under this one.
+- **Any new admin route that changes something the public site renders must call one of these** (or
+  add an entity to `entitySurfaces`, with a test). A route that doesn't looks fine for an hour under
+  the old window and silently stale for a week under this one. `lib/cache/no-route-wide-revalidation.test.ts`
+  fails CI on an admin route that writes to Supabase without importing a helper; a route whose write
+  no public page reads goes on its `NO_PUBLIC_WRITE` list with the reason.
+- **Name the pages that changed; never purge a whole route.** `revalidatePath('/texts/[slug]', 'page')`
+  (or a `'layout'` purge) marks every page of that route stale, and because crawlers visit every page,
+  it costs a production deploy's worth of CPU and Supabase reads. Until 2026-11-04 every chapter edit
+  did exactly that. Pages that render a row *inside* them come from `collectionTextPaths` /
+  `locationPaths`; the same test refuses the pattern form.
+- **A `revalidate` window on a `[param]` page only works with `generateStaticParams`.** Without it Next
+  renders the page on every request (ƒ in `next build`) and the window caches nothing but the data.
+  Until 2026-11-04 the text, author, collection and Scripture pages were all like that: `/texts/[slug]`
+  alone was most of the Hobby CPU. An empty `return []` is enough (● in `next build`);
+  `lib/cache/public-pages-are-cached.test.ts` fails CI on a new cached `[param]` page without it.
+- **Keep public routes cacheable; this is what decides the Hobby CPU bill.** Since 2026-11-04 traffic, not
+  deploys or edits, is most of the cost, so a route that renders per request is paid for on every crawler
+  hit. When building a public feature:
+  1. A `[param]` page with a `revalidate` window exports `generateStaticParams` (see above).
+  2. Public pages and the code they import never read `cookies()`, `headers()`, `draftMode()`,
+     `connection()` or `searchParams`, and never opt out with `noStore`, `dynamic = 'force-dynamic'`,
+     `revalidate = 0` or the public client's `{ live: true }`. Anything per visitor (reading progress,
+     "continue reading", the season) stays in the browser, as it does today.
+  3. No browser fetch to an `/api` route from public code: it is billed on every page view even when the
+     page is cached. Render the data into the cached page instead.
+  4. A route that truly must be dynamic (search, feeds, downloads) sets a CDN `Cache-Control` with
+     `s-maxage`, and goes on `DYNAMIC_ALLOWED` with its reason.
+  `lib/cache/public-routes-stay-cached.test.ts` enforces 2–4 by source scan and
+  `lib/cache/public-pages-are-cached.test.ts` enforces 1. A scan cannot follow every import, so **for a PR
+  that adds or changes a public route, also read the `next build` route table and confirm the route shows
+  ● or ○, not ƒ**, and say so in the PR. To see where CPU goes, Vercel → Observability → Vercel Functions,
+  sorted by Active CPU (Hobby shows 12 hours); the budget is ~8 min a day.
 - **`/scripture/[ref]` is the exception: daily, on purpose** (`revalidate: 86400`, passed to the client
   too), because publishing does not fan out to its ~4,000 leaves.
-- An edit made straight to the database from a CLI script calls no `revalidatePath` and so takes up to
-  a week to show. If that matters, refresh the affected page by saving it once in the admin app.
+- **A CLI script that edits published content calls `revalidateSite()`** from `scripts/lib/revalidate.mjs`
+  after its writes, passing only the slugs it changed. That POSTs to `/api/revalidate` with
+  `REVALIDATE_SECRET` (set in Vercel and in `.env.local`). It is never fatal: without the secret, or if
+  the request is refused, it warns and the pages update within the week. Wired into
+  `rejoin-text-paragraphs`, `strip-source-chrome`, `dewittenberg-blockquotes`, `reformat-text-body`,
+  `repair-summaries` and `generate-summaries`; a new script that edits published rows gets the same
+  call. Pipeline imports write drafts only and need none.
+
+---
+
+## Supabase limits — know which meter a job reads before you run it
+
+Added 2026-10-06 (sizes measured the same day with `pg_total_relation_size`). **Stromata shares one Supabase organisation with Paideia, on the Free plan**, so the
+allowances below are shared too: a Stromata job can spend Paideia's headroom, and the reverse. In the
+17 Sep–17 Oct cycle the organisation went over two quotas and was warned of restriction from 7 Oct:
+Egress (5.93 / 5 GB, most of it one Stromata day, 21 Sep) and Log Query (249.7 / 100 GB, Stromata
+~29.6 GB on 21 Sep, most of the rest Paideia's simulator). Background, measured split and reasoning:
+Paideia's `docs/research/2026-10-06-know-the-meter-before-you-run-the-script.md`.
+
+| Meter | Free allowance (per org, per cycle) | What spends it |
+|---|---|---|
+| Egress | 5 GB | every byte the API, functions or storage send out: bulk exports, wide selects, re-downloads, polling. Here, chiefly `texts.body`: ~30 MB uncompressed across 566 texts, so one full-corpus body read is ~0.6% of the cycle and ~170 of them spend all of it |
+| Log Query | 100 GB scanned (enforced from 2027) | every log read: the dashboard log explorer, `query_logs`, the Management API logs endpoint. One 24-hour scan is gigabytes |
+| Database size | 500 MB | rows kept. Not the pressure here: 34 MB in total, of which `texts` is 19 MB and nothing else tops 1.5 MB |
+
+The cycle runs from the 17th to the 17th. What is spent cannot be clawed back before the reset, so the
+time to think is before the run.
+
+1. **Never read logs for routine data.** What the site and pipeline did is in tables: `texts`,
+   `authors`, `collections` for corpus state, `published`/`draft` flags for pipeline output, and Umami
+   (not Supabase) for reader behaviour. Use `execute_sql` on those. A log query is a last resort for a
+   one-off diagnosis, over the shortest window that answers it.
+2. **Before any bulk job, say which meter it draws on and roughly what one run costs**, in the
+   script's header and in the PR. The jobs that matter here select `body` across the corpus:
+   `build-corpus-index.mjs`, `strip-source-chrome.mjs` and `rejoin-text-paragraphs.mjs` without a
+   `--slug=`, `reformat-text-body.mjs`, `backfill-scripture-refs.ts`, `dedup-draft-texts.mjs`, `build-collection-pdfs.ts` (~22 MB per full run), and the
+   `generate-note-drafts`/`generate-summaries`/`repair-summaries` backfills. If you
+   cannot estimate it, run it scoped (`--slug=`, `--drafts`) first and measure.
+3. **Fetch once, keep locally, and select only the columns you need.** A script that re-downloads
+   every body on each run multiplies its egress by its run count. `data/corpus-frequency.json` is the
+   pattern: built once from the DB, gitignored, reused. A Drive batch or pipeline run should touch
+   only the rows it imports and verifies, never `select('*')` across `texts`.
+4. **Scheduled routines use the cheapest source**, and their stored prompt or workflow names the
+   meter they touch. The analytics digest (weekly), Scout (1st and 15th) and Sourcer (monthly) read
+   metadata columns, not bodies; keep them that way. A daily log scan to answer a yes/no question a
+   table already holds costs gigabytes a month.
+5. **When a usage warning appears, read the per-project split first** (Usage page, project selector).
+   Egress and Log Query are organisation totals; on 2026-10-06 the egress overrun was one Stromata
+   day, not Paideia.
+6. **A build is a recurring job too, and merges set its run count.** Every production build (and any
+   preview) prerenders pages that read Supabase. The 21 Sep spike was ~40 builds × ~220 MB, from
+   listing pages selecting `body` before `word_count` existed (CHANGELOG 2026-10-06).
+   `lib/supabase/no-body-in-listings.test.ts` now fails CI if a public page or route selects `body`
+   outside the reader and the downloads. Portraits are Storage egress on every page view, so the
+   upload route stores them display-sized (`scripts/lib/portrait-resize.mjs`).
 
 ---
 
@@ -455,7 +715,7 @@ in a run-log is invisible.
 | **Code / product change** (a `/next-agent-card` build, a bug fix, an infra change) | `CHANGELOG.md`, newest entry on top | **Inside the same PR** — the entry is committed on the branch and merges atomically with the code. A code PR should always touch CHANGELOG.md; this is enforced by convention (the mechanic + this doc), not a CI gate. |
 | **Content import** (pipeline stages, Sourcer bundles) | `scripts/ingestion/run-log/YYYY-MM-DD.md` | At the end of the run. **Not** CHANGELOG.md. |
 | **Analytics digest** | Notion Growth Digest DB (+ committed report under `scripts/analytics/reports/`) | Weekly, by the digest routine/workflow. |
-| **Backlog card lifecycle** | Notion Feature Backlog `Status` | `Agent-ready` → `Planned` (at PR open, by the builder) → `Built` (after merge, by the next `/next-agent-card` run's reconciliation sweep — step 0 — or by whoever merges). |
+| **Backlog card lifecycle** | Notion Feature Backlog `Status` | `Agent-ready` → `Planned` (at PR open, by the builder) → `Built` (once the change is on `release` — after the weekly promotion, not at the merge into `main` — by the next `/next-agent-card` run's reconciliation sweep, step 0, or by whoever merges the release). |
 
 **The two loop-closers that make this self-healing:**
 
@@ -463,12 +723,37 @@ in a run-log is invisible.
    can never lag behind what shipped — there is no separate "remember to update the log" step
    to forget.
 2. **The weekly reconciliation sweep** (`/next-agent-card` step 0) flips `Planned` → `Built`
-   for any card whose PR has since merged, and backfills a CHANGELOG entry if one is somehow
+   for any card whose PR has since reached `release`, and backfills a CHANGELOG entry if one is somehow
    missing. This closes the merge-time gap without wiring a webhook from GitHub into Notion:
    `Built` is Keith's merge made visible, reconciled on the next run, not guessed at PR time.
 
 If you ship a code change by hand (not via a routine), you own the same two acts: a CHANGELOG
-entry in the PR, and flipping the backlog card to `Built` after merge.
+entry in the PR, and flipping the backlog card to `Built` once it is on `release`.
+
+**Before building any backlog card — by hand or by routine — check it is not already in flight, then
+claim it.** A card's `Status` cannot tell you: `Planned` reads the same whether a build exists or not.
+On 2 Nov 2026 two sessions built "Mid-text navigation on phones" on the same day (#184, closed; #187,
+merged), and the duplication showed only at the end, as clashing Events Register rows. So: search open
+PRs by the card's title (any branch name, not just `claude/*`), read the card body for a recent
+`Building: …` line, then append your own `Building: <session URL> · <date> · branch <name>` to the card
+body before writing code, and the PR link as soon as it exists. If you answer a card's open question
+while a build is open, put the decision on that PR too. `/next-agent-card` steps 2 and 2a spell out
+the commands; `docs/research/2026-11-02-claim-the-work-before-you-build.md` has the reasoning.
+
+**A PR that builds a backlog card names the card by its exact title.** Put `Card: <exact Feature title>`
+on the first line of the PR description, and the same title in the CHANGELOG entry. Copy it from Notion
+rather than paraphrasing it: the weekly reconciliation flips `Planned` → `Built` only where a PR or
+CHANGELOG entry names the card, and it matches on the title. PR #183 removed the page-load `text-open`
+and went live on 9 Nov, but it never named "Remove the duplicate page-mount text-open emitter", so the
+card was still `Planned` a week later. One PR covering several cards gets one `Card:` line for each. A PR
+that builds no card leaves the line out.
+
+**A PR that needs something done before it goes live says so in a `Before release:` line** (Keith, 17 Nov
+2026). One line per step, in the PR description, e.g. `Before release: publish <slug> in /admin/review`.
+The Monday release task copies every such line from the PRs a release carries into a "Before you merge"
+checklist at the top of the release PR, beside any migrations to apply. Use it for anything the code
+depends on that a merge cannot do: a text to publish, a setting to change, a migration. PR #234 was the
+first: its Vainglory redirect points at a text that was still a draft.
 
 ---
 
@@ -1061,9 +1346,13 @@ still apply per-file, still parallelize the same way. What changes is Stage 2/5a
 | `scripts/lib/leading-h1.mjs` | Decides whether a body's opening `# H1` duplicates the title or is content: keep-list → structural veto → name test → reviewed drop-list. The judgement half; `source-chrome.mjs` stays mechanical | Auto via strip-source-chrome |
 | `scripts/strip-source-chrome.mjs` | Heal source-site chrome in already-imported Supabase texts (dry-run default, `--write`; `--slug=`/`--id=`/`--drafts` to scope, `--drop-leading-h1` for a duplicated title heading, **`--files` to apply the same verdict to the staged output markdown so the two stores cannot drift**) | Maintenance only |
 | `scripts/pipeline-import.mjs` | Import staged output into Supabase as `published: false` | Stage 5a |
+| `scripts/lib/paragraphs.mjs` | Walls of text: the 800-word detector and tiers, sentence ends, break anchors, `applyBreaks` (refuses any change but whitespace), the drafting prompt. Mirrors `paragraph_wall_stats` (migration 038) | Auto via pipeline-import (flag), generate-review-drafts `--paragraphs`, /admin/review/paragraphs |
 | `scripts/rejoin-text-paragraphs.mjs` | Heal mid-sentence page-break splits in already-imported Supabase texts (dry-run default, `--write` to apply; `--slug=`/`--id=` to scope) | Maintenance only |
 | `scripts/dedup-draft-texts.mjs` | Find draft texts that duplicate a published text (matches on title + author *name*, so it catches the draft-author-stub case) and optionally delete the redundant draft (dry-run default, `--write` deletes HIGH-confidence body matches, `--force` includes lower-confidence, `--slug=` to scope, `--fuzzy` lists near-title matches). Never touches published rows, authors, or collections. | Maintenance only |
 | `scripts/check-prospect-urls.mjs` | Fetch every `Cleared edition URL` / `Additional edition URLs` / `Reference URL` in the Notion prospect list and report the ones that no longer answer. Read-only, and uses the **REST API with `NOTION_TOKEN`**, so it does not spend the MCP query budget. Distinguishes **dead (404/410) from blocked (403, e.g. sacred-texts behind Cloudflare)** — only dead exits non-zero, because failing on a 403 every run is how a check stops being read. **Reachability only: a 200 does not mean the URL holds the right work** — the read-the-title check before Stage 2 still stands. `--cleared-only`, `--status=`, `--json`, `--fail-on=any`. Assertion half in `scripts/lib/url-check.mjs`, unit-tested | Maintenance; before a sync |
+| `scripts/shrink-author-portraits.mjs` | Replace oversized author portraits in the `authors` bucket with display-sized copies (`scripts/lib/portrait-resize.mjs`, the same rule the admin upload route applies), repointing `authors.image_url` and keeping the originals. Dry-run default reads sizes from the bucket listing and costs no egress; `--write`, `--slug=`, `--min-kb=` | Maintenance only |
+| `scripts/propose-edition-metadata.mjs` | Read-only audit: propose structured edition fields (translator, series, volume, year, publisher, place, `is_translation`) from each text's three provenance columns, with a method and reason codes per row. Refuses write keys; `--slug=`/`--collection=`/`--include-drafts`/`--llm` (verbatim-evidence only; or `--llm-export=` + `--llm-answers=` to have any model, e.g. a subagent, answer without an API key)/`--input=`. Applies the curated `outputs/edition-audit/sourced-fields.json` (verbatim-cited or editor-confirmed values; `--sourced=none` to skip). Writes `outputs/edition-audit/YYYY-MM-DD/{proposals.json,proposals.csv,summary.md}`; the parser is `scripts/lib/edition-parse.mjs` | Edition metadata Step 1; before the Step 2 apply |
+| `scripts/build-collection-pdfs.ts` | Render every published collection's PDF and store it in Vercel Blob, where `/collections/[slug]/download/pdf` redirects (dry-run default, `--write`, `--slug=`). Admin saves rebuild a collection's PDF on their own; run this once after connecting the store, and after a CLI script edits a chapter body | Maintenance only |
 | `scripts/generate-note-drafts.mjs` | Backfill note_draft in Supabase for existing texts | Maintenance only |
 | `scripts/generate-summaries.mjs` | Backfill summaries in Supabase | Maintenance only |
 | `scripts/repair-summaries.mjs` | Repair truncated summaries | Maintenance only |

@@ -5,6 +5,7 @@ import { MobileNav } from './MobileNav'
 export function SiteHeader({ breadcrumb }: { breadcrumb?: React.ReactNode }) {
   return (
     <header
+      id="site-header"
       style={{
         position: 'fixed', top: 0, left: 0, right: 0, zIndex: 50,
         background: 'var(--paper)',
@@ -21,7 +22,7 @@ export function SiteHeader({ breadcrumb }: { breadcrumb?: React.ReactNode }) {
           </span>
         )}
       </div>
-      <nav className="hidden sm:flex gap-6 text-sm font-serif shrink-0" style={{ color: 'var(--ink-soft)' }}>
+      <nav className="hidden sm:flex gap-6 text-sm shrink-0" style={{ fontFamily: 'var(--ui-face)', color: 'var(--ink-soft)' }}>
         <Link href="/authors" className="hover:opacity-70 transition-opacity">Authors</Link>
         <Link href="/locations" className="hover:opacity-70 transition-opacity">Locations</Link>
         <Link href="/texts" className="hover:opacity-70 transition-opacity">Library</Link>

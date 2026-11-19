@@ -1,4 +1,34 @@
 import { traditionColor } from '@/lib/tradition-colors'
+import { ornamentUrl } from '@/lib/genres/ornaments'
+import { markUrl } from '@/lib/brand/mark-url'
+
+/**
+ * Long titles on covers. The title panel holds five lines on every cover (the
+ * @container rule in globals.css trims the clip edge on small ones), and a clamp
+ * cuts wherever the last line ends, mid-word ("…Power and Efficacy o.."). So a long
+ * title steps down a size, and a small cover gets a copy shortened at a word
+ * boundary past SMALL_COVER_CHARS.
+ * Re-measured 9 Nov 2026, after both bands were slimmed to the same height (Keith):
+ * on all 191 published titles over 30 characters, at cover widths 84, 148, 200 and
+ * 224px, every title fits whole, the longest (101 characters) included, so nothing
+ * is shortened today. 101 is the longest length measured to fit; it stays as a
+ * guard for a longer title added later. (Supersedes the 4 Nov calibration: three
+ * lines and 56 characters, which shortened 33 titles on phone covers.)
+ */
+const SMALL_COVER_CHARS = 101
+
+function lengthClass(title: string): 'long' | 'medium' | 'short' {
+  if (title.length > 60) return 'long'     // smaller size on every cover
+  if (title.length > 40) return 'medium'   // smaller size on small covers only
+  return 'short'
+}
+
+function shortenAtWord(title: string, max: number): string {
+  if (title.length <= max) return title
+  const cut = title.slice(0, max)
+  const space = cut.lastIndexOf(' ')
+  return (space > 0 ? cut.slice(0, space) : cut).replace(/[\s,:;(/–-]+$/, '') + '…'
+}
 
 export function BookCover({
   title,
@@ -9,6 +39,7 @@ export function BookCover({
   index,
   readingMinutes,
   accessionDisplay,
+  genre,
 }: {
   title: string
   authorName: string | null
@@ -24,8 +55,16 @@ export function BookCover({
    * - string             → render this exact string (e.g. "№ 100–105")
    */
   accessionDisplay?: string | null
+  /**
+   * Genre name (e.g. "Sermon"). When it has an ornament (lib/genres/ornaments.ts),
+   * the ornament takes the place of the hairline rule between title and author;
+   * an unknown or missing genre keeps the rule.
+   */
+  genre?: string | null
 }) {
   const ground = traditionColor(traditionSlug)
+  const ornament = ornamentUrl(genre)
+  const shortTitle = shortenAtWord(title, SMALL_COVER_CHARS)
   const num = String(accessionNumber ?? index + 1).padStart(2, '0')
   const bandAccession = accessionDisplay !== undefined
     ? accessionDisplay   // null → hidden below; string → shown as-is
@@ -47,13 +86,14 @@ export function BookCover({
         width: '100%',
       }}
     >
-      {/* Top band: Stromata left + № right */}
+      {/* Top band: Stromata left + № right. Same height as the bottom band
+          (9 Nov 2026, Keith), so the two frame the title panel evenly. */}
       <div
         style={{
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
-          padding: 'min(1.5rem, 12cqi) min(1rem, 8cqi)',
+          padding: 'min(0.65rem, 5.2cqi) min(1rem, 8cqi)',
           borderBottom: '1px solid var(--on-dark-rule)',
           flexShrink: 0,
         }}
@@ -85,7 +125,7 @@ export function BookCover({
         )}
       </div>
 
-      {/* Mid panel: vellum, italic title + rule + author */}
+      {/* Mid panel: vellum, italic title + genre ornament (or rule) + author */}
       <div
         className="book-cover-mid"
         style={{
@@ -104,33 +144,72 @@ export function BookCover({
       >
         <p
           className="book-cover-title"
+          data-length={lengthClass(title)}
           style={{
             fontFamily: 'var(--serif)',
-            fontSize: 'min(1rem, 8cqi)',
             fontStyle: 'italic',
             fontWeight: 500,
             lineHeight: 1.15,
             color: 'var(--ink)',
             margin: 0,
             display: '-webkit-box',
-            WebkitLineClamp: 4,
+            WebkitLineClamp: 5,
             WebkitBoxOrient: 'vertical',
             overflow: 'hidden',
             paddingBottom: '0.2em',
           }}
         >
-          {title}
+          {shortTitle === title ? (
+            title
+          ) : (
+            <>
+              <span className="book-cover-title-full">{title}</span>
+              <span className="book-cover-title-short" aria-hidden="true">{shortTitle}</span>
+            </>
+          )}
         </p>
-        <div
-          style={{
-            width: 'min(20px, 10cqi)',
-            height: 1,
-            background: 'var(--ink)',
-            opacity: 0.35,
-            margin: 'min(1rem, 8cqi) auto',
-            flexShrink: 0,
-          }}
-        />
+        {ornament ? (
+          /* Genre ornament, drawn as a mask so each shape is fetched once and
+             cached, and coloured by a token that the reader dark theme leaves
+             alone (the cover panel stays cream). Decorative: the genre is
+             stated in text wherever it matters.
+             Sized to the panel's slack (9 Nov 2026): it takes 18cqi of height
+             against the rule's 16cqi. At 16cqi + 8cqi of margin, 53 of the 106
+             published titles over 40 characters lost their descenders (up to
+             8px) at every cover width; at this size none do. Re-measure before
+             making it bigger. */
+          <span
+            aria-hidden="true"
+            className="book-cover-ornament"
+            style={{
+              display: 'block',
+              width: 'min(28px, 14cqi)',
+              height: 'min(28px, 14cqi)',
+              margin: 'min(4px, 2cqi) auto',
+              flexShrink: 0,
+              backgroundColor: 'var(--cover-ornament)',
+              WebkitMaskImage: `url(${ornament})`,
+              maskImage: `url(${ornament})`,
+              WebkitMaskSize: 'contain',
+              maskSize: 'contain',
+              WebkitMaskRepeat: 'no-repeat',
+              maskRepeat: 'no-repeat',
+              WebkitMaskPosition: 'center',
+              maskPosition: 'center',
+            }}
+          />
+        ) : (
+          <div
+            style={{
+              width: 'min(20px, 10cqi)',
+              height: 1,
+              background: 'var(--ink)',
+              opacity: 0.35,
+              margin: 'min(1rem, 8cqi) auto',
+              flexShrink: 0,
+            }}
+          />
+        )}
         {authorName && (
           <p
             className="book-cover-author"
@@ -162,13 +241,14 @@ export function BookCover({
         )}
       </div>
 
-      {/* Bottom band: reading time (optional) + S mark */}
+      {/* Bottom band: reading time (optional) + S mark. Kept slim (9 Nov 2026,
+          Keith): at full height it weighed as much as the title panel. */}
       <div
         style={{
           textAlign: 'center',
           padding: readingMinutes
-            ? 'min(0.6rem, 4.8cqi) min(1rem, 8cqi)'
-            : 'min(1rem, 8cqi) min(1rem, 8cqi)',
+            ? 'min(0.4rem, 3.2cqi) min(1rem, 8cqi)'
+            : 'min(0.6rem, 4.8cqi) min(1rem, 8cqi)',
           borderTop: '1px solid var(--on-dark-rule)',
           display: 'flex',
           flexDirection: 'column',
@@ -177,17 +257,28 @@ export function BookCover({
           flexShrink: 0,
         }}
       >
+        {/* The publisher's mark (lib/brand/mark.ts): the S wound through a
+            cross, in its small cut, drawn as a mask like the genre ornaments.
+            It takes the old S's line box (7cqi, capped at 0.875rem), so the
+            band keeps the height it was matched to on 9 Nov 2026. */}
         <span
+          aria-hidden="true"
           className="book-cover-s"
           style={{
-            fontFamily: 'var(--serif-display)',
-            fontSize: 'min(1.25rem, 10cqi)',
-            color: 'var(--on-dark-soft)',
-            lineHeight: 1,
+            display: 'block',
+            width: 'min(0.875rem, 7cqi)',
+            height: 'min(0.875rem, 7cqi)',
+            backgroundColor: 'var(--on-dark-soft)',
+            WebkitMaskImage: `url(${markUrl('small')})`,
+            maskImage: `url(${markUrl('small')})`,
+            WebkitMaskSize: 'contain',
+            maskSize: 'contain',
+            WebkitMaskRepeat: 'no-repeat',
+            maskRepeat: 'no-repeat',
+            WebkitMaskPosition: 'center',
+            maskPosition: 'center',
           }}
-        >
-          S
-        </span>
+        />
         {readingMinutes && (
           <span
             style={{

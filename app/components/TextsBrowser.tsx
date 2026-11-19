@@ -1,10 +1,12 @@
 'use client'
 
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import Link from 'next/link'
 import { FilterPill } from './FilterPill'
+import { FilterToggle } from './FilterToggle'
 import { useUrlFilters } from '@/lib/use-url-filters'
 import { pickFacet } from '@/lib/facets'
+import { SectionHeader } from './SectionHeader'
 
 declare global {
   interface Window {
@@ -88,6 +90,10 @@ export function TextsBrowser({
   }
 
   const hasFilter = Boolean(filters.tradition || filters.era || filters.genre)
+  const activeCount = [filters.tradition, filters.era, filters.genre].filter(Boolean).length
+  // Closed on load, filtered link or not: the gold count on the button says
+  // a filter is on, and the list stays on the first screen (as on /authors).
+  const [filtersOpen, setFiltersOpen] = useState(false)
 
   const filtered = useMemo(() => {
     const list = items.filter(
@@ -107,41 +113,44 @@ export function TextsBrowser({
 
   return (
     <>
-      <div className="mb-6">
-        <div className="flex items-baseline justify-between mb-3">
-          <h1 className="font-serif italic text-xl" style={{ color: '#1b1b1b' }}>
-            Library
-          </h1>
-          <span className="smallcaps" style={{ color: '#6f6a60' }}>
-            {hasFilter
-              ? `${filtered.length} of ${items.length}`
-              : `${items.length} text${items.length === 1 ? '' : 's'}`}
-          </span>
-        </div>
-        <hr style={{ borderColor: '#1b1b1b', borderTopWidth: '1px' }} />
-      </div>
+      <SectionHeader
+        level="page"
+        title="Library"
+        aside={hasFilter ? `${filtered.length} of ${items.length}` : `${items.length} text${items.length === 1 ? '' : 's'}`}
+      />
 
       <div className="mb-8 space-y-3">
-        <FilterRow
-          label="Tradition"
-          options={facets.traditions}
-          selected={filters.tradition}
-          onToggle={slug => set('tradition', slug)}
+        {/* Thirty-odd facet tags used to fill the first screen before any
+            title. They sit behind the same Filter button as /authors, here at
+            every width. */}
+        <FilterToggle
+          open={filtersOpen}
+          onToggle={() => setFiltersOpen(o => !o)}
+          activeCount={activeCount}
+          controls="text-filters"
         />
-        <FilterRow
-          label="Era"
-          options={facets.eras}
-          selected={filters.era}
-          onToggle={slug => set('era', slug)}
-        />
-        <FilterRow
-          label="Genre"
-          options={facets.genres}
-          selected={filters.genre}
-          onToggle={slug => set('genre', slug)}
-        />
+        <div id="text-filters" className={filtersOpen ? 'space-y-3' : 'hidden'}>
+          <FilterRow
+            label="Tradition"
+            options={facets.traditions}
+            selected={filters.tradition}
+            onToggle={slug => set('tradition', slug)}
+          />
+          <FilterRow
+            label="Era"
+            options={facets.eras}
+            selected={filters.era}
+            onToggle={slug => set('era', slug)}
+          />
+          <FilterRow
+            label="Genre"
+            options={facets.genres}
+            selected={filters.genre}
+            onToggle={slug => set('genre', slug)}
+          />
+        </div>
         <div className="flex items-center gap-3 flex-wrap pt-1">
-          <span className="smallcaps" style={{ color: '#9c9589' }}>
+          <span className="smallcaps" style={{ color: 'var(--ink-mute)' }}>
             Sort
           </span>
           {SORTS.map(s => (
@@ -166,7 +175,7 @@ export function TextsBrowser({
       </div>
 
       {filtered.length > 0 ? (
-        <ul className="divide-y" style={{ borderColor: '#e5e0d8' }}>
+        <ul className="divide-y" style={{ borderColor: 'var(--rule-soft)' }}>
           {filtered.map(t => (
             <li key={t.id}>
               <Link data-umami-event="text-open" data-umami-event-from="texts-index" data-umami-event-text={t.slug} href={`/texts/${t.slug}`} className="flex items-start justify-between py-4 group">
@@ -174,26 +183,26 @@ export function TextsBrowser({
                   <div>
                     <span
                       className="font-serif group-hover:opacity-70 transition-opacity"
-                      style={{ color: '#1b1b1b' }}
+                      style={{ color: 'var(--ink)' }}
                     >
                       {t.title}
                     </span>
                     {t.author && (
-                      <span className="text-sm ml-3" style={{ color: '#6f6a60' }}>
+                      <span className="text-sm ml-3" style={{ fontFamily: 'var(--ui-face)', color: 'var(--ink-faint)' }}>
                         {t.author.name}
                       </span>
                     )}
                     {t.themes.length > 0 && (
-                      <span className="text-xs ml-3" style={{ color: '#6f6a60' }}>
+                      <span className="text-xs ml-3" style={{ fontFamily: 'var(--ui-face)', color: 'var(--ink-faint)' }}>
                         {t.themes.join(' · ')}
                       </span>
                     )}
                   </div>
-                  <div className="text-xs mt-0.5" style={{ color: '#9c9589' }}>
+                  <div className="text-xs mt-0.5" style={{ fontFamily: 'var(--ui-face)', color: 'var(--ink-mute)' }}>
                     approx. {t.minutes} min read
                   </div>
                 </div>
-                <span className="text-xs ml-4 shrink-0 mt-0.5" style={{ color: '#6f6a60' }}>
+                <span className="text-xs ml-4 shrink-0 mt-0.5" style={{ fontFamily: 'var(--ui-face)', color: 'var(--ink-faint)' }}>
                   {t.genre?.name}
                 </span>
               </Link>
@@ -201,7 +210,7 @@ export function TextsBrowser({
           ))}
         </ul>
       ) : (
-        <p className="text-sm" style={{ color: '#6f6a60' }}>
+        <p className="text-sm" style={{ color: 'var(--ink-faint)' }}>
           No texts match these filters.
         </p>
       )}
@@ -226,11 +235,11 @@ function FilterRow({
     <div className="flex items-baseline gap-3 flex-wrap">
       <span
         className="smallcaps shrink-0"
-        style={{ color: '#9c9589', width: '5rem' }}
+        style={{ color: 'var(--ink-mute)', width: '5rem' }}
       >
         {label}
       </span>
-      <div className="flex gap-2 flex-wrap">
+      <div className="flex gap-x-2 flex-wrap">
         {options.map(o => (
           <FilterPill
             key={o.slug}
@@ -260,6 +269,7 @@ function SortButton({
       aria-pressed={active}
       className="text-xs hover:opacity-70 transition-opacity"
       style={{
+        fontFamily: 'var(--ui-face)',
         color: active ? 'var(--ink)' : 'var(--ink-mute)',
         borderBottom: `1px solid ${active ? 'var(--gold)' : 'transparent'}`,
         paddingBottom: '1px',

@@ -7,6 +7,7 @@ import { TrackPageEvent } from '@/app/components/TrackPageEvent'
 import { DownloadLinks } from '@/app/components/DownloadLinks'
 import { JsonLd } from '@/app/components/JsonLd'
 import { readingMinutes } from '@/lib/reading-time'
+import { shortCollectionTitles } from '@/lib/collections/short-titles'
 import { fetchCollectionAuthors, formatAuthorNames, isLinkable } from '@/lib/collections/author'
 import { OG_IMAGE, SITE_URL } from '@/lib/metadata'
 
@@ -15,6 +16,17 @@ import { OG_IMAGE, SITE_URL } from '@/lib/metadata'
 // publish cadence, and publish-text.ts revalidates the path on publish — a newly published or edited
 // collection appears within the window rather than requiring a redeploy.
 export const revalidate = 604800
+
+// Cache each page on its first visit. Without generateStaticParams, Next 15
+// classes a [param] route as dynamic and renders it on EVERY request, and the
+// `revalidate` above does nothing for the page: in the 12 hours to 4 Nov 2026
+// /texts/[slug] rendered 1,100 times for ~4 min of CPU, most of the Hobby
+// allowance. An empty list prebuilds nothing at deploy (builds stay cheap) but
+// makes the route ISR: `next build` shows it as ● with a cache window, not ƒ.
+// lib/cache/public-pages-are-cached.test.ts keeps it that way.
+export async function generateStaticParams() {
+  return []
+}
 
 type Props = { params: Promise<{ slug: string }> }
 
@@ -139,6 +151,10 @@ export default async function CollectionPage({ params }: Props) {
     ],
   }
 
+  // The heading already names the work, so each row shows only the part that differs
+  // ("Book IV", not "The Refutation of All Heresies, Book IV"). Display only.
+  const rowTitles = shortCollectionTitles((texts ?? []).map(t => t.title as string))
+
   return (
     <div style={{ background: 'var(--paper)', paddingTop: '4rem' }} className="min-h-screen">
       <JsonLd data={collectionJsonLd} />
@@ -151,14 +167,14 @@ export default async function CollectionPage({ params }: Props) {
       <main id="main-content" className="content-shell py-12">
         {/* Collection header */}
         <div className="mb-10">
-          <p className="smallcaps mb-3" style={{ color: '#6f6a60' }}>
+          <p className="smallcaps mb-3" style={{ color: 'var(--ink-faint)' }}>
             Collection
           </p>
-          <h1 className="font-serif text-3xl mb-3" style={{ color: '#1b1b1b' }}>
+          <h1 className="font-serif text-3xl mb-3" style={{ color: 'var(--ink)' }}>
             {collection.title}
           </h1>
           {authors.length > 0 && (
-            <p className="text-sm mb-4" style={{ color: '#6f6a60' }}>
+            <p className="text-sm mb-4" style={{ color: 'var(--ink-faint)' }}>
               {authors.map((a, i) => (
                 <span key={a.slug ?? a.name}>
                   {/* "A", "A and B", "A, B and C" — mirrors formatAuthorNames. */}
@@ -173,7 +189,7 @@ export default async function CollectionPage({ params }: Props) {
             </p>
           )}
           {collection.description && (
-            <p className="font-serif leading-relaxed" style={{ color: '#1b1b1b' }}>
+            <p className="font-serif leading-relaxed" style={{ color: 'var(--ink)' }}>
               {collection.description}
             </p>
           )}
@@ -186,7 +202,7 @@ export default async function CollectionPage({ params }: Props) {
         </div>
 
         {/* Divider */}
-        <hr className="mb-8" style={{ borderColor: '#e5e0d8' }} />
+        <hr className="mb-8" style={{ borderColor: 'var(--rule-soft)' }} />
 
         {/* Text list */}
         {texts && texts.length > 0 ? (
@@ -201,11 +217,11 @@ export default async function CollectionPage({ params }: Props) {
                   <Link data-umami-event="text-open" data-umami-event-from="collection-page" data-umami-event-text={text.slug}
                     href={`/texts/${text.slug}`}
                     className="flex items-start gap-4 py-3 group"
-                    style={{ borderBottom: '1px solid #e5e0d8' }}
+                    style={{ borderBottom: '1px solid var(--rule-soft)' }}
                   >
                     <span
                       className="text-sm tabular-nums shrink-0 w-6 text-right mt-0.5"
-                      style={{ color: '#c8c3bb' }}
+                      style={{ color: 'var(--ink-faint)' }}
                     >
                       {position}
                     </span>
@@ -213,28 +229,28 @@ export default async function CollectionPage({ params }: Props) {
                       <span className="block">
                         <span
                           className="font-serif group-hover:opacity-70 transition-opacity"
-                          style={{ color: '#1b1b1b' }}
+                          style={{ color: 'var(--ink)' }}
                         >
-                          {text.title}
+                          {rowTitles[i]}
                         </span>
                         {genre?.name && (
-                          <span className="ml-3 text-xs" style={{ color: '#6f6a60' }}>
+                          <span className="ml-3 text-xs" style={{ color: 'var(--ink-faint)' }}>
                             {genre.name}
                           </span>
                         )}
                       </span>
-                      <span className="block text-xs mt-0.5" style={{ color: '#9c9589' }}>
+                      <span className="block text-xs mt-0.5" style={{ color: 'var(--ink-faint)' }}>
                         approx. {readingMinutes((text as unknown as { word_count: number | null }).word_count)} min read
                       </span>
                     </span>
-                    <span className="text-xs shrink-0 mt-0.5" style={{ color: '#c8c3bb' }}>→</span>
+                    <span className="text-xs shrink-0 mt-0.5" aria-hidden="true" style={{ color: 'var(--rule)' }}>→</span>
                   </Link>
                 </li>
               )
             })}
           </ol>
         ) : (
-          <p className="text-sm italic" style={{ color: '#6f6a60' }}>
+          <p className="text-sm italic" style={{ color: 'var(--ink-faint)' }}>
             No published texts in this collection yet.
           </p>
         )}

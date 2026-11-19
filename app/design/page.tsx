@@ -144,6 +144,9 @@ export default function DesignPage() {
               <ColourSwatch token="--on-dark-gold" backdrop="--season-trinitytide" label="Reversed gold" />
               <ColourSwatch token="--on-dark-gold-soft" backdrop="--season-trinitytide" label="Reversed gold, faint" />
               <ColourSwatch token="--cover-mid" label="Book-cover inner panel" />
+              <ColourSwatch token="--cover-ornament" backdrop="--cover-mid" label="Genre ornament on a cover" />
+              <ColourSwatch token="--cover-stack-back" label="Collection stack, rear spine" />
+              <ColourSwatch token="--cover-stack-mid" label="Collection stack, middle spine" />
             </div>
           </SubSection>
 
@@ -287,10 +290,10 @@ export default function DesignPage() {
           <SubSection title="BookCover — colour by tradition">
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-6">
               {[
-                { title: 'On the Priesthood', authorName: 'John Chrysostom', deathYear: 407, accessionNumber: 99, traditionSlug: 'patristic', index: 0 },
-                { title: 'Of Good Marriage', authorName: 'Augustine of Hippo', deathYear: 430, accessionNumber: 83, traditionSlug: 'patristic', index: 1 },
-                { title: 'The Golden Grove', authorName: 'Jeremy Taylor', deathYear: 1667, accessionNumber: 84, traditionSlug: 'anglican', index: 2 },
-                { title: 'Against Marcion', authorName: 'Tertullian', deathYear: 240, accessionNumber: 93, traditionSlug: null, index: 3 },
+                { title: 'On the Priesthood', authorName: 'John Chrysostom', deathYear: 407, accessionNumber: 99, traditionSlug: 'patristic', index: 0, genre: 'Treatise' },
+                { title: 'Of Good Marriage', authorName: 'Augustine of Hippo', deathYear: 430, accessionNumber: 83, traditionSlug: 'patristic', index: 1, genre: 'Treatise' },
+                { title: 'The Golden Grove', authorName: 'Jeremy Taylor', deathYear: 1667, accessionNumber: 84, traditionSlug: 'anglican', index: 2, genre: 'Meditation' },
+                { title: 'Against Marcion', authorName: 'Tertullian', deathYear: 240, accessionNumber: 93, traditionSlug: null, index: 3, genre: 'Apology' },
               ].map((props, i) => (
                 <div key={i}>
                   <BookCover {...props} />

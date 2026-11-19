@@ -1,4 +1,6 @@
 import { revalidatePath } from 'next/cache'
+import { scheduleCollectionPdfRebuilds } from '@/lib/pdf/collection-pdf-schedule'
+import type { SupabaseClient } from '@supabase/supabase-js'
 
 /**
  * Refresh the public pages that render a taxonomy / place / collection row,
@@ -16,20 +18,19 @@ import { revalidatePath } from 'next/cache'
  * One function rather than a copy per route, for the reason `authorPaths` gives:
  * a second implementation of "where does X appear" is what goes stale.
  *
- * `paths` are concrete URLs. `patterns` are dynamic-route patterns revalidated
- * as a class (`revalidatePath('/texts/[slug]', 'page')`): used where a row is
- * rendered *inside* many other pages — a location name sits in every author
- * aside, a collection's title and published flag drive every member text's
- * prev/next nav. Marking them stale is lazy — nothing is rebuilt until a reader
- * or crawler next asks — so an admin edit that is rare costs one rebuild per
- * page that is actually visited, not one per page that exists.
+ * Every surface is a concrete path. Until 2026-11-04 a location or collection
+ * save also marked whole dynamic routes stale (`revalidatePath('/texts/[slug]',
+ * 'page')`), on the theory that marking is lazy and costs only the pages that
+ * get visited. Crawlers visit all of them: one chapter edit re-rendered the
+ * whole library of ~770 text pages and re-read every body from Supabase, the
+ * same bill as a production deploy. The pages that really change are few and
+ * cheap to list (a collection's published chapters; a location's authors and
+ * their texts), so `collectionTextPaths` and `locationPaths` list them, and
+ * `lib/cache/no-route-wide-revalidation.test.ts` keeps the pattern form out.
  */
 export type Entity = 'era' | 'tradition' | 'theme' | 'location' | 'collection'
 
-export type Surfaces = { paths: string[]; patterns: string[] }
-
-const TEXT_PAGES = '/texts/[slug]'
-const AUTHOR_PAGES = '/authors/[slug]'
+export type Surfaces = { paths: string[] }
 
 /**
  * Pure, so the surface list is testable without mocking `next/cache`.
@@ -46,24 +47,20 @@ export function entitySurfaces(
   switch (entity) {
     // The description / subtitle shows on the entity's own page and nowhere else.
     case 'era':
-      return { paths: real.map(s => `/eras/${s}`), patterns: [] }
+      return { paths: real.map(s => `/eras/${s}`) }
     case 'tradition':
-      return { paths: real.map(s => `/traditions/${s}`), patterns: [] }
+      return { paths: real.map(s => `/traditions/${s}`) }
     case 'theme':
-      return { paths: real.map(s => `/themes/${s}`), patterns: [] }
-    // A location's name is printed in the author aside on author and text pages.
+      return { paths: real.map(s => `/themes/${s}`) }
+    // A location's name is also printed in the author aside on author and text
+    // pages: the caller adds those from `locationPaths`.
     case 'location':
-      return {
-        paths: ['/locations', ...real.map(s => `/locations/${s}`)],
-        patterns: [AUTHOR_PAGES, TEXT_PAGES],
-      }
+      return { paths: ['/locations', ...real.map(s => `/locations/${s}`)] }
     // Title, description and the published flag also drive each member text's
-    // collection nav (an unpublished collection reads as no collection at all).
+    // collection nav (an unpublished collection reads as no collection at all):
+    // the caller adds those from `collectionTextPaths`.
     case 'collection':
-      return {
-        paths: ['/', '/texts', ...real.map(s => `/collections/${s}`)],
-        patterns: [TEXT_PAGES],
-      }
+      return { paths: ['/', '/texts', ...real.map(s => `/collections/${s}`)] }
   }
 }
 
@@ -71,37 +68,84 @@ export function entitySurfaces(
  * Best-effort, like `revalidateAuthor`: the write is already committed by the
  * time this runs, and a stale page is a far smaller problem than a save that
  * reports failure after having saved.
+ *
+ * `extraPaths` carries the pages that render the row inside them, from
+ * `collectionTextPaths` / `locationPaths`.
  */
 export function revalidateEntity(
   entity: Entity,
-  slugs: (string | null | undefined)[]
+  slugs: (string | null | undefined)[],
+  extraPaths: string[] = []
 ): void {
-  const { paths, patterns } = entitySurfaces(entity, slugs)
-  for (const path of paths) {
+  const { paths } = entitySurfaces(entity, slugs)
+  const all = new Set([...paths, ...extraPaths])
+  for (const path of all) {
     try {
       revalidatePath(path)
     } catch {
       /* one bad path must not stop the rest */
     }
   }
-  for (const pattern of patterns) {
-    try {
-      revalidatePath(pattern, 'page')
-    } catch {
-      /* as above */
-    }
+  // A collection save rebuilds its stored PDF; a rename's old slug finds no
+  // published collection and removes the old file.
+  scheduleCollectionPdfRebuilds(all)
+}
+
+/**
+ * The reader pages of a collection's published chapters. Each one renders the
+ * collection's title and prev/next links to its siblings, so a change to the
+ * collection row, or to any one chapter, changes all of them. Unpublished
+ * chapters have no public page to refresh.
+ *
+ * Selects `slug` only. Returns [] on any error: callers are best-effort.
+ */
+export async function collectionTextPaths(
+  supabase: SupabaseClient,
+  collectionId: string | null | undefined
+): Promise<string[]> {
+  if (!collectionId) return []
+  try {
+    const { data, error } = await supabase
+      .from('texts')
+      .select('slug')
+      .eq('collection_id', collectionId)
+      .eq('published', true)
+    if (error || !data) return []
+    return slugPaths('/texts', data)
+  } catch {
+    return []
   }
 }
 
 /**
- * Every `/texts/[slug]` page, as a class. For a text that sits in a collection:
- * its siblings render prev/next links to it, so publishing or editing one
- * chapter changes pages other than its own. Lazy, like the above.
+ * The author pages, and those authors' published text pages, that print a
+ * location's name in their author aside. Slug columns only; [] on any error.
  */
-export function revalidateTextPages(): void {
+export async function locationPaths(
+  supabase: SupabaseClient,
+  locationId: string | null | undefined
+): Promise<string[]> {
+  if (!locationId) return []
   try {
-    revalidatePath(TEXT_PAGES, 'page')
+    const { data: authors, error } = await supabase
+      .from('authors')
+      .select('id, slug')
+      .eq('location_id', locationId)
+    if (error || !authors || authors.length === 0) return []
+    const { data: texts } = await supabase
+      .from('texts')
+      .select('slug')
+      .in('author_id', authors.map(a => a.id))
+      .eq('published', true)
+    return [...slugPaths('/authors', authors), ...slugPaths('/texts', texts ?? [])]
   } catch {
-    /* best-effort */
+    return []
   }
+}
+
+/** `[{ slug: 'a' }, { slug: null }]` → `['/texts/a']`. Pure; exported for tests. */
+export function slugPaths(prefix: string, rows: { slug?: string | null }[]): string[] {
+  return [...new Set(rows.map(r => r.slug).filter((s): s is string => Boolean(s)))].map(
+    s => `${prefix}/${s}`
+  )
 }

@@ -3,7 +3,9 @@ import remarkGfm from 'remark-gfm'
 import { slugify } from '@/lib/headings'
 import { rehypeScripture } from '@/lib/scripture/rehype-scripture'
 import { isPlateParagraphMdast, plateFromHast } from '@/lib/markdown/plate'
+import { remarkSmartPunctuation } from '@/lib/markdown/smart-punctuation'
 import ScriptureRef from '@/app/components/ScriptureRef'
+import { remarkSectionAnchors, type LocatedSection } from '@/lib/markdown/section-anchors'
 
 // Extracts plain text from a React node tree so we can slugify heading children.
 // Must produce the same string that extractHeadings() produces from raw markdown.
@@ -58,8 +60,17 @@ function remarkNumberParagraphs() {
   }
 }
 
-export default function MarkdownBody({ content, numbered = true, size = 'default' }: { content: string; numbered?: boolean; size?: 'default' | 'large' | 'small' }) {
-  const remarkPlugins = numbered ? [remarkGfm, remarkNumberParagraphs] : [remarkGfm]
+export default function MarkdownBody({ content, numbered = true, size = 'default', sections }: {
+  content: string
+  numbered?: boolean
+  size?: 'default' | 'large' | 'small'
+  /** Editorial sections located in `content` (lib/markdown/section-anchors.ts); their paragraphs get ids. */
+  sections?: LocatedSection[]
+}) {
+  const remarkPlugins: NonNullable<React.ComponentProps<typeof ReactMarkdown>['remarkPlugins']> = numbered
+    ? [remarkGfm, remarkSmartPunctuation, remarkNumberParagraphs]
+    : [remarkGfm, remarkSmartPunctuation]
+  if (sections?.length) remarkPlugins.push([remarkSectionAnchors, sections])
   const proseSize = size === 'large' ? 'var(--text-xl)' : size === 'small' ? 'var(--text-label)' : 'var(--text-prose)'
 
   return (
@@ -112,8 +123,16 @@ export default function MarkdownBody({ content, numbered = true, size = 'default
             : typeof rawNum === 'string' && rawNum
               ? Number(rawNum)
               : undefined
+          // A section start carries its id (and data-section) on the wrapper, so the
+          // reading header's contents can jump to it; data-pnum lets "Back to ¶17" name it.
+          const sectionStart = typeof node?.properties?.id === 'string' ? node.properties.id : undefined
           return (
-            <div className="relative">
+            <div
+              className="relative"
+              id={sectionStart}
+              data-section={sectionStart ? 'editorial' : undefined}
+              data-pnum={num}
+            >
               {num !== undefined && (
                 <span
                   className="absolute select-none pointer-events-none hidden sm:block"
@@ -129,7 +148,9 @@ export default function MarkdownBody({ content, numbered = true, size = 'default
                   {num}
                 </span>
               )}
-              <p className={`font-serif mb-5 ${size === 'small' ? 'leading-relaxed' : 'leading-loose'}`} style={{ color: 'var(--reader-text)', fontSize: proseSize }}>
+              {/* Double leading suits the desktop measure; on a phone's ~38-character line it
+                  spreads the text thin, so phones get 1.65 (about a fifth more text per screen). */}
+              <p className={`font-serif mb-5 ${size === 'small' ? 'leading-relaxed' : 'leading-[1.65] sm:leading-loose'}`} style={{ color: 'var(--reader-text)', fontSize: proseSize }}>
                 {children}
               </p>
             </div>
@@ -147,9 +168,22 @@ export default function MarkdownBody({ content, numbered = true, size = 'default
         h3: ({ children }) => (
           <h3 id={slugify(nodeToText(children))} className="font-serif text-lg mt-6 mb-2" style={{ color: 'var(--reader-text)' }}>{children}</h3>
         ),
+        // h4–h6 were unmapped, so they fell through to Tailwind preflight's sans stack and
+        // read as a glitch (e.g. "Pliny to the Emperor Trajan"). Set them in serif small caps,
+        // a quieter step below h3. Not in the TOC, so no anchor IDs.
+        h4: ({ children }) => (
+          <h4 className="smallcaps mt-6 mb-2" style={{ color: 'var(--reader-text)' }}>{children}</h4>
+        ),
+        h5: ({ children }) => (
+          <h5 className="smallcaps mt-5 mb-2" style={{ color: 'var(--reader-text)' }}>{children}</h5>
+        ),
+        h6: ({ children }) => (
+          <h6 className="smallcaps mt-5 mb-2" style={{ color: 'var(--reader-text)' }}>{children}</h6>
+        ),
         // Blockquote — useful for scripture references
-        blockquote: ({ children }) => (
+        blockquote: ({ node, children }) => (
           <blockquote
+            id={typeof node?.properties?.id === 'string' ? node.properties.id : undefined}
             className="border-l-2 pl-5 my-6 font-serif italic"
             style={{ borderColor: 'var(--reader-quote-rule)', color: 'var(--reader-quote)' }}
           >

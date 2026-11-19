@@ -9,7 +9,17 @@
 
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { isUmamiCollect, parseBeacon, checkProps, SLUG, summarise } from './wire-check.mjs';
+import {
+  isUmamiCollect,
+  parseBeacon,
+  checkProps,
+  pickEvent,
+  SLUG,
+  READ_NEXT_PICK,
+  summarise,
+  isVercelCheckpoint,
+  describeMissing,
+} from './wire-check.mjs';
 
 test('the collection endpoint is matched, the tracker script is not', () => {
   assert.equal(isUmamiCollect('https://cloud.umami.is/api/send'), true);
@@ -85,5 +95,76 @@ test('summarise tallies by status', () => {
   assert.deepEqual(
     summarise([{ status: 'pass' }, { status: 'pass' }, { status: 'fail' }, { status: 'skip' }]),
     { pass: 2, fail: 1, skip: 1 }
+  );
+});
+
+test('read-next pick accepts the four kinds and nothing else', () => {
+  for (const kind of ['editorial', 'author', 'theme', 'genre']) {
+    assert.equal(checkProps({ data: { pick: kind } }, { pick: READ_NEXT_PICK }).ok, true, kind);
+  }
+  assert.equal(checkProps({ data: { pick: 'Editorial' } }, { pick: READ_NEXT_PICK }).ok, false);
+  assert.equal(checkProps({ data: {} }, { pick: READ_NEXT_PICK }).ok, false);
+});
+
+test('pickEvent prefers the event that passes over an earlier one of the same name', () => {
+  // A navigating click: the landing page's own event arrives first.
+  const captured = [
+    { name: 'text-view', data: { text: 'conference-9' } },
+    { name: 'text-open', data: { text: 'conference-9' } },
+    { name: 'text-open', data: { from: 'tradition-page', text: 'conference-9' } },
+  ];
+  const { event, ok } = pickEvent(captured, 'text-open', { from: 'tradition-page', text: SLUG });
+  assert.equal(ok, true);
+  assert.equal(event.data.from, 'tradition-page');
+});
+
+test('pickEvent falls back to the first of the name, so a real failure still says why', () => {
+  const captured = [{ name: 'text-open', data: { text: 'conference-9' } }];
+  const { event, ok } = pickEvent(captured, 'text-open', { from: 'tradition-page' });
+  assert.equal(ok, false);
+  assert.deepEqual(checkProps(event, { from: 'tradition-page' }).problems, ['from missing (wanted tradition-page)']);
+});
+
+test('pickEvent returns no event when none of the name arrived', () => {
+  assert.deepEqual(pickEvent([{ name: 'text-view', data: {} }], 'text-open', {}), { event: null, ok: false });
+});
+
+test('pickEvent ignores events sent from another page', () => {
+  // The landing page's event carries the landing url; the click's carries the
+  // url of the page it was clicked on.
+  const captured = [
+    { name: 'text-open', url: '/texts/conference-9', data: { text: 'conference-9' } },
+    { name: 'text-open', url: '/search?q=augustine', data: { from: 'search-results', text: 'conference-9' } },
+  ];
+  const onSearch = pickEvent(captured, 'text-open', { from: 'search-results' }, { onPath: '/search?q=augustine' });
+  assert.equal(onSearch.ok, true);
+  // Only the landing page's event arrived: report no beacon, not "from missing".
+  const lost = pickEvent(captured.slice(0, 1), 'text-open', { from: 'search-results' }, { onPath: '/search?q=augustine' });
+  assert.deepEqual(lost, { event: null, ok: false });
+});
+
+test('pickEvent keeps an event with no url rather than guessing where it came from', () => {
+  const { ok } = pickEvent([{ name: 'text-open', url: '', data: { from: 'era-page' } }], 'text-open', { from: 'era-page' }, { onPath: '/eras/ante-nicene' });
+  assert.equal(ok, true);
+});
+
+test('the bot checkpoint is told apart from the site', () => {
+  assert.equal(isVercelCheckpoint('Vercel Security Checkpoint'), true);
+  assert.equal(isVercelCheckpoint('Conference 9 · The Stromata'), false);
+  assert.equal(isVercelCheckpoint(undefined), false);
+});
+
+test('a missing control says what the browser was looking at', () => {
+  assert.match(
+    describeMissing('reader settings control', { path: '/texts/a', status: 200, title: 'Vercel Security Checkpoint' }),
+    /bot checkpoint/
+  );
+  const d = describeMissing('reader settings control', { path: '/texts/a', status: 404, title: 'Not found' });
+  assert.match(d, /\/texts\/a/);
+  assert.match(d, /HTTP 404/);
+  assert.match(d, /Not found/);
+  assert.match(
+    describeMissing('x', { path: '/texts/a', status: null, title: '' }),
+    /no response/
   );
 });

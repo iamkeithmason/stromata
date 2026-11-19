@@ -1,11 +1,12 @@
 'use client'
 
-import { useMemo } from 'react'
-import Link from 'next/link'
+import { useMemo, useState } from 'react'
 import { FilterPill } from './FilterPill'
+import { FilterToggle } from './FilterToggle'
 import { useUrlFilters } from '@/lib/use-url-filters'
 import { pickFacet } from '@/lib/facets'
-import { LancetArch } from './LancetArch'
+import { AuthorCard } from './AuthorCard'
+import { SectionHeader } from './SectionHeader'
 
 declare global {
   interface Window {
@@ -84,6 +85,12 @@ export function AuthorsBrowser({
   }
 
   const hasFilter = Boolean(filters.tradition || filters.era)
+  const activeCount = (filters.tradition ? 1 : 0) + (filters.era ? 1 : 0)
+
+  // Phones only: the tradition and era tags fill most of the first screen
+  // (nine rows of tags at 390px), so they wait behind a Filter button and the
+  // authors come first. From sm up there is room, and they are always shown.
+  const [filtersOpen, setFiltersOpen] = useState(false)
 
   const filtered = useMemo(() => {
     const list = items.filter(
@@ -103,33 +110,40 @@ export function AuthorsBrowser({
 
   return (
     <>
-      <div className="mb-6">
-        <div className="flex items-baseline justify-between mb-3">
-          <h1 className="font-serif italic text-xl" style={{ color: '#1b1b1b' }}>
-            Authors
-          </h1>
-          <span className="smallcaps" style={{ color: '#6f6a60' }}>
-            {hasFilter ? `${filtered.length} of ${items.length}` : `${items.length} in the library`}
-          </span>
-        </div>
-        <hr style={{ borderColor: '#1b1b1b', borderTopWidth: '1px' }} />
-      </div>
+      <SectionHeader
+        level="page"
+        title="Authors"
+        aside={hasFilter ? `${filtered.length} of ${items.length}` : `${items.length} in the library`}
+      />
 
       <div className="mb-8 space-y-3">
-        <FilterRow
-          label="Tradition"
-          options={facets.traditions}
-          selected={filters.tradition}
-          onToggle={slug => set('tradition', slug)}
-        />
-        <FilterRow
-          label="Era"
-          options={facets.eras}
-          selected={filters.era}
-          onToggle={slug => set('era', slug)}
-        />
+        <div className="sm:hidden">
+          <FilterToggle
+            open={filtersOpen}
+            onToggle={() => setFiltersOpen(o => !o)}
+            activeCount={activeCount}
+            controls="author-filters"
+          />
+        </div>
+        <div
+          id="author-filters"
+          className={`${filtersOpen ? 'block' : 'hidden'} sm:block space-y-3`}
+        >
+          <FilterRow
+            label="Tradition"
+            options={facets.traditions}
+            selected={filters.tradition}
+            onToggle={slug => set('tradition', slug)}
+          />
+          <FilterRow
+            label="Era"
+            options={facets.eras}
+            selected={filters.era}
+            onToggle={slug => set('era', slug)}
+          />
+        </div>
         <div className="flex items-center gap-3 flex-wrap pt-1">
-          <span className="smallcaps" style={{ color: '#9c9589' }}>
+          <span className="smallcaps" style={{ color: 'var(--ink-faint)' }}>
             Sort
           </span>
           {SORTS.map(s => (
@@ -154,64 +168,35 @@ export function AuthorsBrowser({
       </div>
 
       {filtered.length > 0 ? (
-        <ul className="divide-y" style={{ borderColor: '#e5e0d8' }}>
-          {filtered.map(a => (
+        // The same arch card as the homepage's featured band; one column more at
+        // each width than the band, because this grid is the whole page.
+        <ul className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-x-6 gap-y-6">
+          {filtered.map((a, i) => (
             <li key={a.id}>
-              {/* Stretched-link pattern: author row is the base, tradition link sits above */}
-              <div className="relative flex items-start justify-between py-4 group">
-                <div className="flex items-center gap-3 min-w-0">
-                  {a.imageUrl && (
-                    <div className="shrink-0" style={{ width: 30, aspectRatio: '200 / 380' }}>
-                      <LancetArch initial={a.name.charAt(0)} label={a.name} imageUrl={a.imageUrl} focusX={a.imageFocusX} focusY={a.imageFocusY} zoom={a.imageZoom} />
-                    </div>
-                  )}
-                  <div>
-                    <span
-                      className="font-serif group-hover:opacity-70 transition-opacity"
-                      style={{ color: '#1b1b1b' }}
-                    >
-                      {a.name}
-                    </span>
-                    <span className="text-sm ml-3" style={{ color: '#6f6a60' }}>
-                      {a.birth_year && a.death_year
-                        ? `${a.birth_year}–${a.death_year}`
-                        : a.death_year
-                          ? `d. ${a.death_year}`
-                          : ''}
-                    </span>
-                  </div>
-                </div>
-                <div className="text-right ml-4 shrink-0">
-                  {a.tradition?.slug ? (
-                    <Link
-                      href={`/traditions/${a.tradition.slug}`}
-                      className="text-xs relative hover:opacity-70 transition-opacity"
-                      style={{ color: '#6f6a60', zIndex: 2 }}
-                    >
-                      {a.tradition.name}
-                    </Link>
-                  ) : (
-                    <span className="text-xs" style={{ color: '#6f6a60' }}>
-                      {a.tradition?.name}
-                    </span>
-                  )}
-                  <div className="text-xs mt-0.5" style={{ color: '#9c9589' }}>
-                    {a.textCount} text{a.textCount === 1 ? '' : 's'}
-                  </div>
-                </div>
-                {/* Stretched link covers the row but sits below the tradition link */}
-                <Link data-umami-event="author-open" data-umami-event-from="authors-index" data-umami-event-author={a.name}
-                  href={`/authors/${a.slug}`}
-                  className="absolute inset-0"
-                  style={{ zIndex: 1 }}
-                  aria-label={a.name}
-                />
-              </div>
+              <AuthorCard
+                from={from}
+                textCount={a.textCount}
+                // The first row is on screen at load; everything after waits
+                // for the reader to scroll to it (portraits are Storage egress).
+                lazy={i >= 4}
+                author={{
+                  name: a.name,
+                  slug: a.slug,
+                  birth_year: a.birth_year,
+                  death_year: a.death_year,
+                  imageUrl: a.imageUrl,
+                  imageFocusX: a.imageFocusX,
+                  imageFocusY: a.imageFocusY,
+                  imageZoom: a.imageZoom,
+                  traditionName: a.tradition?.name ?? null,
+                  eraLabel: a.era?.label ?? null,
+                }}
+              />
             </li>
           ))}
         </ul>
       ) : (
-        <p className="text-sm" style={{ color: '#6f6a60' }}>
+        <p className="text-sm" style={{ color: 'var(--ink-mute)' }}>
           No authors match these filters.
         </p>
       )}
@@ -235,11 +220,11 @@ function FilterRow({
     <div className="flex items-baseline gap-3 flex-wrap">
       <span
         className="smallcaps shrink-0"
-        style={{ color: '#9c9589', width: '5rem' }}
+        style={{ color: 'var(--ink-faint)', width: '5rem' }}
       >
         {label}
       </span>
-      <div className="flex gap-2 flex-wrap">
+      <div className="flex gap-x-2 flex-wrap">
         {options.map(o => (
           <FilterPill
             key={o.slug}

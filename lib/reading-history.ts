@@ -8,6 +8,8 @@ export type ReadingHistoryEntry = {
   deathYear: number | null
   accessionNumber: number | null
   traditionSlug: string | null
+  /** For the cover's ornament. Optional: entries saved before 9 Nov 2026 lack it. */
+  genreName?: string | null
   readingMinutes: number | null
   visitedAt: number
   progress?: number

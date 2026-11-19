@@ -17,6 +17,7 @@ import path from 'path';
 import { createClient } from '@supabase/supabase-js';
 import Anthropic from '@anthropic-ai/sdk';
 import { generateSummary, isTruncated } from './lib/summary-prompt.mjs';
+import { revalidateSite } from './lib/revalidate.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 // override: true ensures our local file wins even if the shell pre-loaded
@@ -40,7 +41,7 @@ async function main() {
   // Fetch all published texts with an existing summary
   const { data: texts, error } = await supabase
     .from('texts')
-    .select('id, title, summary, body, author:authors(name)')
+    .select('id, slug, title, summary, body, author:authors(name)')
     .eq('published', true)
     .not('summary', 'is', null)
     .order('title');
@@ -61,6 +62,7 @@ async function main() {
   }
 
   let repaired = 0;
+  const livePages = [];
   let failed = 0;
 
   const batch = sampleLimit < Infinity ? affected.slice(0, sampleLimit) : affected;
@@ -105,6 +107,7 @@ async function main() {
       failed++;
     } else {
       repaired++;
+      livePages.push(text.slug);
     }
 
     console.log('');
@@ -116,6 +119,9 @@ async function main() {
   } else {
     console.log(`\nDone. ${repaired} repaired, ${failed} failed (of ${processed} processed).`);
   }
+  // A summary is the reader's meta description and the text's listing card.
+  // Cards on author/theme/era pages pick it up within the week.
+  if (livePages.length) await revalidateSite({ texts: livePages, paths: ['/', '/texts'] });
 }
 
 main().catch(err => {

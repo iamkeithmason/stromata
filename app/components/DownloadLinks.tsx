@@ -1,69 +1,61 @@
-// Server-rendered download affordances. Clicks are tracked by Umami's
-// automatic `data-umami-event` binding (same pattern as the ko-fi and
-// collection-nav links), so no client component is needed.
+import { PrintButton } from '@/app/components/PrintButton'
+
+// Download affordances for a text and its collection. Clicks are tracked by
+// Umami's automatic `data-umami-event` binding (same pattern as the ko-fi and
+// collection-nav links).
 //
 // Two DISTINCT event names, one per user-meaningful action (per the analytics
 // conventions in CLAUDE.md — never overload one name across content types):
-//   • text-download        — a single text
-//   • collection-download  — a whole collection bundle
-// Each carries `from` (surface) and `format` (markdown | pdf); identifiers are
-// slugs, never titles.
+//   • text-download        — a single text: format markdown | print
+//   • collection-download  — a whole collection bundle: format markdown | pdf
+// Each carries `from` (surface) and `format`; identifiers are slugs, never titles.
 //
-// Targets are Route Handlers that return a file with Content-Disposition:
-// attachment — so plain <a href> (a full request), not next/link.
+// A text's PDF is the browser's own "Save as PDF" (PrintButton + the print
+// stylesheet); a collection's PDF is built ahead of time and stored
+// (lib/pdf/collection-pdf.ts). Nothing here renders a PDF on request.
+//
+// Download targets are Route Handlers that return or redirect to a file, so
+// plain <a href> (a full request), not next/link.
 
-type Tone = 'light' | 'dark'
-type Format = 'markdown' | 'pdf'
+// 44px tall: the phone checklist's minimum tap target (CLAUDE.md, mobile-first).
+const TARGET = 'inline-flex items-center min-h-[44px] hover:opacity-70 transition-opacity'
+const LINK_STYLE: React.CSSProperties = { color: 'var(--ink)', textDecoration: 'underline', textUnderlineOffset: 2 }
 
-function linkStyle(dark: boolean): React.CSSProperties {
-  return { color: dark ? 'rgba(250,246,236,0.85)' : 'var(--ink)', textDecoration: 'underline', textUnderlineOffset: 2 }
+function Sep() {
+  return <span aria-hidden style={{ color: 'var(--ink-faint)' }}>·</span>
 }
 
-// One labelled row offering the same target in both formats.
-function DownloadRow({
+function FileLink({
+  href,
   label,
-  base,
   event,
   from,
+  format,
   idAttr,
   idValue,
-  dark,
 }: {
+  href: string
   label: string
-  base: string // e.g. `/texts/${slug}/download`
   event: 'text-download' | 'collection-download'
   from: string
+  format: 'markdown' | 'pdf'
   idAttr: 'text' | 'collection'
   idValue: string
-  dark: boolean
 }) {
-  const formats: { format: Format; label: string }[] = [
-    { format: 'markdown', label: 'Markdown' },
-    { format: 'pdf', label: 'PDF' },
-  ]
   return (
-    <li className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
-      <span style={{ color: dark ? 'rgba(250,246,236,0.7)' : 'var(--ink-mute)' }}>{label}</span>
-      {formats.map(({ format, label: fmtLabel }, i) => (
-        <span key={format} className="flex items-baseline gap-2">
-          {i > 0 && <span aria-hidden style={{ color: dark ? 'rgba(250,246,236,0.4)' : 'var(--ink-faint)' }}>·</span>}
-          <a
-            href={`${base}/${format}`}
-            // Belt to robots.ts's braces: crawlers that ignore the disallow
-            // still shouldn't treat a CPU-heavy render as a page to follow.
-            rel="nofollow"
-            className="hover:opacity-70 transition-opacity"
-            style={linkStyle(dark)}
-            data-umami-event={event}
-            data-umami-event-from={from}
-            data-umami-event-format={format}
-            {...{ [`data-umami-event-${idAttr}`]: idValue }}
-          >
-            {fmtLabel}
-          </a>
-        </span>
-      ))}
-    </li>
+    <a
+      href={href}
+      // Belt to robots.ts's braces: crawlers have no business with a download.
+      rel="nofollow"
+      className={TARGET}
+      style={LINK_STYLE}
+      data-umami-event={event}
+      data-umami-event-from={from}
+      data-umami-event-format={format}
+      {...{ [`data-umami-event-${idAttr}`]: idValue }}
+    >
+      {label}
+    </a>
   )
 }
 
@@ -71,7 +63,6 @@ export function DownloadLinks({
   textSlug,
   collectionSlug,
   from,
-  tone = 'light',
 }: {
   /** When set, offers single-text downloads. */
   textSlug?: string
@@ -79,38 +70,49 @@ export function DownloadLinks({
   collectionSlug?: string
   /** Originating surface, e.g. "text-reader" or "collection-page". */
   from: string
-  tone?: Tone
 }) {
-  const dark = tone === 'dark'
   if (!textSlug && !collectionSlug) return null
 
   return (
     <section aria-label="Download">
-      <p className="kicker" style={{ marginBottom: '0.75rem', color: dark ? 'rgba(250,246,236,0.7)' : undefined }}>
+      <p className="kicker" style={{ marginBottom: '0.25rem' }}>
         Download
       </p>
-      <ul className="flex flex-col gap-2 text-xs">
+      <ul className="flex flex-col text-xs">
         {textSlug && (
-          <DownloadRow
-            label={collectionSlug ? 'This text' : 'Text'}
-            base={`/texts/${textSlug}/download`}
-            event="text-download"
-            from={from}
-            idAttr="text"
-            idValue={textSlug}
-            dark={dark}
-          />
+          <li className="flex flex-wrap items-center gap-x-2">
+            <span style={{ color: 'var(--ink-mute)' }}>{collectionSlug ? 'This text' : 'Text'}</span>
+            <FileLink
+              href={`/texts/${textSlug}/download/markdown`}
+              label="Markdown"
+              event="text-download"
+              from={from}
+              format="markdown"
+              idAttr="text"
+              idValue={textSlug}
+            />
+            <Sep />
+            <PrintButton slug={textSlug} from={from} className={TARGET} style={LINK_STYLE} />
+          </li>
         )}
         {collectionSlug && (
-          <DownloadRow
-            label={textSlug ? 'Whole collection' : 'Collection'}
-            base={`/collections/${collectionSlug}/download`}
-            event="collection-download"
-            from={from}
-            idAttr="collection"
-            idValue={collectionSlug}
-            dark={dark}
-          />
+          <li className="flex flex-wrap items-center gap-x-2">
+            <span style={{ color: 'var(--ink-mute)' }}>{textSlug ? 'Whole collection' : 'Collection'}</span>
+            {(['markdown', 'pdf'] as const).map((format, i) => (
+              <span key={format} className="flex items-center gap-x-2">
+                {i > 0 && <Sep />}
+                <FileLink
+                  href={`/collections/${collectionSlug}/download/${format}`}
+                  label={format === 'pdf' ? 'PDF' : 'Markdown'}
+                  event="collection-download"
+                  from={from}
+                  format={format}
+                  idAttr="collection"
+                  idValue={collectionSlug}
+                />
+              </span>
+            ))}
+          </li>
         )}
       </ul>
     </section>

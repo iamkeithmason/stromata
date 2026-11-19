@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { createServerClient } from '@/lib/supabase/server'
 import EditEraForm from './EditEraForm'
+import { DEFAULT_ERA_PLATES } from '@/lib/eras/plates'
 import AssignAuthorToEra from '../../AssignAuthorToEra'
 
 type Props = { params: Promise<{ slug: string }> }
@@ -18,6 +19,15 @@ export default async function EditEraPage({ params }: Props) {
   ])
 
   if (!era) notFound()
+
+  // Read apart from the main query so the form still loads before migration 035
+  // has been applied (the plate columns then do not exist).
+  const { data: plateRow, error: plateError } = await supabase
+    .from('eras')
+    .select('plate_url, plate_credit, plate_focus_y')
+    .eq('slug', slug)
+    .maybeSingle()
+  const defaultPlate = DEFAULT_ERA_PLATES[era.slug] ?? null
 
   const allAuthors = (authors ?? []) as AuthorRow[]
   const assignedAuthors = allAuthors.filter(a => a.era_id === era.id)
@@ -36,6 +46,11 @@ export default async function EditEraPage({ params }: Props) {
           slug={era.slug}
           label={era.label}
           initialDescription={era.description ?? ''}
+          platesAvailable={!plateError}
+          initialPlateUrl={plateRow?.plate_url ?? null}
+          initialPlateCredit={plateRow?.plate_credit ?? ''}
+          initialPlateFocusY={plateRow?.plate_focus_y ?? null}
+          defaultPlate={defaultPlate}
         />
 
         <div className="mt-12 pt-8 border-t border-stone-200 max-w-2xl">

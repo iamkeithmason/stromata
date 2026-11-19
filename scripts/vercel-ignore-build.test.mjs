@@ -70,12 +70,29 @@ function baseRepo() {
 
 // ── previews ────────────────────────────────────────────────────────────────
 
-test('a preview is skipped unless the commit asks for one', () => {
+test('a preview builds only on a preview/ branch', () => {
   const dir = baseRepo()
-  assert.equal(run(dir, { VERCEL_ENV: 'preview', VERCEL_GIT_COMMIT_MESSAGE: 'Fix a thing' }).code, 0)
-  assert.equal(run(dir, { VERCEL_ENV: 'preview', VERCEL_GIT_COMMIT_MESSAGE: 'Try header [preview]' }).code, 1)
-  assert.equal(run(dir, { VERCEL_ENV: 'development', VERCEL_GIT_COMMIT_MESSAGE: 'x' }).code, 0)
+  const pre = (ref, message = 'Fix a thing') => ({ VERCEL_ENV: 'preview', VERCEL_GIT_COMMIT_REF: ref, VERCEL_GIT_COMMIT_MESSAGE: message })
+  assert.equal(run(dir, pre('claude/some-work')).code, 0)
+  assert.equal(run(dir, pre('release')).code, 0)
+  assert.equal(run(dir, pre('preview/reader-nav')).code, 1)
+  assert.equal(run(dir, { VERCEL_ENV: 'preview', VERCEL_GIT_COMMIT_MESSAGE: 'x' }).code, 0)
   rmSync(dir, { recursive: true, force: true })
+})
+
+test('the old commit-message tag no longer builds a preview on an ordinary branch', () => {
+  const dir = baseRepo()
+  const tag = '[' + 'preview' + ']'
+  assert.equal(run(dir, { VERCEL_ENV: 'preview', VERCEL_GIT_COMMIT_REF: 'claude/x', VERCEL_GIT_COMMIT_MESSAGE: `Try header ${tag}` }).code, 0)
+  rmSync(dir, { recursive: true, force: true })
+})
+
+test('vercel.json lets only the production branch (release) and preview/** create deployments', async () => {
+  const { readFileSync } = await import('node:fs')
+  const cfg = JSON.parse(readFileSync(join(dirname(SCRIPT), '..', 'vercel.json'), 'utf8'))
+  // `main` is not production (Production Branch is `release` since 9 Nov 2026), so a push to it makes no
+  // deployment at all, not even a cancelled one that would spend a slot of the shared 100-a-day cap.
+  assert.deepEqual(cfg.git.deploymentEnabled, { '**': false, release: true, 'preview/**': true })
 })
 
 // ── production: what may be skipped ─────────────────────────────────────────
@@ -112,6 +129,25 @@ test('production skips a content-pipeline run: queue, staged output and run log'
 })
 
 // ── production: what must build ─────────────────────────────────────────────
+
+test('production skips a screens-reference refresh (the weekly PDF)', () => {
+  const dir = baseRepo()
+  commit(dir, 'Screens reference — 2026-11-02', {
+    'docs/screens/stromata-screens.pdf': 'pdf bytes',
+  })
+  assert.equal(run(dir, prod()).code, 0)
+  rmSync(dir, { recursive: true, force: true })
+})
+
+test('production builds when the screens script itself changes', () => {
+  const dir = baseRepo()
+  commit(dir, 'Tweak the screens script', {
+    'docs/screens/stromata-screens.pdf': 'pdf bytes',
+    'scripts/screens/render.mjs': 'code',
+  })
+  assert.equal(run(dir, prod()).code, 1)
+  rmSync(dir, { recursive: true, force: true })
+})
 
 test('production builds when any changed file is a site file', () => {
   const dir = baseRepo()

@@ -35,7 +35,7 @@ type Props = {
 
 export function ChurchYearRow({ currentSeason }: Props) {
   return (
-    <section className="content-shell pb-10">
+    <section className="content-shell pb-20">
       <div
         className="flex flex-wrap items-center justify-center gap-x-3 gap-y-2"
         style={{ fontFamily: 'var(--serif)', fontSize: 'var(--text-base)' }}
@@ -48,14 +48,6 @@ export function ChurchYearRow({ currentSeason }: Props) {
           const isActive = season.slug === currentSeason
           return (
             <span key={season.slug} className="flex items-center gap-x-3">
-              {i > 0 && (
-                <span
-                  aria-hidden
-                  style={{ color: 'var(--rule-soft)', userSelect: 'none' }}
-                >
-                  ·
-                </span>
-              )}
               <span
                 style={{
                   color: isActive ? 'var(--gold)' : 'var(--ink-faint)',
@@ -69,6 +61,18 @@ export function ChurchYearRow({ currentSeason }: Props) {
               >
                 {season.name}
               </span>
+              {/* Separator after the name so a wrapped line never starts with a
+                  dot. Hidden on phones, where the row wraps and left dots
+                  hanging at line ends; the gap alone separates the names there. */}
+              {i < SEASONS.length - 1 && (
+                <span
+                  aria-hidden
+                  className="hidden sm:inline"
+                  style={{ color: 'var(--rule-soft)', userSelect: 'none' }}
+                >
+                  ·
+                </span>
+              )}
             </span>
           )
         })}

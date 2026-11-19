@@ -4,6 +4,8 @@ import { BookCover } from '@/app/components/BookCover'
 import { SiteHeader } from '@/app/components/SiteHeader'
 import { TrackPageEvent } from '@/app/components/TrackPageEvent'
 import { readingMinutes } from '@/lib/reading-time'
+import { contentWords, labelMatches, needsWordPass, mergeResults, allFailed, snippetFocus } from '@/lib/search/query'
+import { findBodyMatches, type Excerpt } from '@/lib/search/body-matches'
 
 type Props = { searchParams: Promise<{ q?: string }> }
 
@@ -11,8 +13,9 @@ type TextResult = {
   id: string
   title: string
   slug: string
-  // Only the body-match query selects `body` — see the two selects below.
-  body?: string
+  // Set only on body-match results: the passage around the hit, from the
+  // text_excerpts function (see the body-search note below).
+  excerpt?: Excerpt
   summary: string | null
   word_count: number | null
   accession_number: number | null
@@ -25,6 +28,7 @@ type TextResult = {
   } | null
   genre: { name: string } | null
 }
+
 
 type AuthorResult = {
   id: string
@@ -68,6 +72,16 @@ function bodySnippet(body: string, query = '', max = 160): string {
     }
   }
   return stripped.length > max ? stripped.slice(0, max).trimEnd() + '…' : stripped
+}
+
+// The snippet for a body match. The excerpt is already a window cut from the
+// middle of the body, so ellipses mark where the window, not just the
+// snippet, was cut short.
+function excerptSnippet({ excerpt, has_before, has_after }: Excerpt, query: string): string {
+  let snip = bodySnippet(excerpt, snippetFocus(excerpt, query))
+  if (has_before && !snip.startsWith('…')) snip = '…' + snip
+  if (has_after && !snip.endsWith('…')) snip += '…'
+  return snip
 }
 
 // Highlight occurrences of `query` within `text` using <mark>.
@@ -119,105 +133,146 @@ export default async function SearchPage({ searchParams }: Props) {
   let texts: TextResult[] = []
   let authors: AuthorResult[] = []
   let suggested: SuggestedText[] | null = null
+  let searchFailed = false
 
-  // TWO SELECTS, DELIBERATELY.
+  // NO QUERY HERE SELECTS `body`.
   //
-  // A search ran five text queries, each asking for `body`, each capped at
-  // 10–20 rows: up to ~90 bodies averaging 55 kB, so roughly 5 MB of egress per
-  // search. Only one of those queries needs the body at all — the one matching
-  // *within* it, where the snippet is centred on the hit. The other four match
-  // on title, genre, theme or author and show the opening of the text, which
-  // `summary` gives more usefully and in a couple of hundred bytes.
+  // A search once ran five text queries that each asked for `body`: up to ~90
+  // bodies averaging 55 kB, roughly 5 MB of egress per search. Title, genre,
+  // theme and author matches show `summary` instead. The body match still
+  // *filters* on body (PostgREST can filter on a column it does not return),
+  // and its snippet comes from text_excerpts (migration 032), which sends back
+  // a few hundred characters around the hit. lib/supabase/no-body-in-listings
+  // .test.ts keeps it that way.
   const textSelect = `id, title, slug, summary, word_count, accession_number,
     author:authors(name, slug, death_year, tradition:traditions(name, slug), era:eras(label, slug)),
     genre:genres(name)`
 
-  // Body-match results only: the full text, so the snippet can be centred on
-  // the search term rather than starting at the top.
-  const bodyMatchSelect = `${textSelect}, body`
-
   if (query) {
     const pattern = `%${query}%`
+    const words = contentWords(query)
+    const wordPass = needsWordPass(query)
+    // Every query's outcome, so the page can tell "nothing matched" from
+    // "nothing answered" (see allFailed in lib/search/query.ts).
+    const outcomes: { error: unknown }[] = []
+    const track = <R extends { error: unknown }>(r: R): R => { outcomes.push(r); return r }
 
-    // Phase 1: gather matching IDs for extended dimensions (parallel)
-    const [
-      { data: genreMatches },
-      { data: themeMatches },
-      { data: traditionAuthorMatches },
-      { data: eraAuthorMatches },
-      { data: authorData },
-    ] = await Promise.all([
-      supabase.from('genres').select('id').ilike('name', pattern).limit(50),
-      supabase.from('text_themes')
-        .select('text_id, theme:themes!inner(name)')
-        .ilike('themes.name', pattern)
-        .limit(100),
+    // Phase 1: the short vocabularies (35 themes, 17 genres, 12 traditions,
+    // 9 eras) come back whole and are matched here, by phrase or by any word
+    // (labelMatches), plus authors matched by name.
+    const [themesRes, genresRes, traditionsRes, erasRes, authorPhraseRes, authorWordsRes] = await Promise.all([
+      supabase.from('themes').select('id, name').then(track),
+      supabase.from('genres').select('id, name').then(track),
+      supabase.from('traditions').select('id, name').then(track),
+      supabase.from('eras').select('id, label').then(track),
       supabase.from('authors')
-        .select('id, tradition:traditions!inner(name)')
-        .ilike('traditions.name', pattern)
-        .limit(100),
-      supabase.from('authors')
-        .select('id, era:eras!inner(label)')
-        .ilike('eras.label', pattern)
-        .limit(100),
-      supabase.from('authors')
-        .select('id, name, slug, tradition:traditions(name)')
+        .select('id, name, slug, tradition:traditions(name), texts!inner(id)')
         .ilike('name', pattern)
         .not('slug', 'is', null)
         .eq('draft', false)
+        // Only authors with a published text, matching the /authors index.
+        .eq('texts.published', true)
         .order('name')
-        .limit(10),
+        .limit(10)
+        .then(track),
+      wordPass
+        ? words
+            .reduce(
+              (qb, w) => qb.ilike('name', `%${w}%`),
+              supabase.from('authors').select('id, name, slug, tradition:traditions(name), texts!inner(id)')
+            )
+            .not('slug', 'is', null)
+            .eq('draft', false)
+            .eq('texts.published', true)
+            .order('name')
+            .limit(10)
+            .then(track)
+        : Promise.resolve({ data: [], error: null }),
     ])
 
-    const genreIds = (genreMatches ?? []).map((g: { id: number }) => g.id)
-    const themeTextIds = (themeMatches ?? []).map((tt: { text_id: string }) => tt.text_id)
-    const extendedAuthorIds = [
-      ...(traditionAuthorMatches ?? []).map((a: { id: string }) => a.id),
-      ...(eraAuthorMatches ?? []).map((a: { id: string }) => a.id),
+    const idsWhere = <R extends { id: number | string }>(rows: R[] | null, label: (r: R) => string) =>
+      (rows ?? []).filter((r) => labelMatches(label(r), query)).map((r) => r.id)
+    const themeIds = idsWhere(themesRes.data as { id: number; name: string }[] | null, (r) => r.name)
+    const genreIds = idsWhere(genresRes.data as { id: number; name: string }[] | null, (r) => r.name)
+    const traditionIds = idsWhere(traditionsRes.data as { id: number; name: string }[] | null, (r) => r.name)
+    const eraIds = idsWhere(erasRes.data as { id: number; label: string }[] | null, (r) => r.label)
+
+    const authorSeen = new Set<string>()
+    authors = [...((authorPhraseRes.data ?? []) as unknown as AuthorResult[]), ...((authorWordsRes.data ?? []) as unknown as AuthorResult[])]
+      .filter((a) => (authorSeen.has(a.id) ? false : (authorSeen.add(a.id), true)))
+      .slice(0, 10)
+
+    // Phase 1b: which texts and authors those vocabulary matches point at.
+    const [themeTextsRes, traditionAuthorsRes, eraAuthorsRes] = await Promise.all([
+      themeIds.length > 0
+        ? supabase.from('text_themes').select('text_id').in('theme_id', themeIds).limit(200).then(track)
+        : Promise.resolve({ data: [], error: null }),
+      traditionIds.length > 0
+        ? supabase.from('authors').select('id').in('tradition_id', traditionIds).limit(200).then(track)
+        : Promise.resolve({ data: [], error: null }),
+      eraIds.length > 0
+        ? supabase.from('authors').select('id').in('era_id', eraIds).limit(200).then(track)
+        : Promise.resolve({ data: [], error: null }),
+    ])
+    const themeTextIds = [...new Set(((themeTextsRes.data ?? []) as { text_id: string }[]).map((r) => r.text_id))]
+    const uniqueAuthorIds = [
+      ...new Set([
+        ...((traditionAuthorsRes.data ?? []) as { id: string }[]).map((a) => a.id),
+        ...((eraAuthorsRes.data ?? []) as { id: string }[]).map((a) => a.id),
+      ]),
     ]
-    const uniqueAuthorIds = [...new Set(extendedAuthorIds)]
 
-    authors = (authorData ?? []) as unknown as AuthorResult[]
-
-    // Phase 2: text queries (always by title; conditionally by extended dimensions)
-    // Body search runs last — lowest priority in dedup (title/theme/tradition matches rank higher).
-    // Note: ilike on body is fine at current scale (~100 texts). Phase 3 will add a GIN tsvector index.
-    const textQueryPromises = [
-      supabase.from('texts').select(textSelect).eq('published', true).ilike('title', pattern).order('title').limit(20),
-      ...(genreIds.length > 0
-        ? [supabase.from('texts').select(textSelect).eq('published', true).in('genre_id', genreIds).order('title').limit(20)]
+    // Phase 2: texts matched by title (phrase, then every word), genre, theme
+    // or author dimension. These rank above body matches, as they always have.
+    const published = () => supabase.from('texts').select(textSelect).eq('published', true)
+    const metadataResults = await Promise.all([
+      published().ilike('title', pattern).order('title').limit(20).then(track),
+      ...(wordPass
+        ? [words.reduce((qb, w) => qb.ilike('title', `%${w}%`), published()).order('title').limit(20).then(track)]
         : []),
-      ...(themeTextIds.length > 0
-        ? [supabase.from('texts').select(textSelect).eq('published', true).in('id', themeTextIds).order('title').limit(20)]
-        : []),
-      ...(uniqueAuthorIds.length > 0
-        ? [supabase.from('texts').select(textSelect).eq('published', true).in('author_id', uniqueAuthorIds).order('title').limit(20)]
-        : []),
-      // Body search — runs last so title/metadata matches take priority in dedup
-      supabase.from('texts').select(bodyMatchSelect).eq('published', true).ilike('body', pattern).order('title').limit(10),
-    ]
+      ...(genreIds.length > 0 ? [published().in('genre_id', genreIds).order('title').limit(20).then(track)] : []),
+      ...(themeTextIds.length > 0 ? [published().in('id', themeTextIds).order('title').limit(20).then(track)] : []),
+      ...(uniqueAuthorIds.length > 0 ? [published().in('author_id', uniqueAuthorIds).order('title').limit(20).then(track)] : []),
+    ])
 
-    const textResults = await Promise.all(textQueryPromises)
+    // Body matches: whole words, ranked (migration 036), falling back to the
+    // old substring match while that migration is not applied. Never selects
+    // `body` (lib/supabase/no-body-in-listings.test.ts).
+    const body = await findBodyMatches<TextResult>({
+      ranked: () => supabase.rpc('search_texts_body', { term: query, max_results: 20 }),
+      fetchByIds: (ids) =>
+        published().in('id', ids).then((r) => ({ data: r.data as unknown as TextResult[] | null, error: r.error })),
+      substring: () =>
+        published().ilike('body', pattern).order('title').limit(10)
+          .then((r) => ({ data: r.data as unknown as TextResult[] | null, error: r.error })),
+    })
+    outcomes.push({ error: body.error })
 
-    // Phase 3: merge and deduplicate
-    const seen = new Set<string>()
-    const merged: TextResult[] = []
-    for (const { data } of textResults) {
-      for (const t of (data ?? []) as unknown as TextResult[]) {
-        if (!seen.has(t.id)) {
-          seen.add(t.id)
-          merged.push(t)
-        }
+    const merged = mergeResults(
+      metadataResults.map(({ data }) => (data ?? []) as unknown as TextResult[]),
+      body.rows
+    )
+    texts = merged.texts
+    searchFailed = allFailed(outcomes)
+
+    // Snippets for the body matches that survived the merge. The ranked search
+    // brings its own; the fallback asks text_excerpts. If that fails too, those
+    // rows show their summary: a plainer snippet, never a broken page.
+    const excerptIds = texts.filter((t) => merged.bodyMatchIds.has(t.id)).map((t) => t.id)
+    if (excerptIds.length > 0) {
+      let byId: Map<string, Excerpt> | null = body.excerpts
+      if (!byId) {
+        const { data: excerpts } = await supabase.rpc('text_excerpts', { text_ids: excerptIds, term: query })
+        byId = new Map(((excerpts ?? []) as (Excerpt & { id: string })[]).map((e) => [e.id, e]))
       }
+      for (const t of texts) if (merged.bodyMatchIds.has(t.id)) t.excerpt = byId.get(t.id)
     }
-    merged.sort((a, b) => a.title.localeCompare(b.title))
-    texts = merged.slice(0, 20)
   }
 
   const total = texts.length + authors.length
 
   // Suggested texts for zero-results state
-  if (query && total === 0) {
+  if (query && total === 0 && !searchFailed) {
     const { data } = await supabase
       .from('texts')
       .select('id, title, slug, genre:genres(name), author:authors(name)')
@@ -270,7 +325,9 @@ export default async function SearchPage({ searchParams }: Props) {
 
         {query && (
           <p className="text-sm mb-8" style={{ color: '#6f6a60' }}>
-            {total === 0
+            {searchFailed
+              ? 'Search is unavailable right now. Please try again in a moment.'
+              : total === 0
               ? `No results for "${query}"`
               : `${total} result${total === 1 ? '' : 's'} for "${query}"`}
           </p>
@@ -323,7 +380,7 @@ export default async function SearchPage({ searchParams }: Props) {
                 const tradition = author?.tradition?.name
                 const eraLabel = author?.era?.label
                 const eraSlug = author?.era?.slug
-                const snippet = t.body ? bodySnippet(t.body, query) : (t.summary ?? '')
+                const snippet = t.excerpt ? excerptSnippet(t.excerpt, query) : (t.summary ?? '')
                 const readTime = `approx. ${readingMinutes(t.word_count)} min read`
                 return (
                   <li key={t.id} className="relative group">
@@ -336,6 +393,7 @@ export default async function SearchPage({ searchParams }: Props) {
                             deathYear={author?.death_year ?? null}
                             accessionNumber={t.accession_number}
                             traditionSlug={author?.tradition?.slug ?? null}
+                            genre={t.genre?.name ?? null}
                             index={i}
                           />
                         </div>
@@ -382,7 +440,7 @@ export default async function SearchPage({ searchParams }: Props) {
         )}
 
         {/* Zero-results suggestions */}
-        {query && total === 0 && <TrackPageEvent event="search-no-results" data={{ query }} />}
+        {query && total === 0 && !searchFailed && <TrackPageEvent event="search-no-results" data={{ query }} />}
         {query && total === 0 && suggested && suggested.length > 0 && (
           <section className="mt-10">
             <div className="mb-4">

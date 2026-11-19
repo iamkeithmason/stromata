@@ -39,35 +39,67 @@ to promote — never promote a card to `Agent-ready` yourself.
    make the backlog reflect what actually shipped. List Feature Backlog cards at
    `Status = 'Planned'` that carry a linked PR in their body, and check each PR's state
    via `mcp__github__pull_request_read`:
-   - **Merged** → set the card `Status` → `Built`. (This is the only place a routine sets
-     `Built` — it does so *after* merge, never at PR time. It reconciles Keith's merge,
-     it does not pre-empt his review.) Confirm the merged PR added a CHANGELOG entry; if
-     for some reason it didn't, add one now describing the shipped change.
+   - **Merged, and on `release`** → set the card `Status` → `Built`. (This is the only place a
+     routine sets `Built` — it does so *after* the change ships, never at PR time. It
+     reconciles Keith's merge, it does not pre-empt his review.) `main` is where work lands
+     and `release` is what is live (CLAUDE.md "Vercel usage"), so a PR merged into `main` is
+     **not** `Built` yet: check that the PR's merge commit is reachable from `release`
+     (`gh api repos/{owner}/{repo}/compare/release...{merge_sha}` reports `behind` or
+     `identical` once it is). Confirm the merged PR added a CHANGELOG
+     entry; if for some reason it didn't, add one now describing the shipped change.
+   - **Merged into `main`, not yet on `release`** → leave it `Planned`; it ships in the next
+     weekly promotion PR (`main` → `release`), which Keith merges.
    - **Closed unmerged** → leave `Status` as-is and add one line to the card body noting
      the PR was closed without merging.
    - **Still open** → leave it; it's in flight.
    Then continue to the new card below. This sweep is what keeps `Built` and the CHANGELOG
    current between runs without any merge-time webhook into Notion.
 
-1. **Pull the queue.** Query the Feature Backlog data source
-   (`collection://00686889-855b-424e-8af1-1fe31062648e`), Agent-ready cards first:
+1. **Pull the queue.** Read the Feature Backlog's saved **Agent queue, approved** view
+   with `notion-query-data-sources` in **view mode**, not SQL:
 
-   ```sql
-   SELECT url, Feature, Impact, Confidence, Ease, (Impact*Confidence*Ease) AS ICE,
-          "Recommended Phase", Status, "Stack Context"
-   FROM "collection://00686889-855b-424e-8af1-1fe31062648e"
-   WHERE "Agent" = 'Agent-ready' AND Status IN ('Idea','Under Consideration','Planned')
-   ORDER BY ICE DESC
+   ```json
+   {"data": {"mode": "view", "view_url": "view://3d2d9194-805d-8188-9ddb-000c4cbc0eba", "page_size": 10}}
    ```
 
-   If SQL is plan-gated (400 "requires a Business plan"), fall back to `notion-search`
-   scoped to the data source, then `notion-fetch` each — same pattern as the
-   `backlog-triage` skill and CLAUDE.md's Notion note.
+   The view carries the filter (`Agent = 'Agent-ready'`, not yet `Built`) and the sort
+   (ICE, highest first), so the rows come back already ranked. View mode has no plan
+   quota, so it does not spend the shared SQL budget that the Prospect List sync and
+   `backlog-triage` draw on (CLAUDE.md's Notion note). Two things to know when reading it:
 
-2. **Choose one card.** Take the highest-ICE card that does **not** already have an open
-   PR or a `claude/*` branch for it (check `mcp__github__list_pull_requests` and
-   `git branch -r`). Skip anything already in flight. If nothing qualifies, report that
-   and stop.
+   - **`ICE Score` comes back as a `formulaResult://…` reference, not a number.** Trust
+     the view's order; if you need the figure, compute `Impact × Confidence × Ease`.
+   - **Rows arrive whole**, long `Notes` and `Outcome / Done when` included, so keep
+     `page_size` small. The top few cards are all step 2 needs; follow `next_cursor`
+     only if every one of them is already in flight.
+
+   If view mode refuses, fall back to SQL against the data source
+   (`collection://00686889-855b-424e-8af1-1fe31062648e`) with the same filter and
+   `ORDER BY Impact*Confidence*Ease DESC`, and say in the run report that the view failed.
+
+2. **Choose one card, and make sure nobody else is building it.** Take the highest-ICE
+   card that is not already in flight. "In flight" is decided by evidence, not by the card's
+   `Status` — `Planned` reads the same whether a build exists or not, and on 2 Nov 2026 two
+   sessions built the same card because of it (#184 and #187;
+   `docs/research/2026-11-02-claim-the-work-before-you-build.md`). For each candidate, all three:
+   - **Search open PRs by the card's title**, not by branch prefix (hand-started sessions use
+     `ccr-*` branches, not `claude/*`):
+     `gh api -X GET search/issues -f q='repo:iamkeithmason/stromata is:pr is:open in:title,body "<two or three distinctive words from the card title>"'`
+     and skim `mcp__github__list_pull_requests` (state open, sorted by updated) for the same
+     words.
+   - **Read the card body for a claim line** (`Building: …`, below) dated within the last
+     three days, and the `Notes` property for a PR link.
+   - **`git branch -r --sort=-committerdate | head -20`** for a branch pushed in the last
+     few days whose latest commit message names the card.
+   Any hit means skip the card and say which PR or claim you found. If nothing qualifies,
+   report that and stop.
+
+2a. **Claim the card before writing any code.** Append one line to the card *body* with
+   `notion-update-page` → `insert_content`:
+   `Building: <this session's URL> · <YYYY-MM-DD> · branch <branch name>`. Do this
+   even though the PR, and the `Planned` status (step 11), come later: the claim is what a
+   parallel session reads in step 2. If the run stops without a PR, replace the line with
+   `Abandoned: <reason>` so the card is free again.
 
 3. **Read it fully.** `notion-fetch` the card page and read `Summary`,
    `Implementation Suggestion`, `Stack Context`, and `Notes`. If, on reading, the card
@@ -113,14 +145,21 @@ to promote — never promote a card to `Agent-ready` yourself.
    CHANGELOG — see CLAUDE.md "Keeping the record current"), but a `/next-agent-card` PR is
    a code/product change, so it always gets a CHANGELOG entry.
 
-10. **Open a draft PR.** `git push -u origin claude/<card-slug>`, then create a **draft**
-   PR (mirror any PR template), and `subscribe_pr_activity`. In the PR body, record that
-   the review gate ran and what it surfaced (or "clean"). Never mark ready, never
-   merge — Keith does that. Drive its CI to green per the babysit rules.
+10. **Open a draft PR — with base `main`.** `git push -u origin claude/<card-slug>`, then
+   create a **draft** PR against `main` (set `base: "main"` explicitly). `main` is where work
+   lands and `release` is what is live, so a merge into `main` deploys nothing — see CLAUDE.md
+   "Vercel usage". Mirror any PR template, and `subscribe_pr_activity`.
+   Make the PR body's first line `Card: <exact Feature title>`, copied from Notion (CLAUDE.md
+   "Keeping the record current"); step 0's reconciliation matches on it.
+   In the PR body, record that the review gate ran and what it surfaced (or "clean"). Never
+   mark ready, never merge — Keith does that. Drive its CI to green per the babysit rules.
+   Merged into `main` means reviewed and queued, not `Built` and not live: the card
+   becomes `Built` once it is on `release`, via the weekly promotion PR (`main` → `release`),
+   which Keith merges.
 
 11. **Update the card.** Add a note to the card *body* (never overwrite the `Notes`
     property) linking the PR and stating what was verified (including the review-gate
-    outcome). Set `Status` → `Planned`. Do **not** set `Built` here — that happens in
+    outcome), next to the step 2a claim line so the two read together. Set `Status` → `Planned`. Do **not** set `Built` here — that happens in
     step 0 of the next run, once Keith has merged (or is set by whoever merges, per
     CLAUDE.md). Leave `Agent` = `Agent-ready`.
 
@@ -131,5 +170,6 @@ to promote — never promote a card to `Agent-ready` yourself.
 
 - Merge, mark a draft PR ready, or set `published: true` / `authors.draft: false`.
 - Widen a card's scope, or batch several cards into one PR.
+- Start building a card you have not searched for (step 2) and claimed (step 2a).
 - Skip, disable, or quarantine a test to get CI green.
 - Build a card that needs taste, auth design, or editing a third-party site.

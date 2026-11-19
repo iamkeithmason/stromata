@@ -86,8 +86,50 @@ export function checkProps(event, expected) {
   return { ok: problems.length === 0, problems };
 }
 
+/**
+ * Choose which captured event a check should judge.
+ *
+ * Taking the first event with the right name is not enough: one action can
+ * produce two events of the same name. A click that really navigates lands on
+ * a new page, and that page may fire its own event before the click's beacon
+ * is recorded, so "first of this name" can be the wrong one. That turned a
+ * correct link into a red row (tradition-page and location-page, 2 Nov 2026,
+ * when every text page still fired a from-less `text-open` on load).
+ *
+ * So judge only events sent from the page the click happened on (`onPath`,
+ * compared by pathname; an event with no url is kept rather than guessed
+ * about), and among those prefer one that passes the expectation. When none
+ * does, fall back to the first of the name, so a genuine failure still reports
+ * what was wrong with the event that did arrive. Returns `{ event, ok }`;
+ * `event` is null when no event of the name was captured from that page.
+ */
+export function pickEvent(captured, name, expected = {}, { onPath } = {}) {
+  const want = onPath ? pathOf(onPath) : null;
+  const named = captured.filter(
+    (e) => e.name === name && (!want || !e.url || pathOf(e.url) === want)
+  );
+  const match = named.find((e) => checkProps(e, expected).ok);
+  if (match) return { event: match, ok: true };
+  return { event: named[0] ?? null, ok: false };
+}
+
+function pathOf(url) {
+  try {
+    return new URL(url, 'http://wire.check').pathname;
+  } catch {
+    return url;
+  }
+}
+
 /** A slug-shaped identifier — the rule that identifiers are slugs, not titles. */
 export const SLUG = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+
+/**
+ * Which rule chose a read-next pick (`pick` on text-open from=read-next): the
+ * editor's own choice, or one of lib/read-next.ts's rules. Lets editorial picks
+ * be compared with automatic ones without joining sessions.
+ */
+export const READ_NEXT_PICK = /^(editorial|author|theme|genre)$/;
 
 /** Render result rows as a fixed-width table. */
 export function formatTable(rows) {
@@ -105,4 +147,27 @@ export function summarise(rows) {
   const t = { pass: 0, fail: 0, skip: 0 };
   for (const r of rows) t[r.status] = (t[r.status] ?? 0) + 1;
   return t;
+}
+
+/**
+ * Vercel's bot checkpoint answers a cloud browser in place of the site. The
+ * page is a real 200 with its own scripts, so without this test a run against
+ * it reads as "control not found" — a finding about the site that is really a
+ * finding about the network. CLAUDE.md: that protection is not to be bypassed.
+ */
+export function isVercelCheckpoint(title) {
+  return /vercel security checkpoint/i.test(String(title ?? ''));
+}
+
+/**
+ * The detail for a control that every text page renders but this one did not.
+ * Says what the browser was actually looking at, because "not found" alone is
+ * ambiguous between a regression, a wrong page and a page that never arrived.
+ */
+export function describeMissing(what, { path, status, title }) {
+  if (isVercelCheckpoint(title)) {
+    return `${what} absent: ${path} served Vercel's bot checkpoint, not the site`;
+  }
+  const code = status == null ? 'no response' : `HTTP ${status}`;
+  return `${what} absent on ${path} (${code}, title "${String(title ?? '').slice(0, 60)}")`;
 }
