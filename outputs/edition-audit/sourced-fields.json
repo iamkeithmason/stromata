@@ -1,0 +1,364 @@
+{
+  "_about": "Curated, committed input to scripts/propose-edition-metadata.mjs. \"source\" entries carry a verbatim citation from the named URL, and every value must appear in it; \"editor\" entries are values Keith confirmed by hand. Applied after Pass 1 and before Pass 2.",
+  "the-epistle-of-ignatius-to-the-ephesians": {
+    "basis": "source",
+    "source_url": "https://www.newadvent.org/fathers/0104.htm",
+    "checked": "2026-11-10",
+    "citation": "Translated by Alexander Roberts and James Donaldson. From Ante-Nicene Fathers, Vol. 1. Edited by Alexander Roberts, James Donaldson, and A. Cleveland Coxe. (Buffalo, NY: Christian Literature Publishing Co., 1885.) Revised and edited for New Advent by Kevin Knight.",
+    "fields": {
+      "translator_display": "Alexander Roberts and James Donaldson",
+      "volume": 1,
+      "publication_year": 1885,
+      "publisher": "Christian Literature Publishing Co.",
+      "place": "Buffalo, NY"
+    }
+  },
+  "the-epistle-of-ignatius-to-the-magnesians": {
+    "basis": "source",
+    "source_url": "https://www.newadvent.org/fathers/0105.htm",
+    "checked": "2026-11-10",
+    "citation": "Translated by Alexander Roberts and James Donaldson. From Ante-Nicene Fathers, Vol. 1. Edited by Alexander Roberts, James Donaldson, and A. Cleveland Coxe. (Buffalo, NY: Christian Literature Publishing Co., 1885.) Revised and edited for New Advent by Kevin Knight.",
+    "fields": {
+      "translator_display": "Alexander Roberts and James Donaldson",
+      "volume": 1,
+      "publication_year": 1885,
+      "publisher": "Christian Literature Publishing Co.",
+      "place": "Buffalo, NY"
+    }
+  },
+  "the-epistle-of-ignatius-to-the-trallians": {
+    "basis": "source",
+    "source_url": "https://www.newadvent.org/fathers/0106.htm",
+    "checked": "2026-11-10",
+    "citation": "Translated by Alexander Roberts and James Donaldson. From Ante-Nicene Fathers, Vol. 1. Edited by Alexander Roberts, James Donaldson, and A. Cleveland Coxe. (Buffalo, NY: Christian Literature Publishing Co., 1885.) Revised and edited for New Advent by Kevin Knight.",
+    "fields": {
+      "translator_display": "Alexander Roberts and James Donaldson",
+      "volume": 1,
+      "publication_year": 1885,
+      "publisher": "Christian Literature Publishing Co.",
+      "place": "Buffalo, NY"
+    }
+  },
+  "the-epistle-of-ignatius-to-the-romans": {
+    "basis": "source",
+    "source_url": "https://www.newadvent.org/fathers/0107.htm",
+    "checked": "2026-11-10",
+    "citation": "Translated by Alexander Roberts and James Donaldson. From Ante-Nicene Fathers, Vol. 1. Edited by Alexander Roberts, James Donaldson, and A. Cleveland Coxe. (Buffalo, NY: Christian Literature Publishing Co., 1885.) Revised and edited for New Advent by Kevin Knight.",
+    "fields": {
+      "translator_display": "Alexander Roberts and James Donaldson",
+      "volume": 1,
+      "publication_year": 1885,
+      "publisher": "Christian Literature Publishing Co.",
+      "place": "Buffalo, NY"
+    }
+  },
+  "the-epistle-of-ignatius-to-the-philadelphians": {
+    "basis": "source",
+    "source_url": "https://www.newadvent.org/fathers/0108.htm",
+    "checked": "2026-11-10",
+    "citation": "Translated by Alexander Roberts and James Donaldson. From Ante-Nicene Fathers, Vol. 1. Edited by Alexander Roberts, James Donaldson, and A. Cleveland Coxe. (Buffalo, NY: Christian Literature Publishing Co., 1885.) Revised and edited for New Advent by Kevin Knight.",
+    "fields": {
+      "translator_display": "Alexander Roberts and James Donaldson",
+      "volume": 1,
+      "publication_year": 1885,
+      "publisher": "Christian Literature Publishing Co.",
+      "place": "Buffalo, NY"
+    }
+  },
+  "the-epistle-of-ignatius-to-the-smyrnaeans": {
+    "basis": "source",
+    "source_url": "https://www.newadvent.org/fathers/0109.htm",
+    "checked": "2026-11-10",
+    "citation": "Translated by Alexander Roberts and James Donaldson. From Ante-Nicene Fathers, Vol. 1. Edited by Alexander Roberts, James Donaldson, and A. Cleveland Coxe. (Buffalo, NY: Christian Literature Publishing Co., 1885.) Revised and edited for New Advent by Kevin Knight.",
+    "fields": {
+      "translator_display": "Alexander Roberts and James Donaldson",
+      "volume": 1,
+      "publication_year": 1885,
+      "publisher": "Christian Literature Publishing Co.",
+      "place": "Buffalo, NY"
+    }
+  },
+  "the-epistle-of-ignatius-to-polycarp": {
+    "basis": "source",
+    "source_url": "https://www.newadvent.org/fathers/0110.htm",
+    "checked": "2026-11-10",
+    "citation": "Translated by Alexander Roberts and James Donaldson. From Ante-Nicene Fathers, Vol. 1. Edited by Alexander Roberts, James Donaldson, and A. Cleveland Coxe. (Buffalo, NY: Christian Literature Publishing Co., 1885.) Revised and edited for New Advent by Kevin Knight.",
+    "fields": {
+      "translator_display": "Alexander Roberts and James Donaldson",
+      "volume": 1,
+      "publication_year": 1885,
+      "publisher": "Christian Literature Publishing Co.",
+      "place": "Buffalo, NY"
+    }
+  },
+  "the-stromata-book-i": {
+    "basis": "source",
+    "source_url": "https://www.newadvent.org/fathers/02101.htm",
+    "checked": "2026-11-10",
+    "citation": "Translated by William Wilson. From Ante-Nicene Fathers, Vol. 2. Edited by Alexander Roberts, James Donaldson, and A. Cleveland Coxe. (Buffalo, NY: Christian Literature Publishing Co., 1885.) Revised and edited for New Advent by Kevin Knight.",
+    "fields": {
+      "translator_display": "William Wilson",
+      "volume": 2,
+      "publication_year": 1885,
+      "publisher": "Christian Literature Publishing Co.",
+      "place": "Buffalo, NY"
+    },
+    "note": "The row's notes credit \"Roberts-Donaldson\", the series editors; the citation names William Wilson as translator."
+  },
+  "the-stromata-book-ii": {
+    "basis": "source",
+    "source_url": "https://www.newadvent.org/fathers/02102.htm",
+    "checked": "2026-11-10",
+    "citation": "Translated by William Wilson. From Ante-Nicene Fathers, Vol. 2. Edited by Alexander Roberts, James Donaldson, and A. Cleveland Coxe. (Buffalo, NY: Christian Literature Publishing Co., 1885.) Revised and edited for New Advent by Kevin Knight.",
+    "fields": {
+      "translator_display": "William Wilson",
+      "volume": 2,
+      "publication_year": 1885,
+      "publisher": "Christian Literature Publishing Co.",
+      "place": "Buffalo, NY"
+    },
+    "note": "The row's notes credit \"Roberts-Donaldson\", the series editors; the citation names William Wilson as translator."
+  },
+  "the-stromata-book-iii": {
+    "basis": "source",
+    "source_url": "https://www.newadvent.org/fathers/02103.htm",
+    "checked": "2026-11-10",
+    "citation": "Translated by William Wilson. From Ante-Nicene Fathers, Vol. 2. Edited by Alexander Roberts, James Donaldson, and A. Cleveland Coxe. (Buffalo, NY: Christian Literature Publishing Co., 1885.) Revised and edited for New Advent by Kevin Knight.",
+    "fields": {
+      "volume": 2,
+      "publication_year": 1885,
+      "publisher": "Christian Literature Publishing Co.",
+      "place": "Buffalo, NY"
+    },
+    "note": "ANF printed Book III in Latin, untranslated; the page credits Wilson for the volume, not for this book, so only the volume and imprint are taken."
+  },
+  "the-stromata-book-iv": {
+    "basis": "source",
+    "source_url": "https://www.newadvent.org/fathers/02104.htm",
+    "checked": "2026-11-10",
+    "citation": "Translated by William Wilson. From Ante-Nicene Fathers, Vol. 2. Edited by Alexander Roberts, James Donaldson, and A. Cleveland Coxe. (Buffalo, NY: Christian Literature Publishing Co., 1885.) Revised and edited for New Advent by Kevin Knight.",
+    "fields": {
+      "translator_display": "William Wilson",
+      "volume": 2,
+      "publication_year": 1885,
+      "publisher": "Christian Literature Publishing Co.",
+      "place": "Buffalo, NY"
+    },
+    "note": "The row's notes credit \"Roberts-Donaldson\", the series editors; the citation names William Wilson as translator."
+  },
+  "the-stromata-book-v": {
+    "basis": "source",
+    "source_url": "https://www.newadvent.org/fathers/02105.htm",
+    "checked": "2026-11-10",
+    "citation": "Translated by William Wilson. From Ante-Nicene Fathers, Vol. 2. Edited by Alexander Roberts, James Donaldson, and A. Cleveland Coxe. (Buffalo, NY: Christian Literature Publishing Co., 1885.) Revised and edited for New Advent by Kevin Knight.",
+    "fields": {
+      "translator_display": "William Wilson",
+      "volume": 2,
+      "publication_year": 1885,
+      "publisher": "Christian Literature Publishing Co.",
+      "place": "Buffalo, NY"
+    },
+    "note": "The row's notes credit \"Roberts-Donaldson\", the series editors; the citation names William Wilson as translator."
+  },
+  "the-stromata-book-vi": {
+    "basis": "source",
+    "source_url": "https://www.newadvent.org/fathers/02106.htm",
+    "checked": "2026-11-10",
+    "citation": "Translated by William Wilson. From Ante-Nicene Fathers, Vol. 2. Edited by Alexander Roberts, James Donaldson, and A. Cleveland Coxe. (Buffalo, NY: Christian Literature Publishing Co., 1885.) Revised and edited for New Advent by Kevin Knight.",
+    "fields": {
+      "translator_display": "William Wilson",
+      "volume": 2,
+      "publication_year": 1885,
+      "publisher": "Christian Literature Publishing Co.",
+      "place": "Buffalo, NY"
+    },
+    "note": "The row's notes credit \"Roberts-Donaldson\", the series editors; the citation names William Wilson as translator."
+  },
+  "the-stromata-book-vii": {
+    "basis": "source",
+    "source_url": "https://www.newadvent.org/fathers/02107.htm",
+    "checked": "2026-11-10",
+    "citation": "Translated by William Wilson. From Ante-Nicene Fathers, Vol. 2. Edited by Alexander Roberts, James Donaldson, and A. Cleveland Coxe. (Buffalo, NY: Christian Literature Publishing Co., 1885.) Revised and edited for New Advent by Kevin Knight.",
+    "fields": {
+      "translator_display": "William Wilson",
+      "volume": 2,
+      "publication_year": 1885,
+      "publisher": "Christian Literature Publishing Co.",
+      "place": "Buffalo, NY"
+    },
+    "note": "The row's notes credit \"Roberts-Donaldson\", the series editors; the citation names William Wilson as translator."
+  },
+  "a-paper-on-usury": {
+    "basis": "editor",
+    "checked": "2026-11-10",
+    "note": "Keith confirmed on 10 Nov 2026 that \"pp. 4: 1283-98\" in the provenance notes means volume 4 of The Works of John Jewel.",
+    "fields": {
+      "volume": 4
+    }
+  },
+  "confession-catholic-faith-damasus": {
+    "basis": "source",
+    "source_url": "https://www.newadvent.org/fathers/27025.htm",
+    "checked": "2026-11-10",
+    "citation": "Translated by Blomfield Jackson. From Nicene and Post-Nicene Fathers, Second Series, Vol. 3. Edited by Philip Schaff and Henry Wace. (Buffalo, NY: Christian Literature Publishing Co., 1892.) Revised and edited for New Advent by Kevin Knight.",
+    "note": "Theodoret, Ecclesiastical History V.11, \"A confession of the Catholic faith which Pope Damasus sent to Bishop Paulinus\"; the citation covers the whole of Book V.",
+    "fields": {
+      "translator_display": "Blomfield Jackson",
+      "volume": 3,
+      "publication_year": 1892,
+      "publisher": "Christian Literature Publishing Co.",
+      "place": "Buffalo, NY"
+    }
+  },
+  "first-letter-to-henry-bullinger": {
+    "basis": "source",
+    "source_url": "https://archive.org/details/memoirsremainsof00grey",
+    "checked": "2026-11-10",
+    "citation": "Archive.org record memoirsremainsof00grey: title \"Memoirs and remains of Lady Jane Grey\"; creator \"Grey, Jane, Lady, 1537-1554\", \"Nicolas, Nicholas Harris, Sir, 1799-1848\"; publisher \"London : H. Colburn & R. Bentley\"; date \"1831\". Editor's preface: \"Three letters in Latin to Henry Bullinger. These letters were written before her marriage, and between the years 1550 and 1553. Translations of them are also inserted.\"",
+    "note": "Latin original; the edition prints an English \"[translation.]\" after each letter without naming the translator (presumably the editor, Nicolas). Public domain by the 1831 publication date.",
+    "fields": {
+      "is_translation": true,
+      "publication_year": 1831,
+      "publisher": "H. Colburn & R. Bentley",
+      "place": "London"
+    }
+  },
+  "second-letter-to-henry-bullinger": {
+    "basis": "source",
+    "source_url": "https://archive.org/details/memoirsremainsof00grey",
+    "checked": "2026-11-10",
+    "citation": "Archive.org record memoirsremainsof00grey: title \"Memoirs and remains of Lady Jane Grey\"; creator \"Grey, Jane, Lady, 1537-1554\", \"Nicolas, Nicholas Harris, Sir, 1799-1848\"; publisher \"London : H. Colburn & R. Bentley\"; date \"1831\". Editor's preface: \"Three letters in Latin to Henry Bullinger. These letters were written before her marriage, and between the years 1550 and 1553. Translations of them are also inserted.\"",
+    "note": "Latin original; the edition prints an English \"[translation.]\" after each letter without naming the translator (presumably the editor, Nicolas). Public domain by the 1831 publication date.",
+    "fields": {
+      "is_translation": true,
+      "publication_year": 1831,
+      "publisher": "H. Colburn & R. Bentley",
+      "place": "London"
+    }
+  },
+  "third-letter-to-henry-bullinger": {
+    "basis": "source",
+    "source_url": "https://archive.org/details/memoirsremainsof00grey",
+    "checked": "2026-11-10",
+    "citation": "Archive.org record memoirsremainsof00grey: title \"Memoirs and remains of Lady Jane Grey\"; creator \"Grey, Jane, Lady, 1537-1554\", \"Nicolas, Nicholas Harris, Sir, 1799-1848\"; publisher \"London : H. Colburn & R. Bentley\"; date \"1831\". Editor's preface: \"Three letters in Latin to Henry Bullinger. These letters were written before her marriage, and between the years 1550 and 1553. Translations of them are also inserted.\"",
+    "note": "Latin original; the edition prints an English \"[translation.]\" after each letter without naming the translator (presumably the editor, Nicolas). Public domain by the 1831 publication date.",
+    "fields": {
+      "is_translation": true,
+      "publication_year": 1831,
+      "publisher": "H. Colburn & R. Bentley",
+      "place": "London"
+    }
+  },
+  "conference-with-john-feckenham": {
+    "basis": "source",
+    "source_url": "https://archive.org/details/memoirsremainsof00grey",
+    "checked": "2026-11-10",
+    "citation": "Archive.org record memoirsremainsof00grey: title \"Memoirs and remains of Lady Jane Grey\"; creator \"Grey, Jane, Lady, 1537-1554\", \"Nicolas, Nicholas Harris, Sir, 1799-1848\"; publisher \"London : H. Colburn & R. Bentley\"; date \"1831\". Editor's preface: \"Three letters in Latin to Henry Bullinger. These letters were written before her marriage, and between the years 1550 and 1553. Translations of them are also inserted.\"",
+    "note": "English original: the editor lists only the Bullinger letters as Latin with translations. Keith confirmed this reading on 10 Nov 2026.",
+    "fields": {
+      "is_translation": false,
+      "publication_year": 1831,
+      "publisher": "H. Colburn & R. Bentley",
+      "place": "London"
+    }
+  },
+  "letter-to-lady-katherine-grey": {
+    "basis": "source",
+    "source_url": "https://archive.org/details/memoirsremainsof00grey",
+    "checked": "2026-11-10",
+    "citation": "Archive.org record memoirsremainsof00grey: title \"Memoirs and remains of Lady Jane Grey\"; creator \"Grey, Jane, Lady, 1537-1554\", \"Nicolas, Nicholas Harris, Sir, 1799-1848\"; publisher \"London : H. Colburn & R. Bentley\"; date \"1831\". Editor's preface: \"Three letters in Latin to Henry Bullinger. These letters were written before her marriage, and between the years 1550 and 1553. Translations of them are also inserted.\"",
+    "note": "English original: the editor lists only the Bullinger letters as Latin with translations. Keith confirmed this reading on 10 Nov 2026.",
+    "fields": {
+      "is_translation": false,
+      "publication_year": 1831,
+      "publisher": "H. Colburn & R. Bentley",
+      "place": "London"
+    }
+  },
+  "letter-to-the-duke-of-suffolk": {
+    "basis": "source",
+    "source_url": "https://archive.org/details/memoirsremainsof00grey",
+    "checked": "2026-11-10",
+    "citation": "Archive.org record memoirsremainsof00grey: title \"Memoirs and remains of Lady Jane Grey\"; creator \"Grey, Jane, Lady, 1537-1554\", \"Nicolas, Nicholas Harris, Sir, 1799-1848\"; publisher \"London : H. Colburn & R. Bentley\"; date \"1831\". Editor's preface: \"Three letters in Latin to Henry Bullinger. These letters were written before her marriage, and between the years 1550 and 1553. Translations of them are also inserted.\"",
+    "note": "English original: the editor lists only the Bullinger letters as Latin with translations. Keith confirmed this reading on 10 Nov 2026.",
+    "fields": {
+      "is_translation": false,
+      "publication_year": 1831,
+      "publisher": "H. Colburn & R. Bentley",
+      "place": "London"
+    }
+  },
+  "letter-to-thomas-harding-on-his-apostasy": {
+    "basis": "source",
+    "source_url": "https://archive.org/details/memoirsremainsof00grey",
+    "checked": "2026-11-10",
+    "citation": "Archive.org record memoirsremainsof00grey: title \"Memoirs and remains of Lady Jane Grey\"; creator \"Grey, Jane, Lady, 1537-1554\", \"Nicolas, Nicholas Harris, Sir, 1799-1848\"; publisher \"London : H. Colburn & R. Bentley\"; date \"1831\". Editor's preface: \"Three letters in Latin to Henry Bullinger. These letters were written before her marriage, and between the years 1550 and 1553. Translations of them are also inserted.\"",
+    "note": "English original: the editor lists only the Bullinger letters as Latin with translations. Keith confirmed this reading on 10 Nov 2026.",
+    "fields": {
+      "is_translation": false,
+      "publication_year": 1831,
+      "publisher": "H. Colburn & R. Bentley",
+      "place": "London"
+    }
+  },
+  "prayer-before-execution": {
+    "basis": "source",
+    "source_url": "https://archive.org/details/memoirsremainsof00grey",
+    "checked": "2026-11-10",
+    "citation": "Archive.org record memoirsremainsof00grey: title \"Memoirs and remains of Lady Jane Grey\"; creator \"Grey, Jane, Lady, 1537-1554\", \"Nicolas, Nicholas Harris, Sir, 1799-1848\"; publisher \"London : H. Colburn & R. Bentley\"; date \"1831\". Editor's preface: \"Three letters in Latin to Henry Bullinger. These letters were written before her marriage, and between the years 1550 and 1553. Translations of them are also inserted.\"",
+    "note": "English original: the editor lists only the Bullinger letters as Latin with translations. Keith confirmed this reading on 10 Nov 2026.",
+    "fields": {
+      "is_translation": false,
+      "publication_year": 1831,
+      "publisher": "H. Colburn & R. Bentley",
+      "place": "London"
+    }
+  },
+  "scaffold-speech": {
+    "basis": "source",
+    "source_url": "https://archive.org/details/memoirsremainsof00grey",
+    "checked": "2026-11-10",
+    "citation": "Archive.org record memoirsremainsof00grey: title \"Memoirs and remains of Lady Jane Grey\"; creator \"Grey, Jane, Lady, 1537-1554\", \"Nicolas, Nicholas Harris, Sir, 1799-1848\"; publisher \"London : H. Colburn & R. Bentley\"; date \"1831\". Editor's preface: \"Three letters in Latin to Henry Bullinger. These letters were written before her marriage, and between the years 1550 and 1553. Translations of them are also inserted.\"",
+    "note": "English original: the editor lists only the Bullinger letters as Latin with translations. Keith confirmed this reading on 10 Nov 2026.",
+    "fields": {
+      "is_translation": false,
+      "publication_year": 1831,
+      "publisher": "H. Colburn & R. Bentley",
+      "place": "London"
+    }
+  },
+  "note-to-her-father-memorial-for-sir-john-brydges-and-tower-inscriptions": {
+    "basis": "source",
+    "source_url": "https://archive.org/details/memoirsremainsof00grey",
+    "checked": "2026-11-10",
+    "citation": "Archive.org record memoirsremainsof00grey: title \"Memoirs and remains of Lady Jane Grey\"; creator \"Grey, Jane, Lady, 1537-1554\", \"Nicolas, Nicholas Harris, Sir, 1799-1848\"; publisher \"London : H. Colburn & R. Bentley\"; date \"1831\". Editor's preface: \"Three letters in Latin to Henry Bullinger. These letters were written before her marriage, and between the years 1550 and 1553. Translations of them are also inserted.\"",
+    "note": "Edition sourced; translation status left open because the Tower inscriptions include Latin.",
+    "fields": {
+      "publication_year": 1831,
+      "publisher": "H. Colburn & R. Bentley",
+      "place": "London"
+    }
+  },
+  "a-short-rule-of-life": {
+    "basis": "source",
+    "source_url": "https://archive.org/details/selectenglishworks03wycl",
+    "checked": "2026-11-10",
+    "citation": "Archive.org record selectenglishworks03wycl: title \"Select English works of John Wyclif\"; creator \"Wycliffe, John, d. 1384\", \"Arnold, Thomas, 1823-1900\"; publisher \"Oxford : Clarendon Press\"; date \"1869\"; volume \"3\".",
+    "note": "Middle English original, edited by Thomas Arnold (vol. III, Miscellaneous works).",
+    "fields": {
+      "is_translation": false,
+      "volume": 3,
+      "publication_year": 1869,
+      "publisher": "Clarendon Press",
+      "place": "Oxford"
+    }
+  },
+  "letters-109697-to-trajan-on-the-christians": {
+    "basis": "source",
+    "source_url": "https://faculty.georgetown.edu/jod/texts/pliny.html",
+    "checked": "2026-11-10",
+    "citation": "Georgetown page names no translator. Its text opens \"It is my practice, my lord, to refer to you all matters concerning which I am in doubt.\" Melmoth, rev. Bosanquet (Project Gutenberg #2811, https://www.gutenberg.org/ebooks/2811) opens \"IT is my invariable rule, Sir, to refer to you in all matters where I feel doubtful\". Fordham Internet Medieval Sourcebook copy (https://sourcebooks.web.fordham.edu/source/pliny1.asp), same wording, notes: \"I was unsure of the origin of this file. Bob Edsall (redsall@voicenet.com) informs me that is originates with James O'Donnell's (jod@ccat.sas.upenn.edu) file at http://ccat.sas.upenn.edu/jod/texts/pliny.html\".",
+    "note": "FINDING: the published text is not the Melmoth/Bosanquet translation the notes claim. Every copy traced (Georgetown, Fordham, World History Encyclopedia) leads back to James O'Donnell's 1990s Penn web file, which names no translator; searches on two distinctive sentences found no older printed edition. Treat it as an unidentified, possibly modern translation until one is found. A public-domain alternative is Melmoth rev. Bosanquet, Project Gutenberg #2811, Letters XCVII–XCVIII. Melmoth/Bosanquet replacement staged for review in outputs/edition-audit/replacements/pliny-letters-to-trajan-melmoth.md (10 Nov 2026).",
+    "fields": {}
+  }
+}

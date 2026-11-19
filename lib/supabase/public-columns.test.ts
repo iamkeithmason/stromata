@@ -4,6 +4,7 @@ import {
   PUBLIC_TEXT_COLUMNS,
   PUBLIC_TEXT_SELECT,
   EDITORIAL_TEXT_COLUMNS,
+  INTERNAL_TEXT_COLUMNS,
   PUBLIC_COLLECTION_COLUMNS,
   PUBLIC_COLLECTION_SELECT,
   EDITORIAL_COLLECTION_COLUMNS,
@@ -19,6 +20,15 @@ test('no editorial text column is exposed to the public select', () => {
     assert.ok(
       !(PUBLIC_TEXT_COLUMNS as readonly string[]).includes(col),
       `${col} is not granted to anon — including it makes PostgREST refuse the whole query`
+    )
+  }
+})
+
+test('no internal text column (the stored search vector) is exposed to the public select', () => {
+  for (const col of INTERNAL_TEXT_COLUMNS) {
+    assert.ok(
+      !(PUBLIC_TEXT_COLUMNS as readonly string[]).includes(col),
+      `${col} is not granted to anon, and every page selecting the public set would download it`
     )
   }
 })

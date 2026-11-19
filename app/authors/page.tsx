@@ -64,7 +64,9 @@ export default async function AuthorsPage() {
     {},
   )
 
-  const items: AuthorItem[] = rows.map(a => ({
+  // An author with no published text has nothing to read yet, so the index
+  // leaves them out (Keith, 17 Nov 2026). Their page still answers by URL.
+  const items: AuthorItem[] = rows.filter(a => (textCounts[a.id] ?? 0) > 0).map(a => ({
     id: a.id,
     name: a.name,
     slug: a.slug,

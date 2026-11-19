@@ -21,7 +21,7 @@ export function ContinueExploring({ picks }: { picks: ReadNextPick[] }) {
   const [lead, ...rest] = picks
   const minutes = readingMinutes(lead.wordCount)
   return (
-    <nav aria-label="Read next" className="mb-12 pt-6 border-t" style={{ borderColor: 'var(--rule)' }}>
+    <nav aria-label="Read next" className="mb-12 pt-6 border-t print:hidden" style={{ borderColor: 'var(--rule)' }}>
       <p className="kicker-gold" style={{ marginBottom: '1rem' }}>Read next</p>
       <Link
         href={`/texts/${lead.slug}`}
@@ -38,6 +38,7 @@ export function ContinueExploring({ picks }: { picks: ReadNextPick[] }) {
             deathYear={lead.deathYear}
             accessionNumber={lead.accessionNumber}
             traditionSlug={lead.traditionSlug}
+            genre={lead.genreName}
             index={0}
           />
         </div>

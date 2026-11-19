@@ -1,0 +1,456 @@
+{
+  "a-paper-on-usury": {
+    "series_raw": {
+      "value": "The Works of John Jewel",
+      "evidence": "The Works of John Jewel"
+    },
+    "volume": {
+      "value": 4,
+      "evidence": "pp. 4: 1283-98"
+    },
+    "publication_year": {
+      "value": 1845,
+      "evidence": "Jewel J (1845b)"
+    },
+    "publisher": {
+      "value": "Cambridge University Press",
+      "evidence": "Cambridge: Cambridge University Press"
+    },
+    "place": {
+      "value": "Cambridge",
+      "evidence": "Cambridge: Cambridge University Press"
+    }
+  },
+  "a-short-rule-of-life": {
+    "series_raw": {
+      "value": "Select English Works of John Wyclif",
+      "evidence": "Select English Works of John Wyclif, Vol. III"
+    },
+    "volume": {
+      "value": 3,
+      "evidence": "Vol. III"
+    },
+    "publisher": {
+      "value": "Clarendon Press",
+      "evidence": "Clarendon Press, Oxford"
+    },
+    "place": {
+      "value": "Oxford",
+      "evidence": "Clarendon Press, Oxford"
+    },
+    "publication_year": {
+      "value": 1869,
+      "evidence": "Oxford, in 1869"
+    }
+  },
+  "address-on-vainglory-and-how-to-bring-up-children": {},
+  "conference-with-john-feckenham": {
+    "series_raw": {
+      "value": "Memoirs and Remains of Lady Jane Grey",
+      "evidence": "Memoirs and Remains of Lady Jane Grey"
+    }
+  },
+  "confession-catholic-faith-damasus": {
+    "is_translation": {
+      "value": true,
+      "evidence": "Standard Nicene and Post-Nicene Fathers (NPNF) translation"
+    },
+    "series_raw": {
+      "value": "Nicene and Post-Nicene Fathers, Second Series",
+      "evidence": "Nicene and Post-Nicene Fathers, Second Series"
+    },
+    "volume": {
+      "value": 3,
+      "evidence": "Second Series, Vol. 3"
+    },
+    "place": {
+      "value": "Buffalo, NY",
+      "evidence": "Buffalo, NY"
+    },
+    "publisher": {
+      "value": "Christian Literature Publishing Co.",
+      "evidence": "Christian Literature Publishing Co."
+    },
+    "publication_year": {
+      "value": 1892,
+      "evidence": "Christian Literature Publishing Co., 1892"
+    }
+  },
+  "first-letter-to-henry-bullinger": {
+    "series_raw": {
+      "value": "Memoirs and Remains of Lady Jane Grey",
+      "evidence": "Memoirs and Remains of Lady Jane Grey"
+    },
+    "is_translation": {
+      "value": true,
+      "evidence": "originally in Latin and appear here in English translation"
+    }
+  },
+  "how-the-office-of-curates-is-ordained-of-god": {},
+  "letter-to-lady-katherine-grey": {
+    "series_raw": {
+      "value": "Memoirs and Remains of Lady Jane Grey",
+      "evidence": "Memoirs and Remains of Lady Jane Grey"
+    }
+  },
+  "letter-to-the-duke-of-suffolk": {
+    "series_raw": {
+      "value": "Memoirs and Remains of Lady Jane Grey",
+      "evidence": "Memoirs and Remains of Lady Jane Grey"
+    }
+  },
+  "letter-to-thomas-harding-on-his-apostasy": {
+    "series_raw": {
+      "value": "Memoirs and Remains of Lady Jane Grey",
+      "evidence": "Memoirs and Remains of Lady Jane Grey"
+    }
+  },
+  "note-to-her-father-memorial-for-sir-john-brydges-and-tower-inscriptions": {
+    "series_raw": {
+      "value": "Memoirs and Remains of Lady Jane Grey",
+      "evidence": "Memoirs and Remains of Lady Jane Grey"
+    }
+  },
+  "on-the-body-and-blood-of-our-lord": {
+    "is_translation": {
+      "value": true,
+      "evidence": "Translation from the nineteenth-century edition"
+    }
+  },
+  "prayer-before-execution": {
+    "series_raw": {
+      "value": "Memoirs and Remains of Lady Jane Grey",
+      "evidence": "Memoirs and Remains of Lady Jane Grey"
+    }
+  },
+  "preface-to-the-pastoral-care": {
+    "publisher": {
+      "value": "Gazette Office",
+      "evidence": "Gazette Office, 1876"
+    },
+    "publication_year": {
+      "value": 1876,
+      "evidence": "Gazette Office, 1876"
+    }
+  },
+  "psychomachia-prudentius": {
+    "is_translation": {
+      "value": true,
+      "evidence": "Anonymous English verse translation"
+    },
+    "publication_year": {
+      "value": 1743,
+      "evidence": "printed 1743"
+    },
+    "place": {
+      "value": "London",
+      "evidence": "1743 London edition"
+    }
+  },
+  "scaffold-speech": {
+    "series_raw": {
+      "value": "Memoirs and Remains of Lady Jane Grey",
+      "evidence": "Memoirs and Remains of Lady Jane Grey"
+    }
+  },
+  "second-letter-to-henry-bullinger": {
+    "series_raw": {
+      "value": "Memoirs and Remains of Lady Jane Grey",
+      "evidence": "Memoirs and Remains of Lady Jane Grey"
+    },
+    "is_translation": {
+      "value": true,
+      "evidence": "originally in Latin and appear here in English translation"
+    }
+  },
+  "secular-authority-luther": {
+    "is_translation": {
+      "value": true,
+      "evidence": "Philadelphia Edition translation"
+    },
+    "series_raw": {
+      "value": "Works of Martin Luther, with Introductions and Notes",
+      "evidence": "Works of Martin Luther, with Introductions and Notes"
+    },
+    "volume": {
+      "value": 3,
+      "evidence": "Vol. III"
+    },
+    "place": {
+      "value": "Philadelphia",
+      "evidence": "Philadelphia: A. J. Holman Company"
+    },
+    "publisher": {
+      "value": "A. J. Holman Company",
+      "evidence": "Philadelphia: A. J. Holman Company"
+    },
+    "publication_year": {
+      "value": 1915,
+      "evidence": "A. J. Holman Company, 1915"
+    }
+  },
+  "short-clear-exposition-christian-faith-zwingli": {
+    "is_translation": {
+      "value": true,
+      "evidence": "Translated from the Latin"
+    }
+  },
+  "small-catechism": {
+    "is_translation": {
+      "value": true,
+      "evidence": "Translated from Luther's 1529 German original"
+    }
+  },
+  "the-apostles-creed": {
+    "series_raw": {
+      "value": "Concordia Triglotta: The Symbolical Books of the Ev. Lutheran Church",
+      "evidence": "Concordia Triglotta: The Symbolical Books of the Ev. Lutheran Church"
+    },
+    "place": {
+      "value": "St. Louis",
+      "evidence": "St. Louis"
+    },
+    "publisher": {
+      "value": "Concordia Publishing House",
+      "evidence": "Concordia Publishing House"
+    },
+    "publication_year": {
+      "value": 1921,
+      "evidence": "Concordia Publishing House, 1921"
+    }
+  },
+  "the-nicene-creed": {
+    "series_raw": {
+      "value": "Concordia Triglotta: The Symbolical Books of the Ev. Lutheran Church",
+      "evidence": "Concordia Triglotta: The Symbolical Books of the Ev. Lutheran Church"
+    },
+    "place": {
+      "value": "St. Louis",
+      "evidence": "St. Louis"
+    },
+    "publisher": {
+      "value": "Concordia Publishing House",
+      "evidence": "Concordia Publishing House"
+    },
+    "publication_year": {
+      "value": 1921,
+      "evidence": "Concordia Publishing House, 1921"
+    }
+  },
+  "third-letter-to-henry-bullinger": {
+    "series_raw": {
+      "value": "Memoirs and Remains of Lady Jane Grey",
+      "evidence": "Memoirs and Remains of Lady Jane Grey"
+    },
+    "is_translation": {
+      "value": true,
+      "evidence": "originally in Latin and appear here in English translation"
+    }
+  },
+  "the-epistle-of-ignatius-to-polycarp": {
+    "series_raw": {
+      "value": "Ante-Nicene Fathers",
+      "evidence": "Ante-Nicene Fathers"
+    },
+    "volume": {
+      "value": 1,
+      "evidence": "Vol. 1"
+    },
+    "publication_year": {
+      "value": 1885,
+      "evidence": "Vol. 1 (1885)"
+    }
+  },
+  "the-epistle-of-ignatius-to-the-ephesians": {
+    "series_raw": {
+      "value": "Ante-Nicene Fathers",
+      "evidence": "Ante-Nicene Fathers"
+    },
+    "volume": {
+      "value": 1,
+      "evidence": "Vol. 1"
+    },
+    "publication_year": {
+      "value": 1885,
+      "evidence": "Vol. 1 (1885)"
+    }
+  },
+  "the-epistle-of-ignatius-to-the-magnesians": {
+    "series_raw": {
+      "value": "Ante-Nicene Fathers",
+      "evidence": "Ante-Nicene Fathers"
+    },
+    "volume": {
+      "value": 1,
+      "evidence": "Vol. 1"
+    },
+    "publication_year": {
+      "value": 1885,
+      "evidence": "Vol. 1 (1885)"
+    }
+  },
+  "the-epistle-of-ignatius-to-the-philadelphians": {
+    "series_raw": {
+      "value": "Ante-Nicene Fathers",
+      "evidence": "Ante-Nicene Fathers"
+    },
+    "volume": {
+      "value": 1,
+      "evidence": "Vol. 1"
+    },
+    "publication_year": {
+      "value": 1885,
+      "evidence": "Vol. 1 (1885)"
+    }
+  },
+  "the-epistle-of-ignatius-to-the-romans": {
+    "series_raw": {
+      "value": "Ante-Nicene Fathers",
+      "evidence": "Ante-Nicene Fathers"
+    },
+    "volume": {
+      "value": 1,
+      "evidence": "Vol. 1"
+    },
+    "publication_year": {
+      "value": 1885,
+      "evidence": "Vol. 1 (1885)"
+    }
+  },
+  "the-epistle-of-ignatius-to-the-smyrnaeans": {
+    "series_raw": {
+      "value": "Ante-Nicene Fathers",
+      "evidence": "Ante-Nicene Fathers"
+    },
+    "volume": {
+      "value": 1,
+      "evidence": "Vol. 1"
+    },
+    "publication_year": {
+      "value": 1885,
+      "evidence": "Vol. 1 (1885)"
+    }
+  },
+  "the-epistle-of-ignatius-to-the-trallians": {
+    "series_raw": {
+      "value": "Ante-Nicene Fathers",
+      "evidence": "Ante-Nicene Fathers"
+    },
+    "volume": {
+      "value": 1,
+      "evidence": "Vol. 1"
+    },
+    "publication_year": {
+      "value": 1885,
+      "evidence": "Vol. 1 (1885)"
+    }
+  },
+  "the-stromata-book-i": {
+    "is_translation": {
+      "value": true,
+      "evidence": "Roberts-Donaldson translation"
+    },
+    "translator_display": {
+      "value": "Roberts-Donaldson",
+      "evidence": "Roberts-Donaldson translation"
+    },
+    "series_raw": {
+      "value": "Ante-Nicene Fathers",
+      "evidence": "Ante-Nicene Fathers series (1885)"
+    },
+    "publication_year": {
+      "value": 1885,
+      "evidence": "Ante-Nicene Fathers series (1885)"
+    }
+  },
+  "the-stromata-book-ii": {
+    "is_translation": {
+      "value": true,
+      "evidence": "Roberts-Donaldson translation"
+    },
+    "translator_display": {
+      "value": "Roberts-Donaldson",
+      "evidence": "Roberts-Donaldson translation"
+    },
+    "series_raw": {
+      "value": "Ante-Nicene Fathers",
+      "evidence": "Ante-Nicene Fathers series (1885)"
+    },
+    "publication_year": {
+      "value": 1885,
+      "evidence": "Ante-Nicene Fathers series (1885)"
+    }
+  },
+  "the-stromata-book-iv": {
+    "is_translation": {
+      "value": true,
+      "evidence": "Roberts-Donaldson translation"
+    },
+    "translator_display": {
+      "value": "Roberts-Donaldson",
+      "evidence": "Roberts-Donaldson translation"
+    },
+    "series_raw": {
+      "value": "Ante-Nicene Fathers",
+      "evidence": "Ante-Nicene Fathers series (1885)"
+    },
+    "publication_year": {
+      "value": 1885,
+      "evidence": "Ante-Nicene Fathers series (1885)"
+    }
+  },
+  "the-stromata-book-v": {
+    "is_translation": {
+      "value": true,
+      "evidence": "Roberts-Donaldson translation"
+    },
+    "translator_display": {
+      "value": "Roberts-Donaldson",
+      "evidence": "Roberts-Donaldson translation"
+    },
+    "series_raw": {
+      "value": "Ante-Nicene Fathers",
+      "evidence": "Ante-Nicene Fathers series (1885)"
+    },
+    "publication_year": {
+      "value": 1885,
+      "evidence": "Ante-Nicene Fathers series (1885)"
+    }
+  },
+  "the-stromata-book-vi": {
+    "is_translation": {
+      "value": true,
+      "evidence": "Roberts-Donaldson translation"
+    },
+    "translator_display": {
+      "value": "Roberts-Donaldson",
+      "evidence": "Roberts-Donaldson translation"
+    },
+    "series_raw": {
+      "value": "Ante-Nicene Fathers",
+      "evidence": "Ante-Nicene Fathers series (1885)"
+    },
+    "publication_year": {
+      "value": 1885,
+      "evidence": "Ante-Nicene Fathers series (1885)"
+    }
+  },
+  "the-stromata-book-vii": {
+    "is_translation": {
+      "value": true,
+      "evidence": "Roberts-Donaldson translation"
+    },
+    "translator_display": {
+      "value": "Roberts-Donaldson",
+      "evidence": "Roberts-Donaldson translation"
+    },
+    "series_raw": {
+      "value": "Ante-Nicene Fathers",
+      "evidence": "Ante-Nicene Fathers series (1885)"
+    },
+    "publication_year": {
+      "value": 1885,
+      "evidence": "Ante-Nicene Fathers series (1885)"
+    }
+  }
+}

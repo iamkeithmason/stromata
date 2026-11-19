@@ -93,6 +93,7 @@
   --on-dark-gold-soft: rgba(224, 200, 134, 0.55);  /* faint reversed gold (underlines) */
 
   --cover-mid:  #F5F0E6;   /* book-cover inner panel — a stable cream, NOT theme-flipped */
+  --cover-ornament: #8A5F1E; /* genre ornament on the cover panel. --gold-ink's value, but NOT theme-flipped: covers stay cream in the reader dark theme */
   --cover-stack-back: rgba(10, 8, 5, 0.50);   /* collection stack: rearmost spine behind a cover */
   --cover-stack-mid:  rgba(10, 8, 5, 0.28);   /* collection stack: middle spine */
 
@@ -168,6 +169,10 @@
      the reader dark theme (which flips --ink to a light value) leaves the hero
      dark. Light value is the current --ink. */
   --hero-ground: #1E2D3D;
+  /* Era plate header: darkens the foot of the band so the era's name (in
+     --on-dark) reads over any image. Sits on its own image, so it is not
+     flipped by the reader dark theme. */
+  --plate-scrim: linear-gradient(to top, rgba(14, 20, 28, 0.82) 0%, rgba(14, 20, 28, 0.45) 38%, rgba(14, 20, 28, 0) 70%);
 
   /* Celestial hero study — original illuminated-cosmos palette. */
   --cosmos-deep:       #091D34;
@@ -417,42 +422,6 @@
   color: var(--on-dark-soft);
 }
 
-/* The season's pick, in the sky on phones (app/page.tsx). From 641px the
-   seasonal panel below carries it, and "Start with" returns in its place. */
-.celestial-pick {
-  margin-top: 1.4rem;
-  font-family: var(--serif);
-  color: var(--on-dark-soft);
-}
-
-.celestial-pick-label {
-  display: block;
-  font-family: var(--serif-smallcaps);
-  font-feature-settings: "smcp" 1;
-  letter-spacing: 0.08em;
-  color: var(--on-dark-gold);
-}
-
-.celestial-pick a {
-  display: inline-flex;
-  align-items: center;
-  min-height: 44px;
-  font-size: var(--text-prose);
-  color: var(--on-dark);
-  text-decoration: underline;
-  text-underline-offset: 3px;
-  text-decoration-color: var(--on-dark-gold-soft);
-}
-
-.celestial-pick-author {
-  display: block;
-  font-size: var(--text-base);
-}
-
-.celestial-authors.celestial-authors--after-pick {
-  display: none;
-}
-
 @media (min-width: 641px) {
   .celestial-hero {
     min-height: 650px;
@@ -471,14 +440,6 @@
 
   .celestial-description {
     display: block;
-  }
-
-  .celestial-pick {
-    display: none;
-  }
-
-  .celestial-authors.celestial-authors--after-pick {
-    display: flex;
   }
 }
 
@@ -604,8 +565,9 @@
   }
 }
 
-/* A small cover (the two-up phone grid) has room for three title lines, not four:
-   the fourth was cut through the middle. The inline clamp is 4, hence !important.
+/* A small cover (the two-up phone grid) holds five title lines like a full one since
+   both bands were slimmed (re-measured 9 Nov 2026); the clamp is restated here,
+   hence !important.
    The inline bottom padding becomes margin so the clip edge sits at the end of the
    third line and no sliver of the hidden fourth shows through. */
 /* Title size, by length (BookCover's lengthClass). A long title steps down a
@@ -616,7 +578,7 @@
 
 @container (max-width: 200px) {
   .book-cover-title {
-    -webkit-line-clamp: 3 !important;
+    -webkit-line-clamp: 5 !important;
     padding-bottom: 0 !important;
     margin-bottom: 0.2em !important;
   }
@@ -1033,4 +995,117 @@ article.prose-body > div:first-of-type > p::first-letter {
 }
 .scripture-popover-link:hover {
   border-bottom-color: var(--gold);
+}
+
+/* =============================================================
+   Print — the text page as a printable reader (replaces the server PDF)
+   =============================================================
+
+   "Print / Save as PDF" on /texts/[slug] calls window.print(); this block is
+   what the browser lays out. Until 18 Nov 2026 each PDF was rendered on the
+   server per request (@react-pdf, ~1s of CPU a text). The browser now does the
+   work, on the reader's own device, for nothing.
+
+   Whitelist, not blacklist: every direct child of #reader-page is hidden except
+   the print title block and the reading container, so a piece of furniture
+   added later (a fixed button, a sheet, a banner) stays off paper without
+   anyone remembering to tag it. Inside the reading container the rail and the
+   navigation carry `print:hidden`.
+
+   The reader's dark theme and text size are screen preferences: paper is
+   always dark ink on white at book size. Colour literals are fine here; the
+   no-raw-colour lint rule covers `style` props, not this file. */
+.print-only { display: none; }
+
+@media print {
+  @page {
+    margin: 18mm 16mm 20mm;
+  }
+
+  /* Light tokens whatever the reader chose on screen. The ID outranks
+     [data-reader-theme="dark"], so this wins on a dark-theme page too. */
+  #reader-page {
+    --paper: #fff;
+    --paper-deep: #fff;
+    --vellum: #fff;
+    --ink: #111;
+    --ink-soft: #222;
+    --ink-mute: #444;
+    --ink-faint: #666;
+    --rule: #bbb;
+    --rule-soft: #ddd;
+    --reader-text: #111;
+    --reader-quote: #333;
+    --reader-quote-rule: #bbb;
+    --reader-hr: #bbb;
+    --gold-ink: #5a4a22;
+    color-scheme: light;
+    background: #fff !important;
+    padding-top: 0 !important;
+    min-height: 0 !important;
+  }
+
+  #reader-page > :not(.print-only):not(.print-keep) { display: none !important; }
+  .print-only { display: block; }
+
+  /* One column, the full width of the paper, at book size. */
+  #reader-page .margin-cols {
+    display: block !important;
+    max-width: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+  #reader-main {
+    --text-prose: 11.5pt !important;
+    max-width: none !important;
+    margin: 0 !important;
+  }
+  #reader-main .prose-body { line-height: 1.5; }
+
+  .print-title {
+    margin-bottom: 8mm;
+    padding-bottom: 5mm;
+    border-bottom: 0.5pt solid #bbb;
+    color: #111;
+  }
+  .print-title h1 {
+    font-family: var(--serif-display);
+    font-size: 22pt;
+    line-height: 1.15;
+    margin: 0 0 2mm;
+  }
+  .print-title .print-author { font-family: var(--serif); font-style: italic; font-size: 13pt; margin: 0 0 2mm; }
+  .print-title .print-source { font-family: var(--serif); font-size: 9pt; color: #444; margin: 0; }
+  .print-colophon {
+    margin-top: 10mm;
+    padding-top: 4mm;
+    border-top: 0.5pt solid #bbb;
+    font-family: var(--serif);
+    font-size: 8.5pt;
+    color: #444;
+  }
+
+  /* No heading left alone at the foot of a page. `break-after: avoid` is the
+     standard; Safari (every browser on an iPhone) honours it unevenly, so a
+     heading also carries an invisible 4em block beneath it that cannot be
+     split from it, which pushes it over when less than ~3 lines remain. */
+  #reader-main h1, #reader-main h2, #reader-main h3, #reader-main h4 {
+    break-after: avoid;
+    page-break-after: avoid;
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+  #reader-main h1::after, #reader-main h2::after, #reader-main h3::after, #reader-main h4::after {
+    content: "";
+    display: block;
+    height: 4em;
+    margin-bottom: -4em;
+  }
+  #reader-main p, #reader-main li { orphans: 3; widows: 3; }
+  #reader-main blockquote, #reader-main figure, #reader-main img { break-inside: avoid; page-break-inside: avoid; }
+
+  /* Links read as text on paper; tooltips and popovers never print. */
+  #reader-main a { color: inherit; text-decoration: none; }
+  .scripture-popover { display: none !important; }
+  .scripture-ref { text-decoration: none; }
 }

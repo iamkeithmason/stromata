@@ -17,6 +17,7 @@ import { ThemeChip } from '@/app/components/ThemeChip'
 import { BookCover } from '@/app/components/BookCover'
 import { AuthorAside } from '@/app/components/AuthorAside'
 import { DownloadLinks } from '@/app/components/DownloadLinks'
+import { COLOPHON } from '@/lib/downloads'
 import { ReaderSettings } from '@/app/components/ReaderSettings'
 import { CitationButton } from '@/app/components/CitationButton'
 import { resolveLicense } from '@/lib/licenses'
@@ -219,11 +220,12 @@ export default async function TextPage({ params }: Props) {
   // ── Continue exploring — candidate pools for lib/read-next.ts ───────────────
   // Metadata only (never `body`); each pool is capped. Three small reads,
   // regenerated with the page, so the module costs nothing per view.
-  const CAND = 'id, title, slug, word_count, collection_id, author_id, accession_number, author:authors(name, death_year, tradition:traditions(slug))'
+  const CAND = 'id, title, slug, word_count, collection_id, author_id, accession_number, author:authors(name, death_year, tradition:traditions(slug)), genre:genres(name)'
   type CandRow = {
     id: string; title: string; slug: string; word_count: number | null
     collection_id: string | null; author_id: string | null; accession_number: number | null
     author: { name: string; death_year: number | null; tradition: { slug: string } | null } | null
+    genre: { name: string } | null
   }
   const toCand = (r: CandRow, themeSlugs?: string[]): ReadNextCandidate => ({
     id: r.id, title: r.title, slug: r.slug, word_count: r.word_count,
@@ -231,6 +233,7 @@ export default async function TextPage({ params }: Props) {
     authorName: r.author?.name ?? null, themeSlugs,
     accessionNumber: r.accession_number, deathYear: r.author?.death_year ?? null,
     traditionSlug: r.author?.tradition?.slug ?? null,
+    genreName: r.genre?.name ?? null,
   })
   const themeSlugList = themes.map(t => t.slug)
   const [editorialRow, authorRows, genreRows, themeRows] = await Promise.all([
@@ -333,6 +336,13 @@ export default async function TextPage({ params }: Props) {
             "try{var p=JSON.parse(localStorage.getItem('stromata:reader')||'{}');if(p&&p.theme==='dark'){document.currentScript.parentElement.setAttribute('data-reader-theme','dark')}}catch(e){}",
         }}
       />
+      {/* Paper only: what a printout or a saved PDF opens with. The hero above
+          is a dark screen ground and is not printed (globals.css, "Print"). */}
+      <header className="print-only print-title">
+        <h1>{text.title}</h1>
+        {author && <p className="print-author">{author.name}{lifespan(author.birth_year, author.death_year)}</p>}
+        {text.source_attribution && <p className="print-source">Source: {text.source_attribution}</p>}
+      </header>
       <ReadingProgressBar slug={slug} />
       <SiteHeader breadcrumb={author ? (() => {
         return (
@@ -377,6 +387,7 @@ export default async function TextPage({ params }: Props) {
                 deathYear={author?.death_year ?? null}
                 accessionNumber={text.accession_number ?? null}
                 traditionSlug={author?.tradition?.slug ?? null}
+                genre={genre?.name ?? null}
                 index={0}
               />
             </div>
@@ -501,10 +512,10 @@ export default async function TextPage({ params }: Props) {
       </section>
 
       {/* ─── Reading container — marginalia rail + main reading column ─── */}
-      <div className="margin-cols py-12 lg:py-16">
+      <div className="margin-cols print-keep py-12 lg:py-16">
           {/* Left margin rail: author · provenance (the summary now leads the
               frontispiece, so the author block sits at the top of the rail) */}
-          <aside className="margin-rail">
+          <aside className="margin-rail print:hidden">
             <div className="flex flex-col gap-8">
               {author && (
                 <AuthorAside
@@ -638,7 +649,7 @@ export default async function TextPage({ params }: Props) {
             {/* Phones: the theme chips moved out of the frontispiece land here,
                 after the introduction, where they no longer push the text down. */}
             {themes.length > 0 && (
-              <div className="flex flex-wrap gap-x-2 mb-10 lg:hidden">
+              <div className="flex flex-wrap gap-x-2 mb-10 lg:hidden print:hidden">
                 {themes.map(theme => (
                   <ThemeChip key={theme.slug} href={`/themes/${theme.slug}`} name={theme.name} source="text-page" />
                 ))}
@@ -650,10 +661,16 @@ export default async function TextPage({ params }: Props) {
               <MarkdownBody content={body} sections={locatedSections} />
             </article>
 
+            {/* Paper only: where the printout came from, and the terms. */}
+            <p className="print-only print-colophon">
+              {COLOPHON} {SITE_URL}/texts/{slug}
+              {text.translation_notes ? <><br />Translation: {text.translation_notes}</> : null}
+            </p>
+
             {/* Prev / next within collection */}
             {(prevText || nextText || collection) && (
               <nav
-                className="flex justify-between gap-4 mb-12 pt-6 border-t"
+                className="flex justify-between gap-4 mb-12 pt-6 border-t print:hidden"
                 style={{ borderColor: 'var(--rule)' }}
               >
                 {prevText ? (
@@ -785,6 +802,7 @@ export default async function TextPage({ params }: Props) {
         deathYear={author?.death_year ?? null}
         accessionNumber={text.accession_number ?? null}
         traditionSlug={author?.tradition?.slug ?? null}
+        genreName={genre?.name ?? null}
         readingMinutes={minutes}
       />
       <TrackTextSessionDepth slug={slug} />

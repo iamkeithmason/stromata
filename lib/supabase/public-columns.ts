@@ -88,6 +88,15 @@ export const EDITORIAL_TEXT_COLUMNS = [
 ] as const
 
 /**
+ * Columns on `texts` that exist for the database's own use and are never
+ * granted to anon. `body_tsv` (migration 036) is the stored search vector,
+ * about 20 KB a text: search reaches it only through the search_texts_body
+ * function, so it must never join the public set, where every page that selects
+ * "everything" would download it.
+ */
+export const INTERNAL_TEXT_COLUMNS = ['body_tsv'] as const
+
+/**
  * The same story on `collections`: anon cannot read `provenance_verified_at`
  * or `description_draft`, so `select('*')` there would fail identically. No
  * public query does that today — this is here so that if one is ever written,

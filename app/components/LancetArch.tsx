@@ -77,11 +77,18 @@ type Props = {
   focusX?: number | null
   focusY?: number | null
   zoom?: number | null
+  /**
+   * Defer the portrait until it nears the viewport. For long grids (the
+   * /authors index) where most portraits start off-screen: portraits are
+   * Supabase Storage egress on every view, so the ones never scrolled to
+   * should never be fetched. Leave off for portraits on the first screen.
+   */
+  lazy?: boolean
 }
 
 const clamp = (n: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, n))
 
-export function LancetArch({ initial, label, imageUrl, focusX, focusY, zoom }: Props) {
+export function LancetArch({ initial, label, imageUrl, focusX, focusY, zoom, lazy }: Props) {
   // ── Portrait variant: HTML <img> (object-fit: cover) clipped to the arch ──
   if (imageUrl) {
     const clipId = clipIdFor(imageUrl)
@@ -126,6 +133,8 @@ export function LancetArch({ initial, label, imageUrl, focusX, focusY, zoom }: P
           <img
             src={imageUrl}
             alt=""
+            loading={lazy ? 'lazy' : undefined}
+            decoding={lazy ? 'async' : undefined}
             style={{
               position: 'absolute',
               inset: 0,

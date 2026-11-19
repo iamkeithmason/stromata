@@ -87,7 +87,7 @@ const SEASON_COPY: Record<Season, SeasonConfig> = {
 }
 
 // The picks (one text per season, chosen by hand) live in
-// lib/liturgical/season-pick.ts, shared with the homepage hero.
+// lib/liturgical/season-pick.ts.
 
 // ────────────────────────────────────────────────────────────────────────────
 

@@ -1,8 +1,9 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import Link from 'next/link'
 import { FilterPill } from './FilterPill'
+import { FilterToggle } from './FilterToggle'
 import { useUrlFilters } from '@/lib/use-url-filters'
 import { pickFacet } from '@/lib/facets'
 import { SectionHeader } from './SectionHeader'
@@ -90,11 +91,9 @@ export function TextsBrowser({
 
   const hasFilter = Boolean(filters.tradition || filters.era || filters.genre)
   const activeCount = [filters.tradition, filters.era, filters.genre].filter(Boolean).length
-  const [filtersOpen, setFiltersOpen] = useState(hasFilter)
-  // A filter applied from a shared link arrives after the first render.
-  useEffect(() => {
-    if (hasFilter) setFiltersOpen(true)
-  }, [hasFilter])
+  // Closed on load, filtered link or not: the gold count on the button says
+  // a filter is on, and the list stays on the first screen (as on /authors).
+  const [filtersOpen, setFiltersOpen] = useState(false)
 
   const filtered = useMemo(() => {
     const list = items.filter(
@@ -121,43 +120,35 @@ export function TextsBrowser({
       />
 
       <div className="mb-8 space-y-3">
-        {/* Thirty-odd facet pills used to fill the first screen before any
-            title. They now sit behind one line, open whenever a filter is set
-            so a shared filtered link still shows what it is filtering on. */}
-        <details
+        {/* Thirty-odd facet tags used to fill the first screen before any
+            title. They sit behind the same Filter button as /authors, here at
+            every width. */}
+        <FilterToggle
           open={filtersOpen}
-          onToggle={e => setFiltersOpen((e.currentTarget as HTMLDetailsElement).open)}
-        >
-          <summary
-            className="smallcaps cursor-pointer select-none"
-            style={{ color: 'var(--ink-mute)', width: 'fit-content' }}
-          >
-            Filter by tradition, era or genre
-            {activeCount > 0 && (
-              <span style={{ color: 'var(--gold-ink)' }}> · {activeCount} active</span>
-            )}
-          </summary>
-          <div className="space-y-3 pt-3">
-        <FilterRow
-          label="Tradition"
-          options={facets.traditions}
-          selected={filters.tradition}
-          onToggle={slug => set('tradition', slug)}
+          onToggle={() => setFiltersOpen(o => !o)}
+          activeCount={activeCount}
+          controls="text-filters"
         />
-        <FilterRow
-          label="Era"
-          options={facets.eras}
-          selected={filters.era}
-          onToggle={slug => set('era', slug)}
-        />
-        <FilterRow
-          label="Genre"
-          options={facets.genres}
-          selected={filters.genre}
-          onToggle={slug => set('genre', slug)}
-        />
-          </div>
-        </details>
+        <div id="text-filters" className={filtersOpen ? 'space-y-3' : 'hidden'}>
+          <FilterRow
+            label="Tradition"
+            options={facets.traditions}
+            selected={filters.tradition}
+            onToggle={slug => set('tradition', slug)}
+          />
+          <FilterRow
+            label="Era"
+            options={facets.eras}
+            selected={filters.era}
+            onToggle={slug => set('era', slug)}
+          />
+          <FilterRow
+            label="Genre"
+            options={facets.genres}
+            selected={filters.genre}
+            onToggle={slug => set('genre', slug)}
+          />
+        </div>
         <div className="flex items-center gap-3 flex-wrap pt-1">
           <span className="smallcaps" style={{ color: 'var(--ink-mute)' }}>
             Sort
@@ -248,7 +239,7 @@ function FilterRow({
       >
         {label}
       </span>
-      <div className="flex gap-2 flex-wrap">
+      <div className="flex gap-x-2 flex-wrap">
         {options.map(o => (
           <FilterPill
             key={o.slug}

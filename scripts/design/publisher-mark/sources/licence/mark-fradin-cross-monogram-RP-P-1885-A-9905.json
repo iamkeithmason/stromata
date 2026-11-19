@@ -1,0 +1,82 @@
+{
+ "holder": "Rijksmuseum, Amsterdam",
+ "linked_art_id": "https://id.rijksmuseum.nl/200130046",
+ "object_number": [
+  "RP-P-1885-A-9905"
+ ],
+ "titles": [
+  "Drukkersmerk van François Fradin"
+ ],
+ "production_dates": [
+  "1535"
+ ],
+ "descriptions": [
+  "Drukkersmerk van François Fradin in een schild, hangend aan een vruchtboom en vastgehouden door een ridder en een vrouw met een slangestaart.",
+  "collector's mark: Lugt 2228",
+  "verzamelaarsmerk, verso linksboven en midden, gestempeld: Lugt 2228",
+  "houtsnede met schroottechniek, gedrukt in rode en zwarte inkt",
+  "blad: hoogte 127 mm x breedte 87 mm",
+  "height 127 mm x width 87 mm"
+ ],
+ "object_page": "https://www.rijksmuseum.nl/nl/collectie/object/RP-P-1885-A-9905--d6ab6708c98d043b6819fd9efbf2db49",
+ "image_access_point": "https://iiif.micr.io/vabjA/full/max/0/default.jpg",
+ "rights_in_record": [
+  "https://creativecommons.org/publicdomain/mark/1.0/",
+  "https://creativecommons.org/publicdomain/zero/1.0/"
+ ],
+ "rights_snippet": [
+  {
+   "type": "LinguisticObject",
+   "digitally_carried_by": [
+    {
+     "type": "DigitalObject",
+     "access_point": [
+      {
+       "id": "https://iiif.micr.io/vabjA/full/max/0/default.jpg",
+       "type": "DigitalObject"
+      }
+     ],
+     "referred_to_by": [
+      {
+       "type": "LinguisticObject",
+       "_label": "Public Domain",
+       "classified_as": [
+        {
+         "id": "https://vocab.getty.edu/aat/300460240",
+         "type": "Type"
+        }
+       ],
+       "content": "https://creativecommons.org/publicdomain/mark/1.0/"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "https://data.rijksmuseum.nl/200130046",
+   "type": "LinguisticObject",
+   "classified_as": [
+    {
+     "id": "http://vocab.getty.edu/aat/300379475",
+     "type": "Type"
+    }
+   ],
+   "subject_to": [
+    {
+     "type": "Right",
+     "classified_as": [
+      {
+       "id": "https://creativecommons.org/publicdomain/zero/1.0/",
+       "type": "Type"
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "fetched": "2026-11-09",
+ "makers": [
+  "attrib./after: François Fradin",
+  "attrib./after: François Fradin"
+ ]
+}

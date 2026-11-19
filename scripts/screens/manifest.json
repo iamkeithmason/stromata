@@ -1,16 +1,30 @@
 {
-  "$comment": "Pages for the screens reference (npm run screens). Each entry renders at phone (390px) and desktop (1440px). 'shots' adds extra captures further down the page, each starting at the first element matching its selector. 'prefs' sets the reader's stored settings (stromata:reader) before load. Keep this list to the pages a reader actually lands on or moves through; every entry costs a render against the live database.",
+  "$comment": "Pages for the screens reference (npm run screens). Each entry renders at phone (390px) and desktop (1440px). 'shots' adds extra captures further down the page, each starting at the first element matching its selector. 'prefs' sets the reader's stored settings (stromata:reader) before load. Keep this list to the pages a reader actually lands on or moves through; every entry costs a render against the live database. 'canvas' ({col,row,label?}) and 'links' ([{to, event, from: [...]}]) place a page on the site canvas (npm run screens:canvas): each link says which Umami `from` values carry clicks of that event from this page to `to`. Shape and checks: scripts/lib/site-canvas.mjs.",
   "pages": [
     {
       "route": "/",
       "name": "Home",
       "note": "Hero with search and Start with; seasonal panel; featured authors; reading history (empty for a new visitor); recently added.",
+      "canvas": { "col": 0, "row": 1 },
+      "links": [
+        { "to": "Reader: top landing text", "event": "text-open", "from": ["seasonal-panel", "recency-lead", "featured-lead", "editorial-pick", "homepage-grid", "reading-history"] },
+        { "to": "Collection page", "event": "collection-open", "from": ["recency-lead", "featured-lead", "homepage-grid"] },
+        { "to": "Author page", "event": "author-open", "from": ["featured-band", "search-chip"] },
+        { "to": "Theme page", "event": "theme-click", "property": "source", "from": ["homepage", "featured-lead"] }
+      ],
       "shots": [{ "label": "Recently added", "selector": "h2:text-is('Recently added')" }]
     },
     {
       "route": "/texts/letters-109697-to-trajan-on-the-christians",
       "name": "Reader: top landing text",
       "note": "Pliny's letters to Trajan, the most-read text. Frontispiece, editorial note, body, margin rail.",
+      "canvas": { "col": 3, "row": 1, "label": "Reader (any text)" },
+      "links": [
+        { "to": "Reader: top landing text", "event": "text-open", "from": ["read-next", "text-sheet-read-next"] },
+        { "to": "Author page", "event": "author-open", "from": ["text-reader", "related-figures"] },
+        { "to": "Collection page", "event": "collection-open", "from": ["text-page"] },
+        { "to": "Theme page", "event": "theme-click", "property": "source", "from": ["text-page"] }
+      ],
       "shots": [{ "label": "End of text: Read next", "selector": "nav[aria-label='Read next']" }]
     },
     {
@@ -27,27 +41,49 @@
     {
       "route": "/texts",
       "name": "Library index",
-      "note": "All texts, with filters and sorting."
+      "note": "All texts, with filters and sorting.",
+      "canvas": { "col": 1, "row": 0 },
+      "links": [
+        { "to": "Reader: top landing text", "event": "text-open", "from": ["texts-index"] }
+      ]
     },
     {
       "route": "/authors",
       "name": "Authors index",
-      "note": "All authors, filterable by tradition and era."
+      "note": "All authors, filterable by tradition and era.",
+      "canvas": { "col": 1, "row": 2 },
+      "links": [
+        { "to": "Author page", "event": "author-open", "from": ["authors-index"] }
+      ]
     },
     {
       "route": "/authors/john-chrysostom",
       "name": "Author page",
-      "note": "Header, biography, texts in the library, kindred authors."
+      "note": "Header, biography, texts in the library, kindred authors.",
+      "canvas": { "col": 2, "row": 2, "label": "Author page (any author)" },
+      "links": [
+        { "to": "Reader: top landing text", "event": "text-open", "from": ["author-page"] },
+        { "to": "Location page", "event": "location-country-click", "from": ["author-page"] }
+      ]
     },
     {
       "route": "/collections/the-refutation-of-all-heresies-rome",
       "name": "Collection page",
-      "note": "A multi-book collection (Hippolytus) with its contents list."
+      "note": "A multi-book collection (Hippolytus) with its contents list.",
+      "canvas": { "col": 2, "row": 0, "label": "Collection page (any collection)" },
+      "links": [
+        { "to": "Reader: top landing text", "event": "text-open", "from": ["collection-page"] }
+      ]
     },
     {
       "route": "/themes/prayer",
       "name": "Theme page",
-      "note": "Texts gathered under one theme."
+      "note": "Texts gathered under one theme.",
+      "canvas": { "col": 1, "row": 1, "label": "Theme page (any theme)" },
+      "links": [
+        { "to": "Reader: top landing text", "event": "text-open", "from": ["theme-page"] },
+        { "to": "Collection page", "event": "collection-open", "from": ["theme-page"] }
+      ]
     },
     {
       "route": "/eras/nicene-post-nicene",
@@ -60,6 +96,16 @@
       "note": "Authors and texts of one tradition."
     },
     {
+      "route": "/locations/england",
+      "name": "Location page",
+      "note": "Authors and texts from one place (England, the largest).",
+      "canvas": { "col": 1, "row": 3, "label": "Location page (any place)" },
+      "links": [
+        { "to": "Reader: top landing text", "event": "text-open", "from": ["location-page"] },
+        { "to": "Author page", "event": "location-browse-click", "from": ["location-page"] }
+      ]
+    },
+    {
       "route": "/scripture",
       "name": "Scripture index",
       "note": "Browse texts by the Scripture they cite."
@@ -67,7 +113,12 @@
     {
       "route": "/search?q=grace",
       "name": "Search results",
-      "note": "Results for 'grace'."
+      "note": "Results for 'grace'.",
+      "canvas": { "col": 0, "row": 2 },
+      "links": [
+        { "to": "Reader: top landing text", "event": "text-open", "from": ["search-results"] },
+        { "to": "Author page", "event": "author-open", "from": ["search-results"] }
+      ]
     },
     {
       "route": "/this-page-does-not-exist",
