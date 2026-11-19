@@ -7,6 +7,50 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-11-19 — Repair `main` after a stash-pop commit
+
+Card: none
+
+Commit f70f08f (celestial hero study) went to `main` with unresolved `git stash pop` markers in
+`app/page.tsx`, `app/components/CelestialField.tsx` and `app/globals.css`, so every PR's lint failed.
+The stash predated the phone-first hero work, so in each overlap the upstream side was the newer one.
+Resolved as: `page.tsx` keeps the live `NocturneField` hero and the dot-after-name author chips;
+`CelestialField.tsx` takes the stash (class hooks for the study and rounded SVG coordinates, which stop a
+server/browser hydration mismatch); `globals.css` keeps upstream in every overlap and adds the stash's
+new `celestial-study` treatment rules after the cover-title `@container` block (both sides left that
+block for the shared brace to close, so the join needed one more `}`; a local render caught it).
+Eleven `.DS_Store` files are untracked and now ignored. The `package-lock.json` change in that commit is
+npm's own metadata (`"dev": true` dropped from optional packages) and is left as is. Checked: lint,
+types, 746 tests, and a local render of `/` and `/design/celestial-hero` at 390px and 1440px with no
+console errors.
+
+## 2026-11-19 — Weekly digest: the second-text rate and read-next clicks by pick
+
+Card: Weekly digest: track the second-text rate and read-next clicks by pick
+
+Repeat visits move slowly and swing with one-off spikes (13, 17, 30, 6, 20, 40 a week). The second-text rate
+moves faster, and it is the number onward-reading work (read-next, curated next reads) is meant to change. It
+was already on the wire and computed monthly by `monthly-metrics.mjs`, but the weekly digest neither printed
+nor recorded it.
+
+- **`scripts/analytics/digest.mjs` prints a "Reading depth" section**, and `--json` carries it as
+  `readingDepth`: `text-session-depth` depth 1, depth 2 and their ratio, and read-next clicks (`text-open`
+  from `read-next` or `text-sheet-read-next`) split by `pick` (editorial, author, theme, genre). Two more
+  read-only `event-data/values` GETs, the same call `monthly-metrics.mjs` makes. Depth 3+ stays uninstrumented.
+- **The arithmetic is a pure helper**, `scripts/analytics/reading-depth.mjs`, tested against the real week
+  of 9–16 Nov. `pick` is only sent from the two read-next surfaces, so the pick values are the read-next
+  clicks; the helper checks their sum against those surfaces' `from` counts and the digest flags a gap as a
+  wire problem instead of hiding it.
+- **`--from=` / `--to=`** pin an exact window, so a past week can be re-run and checked.
+- **The `stromata-analytics` skill** tells the weekly run to record `Second-text rate %` on the Growth Digest
+  row and cite the pick split in the page body.
+- **Notion:** Growth Digest gained a `Second-text rate %` number column; the "Week of 2026-11-16" row is 7.5.
+
+Checked against a direct `event-data/values` query for 2026-11-09T17:37Z → 2026-11-16T17:37Z: depth 1 = 200,
+depth 2 = 15 (7.5%); read-next 3 + text-sheet-read-next 1 = 4 clicks, picks editorial 2 and theme 2, which
+reconcile. `--range=7d` on 19 Nov reads 6 / 218 = 2.8%. Nothing under `app/` or `lib/` changes, so the site is
+unaffected.
+
 ## 2026-11-18 — Downloads: a printable reader for texts, stored PDFs for collections
 
 Card: Downloads: printable text pages and pre-built collection PDFs (stop rendering PDFs per request)
@@ -61,6 +105,37 @@ text on the same ground did not ship in the 16 Nov release, so the URL has answe
   'pending'`, at the time of writing), or the redirect lands readers on another not-found page.
 - Content side of the same ticket (Homilies 20 and 21: NPNF headers, provenance, summary drafts) is in
   `scripts/ingestion/run-log/2026-11-17.md`.
+
+## 2026-11-17 — A check for PRs that name no card; pipeline runs close or update the earlier run PRs
+
+Card: none
+
+**Why.** The weekly review on 17 Nov found Planned cards whose work was live but whose PRs named no card
+(#224, the paragraph-breaks work), and three pipeline-run PRs piled up as drafts (#174, #205, #229), each
+changing `prospect-queue.json`. Keith asked for both to be routine rather than remembered.
+
+- **`Card: none`.** A PR that builds no card now says so on its `Card:` line instead of leaving the line
+  out (CLAUDE.md, "Keeping the record current"). The rule was written on 16 Nov (#228) with "leaves the
+  line out", which made a missing line mean either "no card" or "forgot", and no check can fail on that.
+- **`npm run check:cards`** (`scripts/check-card-names.mjs`): lists PRs merged into `main` since `release`
+  last moved and exits 1 on any without `Card: <exact title>` or `Card: none`. Routine PRs are exempt by title,
+  and PRs merged before 18 Nov predate the rule. It reads PR bodies through `gh api search/issues`, one or two
+  calls, no Supabase or Vercel meter. If GitHub can't be asked it exits 2, which reports as "not checked",
+  never as a pass. The judgement half is `scripts/lib/card-names.mjs`, with 8 tests on real PR titles. A
+  routine-title exemption is tested on all five routine shapes, and a body that only *mentions* `Card:`
+  mid-sentence (as #230's did) counts as missing.
+- **The Monday release routine runs it** before opening the promotion PR and lists what it finds (CLAUDE.md,
+  "Standing rule"). It reports; it does not block the promotion.
+- **Pipeline runs deal with earlier run PRs** (CLAUDE.md, "Run Log"). Close a run PR this run covers, with
+  `Supersedes #N`. Otherwise merge `main` into it (never a rebase or force-push), keep both sides' prospects,
+  and list it as still open. Applied by hand today: #229 merged, #174 closed (Ken's manual, its only
+  prospect, was imported in #229). #205 stays open because its three prospects (Interior Castle, Neale's
+  *Hymns of the Eastern Church*, Rogers' *Catholic Doctrine*) are in no other run.
+- **Usage reading, 17 Nov (Keith):** the Vercel 30-day Fluid Active CPU total is **3h 22m**, against 3h 47m on 6
+  Nov and the 4h Hobby allowance.
+
+Docs and scripts only: no public route, nothing deploys.
+
 
 ---
 
@@ -514,6 +589,18 @@ so removing `main` from `deploymentEnabled` before Keith has flipped the Product
 old-style release from building. Order: merge the last old-style release, recreate `release` from `main`, Keith sets
 the Production Branch to `release`, a follow-up removes `main` from `deploymentEnabled` and the Monday routine's prompt
 is flipped.
+
+---
+
+## 2026-11-05 — Scripture citation quality: audited, with a plan (docs only)
+
+Backlog card *Scripture citation clustering & normalization quality*. A read-only audit of 193
+citations of Matthew 6, John 6, 1 Corinthians 11 and Romans 13 in `text_scripture_references`. Verse
+starts were right in every row; the one real loss is that a comma list ("11:20, 21") keeps the correct
+`osis` but a NULL `verse_end` (5 rows, 2.6%), because `parseReferences` fills `verseEnd` only for bcv
+`range` entities. Chapter-only citations are 8% of rows and should never merge verse-level ones. The
+write-up, deterministic clustering rules and a five-step bounded plan are in
+`docs/research/2026-11-05-scripture-citation-quality.md`. No code, schema or data changed.
 
 ---
 
