@@ -2254,7 +2254,7 @@
     },
     {
       "id": "an-apology-of-the-church-of-england-jewel",
-      "status": "pending",
+      "status": "stage-2-done",
       "added": "2026-09-11",
       "author": "John Jewel",
       "death_year": 1571,
@@ -6392,7 +6392,7 @@
     },
     {
       "id": "christian-year-keble",
-      "status": "stage-1-done",
+      "status": "stage-2-done",
       "added": "2026-09-22",
       "author": "John Keble",
       "death_year": 1866,
