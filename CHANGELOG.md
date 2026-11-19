@@ -7,6 +7,23 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-11-19 — Repair `main` after a stash-pop commit
+
+Card: none
+
+Commit f70f08f (celestial hero study) went to `main` with unresolved `git stash pop` markers in
+`app/page.tsx`, `app/components/CelestialField.tsx` and `app/globals.css`, so every PR's lint failed.
+The stash predated the phone-first hero work, so in each overlap the upstream side was the newer one.
+Resolved as: `page.tsx` keeps the live `NocturneField` hero and the dot-after-name author chips;
+`CelestialField.tsx` takes the stash (class hooks for the study and rounded SVG coordinates, which stop a
+server/browser hydration mismatch); `globals.css` keeps upstream in every overlap and adds the stash's
+new `celestial-study` treatment rules after the cover-title `@container` block (both sides left that
+block for the shared brace to close, so the join needed one more `}`; a local render caught it).
+Eleven `.DS_Store` files are untracked and now ignored. The `package-lock.json` change in that commit is
+npm's own metadata (`"dev": true` dropped from optional packages) and is left as is. Checked: lint,
+types, 746 tests, and a local render of `/` and `/design/celestial-hero` at 390px and 1440px with no
+console errors.
+
 ## 2026-11-19 — Weekly digest: the second-text rate and read-next clicks by pick
 
 Card: Weekly digest: track the second-text rate and read-next clicks by pick

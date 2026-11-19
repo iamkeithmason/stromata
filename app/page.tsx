@@ -5,11 +5,7 @@ import { THEME_CLUSTERS } from '@/lib/constants'
 import SearchBar from './SearchBar'
 import { BookCover } from './components/BookCover'
 import { SiteHeader } from './components/SiteHeader'
-<<<<<<< Updated upstream
 import { NocturneField } from './components/NocturneField'
-=======
-import { CelestialRingField } from './components/CelestialRingField'
->>>>>>> Stashed changes
 import { ReadingHistorySection } from './components/ReadingHistorySection'
 import { FeaturedAuthors } from './components/FeaturedAuthors'
 import { SeasonalPanel } from './components/SeasonalPanel'
@@ -209,11 +205,7 @@ export default async function Home() {
       <main id="main-content">
       {/* ── Hero ─────────────────────────────────────────────────────────── */}
       <section className="celestial-hero celestial-hero--nocturne">
-<<<<<<< Updated upstream
         <NocturneField />
-=======
-        <CelestialRingField treatment="nocturne-gradient" />
->>>>>>> Stashed changes
 
         <div className="celestial-hero-content">
           <h1>The Stromata</h1>
@@ -224,10 +216,7 @@ export default async function Home() {
 
           <SearchBar tone="celestial" />
 
-<<<<<<< Updated upstream
 
-=======
->>>>>>> Stashed changes
           {authorChips.length > 0 && (
             <nav className="celestial-authors" aria-label="Recommended authors">
               <span className="celestial-authors-label">Start with</span>
@@ -235,10 +224,6 @@ export default async function Home() {
               <span className="celestial-authors-links">
                 {authorChips.map((author, index) => (
                   <span key={author.slug}>
-<<<<<<< Updated upstream
-=======
-                    {index > 0 && <span className="celestial-author-dot" aria-hidden="true">·</span>}
->>>>>>> Stashed changes
                     <Link
                       href={`/authors/${author.slug}`}
                       data-umami-event="author-open"
@@ -247,12 +232,9 @@ export default async function Home() {
                     >
                       {author.name}
                     </Link>
-<<<<<<< Updated upstream
                     {/* After the name, not before: a wrapped line then ends on a dot
                         rather than starting with one. */}
                     {index < authorChips.length - 1 && <span className="celestial-author-dot" aria-hidden="true">·</span>}
-=======
->>>>>>> Stashed changes
                   </span>
                 ))}
               </span>
