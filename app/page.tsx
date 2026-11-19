@@ -15,6 +15,7 @@ import { readingMinutes } from '@/lib/reading-time'
 import { ThemeChip } from './components/ThemeChip'
 import { SectionHeader } from './components/SectionHeader'
 import { feastKey, pickEditorial } from '@/lib/featured'
+import { EditorNote } from './components/EditorNote'
 
 // Incremental Static Regeneration: cache the rendered home page and revalidate
 // hourly. Safe given the manual publish cadence — newly published texts appear
@@ -463,7 +464,7 @@ function TextLead({
           <LeadTitle>{text.title}</LeadTitle>
         </Link>
         <LeadByline author={author} hasContent from={from} />
-        {note && note.trim() && <EditorsLine>{note.trim()}</EditorsLine>}
+        {note && note.trim() && <EditorsLine note={note} />}
         <LeadPara>
           {truncateAtWord(editorialPara, 280)}
         </LeadPara>
@@ -568,13 +569,13 @@ function LeadByline({ author, hasContent, from = 'recency-lead' }: { author: Aut
 }
 
 /** The editor's line: set apart and attributed, so it reads as a note to the reader and not as the summary. */
-function EditorsLine({ children }: { children: React.ReactNode }) {
+function EditorsLine({ note }: { note: string }) {
   return (
     <blockquote
       className="font-serif"
       style={{ margin: '0 0 1rem', paddingLeft: '1rem', borderLeft: '2px solid var(--gold-rule)' }}
     >
-      <p style={{ fontSize: 'var(--text-base)', lineHeight: 1.55, fontStyle: 'italic', color: 'var(--ink)', margin: 0 }}>{children}</p>
+      <EditorNote note={note} style={{ fontSize: 'var(--text-base)', lineHeight: 1.55, fontStyle: 'italic', color: 'var(--ink)' }} />
       <footer style={{ fontSize: 'var(--text-sm)', color: 'var(--ink-mute)', marginTop: '0.35rem' }}>— the editor</footer>
     </blockquote>
   )

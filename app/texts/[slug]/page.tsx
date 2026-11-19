@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { EditorNote } from '@/app/components/EditorNote'
 import { notFound } from 'next/navigation'
 import { createPublicClient } from '@/lib/supabase/public'
 import { orThrow } from '@/lib/supabase/query'
@@ -425,9 +426,7 @@ export default async function TextPage({ params }: Props) {
                   className="font-serif"
                   style={{ margin: 0, paddingLeft: '1rem', borderLeft: '2px solid var(--on-dark-gold-soft)', maxWidth: '30rem' }}
                 >
-                  <p style={{ fontSize: 'var(--text-base)', lineHeight: 1.55, fontStyle: 'italic', color: 'var(--on-dark-body)', margin: 0 }}>
-                    {featuredNote}
-                  </p>
+                  <EditorNote note={featuredNote} style={{ fontSize: 'var(--text-base)', lineHeight: 1.55, fontStyle: 'italic', color: 'var(--on-dark-body)' }} />
                   <footer style={{ fontSize: 'var(--text-sm)', color: 'var(--on-dark-mute)', marginTop: '0.35rem' }}>— the editor</footer>
                 </blockquote>
               )}

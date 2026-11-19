@@ -486,6 +486,13 @@ also needs the two `from` values. The feast-day branch is covered by the unit te
 No migration; no new public columns (the `authors` grant already covers `feast_day`).
 
 
+**Follow-up, 19 Nov (Keith, on the preview).** The curator's note showed its Markdown raw: `*Psychomachia*`
+with the asterisks, and its three paragraphs run together. `EditorNote` (`app/components/EditorNote.tsx`,
+parser in `lib/note-inline.ts` with tests) now renders paragraphs, `*italics*`/`_italics_` and `**bold**`,
+on both the homepage pick and the text page. The note is set in italic, so an italicised title inside it
+turns roman, the usual convention. No Markdown library in the hero: the note needs three rules, not a
+renderer.
+
 ## 2026-11-06 — `main` is where work lands, `release` is what is live
 
 **Usage check first.** The Fluid Active CPU 30-day total read **3h 47m** on 6 Nov (4h allowance), down from 4h 19m
