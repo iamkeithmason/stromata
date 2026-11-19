@@ -1316,3 +1316,116 @@ article.prose-body > div:first-of-type > p::first-letter {
 .scripture-popover-link:hover {
   border-bottom-color: var(--gold);
 }
+
+/* =============================================================
+   Print — the text page as a printable reader (replaces the server PDF)
+   =============================================================
+
+   "Print / Save as PDF" on /texts/[slug] calls window.print(); this block is
+   what the browser lays out. Until 18 Nov 2026 each PDF was rendered on the
+   server per request (@react-pdf, ~1s of CPU a text). The browser now does the
+   work, on the reader's own device, for nothing.
+
+   Whitelist, not blacklist: every direct child of #reader-page is hidden except
+   the print title block and the reading container, so a piece of furniture
+   added later (a fixed button, a sheet, a banner) stays off paper without
+   anyone remembering to tag it. Inside the reading container the rail and the
+   navigation carry `print:hidden`.
+
+   The reader's dark theme and text size are screen preferences: paper is
+   always dark ink on white at book size. Colour literals are fine here; the
+   no-raw-colour lint rule covers `style` props, not this file. */
+.print-only { display: none; }
+
+@media print {
+  @page {
+    margin: 18mm 16mm 20mm;
+  }
+
+  /* Light tokens whatever the reader chose on screen. The ID outranks
+     [data-reader-theme="dark"], so this wins on a dark-theme page too. */
+  #reader-page {
+    --paper: #fff;
+    --paper-deep: #fff;
+    --vellum: #fff;
+    --ink: #111;
+    --ink-soft: #222;
+    --ink-mute: #444;
+    --ink-faint: #666;
+    --rule: #bbb;
+    --rule-soft: #ddd;
+    --reader-text: #111;
+    --reader-quote: #333;
+    --reader-quote-rule: #bbb;
+    --reader-hr: #bbb;
+    --gold-ink: #5a4a22;
+    color-scheme: light;
+    background: #fff !important;
+    padding-top: 0 !important;
+    min-height: 0 !important;
+  }
+
+  #reader-page > :not(.print-only):not(.print-keep) { display: none !important; }
+  .print-only { display: block; }
+
+  /* One column, the full width of the paper, at book size. */
+  #reader-page .margin-cols {
+    display: block !important;
+    max-width: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+  #reader-main {
+    --text-prose: 11.5pt !important;
+    max-width: none !important;
+    margin: 0 !important;
+  }
+  #reader-main .prose-body { line-height: 1.5; }
+
+  .print-title {
+    margin-bottom: 8mm;
+    padding-bottom: 5mm;
+    border-bottom: 0.5pt solid #bbb;
+    color: #111;
+  }
+  .print-title h1 {
+    font-family: var(--serif-display);
+    font-size: 22pt;
+    line-height: 1.15;
+    margin: 0 0 2mm;
+  }
+  .print-title .print-author { font-family: var(--serif); font-style: italic; font-size: 13pt; margin: 0 0 2mm; }
+  .print-title .print-source { font-family: var(--serif); font-size: 9pt; color: #444; margin: 0; }
+  .print-colophon {
+    margin-top: 10mm;
+    padding-top: 4mm;
+    border-top: 0.5pt solid #bbb;
+    font-family: var(--serif);
+    font-size: 8.5pt;
+    color: #444;
+  }
+
+  /* No heading left alone at the foot of a page. `break-after: avoid` is the
+     standard; Safari (every browser on an iPhone) honours it unevenly, so a
+     heading also carries an invisible 4em block beneath it that cannot be
+     split from it, which pushes it over when less than ~3 lines remain. */
+  #reader-main h1, #reader-main h2, #reader-main h3, #reader-main h4 {
+    break-after: avoid;
+    page-break-after: avoid;
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+  #reader-main h1::after, #reader-main h2::after, #reader-main h3::after, #reader-main h4::after {
+    content: "";
+    display: block;
+    height: 4em;
+    margin-bottom: -4em;
+  }
+  #reader-main p, #reader-main li { orphans: 3; widows: 3; }
+  #reader-main blockquote, #reader-main figure, #reader-main img { break-inside: avoid; page-break-inside: avoid; }
+
+  /* Links read as text on paper; tooltips and popovers never print. */
+  #reader-main a { color: inherit; text-decoration: none; }
+  .scripture-popover { display: none !important; }
+  .scripture-ref { text-decoration: none; }
+}

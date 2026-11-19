@@ -1,4 +1,5 @@
 import { revalidatePath } from 'next/cache'
+import { scheduleCollectionPdfRebuilds } from '@/lib/pdf/collection-pdf-schedule'
 import type { SupabaseClient } from '@supabase/supabase-js'
 
 /**
@@ -77,13 +78,17 @@ export function revalidateEntity(
   extraPaths: string[] = []
 ): void {
   const { paths } = entitySurfaces(entity, slugs)
-  for (const path of new Set([...paths, ...extraPaths])) {
+  const all = new Set([...paths, ...extraPaths])
+  for (const path of all) {
     try {
       revalidatePath(path)
     } catch {
       /* one bad path must not stop the rest */
     }
   }
+  // A collection save rebuilds its stored PDF; a rename's old slug finds no
+  // published collection and removes the old file.
+  scheduleCollectionPdfRebuilds(all)
 }
 
 /**

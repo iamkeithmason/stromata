@@ -558,7 +558,10 @@ The Production Branch is set in Vercel → Settings → **Environments** → Pro
   single production deploy. GitHub does not delete `main` when it is a PR's head, so there is no branch to
   recreate (the old direction deleted `release` each week). **Release day is Monday morning** (Keith,
   2026-10-10): a weekly routine opens the draft promotion PR then, only if `main` is ahead of `release` with
-  changes that touch the site; Keith merges it.
+  changes that touch the site; Keith merges it. **Before opening it, the routine runs `npm run
+  check:cards`** and lists, in the promotion PR and its report, every PR the check names as missing a
+  `Card:` line, so the card can be named before the release ships. A failing check does not stop the
+  promotion; exit 2 (GitHub could not be asked) is reported as "not checked", never as a pass.
 - **Never merge the promotion PR yourself** — leave it open, say what it carries, and let Keith merge it.
 - **The 100-deployments-a-day cap is shared with Paideia — check the release actually built.** Vercel's
   Hobby plan allows 100 deployments per day per *account*, and Stromata and Paideia share the account. Every
@@ -680,7 +683,7 @@ time to think is before the run.
 2. **Before any bulk job, say which meter it draws on and roughly what one run costs**, in the
    script's header and in the PR. The jobs that matter here select `body` across the corpus:
    `build-corpus-index.mjs`, `strip-source-chrome.mjs` and `rejoin-text-paragraphs.mjs` without a
-   `--slug=`, `reformat-text-body.mjs`, `backfill-scripture-refs.ts`, `dedup-draft-texts.mjs`, and the
+   `--slug=`, `reformat-text-body.mjs`, `backfill-scripture-refs.ts`, `dedup-draft-texts.mjs`, `build-collection-pdfs.ts` (~22 MB per full run), and the
    `generate-note-drafts`/`generate-summaries`/`repair-summaries` backfills. If you
    cannot estimate it, run it scoped (`--slug=`, `--drafts`) first and measure.
 3. **Fetch once, keep locally, and select only the columns you need.** A script that re-downloads
@@ -746,7 +749,11 @@ rather than paraphrasing it: the weekly reconciliation flips `Planned` → `Buil
 CHANGELOG entry names the card, and it matches on the title. PR #183 removed the page-load `text-open`
 and went live on 9 Nov, but it never named "Remove the duplicate page-mount text-open emitter", so the
 card was still `Planned` a week later. One PR covering several cards gets one `Card:` line for each. A PR
-that builds no card leaves the line out.
+that builds no card says **`Card: none`** on that line instead of leaving it out (Keith, 17 Nov 2026): a
+missing line is then always a gap, never a pass. `npm run check:cards` (`scripts/check-card-names.mjs`) lists
+every PR merged into `main` since `release` last moved and exits 1 on any with neither. Routine PRs
+(Release, Analytics digest, Pipeline run, Sourcer, Screens reference) are exempt by title, and PRs merged
+before 18 Nov predate the rule. The judgement half is `scripts/lib/card-names.mjs`, unit-tested.
 
 **A PR that needs something done before it goes live says so in a `Before release:` line** (Keith, 17 Nov
 2026). One line per step, in the PR description, e.g. `Before release: publish <slug> in /admin/review`.
@@ -1096,6 +1103,17 @@ Keith will:
 
 ## Run Log
 
+**Before opening a pipeline-run PR, deal with the earlier ones** (Keith, 17 Nov 2026; three run PRs had piled
+up as drafts, each changing `prospect-queue.json`). List open PRs titled `Pipeline run …`. For each one:
+
+- **If this run covers it** (every prospect it adds or advances is in this run's queue at the same or a later
+  status), close it. In this run's PR body and run log, say `Supersedes #N` and why.
+- **If it does not**, bring it up to date: merge `main` into its branch (a merge commit, never a rebase or
+  force-push), resolve `prospect-queue.json` by keeping both sides' prospects, and push. Then list it in this
+  run's PR body as still open, with the prospects only it carries, so Keith can merge it first.
+
+Never fold another run's prospects into this run's commit: each run's record stays in its own PR and log.
+
 After each run, append a log entry to `scripts/ingestion/run-log/`:
 
 ```bash
@@ -1352,6 +1370,7 @@ still apply per-file, still parallelize the same way. What changes is Stage 2/5a
 | `scripts/check-prospect-urls.mjs` | Fetch every `Cleared edition URL` / `Additional edition URLs` / `Reference URL` in the Notion prospect list and report the ones that no longer answer. Read-only, and uses the **REST API with `NOTION_TOKEN`**, so it does not spend the MCP query budget. Distinguishes **dead (404/410) from blocked (403, e.g. sacred-texts behind Cloudflare)** — only dead exits non-zero, because failing on a 403 every run is how a check stops being read. **Reachability only: a 200 does not mean the URL holds the right work** — the read-the-title check before Stage 2 still stands. `--cleared-only`, `--status=`, `--json`, `--fail-on=any`. Assertion half in `scripts/lib/url-check.mjs`, unit-tested | Maintenance; before a sync |
 | `scripts/shrink-author-portraits.mjs` | Replace oversized author portraits in the `authors` bucket with display-sized copies (`scripts/lib/portrait-resize.mjs`, the same rule the admin upload route applies), repointing `authors.image_url` and keeping the originals. Dry-run default reads sizes from the bucket listing and costs no egress; `--write`, `--slug=`, `--min-kb=` | Maintenance only |
 | `scripts/propose-edition-metadata.mjs` | Read-only audit: propose structured edition fields (translator, series, volume, year, publisher, place, `is_translation`) from each text's three provenance columns, with a method and reason codes per row. Refuses write keys; `--slug=`/`--collection=`/`--include-drafts`/`--llm` (verbatim-evidence only; or `--llm-export=` + `--llm-answers=` to have any model, e.g. a subagent, answer without an API key)/`--input=`. Applies the curated `outputs/edition-audit/sourced-fields.json` (verbatim-cited or editor-confirmed values; `--sourced=none` to skip). Writes `outputs/edition-audit/YYYY-MM-DD/{proposals.json,proposals.csv,summary.md}`; the parser is `scripts/lib/edition-parse.mjs` | Edition metadata Step 1; before the Step 2 apply |
+| `scripts/build-collection-pdfs.ts` | Render every published collection's PDF and store it in Vercel Blob, where `/collections/[slug]/download/pdf` redirects (dry-run default, `--write`, `--slug=`). Admin saves rebuild a collection's PDF on their own; run this once after connecting the store, and after a CLI script edits a chapter body | Maintenance only |
 | `scripts/generate-note-drafts.mjs` | Backfill note_draft in Supabase for existing texts | Maintenance only |
 | `scripts/generate-summaries.mjs` | Backfill summaries in Supabase | Maintenance only |
 | `scripts/repair-summaries.mjs` | Repair truncated summaries | Maintenance only |

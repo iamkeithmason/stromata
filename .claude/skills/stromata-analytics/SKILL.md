@@ -34,10 +34,11 @@ node scripts/analytics/digest.mjs --range=30d        # Markdown digest
 node scripts/analytics/digest.mjs --range=30d --json  # structured, for further analysis
 ```
 `--range` = `24h|today|7d|30d|90d|all` (default `30d`); `--limit=N` caps list rows.
+`--from=<time> --to=<time>` pins an exact window instead (e.g. to re-check a past week).
 
 The digest prints: traffic summary; **demand by theme / author / era / tradition
-/ genre**; top texts opened (labelled); collections; reading entry points
-(`from`); data-quality flags (slugs opened but missing from the DB); and the
+/ genre**; top texts opened (labelled); collections; **reading depth** (the
+second-text rate and read-next clicks by `pick`); reading entry points (`from`); data-quality flags (slugs opened but missing from the DB); and the
 events-firing list for Events Register reconciliation.
 
 ## Then interpret — this is the point, not the numbers
@@ -55,7 +56,18 @@ events-firing list for Events Register reconciliation.
    **`backlog-triage`** skill (ICE scoring of the Growth Tracker) as the Impact
    evidence, and into `growth-model` (opens are a North-Star driver). Don't
    restate backlog-triage's ranking here; supply it the demand evidence.
-4. **Events Register reconciliation.** Compare the events-firing list against
+4. **Reading depth — record it on the Growth Digest row every week.** Set the
+   row's **`Second-text rate %`** number property to the digest's
+   `readingDepth.secondTextRate.percent` (one decimal, e.g. `7.5`; leave it empty
+   when the digest prints `n/a`). It is depth-2 ÷ depth-1 sessions of
+   `text-session-depth`, the leading indicator for onward-reading work, and moves
+   faster than repeat visits. In the page body, cite the read-next split by `pick`
+   (editorial / author / theme / genre, with the click total), so the curated-reads
+   test can be read across weeks without hand queries. Counts are small, so say
+   the raw numbers, not only shares. If the digest flags that picks do not sum to
+   the read-next clicks, report it as a wire problem. Depth 3+ is deliberately not
+   instrumented; don't ask for it.
+5. **Events Register reconciliation.** Compare the events-firing list against
    **Growth Tracker → Events Register** in Notion (use `notion-search` scoped to
    the database, then `notion-fetch` — the query/view tools are plan-gated on this
    workspace; see the project CLAUDE.md). Flag: events firing that aren't

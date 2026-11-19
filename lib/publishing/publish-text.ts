@@ -1,5 +1,6 @@
 import { revalidatePath } from 'next/cache'
 import { collectionTextPaths } from '@/lib/publishing/revalidate-entities'
+import { scheduleCollectionPdfRebuilds } from '@/lib/pdf/collection-pdf-schedule'
 import type { SupabaseClient } from '@supabase/supabase-js'
 import { fetchCollectionAuthors, type CollectionAuthorRef } from '@/lib/collections/author'
 
@@ -40,7 +41,9 @@ import { fetchCollectionAuthors, type CollectionAuthorRef } from '@/lib/collecti
  * NOT included, on purpose:
  *   /rss, /sitemap.xml, /llms.txt — `dynamic = 'force-dynamic'` + `revalidate = 0`.
  *     They are rendered per request and have nothing to invalidate.
- *   /texts/{slug}/download/*, /collections/{slug}/download/* — same.
+ *   /texts/{slug}/download/markdown, /collections/{slug}/download/* — CDN-cached
+ *     route handlers, not pages. A collection's stored PDF is rebuilt instead,
+ *     by `revalidatePaths` below, whenever `/collections/{slug}` is in the list.
  *   /search — rendered per request from the query string. Its Supabase reads go
  *     through the public client's hourly data cache like everything else, so a
  *     just-published text can take up to an hour to become findable by search.
@@ -348,6 +351,8 @@ export function revalidatePaths(paths: string[]): void {
       /* one bad path must not stop the rest */
     }
   }
+  // A refreshed collection page means its stored PDF may be stale too.
+  scheduleCollectionPdfRebuilds(paths)
 }
 
 // ── internals ────────────────────────────────────────────────────────────────

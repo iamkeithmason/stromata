@@ -36,9 +36,7 @@ const DYNAMIC_ALLOWED: Record<string, string> = {
   'app/llms.txt/route.ts': 'generated per request; CDN-cached for an hour (s-maxage)',
   'app/sitemap.ts': 'generated per request; measured ~7s CPU a day on 2026-10-04',
   'app/texts/[slug]/download/markdown/route.ts': 'download; CDN-cached for a day (s-maxage)',
-  'app/texts/[slug]/download/pdf/route.ts': 'download; CDN-cached for a week (s-maxage)',
   'app/collections/[slug]/download/markdown/route.ts': 'download; CDN-cached for a day (s-maxage)',
-  'app/collections/[slug]/download/pdf/route.ts': 'download; CDN-cached for a week (s-maxage)',
 }
 
 /** Each marker: what it is, and the source pattern that finds it. */
