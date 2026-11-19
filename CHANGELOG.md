@@ -550,6 +550,8 @@ one-off "Switch-over" block is removed from CLAUDE.md. The Monday release routin
 
 ## 2026-11-09 — The featured text slot now has a read path
 
+Card: Wire up the featured text slot — the write path exists, the read path does not
+
 **What was wrong.** Migration 012 gave `texts` a `featured` flag, a start date and a curator's note, and gave `authors` a
 feast day. The admin forms wrote them, and the form's own label stated a selection rule ("the most recently featured
 wins; feast days take priority"), but nothing on the public site read any of it. The homepage section called the "featured
