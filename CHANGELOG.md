@@ -1507,6 +1507,15 @@ the beacon has not yet been observed on the wire (it needs a deployment; see the
 Backlog: Newcomer path: 'I have ten minutes'.
 
 
+**Follow-up, 19 Nov (Keith, on the preview).** The homepage entrance is now a **Short reads** row in the
+style of "Recently added" and "Reading history", placed between them: one row of covers (two on phones,
+three, then four), each with its reading time, and "Under 10 min · All →" to `/ten-minutes`. The row uses
+the page's own rule (`rankTenMinuteTexts`) through `variedRow`, which allows one text per author, because
+on the first render Augustine's Tractates on John took all four covers. Analytics: the surface
+`homepage-entrance` becomes `short-reads`, on `text-open` (the covers) and `ten-minutes-open` (the "All"
+link); `SectionHeader` gained an optional `asideEvent` for that link. The extra homepage query selects
+metadata only, no `body`. Rendered locally at 390px and 1440px.
+
 ## 2026-10-04 — Docs-only and content-only production commits no longer deploy
 
 Every production deployment starts with an empty page cache, so each one makes crawlers re-render the

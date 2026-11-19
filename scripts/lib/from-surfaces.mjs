@@ -7,7 +7,7 @@
  */
 export const FROM_SURFACES = Object.freeze([
   // Homepage
-  'seasonal-panel', 'featured-lead', 'homepage-grid', 'featured-band', 'reading-history', 'homepage-entrance',
+  'seasonal-panel', 'featured-lead', 'homepage-grid', 'featured-band', 'reading-history', 'short-reads',
   // Reader
   'text-reader', 'text-page', 'related-figures', 'read-next',
   // Reader: phone header and its sheet (PR #187)

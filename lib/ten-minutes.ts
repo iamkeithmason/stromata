@@ -80,3 +80,23 @@ export function selectForTheme<T extends TenMinuteText>(
   if (!themeSlug || !choices.some(c => c.slug === themeSlug)) return ranked
   return ranked.filter(t => t.text_themes.some(x => x.theme?.slug === themeSlug))
 }
+
+/**
+ * The homepage row: the best `n` of a ranked list, at most one per author, so
+ * one prolific author's series (Augustine's Tractates on John filled all four
+ * covers on 19 Nov) does not stand for the whole idea. Falls back to repeats
+ * only when there are fewer distinct authors than slots.
+ */
+export function variedRow<T>(ranked: T[], n: number, authorKey: (t: T) => string | null | undefined): T[] {
+  const seen = new Set<string>()
+  const row: T[] = []
+  const rest: T[] = []
+  for (const t of ranked) {
+    const key = authorKey(t)
+    if (row.length < n && (key == null || !seen.has(key))) {
+      if (key != null) seen.add(key)
+      row.push(t)
+    } else rest.push(t)
+  }
+  return row.length >= n ? row : [...row, ...rest.slice(0, n - row.length)]
+}

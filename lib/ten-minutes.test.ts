@@ -1,6 +1,6 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import {
+import { variedRow,
   fitsTenMinutes,
   rankTenMinuteTexts,
   selectForTheme,
@@ -71,4 +71,17 @@ test('selectForTheme filters, and ignores a slug that is not on offer', () => {
   assert.equal(selectForTheme(ranked, 'death', choices).length, 3) // one text: not a choice
   assert.equal(selectForTheme(ranked, 'nonsense', choices).length, 3)
   assert.equal(selectForTheme(ranked, null, choices).length, 3)
+})
+
+test('variedRow takes one text per author, in rank order', () => {
+  const ranked = [
+    { id: 'a1', a: 'augustine' }, { id: 'a2', a: 'augustine' }, { id: 'b1', a: 'basil' },
+    { id: 'a3', a: 'augustine' }, { id: 'c1', a: 'cyprian' }, { id: 'd1', a: 'donne' },
+  ]
+  assert.deepEqual(variedRow(ranked, 4, t => t.a).map(t => t.id), ['a1', 'b1', 'c1', 'd1'])
+})
+
+test('variedRow repeats an author only when there are too few authors', () => {
+  const ranked = [{ id: 'a1', a: 'x' }, { id: 'a2', a: 'x' }, { id: 'b1', a: 'y' }]
+  assert.deepEqual(variedRow(ranked, 3, t => t.a).map(t => t.id), ['a1', 'b1', 'a2'])
 })

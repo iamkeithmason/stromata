@@ -415,7 +415,8 @@ function navSurfaces(site) {
     // text-open — every `from` PR #93 added, plus the surfaces already live.
     ['text-open', 'texts-index', ['/texts']],
     ['text-open', 'ten-minutes', ['/ten-minutes']],
-    ['ten-minutes-open', 'homepage-entrance', ['/']],
+    ['ten-minutes-open', 'short-reads', ['/']],
+    ['text-open', 'short-reads', ['/']],
     ['text-open', 'search-results', ['/search?q=augustine']],
     ['text-open', 'theme-page', site.themes],
     ['text-open', 'era-page', site.eras],
