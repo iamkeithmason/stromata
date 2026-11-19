@@ -59,5 +59,5 @@ below was checked to be published and outside the lander's own collection.
 
 ## Not proposed
 
-- **on-the-thoughts** (Evagrius) was taken offline on 4 Nov (translation in copyright; permission requested). Umami shows the cached full text still served on 8 and 10 Nov (3 `text-view`s), then the 404 from 10 Nov on (2 views titled "Text — The Stromata", the not-found metadata). Nothing since 11 Nov.
+- **on-the-thoughts** (Evagrius) was unpublished on 10 Nov 2026 at 10:53 UTC (translation in copyright; permission requested). Umami shows the full text on 8 Nov and on 10 Nov before 10:53, then the not-found page ("Text — The Stromata") from 10:53 on. The takedown refreshed the page at once; no stale copy was served. An earlier version of this note said otherwise, from a wrong takedown date. Readers still arrive from search, so a redirect to treatise-on-the-practical-life is ticketed in the Feature Backlog.
 - **address-on-vainglory-and-how-to-bring-up-children** still took 13 entries in the window, all now redirected to Homily 21. Its own pick (→ Basil) no longer serves anyone, so the Homily 21 row above inherits it.
