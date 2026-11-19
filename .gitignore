@@ -36,3 +36,6 @@ docs/screens/png/
 # The site canvas (`npm run screens:canvas`) embeds those shots; regenerate rather than commit.
 docs/screens/canvas/
 data/concept-pilot/
+
+# macOS folder metadata
+.DS_Store
