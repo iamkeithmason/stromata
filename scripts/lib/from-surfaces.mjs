@@ -6,8 +6,10 @@
  * the CLAUDE.md row drift apart, so a new surface is added in both places.
  */
 export const FROM_SURFACES = Object.freeze([
-  // Homepage
-  'seasonal-panel', 'featured-lead', 'homepage-grid', 'featured-band', 'reading-history',
+  // Homepage ('featured-lead' is the pre-2026-11-09 name of 'recency-lead', kept so
+  // older Umami data still checks)
+  'seasonal-panel', 'recency-lead', 'featured-lead', 'editorial-pick', 'homepage-grid',
+  'featured-band', 'reading-history',
   // Reader
   'text-reader', 'text-page', 'related-figures', 'read-next',
   // Reader: phone header and its sheet (PR #187)

@@ -7,8 +7,8 @@
       "note": "Hero with search and Start with; seasonal panel; featured authors; reading history (empty for a new visitor); recently added.",
       "canvas": { "col": 0, "row": 1 },
       "links": [
-        { "to": "Reader: top landing text", "event": "text-open", "from": ["seasonal-panel", "featured-lead", "homepage-grid", "reading-history"] },
-        { "to": "Collection page", "event": "collection-open", "from": ["featured-lead", "homepage-grid"] },
+        { "to": "Reader: top landing text", "event": "text-open", "from": ["seasonal-panel", "recency-lead", "featured-lead", "editorial-pick", "homepage-grid", "reading-history"] },
+        { "to": "Collection page", "event": "collection-open", "from": ["recency-lead", "featured-lead", "homepage-grid"] },
         { "to": "Author page", "event": "author-open", "from": ["featured-band", "search-chip"] },
         { "to": "Theme page", "event": "theme-click", "property": "source", "from": ["homepage", "featured-lead"] }
       ],
