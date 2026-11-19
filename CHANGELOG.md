@@ -1635,6 +1635,8 @@ Keith also decided that a backlog card counts as `Built` once its change is on `
 
 ## 2026-10-05 — "I have ten minutes": a time-framed entrance to the library
 
+Card: Newcomer path: 'I have ten minutes'
+
 Added `/ten-minutes`, an entrance organised by the reader's available time rather than by
 theological concept, and a one-line link to it from the homepage between the hero and the seasonal
 panel. The page lists up to twelve published texts whose reading estimate is ten minutes or less
