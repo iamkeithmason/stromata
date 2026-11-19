@@ -7,6 +7,47 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-11-18 — Downloads: a printable reader for texts, stored PDFs for collections
+
+Card: Downloads: printable text pages and pre-built collection PDFs (stop rendering PDFs per request)
+
+No public request renders a PDF any more. A text PDF cost ~1s of Vercel CPU and a collection ~9s (City of
+God), on every CDN miss and again after every deploy.
+
+- **Texts: Print / Save as PDF.** The text page has an `@media print` stylesheet (`app/globals.css`, "Print"):
+  everything but a print title block and the reading column is hidden by whitelist, so furniture added later
+  stays off paper; title, author with dates and source attribution lead; the body prints at 11.5pt with
+  `@page` margins, light ink whatever the reader's dark theme or text size; headings carry `break-after:
+  avoid` plus a 4em keep-with-next block for Safari, so none is left at a page foot. A colophon with the URL
+  and translation note closes it. The "PDF" link is now a **Print / Save as PDF** button
+  (`app/components/PrintButton.tsx`, `window.print()`), tracked as `text-download` with **`format=print`**,
+  `from` unchanged. Checked at 390px with the dark theme and a 1.3× text size set: Chromium's print-to-PDF
+  gives light, book-sized A4 pages with no orphaned heading.
+- **`/texts/[slug]/download/pdf` redirects permanently to `/texts/[slug]`** (`next.config.ts`, answered by
+  the CDN). Its route handler is deleted. Markdown is unchanged.
+- **Collections: built once, stored in Vercel Blob.** `lib/pdf/collection-pdf.ts` renders with the existing
+  `CollectionDocument` and writes `collections/<slug>.pdf` in place. `/collections/[slug]/download/pdf` only
+  redirects there (no render, no database read; 503 until the store is connected).
+- **Rebuilds ride on revalidation.** `revalidatePaths` and `revalidateEntity` schedule a rebuild, in `after()`,
+  for every `/collections/<slug>` they refresh (`lib/pdf/collection-pdf-schedule.ts`). Every publish, text
+  edit, collection save and review-queue approval already refreshes that page, so one hook covers the eight
+  admin routes, and a batch publish builds its collection once. An unpublished or renamed collection's old
+  file is removed. Not covered: CLI scripts that name only text pages; run the backfill after them.
+- **Backfill:** `npm run build:collection-pdfs` (dry run; `--write`, `--slug=`), via tsx, run locally.
+- **Also:** `npm run pipeline:status` read the queue with an `assert` import attribute, which Node 22+ refuses
+  (`ERR_IMPORT_ATTRIBUTE_MISSING`; found on Keith's Node 24). It now reads the file with `fs`, on any version.
+
+Storage, compared before choosing: collection PDFs measured ~1.45× their body text, 49 KB (Small Catechism)
+to 3.5 MB (City of God), ~32 MB for all 41. **Supabase Storage** needs no setup, but every download is egress
+on the 5 GB cycle shared with Paideia, overrun in Sept: at ~0.8 MB a file, 1,000 downloads is ~16% of it.
+**Vercel Blob** (chosen) bills its own meter: Hobby includes 1 GB stored and 10 GB transfer a month (per
+Vercel's pricing page; confirm there). It needs a store connected to the project, which sets
+`BLOB_READ_WRITE_TOKEN`. One full backfill: ~22 MB Supabase egress (~0.4% of the cycle), 41 Blob writes,
+~32 MB stored, a few minutes of local CPU and none on Vercel. A rebuild on an admin save: that collection's
+bodies (avg ~0.5 MB egress), one write, 0.5–9s of function CPU.
+
+---
+
 ## 2026-11-17 — Vainglory redirects to Homily 21 on Ephesians
 
 *Address on Vainglory and How to Bring Up Children* (accession 1, the top landing page) was unpublished on

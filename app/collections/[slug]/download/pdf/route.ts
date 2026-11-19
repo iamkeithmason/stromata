@@ -1,77 +1,34 @@
-import { createPublicClient } from '@/lib/supabase/public'
-import { fetchCollectionAuthors, formatAuthorNames } from '@/lib/collections/author'
-import { markdownFilename, type DownloadableText, type DownloadableCollection } from '@/lib/downloads'
-import { CollectionDocument } from '@/lib/pdf/TextDocument'
+import { collectionPdfPathname, collectionPdfUrl } from '@/lib/pdf/collection-pdf'
 
 export const runtime = 'nodejs'
-export const dynamic = 'force-dynamic'
-export const revalidate = 0
 
 // GET /collections/[slug]/download/pdf
-// Renders a whole collection as one PDF: a cover/contents page, then every
-// published text in reading order on its own page-break-delimited section.
-// CDN-cached for a WEEK (was a day until 2026-10-04): a PDF render is the most
-// CPU-expensive request on the site (~1s for a text, ~9s for a collection) and
-// the content is stable. Accepted trade-off: an edit to a text does not purge
-// this cache (revalidatePath does not reach a CDN-cached function response),
-// so a corrected text can be served from an older PDF for up to a week unless
-// the CDN cache is purged by hand (Vercel → Settings → Caches).
+//
+// Redirects to the collection's stored PDF. It never renders one: the file is
+// built when the collection or one of its texts is published or edited
+// (lib/pdf/collection-pdf-schedule.ts), or by `npm run build:collection-pdfs`.
+// Until 18 Nov 2026 this route rendered the whole collection with @react-pdf
+// on every CDN miss (~9s of CPU for The City of God).
+//
+// No database read either: the stored file's URL is fixed by the slug, so the
+// redirect is pure string work, and the CDN holds it for a week. An unpublished
+// collection's file is removed, so its redirect lands on the store's 404.
 export async function GET(_req: Request, { params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
-  const supabase = createPublicClient()
+  const url = collectionPdfUrl(slug)
 
-  const { data: collection } = await supabase
-    .from('collections')
-    .select('id, title, slug, description, author:authors(name)')
-    .eq('slug', slug)
-    .eq('published', true)
-    .single()
-
-  if (!collection) {
-    return new Response('Not found', { status: 404 })
-  }
-
-  const { data: texts } = await supabase
-    .from('texts')
-    .select(`
-      title, slug, body, summary, editorial_introduction, accession_number,
-      source_attribution, provenance_notes, translation_notes,
-      genre:genres(name),
-      author:authors(name, tradition:traditions(name), era:eras(label))
-    `)
-    .eq('collection_id', (collection as { id: string }).id)
-    .eq('published', true)
-    .order('collection_order', { ascending: true, nullsFirst: false })
-    .order('title')
-
-  // The byline is derived from the collection's texts rather than read off the
-  // collection row (see lib/collections/author.ts), so a bundle is attributed
-  // correctly even where `collections.author_id` was never filled in. The anon
-  // key scopes it to published texts, matching what the bundle contains.
-  const authorNames = formatAuthorNames(
-    await fetchCollectionAuthors(supabase, (collection as { id: string }).id, collection.author)
-  )
-  const downloadable: DownloadableCollection = {
-    ...(collection as unknown as DownloadableCollection),
-    author: authorNames ? { name: authorNames } : null,
-  }
-
-  // @react-pdf/renderer is ESM-only; a static top-level import compiles to a
-  // `require()` in Next's CommonJS route bundle, which throws ERR_REQUIRE_ESM
-  // on Node runtimes without CJS-requiring-ESM support. Dynamic import avoids
-  // that on any Node version.
-  const { renderToBuffer } = await import('@react-pdf/renderer')
-  const buffer = await renderToBuffer(
-    await CollectionDocument({
-      collection: downloadable,
-      texts: (texts ?? []) as unknown as DownloadableText[],
+  if (!url) {
+    // The Blob store is not connected to this deployment (BLOB_READ_WRITE_TOKEN).
+    return new Response(`The PDF of this collection is not available yet (${collectionPdfPathname(slug)}).`, {
+      status: 503,
+      headers: { 'Content-Type': 'text/plain; charset=utf-8', 'Retry-After': '86400', 'Cache-Control': 'no-store' },
     })
-  )
+  }
 
-  return new Response(new Uint8Array(buffer), {
+  return new Response(null, {
+    status: 302,
     headers: {
-      'Content-Type': 'application/pdf',
-      'Content-Disposition': `attachment; filename="${markdownFilename(slug).replace(/\.md$/, '.pdf')}"`,
+      Location: url,
       'Cache-Control': 'public, max-age=3600, s-maxage=604800, stale-while-revalidate=604800',
     },
   })
