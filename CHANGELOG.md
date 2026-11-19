@@ -7,6 +7,33 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-11-19 — Weekly digest: the second-text rate and read-next clicks by pick
+
+Card: Weekly digest: track the second-text rate and read-next clicks by pick
+
+Repeat visits move slowly and swing with one-off spikes (13, 17, 30, 6, 20, 40 a week). The second-text rate
+moves faster, and it is the number onward-reading work (read-next, curated next reads) is meant to change. It
+was already on the wire and computed monthly by `monthly-metrics.mjs`, but the weekly digest neither printed
+nor recorded it.
+
+- **`scripts/analytics/digest.mjs` prints a "Reading depth" section**, and `--json` carries it as
+  `readingDepth`: `text-session-depth` depth 1, depth 2 and their ratio, and read-next clicks (`text-open`
+  from `read-next` or `text-sheet-read-next`) split by `pick` (editorial, author, theme, genre). Two more
+  read-only `event-data/values` GETs, the same call `monthly-metrics.mjs` makes. Depth 3+ stays uninstrumented.
+- **The arithmetic is a pure helper**, `scripts/analytics/reading-depth.mjs`, tested against the real week
+  of 9–16 Nov. `pick` is only sent from the two read-next surfaces, so the pick values are the read-next
+  clicks; the helper checks their sum against those surfaces' `from` counts and the digest flags a gap as a
+  wire problem instead of hiding it.
+- **`--from=` / `--to=`** pin an exact window, so a past week can be re-run and checked.
+- **The `stromata-analytics` skill** tells the weekly run to record `Second-text rate %` on the Growth Digest
+  row and cite the pick split in the page body.
+- **Notion:** Growth Digest gained a `Second-text rate %` number column; the "Week of 2026-11-16" row is 7.5.
+
+Checked against a direct `event-data/values` query for 2026-11-09T17:37Z → 2026-11-16T17:37Z: depth 1 = 200,
+depth 2 = 15 (7.5%); read-next 3 + text-sheet-read-next 1 = 4 clicks, picks editorial 2 and theme 2, which
+reconcile. `--range=7d` on 19 Nov reads 6 / 218 = 2.8%. Nothing under `app/` or `lib/` changes, so the site is
+unaffected.
+
 ## 2026-11-18 — Downloads: a printable reader for texts, stored PDFs for collections
 
 Card: Downloads: printable text pages and pre-built collection PDFs (stop rendering PDFs per request)
