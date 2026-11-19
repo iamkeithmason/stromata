@@ -426,7 +426,7 @@ export default async function TextPage({ params }: Props) {
                   className="font-serif"
                   style={{ margin: 0, paddingLeft: '1rem', borderLeft: '2px solid var(--on-dark-gold-soft)', maxWidth: '30rem' }}
                 >
-                  <EditorNote note={featuredNote} style={{ fontSize: 'var(--text-prose)', lineHeight: 1.6, color: 'var(--on-dark-body)' }} />
+                  <EditorNote note={featuredNote} linkColor="var(--on-dark-gold)" style={{ fontSize: 'var(--text-prose)', lineHeight: 1.6, color: 'var(--on-dark-body)' }} />
                   <footer style={{ fontSize: 'var(--text-label)', fontStyle: 'italic', color: 'var(--on-dark-mute)', marginTop: '0.5rem' }}>— the editor</footer>
                 </blockquote>
               )}
