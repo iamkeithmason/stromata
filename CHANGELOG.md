@@ -9,7 +9,9 @@ Backlog, not here; this is what actually happened and why.
 
 ## 2026-11-20 — Text page: one grid for header and body, a rail that fills its column, author block hierarchy
 
-Card: none. On wide screens the reader's title sat 104px left of the body (at 1440 and 1854px): the reading
+Card: Text page: shared header/body grid, full-width rail, author block hierarchy
+
+On wide screens the reader's title sat 104px left of the body (at 1440 and 1854px): the reading
 measure (600px at the default setting) was centred inside an 808px grid column, while the hero's title block
 sat at that column's edge. The rail was a fixed 200px, leaving a dead band between it and the paragraph numbers.
 
