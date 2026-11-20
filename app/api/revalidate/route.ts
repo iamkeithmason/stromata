@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { revalidatePaths } from '@/lib/publishing/publish-text'
+import { scheduleTextPdfRebuilds, textSlugsIn } from '@/lib/pdf/text-pdf-schedule'
 import { parseRevalidateBody, secretMatches } from '@/lib/cache/revalidate-request'
 
 /**
@@ -37,5 +38,7 @@ export async function POST(request: NextRequest) {
   if (!parsed.ok) return NextResponse.json({ error: parsed.error }, { status: 400 })
 
   revalidatePaths(parsed.paths)
+  // CLI scripts name exactly the texts they edited, so their PDFs follow.
+  scheduleTextPdfRebuilds(textSlugsIn(parsed.paths))
   return NextResponse.json({ ok: true, revalidated: parsed.paths.length })
 }

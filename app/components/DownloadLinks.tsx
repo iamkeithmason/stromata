@@ -1,18 +1,17 @@
-import { PrintButton } from '@/app/components/PrintButton'
-
 // Download affordances for a text and its collection. Clicks are tracked by
 // Umami's automatic `data-umami-event` binding (same pattern as the ko-fi and
 // collection-nav links).
 //
 // Two DISTINCT event names, one per user-meaningful action (per the analytics
 // conventions in CLAUDE.md — never overload one name across content types):
-//   • text-download        — a single text: format markdown | print
+//   • text-download        — a single text: format markdown | pdf
 //   • collection-download  — a whole collection bundle: format markdown | pdf
 // Each carries `from` (surface) and `format`; identifiers are slugs, never titles.
 //
-// A text's PDF is the browser's own "Save as PDF" (PrintButton + the print
-// stylesheet); a collection's PDF is built ahead of time and stored
-// (lib/pdf/collection-pdf.ts). Nothing here renders a PDF on request.
+// Every PDF is built ahead of time and stored (lib/pdf/text-pdf.ts,
+// lib/pdf/collection-pdf.ts); the links reach it through a redirect route.
+// Nothing here renders a PDF on request. (From 18 to 20 Nov 2026 a text's PDF
+// was the browser's Print / Save as PDF, tracked as format=print.)
 //
 // Download targets are Route Handlers that return or redirect to a file, so
 // plain <a href> (a full request), not next/link.
@@ -82,17 +81,20 @@ export function DownloadLinks({
         {textSlug && (
           <li className="flex flex-wrap items-center gap-x-2">
             <span style={{ color: 'var(--ink-mute)' }}>{collectionSlug ? 'This text' : 'Text'}</span>
-            <FileLink
-              href={`/texts/${textSlug}/download/markdown`}
-              label="Markdown"
-              event="text-download"
-              from={from}
-              format="markdown"
-              idAttr="text"
-              idValue={textSlug}
-            />
-            <Sep />
-            <PrintButton slug={textSlug} from={from} className={TARGET} style={LINK_STYLE} />
+            {(['markdown', 'pdf'] as const).map((format, i) => (
+              <span key={format} className="flex items-center gap-x-2">
+                {i > 0 && <Sep />}
+                <FileLink
+                  href={`/texts/${textSlug}/download/${format}`}
+                  label={format === 'pdf' ? 'PDF' : 'Markdown'}
+                  event="text-download"
+                  from={from}
+                  format={format}
+                  idAttr="text"
+                  idValue={textSlug}
+                />
+              </span>
+            ))}
           </li>
         )}
         {collectionSlug && (

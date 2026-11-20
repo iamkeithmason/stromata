@@ -45,15 +45,7 @@ const nextConfig: NextConfig = {
       destination: `/texts/${to}`,
       permanent: true,
     }))
-    // A text's PDF is now the reader's own Print / Save as PDF (18 Nov 2026), so
-    // the old server-rendered PDF address sends old links to the text itself.
-    // A config redirect is answered by the CDN and costs no function time.
-    const textPdf = {
-      source: '/texts/:slug/download/pdf',
-      destination: '/texts/:slug',
-      permanent: true,
-    }
-    return [...authors, ...texts, textPdf]
+    return [...authors, ...texts]
   },
 }
 
