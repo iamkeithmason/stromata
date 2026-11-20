@@ -36,7 +36,8 @@
     "ornaments:svg": "tsx scripts/design/write-ornament-svgs.ts",
     "mark:svg": "tsx scripts/design/write-mark-svgs.ts",
     "mark:icons": "tsx scripts/design/render-icons.mjs",
-    "check:cards": "node scripts/check-card-names.mjs"
+    "check:cards": "node scripts/check-card-names.mjs",
+    "in-flight": "node scripts/in-flight.mjs"
   },
   "dependencies": {
     "@react-pdf/renderer": "^4.9.0",
