@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import { BookCover } from '@/app/components/BookCover'
 import { LancetArch } from '@/app/components/LancetArch'
-import { ColourSwatch } from './LiveToken'
+import { ColourSwatch, TokenValue } from './LiveToken'
 
 export const metadata: Metadata = {
   title: 'Design Reference — The Stromata',
@@ -283,6 +283,28 @@ export default function DesignPage() {
               <p style={{ fontSize: 'var(--text-sm)', color: 'var(--ink-faint)', marginTop: '0.75rem' }}>
                 Composed from: font-serif italic text-xl · .kicker aside · .rule-gold
               </p>
+            </div>
+          </SubSection>
+        </Section>
+
+        {/* ── Layout tokens ─────────────────────────────────────────────── */}
+        <Section title="Layout tokens">
+          <SubSection title="Text page grid">
+            <p style={{ fontSize: 'var(--text-sm)', color: 'var(--ink-mute)', marginBottom: '1rem', maxWidth: '40rem' }}>
+              From 1024px the text page&apos;s hero, body and footer share one grid, declared once as
+              --text-page-columns on #reader-page (beside --reader-column, the reader&apos;s measure, which
+              it is built from): rail | gutter | reading column | gutter | slack. The rail takes what the
+              measure leaves; the gutter holds the hanging paragraph numbers.
+            </p>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-6">
+              <TokenValue token="--frame-max" label="Page frame" />
+              <TokenValue token="--rail-inset" label="Frame edge → rail" />
+              <TokenValue token="--rail-min" label="Narrowest rail" />
+              <TokenValue token="--rail-stacked-max" label="Cover / portrait cap, stacked" />
+              <TokenValue token="--para-num-hang" label="Paragraph numbers hang" />
+              <TokenValue token="--text-gutter" label="Rail → body" />
+              <TokenValue token="--grid-gutter" label="Gutter" />
+              <TokenValue token="--reading-measure" label="Hero title block cap" />
             </div>
           </SubSection>
         </Section>

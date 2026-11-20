@@ -137,7 +137,8 @@ export default function MarkdownBody({ content, numbered = true, size = 'default
                 <span
                   className="absolute select-none pointer-events-none hidden sm:block"
                   style={{
-                    left: '-2.5rem',
+                    // Hangs into the text page's gutter (--text-gutter allows for it).
+                    left: 'calc(-1 * var(--para-num-hang))',
                     top: 0,
                     fontSize: 'var(--text-sm)',
                     color: 'var(--ink-mute)',
