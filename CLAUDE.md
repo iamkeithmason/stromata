@@ -737,12 +737,20 @@ entry in the PR, and flipping the backlog card to `Built` once it is on `release
 **Before building any backlog card — by hand or by routine — check it is not already in flight, then
 claim it.** A card's `Status` cannot tell you: `Planned` reads the same whether a build exists or not.
 On 2 Nov 2026 two sessions built "Mid-text navigation on phones" on the same day (#184, closed; #187,
-merged), and the duplication showed only at the end, as clashing Events Register rows. So: search open
-PRs by the card's title (any branch name, not just `claude/*`), read the card body for a recent
+merged), and the duplication showed only at the end, as clashing Events Register rows. So: run
+`npm run in-flight -- <two or three words from the card title>`, read the card body for a recent
 `Building: …` line, then append your own `Building: <session URL> · <date> · branch <name>` to the card
 body before writing code, and the PR link as soon as it exists. If you answer a card's open question
 while a build is open, put the decision on that PR too. `/next-agent-card` steps 2 and 2a spell out
 the commands; `docs/research/2026-11-02-claim-the-work-before-you-build.md` has the reasoning.
+
+**The same check comes first for work that is not a card** (Keith, 17 Nov 2026): a ticket, a "do it now",
+an import, a fix to a published text. Run `npm run in-flight -- <title, slug or author>` before acting.
+It lists open PRs, PRs merged in the last 7 days, branches pushed in the last 3, prospect-queue entries
+and run logs from the last 14, and ends with a verdict; it writes nothing and costs two GitHub searches.
+It does not read the database, so when the work touches texts, also query the slug in Supabase. Four
+misses in three weeks prompted it, two on 17 Nov alone: an import of two Ephesians homilies a pipeline
+run had imported the day before, and a Homily 50 fix that ran minutes after #236 had made it.
 
 **A PR that builds a backlog card names the card by its exact title.** Put `Card: <exact Feature title>`
 on the first line of the PR description, and the same title in the CHANGELOG entry. Copy it from Notion
