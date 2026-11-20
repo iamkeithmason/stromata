@@ -33,6 +33,23 @@ const ARCH_PATH =
 const ARCH_PATH_BB =
   'M0.125 0.921053 L0.125 0.526316 A0.75 0.394737 0 0 1 0.5 0.184211 A0.75 0.394737 0 0 1 0.875 0.526316 L0.875 0.921053 Z'
 
+// The arch's own bounds inside the 200×380 box, stroke included: the apex sits
+// at y=70 and the sills at y=350, so the full box carries 18% of empty frame
+// above the arch and 8% below. A `tight` arch draws only this window.
+const TIGHT = { x: 24, y: 69, w: 152, h: 282 }
+
+// ARCH_PATH normalised to the tight window, for the clip-path.
+const ARCH_PATH_TIGHT_BB = (() => {
+  const X = (x: number) => +((x - TIGHT.x) / TIGHT.w).toFixed(6)
+  const Y = (y: number) => +((y - TIGHT.y) / TIGHT.h).toFixed(6)
+  const rx = +(150 / TIGHT.w).toFixed(6)
+  const ry = +(150 / TIGHT.h).toFixed(6)
+  return `M${X(25)} ${Y(350)} L${X(25)} ${Y(200)} A${rx} ${ry} 0 0 1 ${X(100)} ${Y(70)} A${rx} ${ry} 0 0 1 ${X(175)} ${Y(200)} L${X(175)} ${Y(350)} Z`
+})()
+
+/** The aspect ratio a `tight` arch's container should carry (width / height). */
+export const LANCET_TIGHT_RATIO = `${TIGHT.w} / ${TIGHT.h}`
+
 // Deterministic id from the image URL so the <clipPath> is unique per portrait
 // without a client-only hook (LancetArch renders inside Server Components).
 function clipIdFor(seed: string): string {
@@ -44,11 +61,15 @@ function clipIdFor(seed: string): string {
 }
 
 // The gold tracery drawn over both variants — keyline, inner head line, apex.
-function ArchTracery() {
+// `fixedStroke` keeps the keylines at 2px and 1px however large the arch is
+// drawn (the tight rail portrait is ~2x the 200px it was designed at).
+function ArchTracery({ fixedStroke = false }: { fixedStroke?: boolean }) {
+  const ve = fixedStroke ? 'non-scaling-stroke' : undefined
   return (
     <>
-      <path d={ARCH_PATH} fill="none" stroke="var(--gold)" strokeWidth="2" />
+      <path d={ARCH_PATH} fill="none" stroke="var(--gold)" strokeWidth="2" vectorEffect={ve} />
       <path
+        vectorEffect={ve}
         d="M35 195 A130 130 0 0 1 100 82 A130 130 0 0 1 165 195"
         fill="none"
         stroke="var(--gold)"
@@ -84,14 +105,25 @@ type Props = {
    * should never be fetched. Leave off for portraits on the first screen.
    */
   lazy?: boolean
+  /**
+   * 'frame' (default): the 200:380 box, with empty frame above and below the
+   * arch, which grid callers rely on to line portraits up.
+   * 'tight': the box is cropped to the arch itself (ratio LANCET_TIGHT_RATIO),
+   * so the arch's apex is the element's top edge. The reader's author rail uses
+   * it: at rail width the full box left ~60px of blank space over the portrait.
+   */
+  fit?: 'frame' | 'tight'
 }
 
 const clamp = (n: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, n))
 
-export function LancetArch({ initial, label, imageUrl, focusX, focusY, zoom, lazy }: Props) {
+export function LancetArch({ initial, label, imageUrl, focusX, focusY, zoom, lazy, fit = 'frame' }: Props) {
+  const tight = fit === 'tight'
+  const viewBox = tight ? `${TIGHT.x} ${TIGHT.y} ${TIGHT.w} ${TIGHT.h}` : '0 0 200 380'
+  const ratio = tight ? LANCET_TIGHT_RATIO : '200 / 380'
   // ── Portrait variant: HTML <img> (object-fit: cover) clipped to the arch ──
   if (imageUrl) {
-    const clipId = clipIdFor(imageUrl)
+    const clipId = clipIdFor(imageUrl + (tight ? '#tight' : ''))
     const clip = `url(#${clipId})`
     // Normalise framing, defaulting to the centred / un-zoomed look so an
     // unframed portrait renders exactly as it did before framing existed.
@@ -101,7 +133,7 @@ export function LancetArch({ initial, label, imageUrl, focusX, focusY, zoom, laz
     const position = `${fx}% ${fy}%`
     return (
       <div
-        style={{ position: 'relative', width: '100%', height: '100%', aspectRatio: '200 / 380' }}
+        style={{ position: 'relative', width: '100%', height: '100%', aspectRatio: ratio }}
         role="img"
         aria-label={label}
       >
@@ -109,7 +141,7 @@ export function LancetArch({ initial, label, imageUrl, focusX, focusY, zoom, laz
         <svg width="0" height="0" style={{ position: 'absolute' }} aria-hidden>
           <defs>
             <clipPath id={clipId} clipPathUnits="objectBoundingBox">
-              <path d={ARCH_PATH_BB} />
+              <path d={tight ? ARCH_PATH_TIGHT_BB : ARCH_PATH_BB} />
             </clipPath>
           </defs>
         </svg>
@@ -149,7 +181,7 @@ export function LancetArch({ initial, label, imageUrl, focusX, focusY, zoom, laz
         </div>
         {/* Gold tracery overlaid, unclipped so the keyline stays crisp */}
         <svg
-          viewBox="0 0 200 380"
+          viewBox={viewBox}
           width="100%"
           height="100%"
           preserveAspectRatio="xMidYMid meet"
@@ -157,7 +189,7 @@ export function LancetArch({ initial, label, imageUrl, focusX, focusY, zoom, laz
           style={{ position: 'absolute', inset: 0, display: 'block' }}
           aria-hidden
         >
-          <ArchTracery />
+          <ArchTracery fixedStroke={tight} />
         </svg>
       </div>
     )
@@ -166,7 +198,7 @@ export function LancetArch({ initial, label, imageUrl, focusX, focusY, zoom, laz
   // ── Initial variant: pure SVG ────────────────────────────────────────────
   return (
     <svg
-      viewBox="0 0 200 380"
+      viewBox={viewBox}
       width="100%"
       height="100%"
       preserveAspectRatio="xMidYMid meet"
@@ -176,7 +208,7 @@ export function LancetArch({ initial, label, imageUrl, focusX, focusY, zoom, laz
       style={{ display: 'block' }}
     >
       <path d={ARCH_PATH} fill="var(--vellum)" />
-      <ArchTracery />
+      <ArchTracery fixedStroke={tight} />
       <text
         x="100"
         y="255"
