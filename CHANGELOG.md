@@ -24,6 +24,16 @@ schema, another project's tables sharing this database, deliberately left alone.
 under `prayer`) moved from a scan of `text_themes`' primary key to a bitmap scan of the new index, 38 ms → 1 ms
 (the first run was also cold, so not all of that gain is the index). The tables are small (~570 texts), so this
 is preventative; the new indexes show as "unused" in the advisor until traffic exercises them.
+## 2026-11-20 — On the Thoughts redirects to the Praktikos
+
+Card: Redirect the withdrawn On the Thoughts to the Praktikos
+
+*On the Thoughts* (Evagrius) was unpublished on 10 Nov for copyright and has answered not-found since, while
+search engines still send readers to it (4 entries 5–19 Nov, one from Bing). `/texts/on-the-thoughts` now
+redirects permanently (308, from `next.config.ts`, answered by the CDN) to `/texts/treatise-on-the-practical-life`,
+Evagrius's *Praktikos* in the cleared Dysinger translation, published (checked in Supabase on 20 Nov), the
+same pattern as Vainglory → Homily 21. If permission to republish *On the Thoughts* arrives, remove the
+redirect in the same PR that republishes it.
 
 ## 2026-11-20 — Reader dark theme: legible cover text and tradition label
 
@@ -42,6 +52,20 @@ each tradition keeps its tint at 5.4–7.6:1 (browsers without `color-mix` get `
 light theme renders exactly as before. Checked: computed colours and before/after renders of the Pliny
 page at 390px and 1440px from a local build (in the PR description, iamkeithmason/stromata#246), lint,
 types and 763 tests.
+
+## 2026-11-20 — Quiet the dark-theme hydration warning on text pages
+
+Card: none
+
+In `next dev`, a text page opened with the reader's dark theme saved showed the red "1 Issue" pill:
+React reported that `#reader-page` hydrated with `data-reader-theme="dark"`, an attribute the server
+had not rendered. The inline script in `app/texts/[slug]/page.tsx` sets it from localStorage before
+hydration, on purpose, to avoid a light flash; the server cannot know a visitor's preference without
+reading cookies, which would make the page uncacheable. The div now carries `suppressHydrationWarning`,
+which covers only its own attributes. Production was never affected: React does not compare attributes
+when hydrating a production build, and it never re-rendered the subtree. Checked with Playwright
+against a local build: the pill and the console error are gone in dark mode at 390px and 1440px, and
+light mode is unchanged.
 
 ## 2026-11-19 — Repair `main` after a stash-pop commit
 
