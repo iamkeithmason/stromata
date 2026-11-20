@@ -2273,7 +2273,7 @@
       "translation_copyright_clear": false,
       "translator": "Ann Bacon (1564); Henry Morley ed. (1888)",
       "translator_death_year": null,
-      "stage_1_notes": "Latin 1562; classic English translation by Ann Bacon, 1564 (public domain); also the 1888 Cassell edition ed. Henry Morley — copyright pre-verified (author pre-1900; PD English translation identified). [2026-11-20 cloud run] The staged output from the earlier run is Project Gutenberg's HTML landing page (site navigation), not the text: gutenberg.org/ebooks/17678 is the book page. Re-fetch from https://www.gutenberg.org/cache/epub/17678/pg17678.txt was attempted but Gutenberg answered \"Temporarily Down for Maintenance\". Left at stage-2-done; the bad output file must be replaced before import.",
+      "stage_1_notes": "Latin 1562; classic English translation by Ann Bacon, 1564 (public domain); also the 1888 Cassell edition ed. Henry Morley — copyright pre-verified (author pre-1900; PD English translation identified). [2026-11-20 cloud run] HELD: the staged output from the earlier run is Project Gutenberg's landing page, not the text. Detail: the file is Project Gutenberg's HTML landing page (site navigation), not the text: gutenberg.org/ebooks/17678 is the book page. Re-fetch from https://www.gutenberg.org/cache/epub/17678/pg17678.txt was attempted but Gutenberg answered \"Temporarily Down for Maintenance\". Left at stage-2-done; the bad output file must be replaced before import.",
       "stage_2_output": "",
       "stage_3_themes": [
         "scripture",

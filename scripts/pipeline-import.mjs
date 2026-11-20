@@ -31,6 +31,7 @@ import { stripChrome, assertNoChrome } from './lib/source-chrome.mjs';
 import { leadingH1Verdict } from './lib/leading-h1.mjs';
 import { needsSections } from './lib/sections.mjs';
 import { FLAG_WORDS, paragraphStats } from './lib/paragraphs.mjs';
+import { loadProspects, saveProspects, changedProspects } from './lib/prospect-store.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 dotenv.config({ path: path.join(__dirname, '..', '.env.local') });
@@ -40,7 +41,6 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY
 );
 
-const QUEUE_PATH = path.join(__dirname, 'ingestion', 'prospect-queue.json');
 const OUTPUT_DIR = path.join(__dirname, 'ingestion', 'output');
 
 // Scanno detection is flag-only at import time. Load the corpus index and
@@ -421,8 +421,12 @@ async function importTextFile(filePath, prospect, authorId, collectionId) {
 // ---------------------------------------------------------------------------
 
 async function main() {
-  const queue = JSON.parse(fs.readFileSync(QUEUE_PATH, 'utf8'));
-  const staged = queue.prospects.filter(p => p.status === 'staged');
+  // The queue is the `prospects` table (migration 041); before that migration
+  // runs, prospect-store falls back to scripts/ingestion/prospect-queue.json.
+  const { source: queueSource, prospects } = await loadProspects(supabase);
+  const before = structuredClone(prospects);
+  const staged = prospects.filter(p => p.status === 'staged');
+  console.log(`Queue: ${queueSource === 'db' ? 'prospects table' : 'prospect-queue.json (table not migrated yet)'}`);
 
   if (staged.length === 0) {
     console.log('No staged prospects to import.');
@@ -518,8 +522,11 @@ async function main() {
     console.log('');
   }
 
-  fs.writeFileSync(QUEUE_PATH, JSON.stringify(queue, null, 2) + '\n');
-  console.log('Queue updated. Review imported texts at /admin/drafts.');
+  // Write back only the prospects this run changed (the file store rewrites
+  // the whole list, so it gets all of them).
+  const changed = changedProspects(before, prospects);
+  await saveProspects(supabase, queueSource, queueSource === 'db' ? changed : prospects);
+  console.log(`Queue updated (${changed.length} prospect(s) changed). Review imported texts at /admin/review.`);
 }
 
 main().catch(err => {

@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { createServerClient } from '@/lib/supabase/server'
-import { readQueue } from '@/lib/pipeline/queue'
+import { countProspects } from '@/lib/pipeline/queue'
 import { listStagedBundles } from '@/lib/sourcer/staging'
 import { resolveLiveStatuses } from '@/lib/pipeline/liveStatus'
 import {
@@ -93,8 +93,7 @@ export default async function AdminDashboard({ searchParams }: Props) {
   // Count pending pipeline prospects for the Pipeline nav card.
   let pendingCount = 0
   try {
-    const queue = await readQueue()
-    pendingCount = queue.prospects.filter(p => p.status === 'pending').length
+    pendingCount = await countProspects('pending')
   } catch {
     /* queue file unreadable — show 0 */
   }
