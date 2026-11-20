@@ -81,10 +81,18 @@ export function isMissingTable(error) {
   return code === 'PGRST205' || code === '42P01' || /could not find the table|relation .*prospects.* does not exist/i.test(msg);
 }
 
+// A row's content for comparison: null and absent mean the same thing (the file
+// writes some empty fields as null; a row read back from the table omits them).
+function canonical(p) {
+  const row = toRow(p);
+  for (const k of Object.keys(row)) if (row[k] === null || row[k] === undefined) delete row[k];
+  return JSON.stringify(row, Object.keys(row).sort());
+}
+
 /** Prospects in `after` that differ from their counterpart in `before` (or are new). */
 export function changedProspects(before, after) {
-  const prev = new Map(before.map((p) => [p.id, JSON.stringify(toRow(p))]));
-  return after.filter((p) => prev.get(p.id) !== JSON.stringify(toRow(p)));
+  const prev = new Map(before.map((p) => [p.id, canonical(p)]));
+  return after.filter((p) => prev.get(p.id) !== canonical(p));
 }
 
 /** Stable display order: by date added, then id (the file's order was append order). */

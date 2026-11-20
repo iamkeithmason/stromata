@@ -65,6 +65,13 @@ test('changedProspects returns only the rows that differ, plus new ones', () => 
   assert.deepEqual(changedProspects(before, after).map((p) => p.id), ['all-of-grace-spurgeon', 'c']);
 });
 
+test('null and absent fields count as the same, so a table round trip is not a change', () => {
+  const fromFile = { ...sample, translator_death_year: null, license: null };
+  const fromTable = fromRow(toRow(fromFile)); // drops the nulls
+  assert.deepEqual(changedProspects([fromFile], [fromTable]), []);
+  assert.equal(changedProspects([fromFile], [{ ...fromTable, translator_death_year: 1887 }]).length, 1);
+});
+
 test('sortProspects orders by date added, then id', () => {
   const out = sortProspects([
     { id: 'b', added: '2026-10-01' }, { id: 'a', added: '2026-10-01' }, { id: 'z', added: '2026-09-01' },
