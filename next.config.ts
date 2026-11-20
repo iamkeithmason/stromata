@@ -33,9 +33,13 @@ const nextConfig: NextConfig = {
     // Texts withdrawn for copyright, pointing at a public-domain text on the same
     // ground. Address on Vainglory (accession 1, unpublished 10 Nov 2026: its
     // translation is in copyright) → Chrysostom's Homily 21 on Ephesians, on
-    // children and parents. The destination must be published before this ships.
+    // children and parents. On the Thoughts (Evagrius, unpublished 10 Nov 2026 for
+    // copyright) → his Praktikos, in the cleared Dysinger translation; remove it in
+    // the PR that republishes On the Thoughts, if permission ever comes. A
+    // destination must be published before its redirect ships.
     const texts = [
       ['address-on-vainglory-and-how-to-bring-up-children', 'homily-21-on-ephesians-on-children-and-parents'],
+      ['on-the-thoughts', 'treatise-on-the-practical-life'],
     ].map(([from, to]) => ({
       source: `/texts/${from}`,
       destination: `/texts/${to}`,
