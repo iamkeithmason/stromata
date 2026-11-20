@@ -19,10 +19,11 @@
 import { execFileSync } from 'node:child_process';
 import { readFileSync, readdirSync } from 'node:fs';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { buildReport, queryWords, WINDOWS } from './lib/in-flight.mjs';
 
 const REPO = 'iamkeithmason/stromata';
-const ROOT = path.resolve(path.dirname(new URL(import.meta.url).pathname), '..');
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const QUEUE = path.join(ROOT, 'scripts/ingestion/prospect-queue.json');
 const RUN_LOGS = path.join(ROOT, 'scripts/ingestion/run-log');
 
