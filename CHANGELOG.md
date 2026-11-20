@@ -30,7 +30,8 @@ sat at that column's edge. The rail was a fixed 200px, leaving a dead band betwe
   800px source on a 2x screen at worst; keylines keep their 2px/1px weight (`non-scaling-stroke`). The "The
   Author" eyebrow is gone; the name is the block's `h2` at `--text-xl` in the display serif; dates · place · era
   are one muted line; the tradition takes `.kicker`, the rail's one label style, in its tradition colour.
-  Stacked (below 1024px), the portrait caps at `--rail-stacked-max` (15rem). The phone hero is unchanged
+  Stacked (below 1024px), the portrait caps at `--rail-stacked-max` (15rem) and is centred: a lancet
+  window frames what it holds, and off to one side it read as a thumbnail (Keith, 20 Nov). The phone hero is unchanged
   (its cover was already an 84px thumbnail beside the title).
 - `/design` gains a **Layout tokens** section, printed live (`TokenValue`). `--rail-width` and
   `--rail-breakpoint` are retired; the 1400px tier merged into the 1024px one.

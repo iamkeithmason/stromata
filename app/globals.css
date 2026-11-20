@@ -1012,8 +1012,10 @@ body {
 .margin-cols.rail-first > .margin-rail { order: 1; }
 .margin-cols.rail-first > .margin-body { order: 2; }
 
-/* When the rail stacks, its pictures stay picture-sized, not screen-wide,. */
-.author-rail-arch { max-width: var(--rail-stacked-max); }
+/* When the rail stacks, its pictures stay picture-sized, not screen-wide, and
+   the portrait is centred: a lancet window frames what it holds, and set off
+   to one side it read as a thumbnail rather than a window (Keith, 20 Nov). */
+.author-rail-arch { max-width: var(--rail-stacked-max); margin-inline: auto; }
 
 /* frontispiece: the reader's hero. Stacked tiers would put a 200px cover, the
    title, the summary and the chips above the text, so on a phone the first
@@ -1051,7 +1053,7 @@ body {
     grid-column: read-start / wide-end;
     max-width: var(--reading-measure);
   }
-  .author-rail-arch { max-width: none; }
+  .author-rail-arch { max-width: none; margin-inline: 0; }
 }
 
 /* Author-rail bio teaser — clamp to ~6 lines and let it trail off with an
