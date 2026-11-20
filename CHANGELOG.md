@@ -22,8 +22,8 @@ now passes the hue as a `--tradition` custom property and a `.tradition-label` c
 it: unchanged in the light theme, and in the dark theme mixed half and half with the flipped `--ink`, so
 each tradition keeps its tint at 5.4–7.6:1 (browsers without `color-mix` get `--ink-faint`, 5.4:1). The
 light theme renders exactly as before. Checked: computed colours and before/after renders of the Pliny
-page at 390px and 1440px from a local build (`docs/screens/pr/2026-11-20-reader-dark-contrast-*.png`),
-lint, types and 763 tests.
+page at 390px and 1440px from a local build (in the PR description, iamkeithmason/stromata#246), lint,
+types and 763 tests.
 
 ## 2026-11-19 — Repair `main` after a stash-pop commit
 
