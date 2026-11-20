@@ -7,6 +7,39 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-11-20 — Text page: one grid for header and body, a rail that fills its column, author block hierarchy
+
+Card: Text page: shared header/body grid, full-width rail, author block hierarchy
+
+On wide screens the reader's title sat 104px left of the body (at 1440 and 1854px): the reading
+measure (600px at the default setting) was centred inside an 808px grid column, while the hero's title block
+sat at that column's edge. The rail was a fixed 200px, leaving a dead band between it and the paragraph numbers.
+
+- **One grid.** From 1024px the hero, the body and the footer are all `.margin-cols` rows on one template,
+  `--text-page-columns` (rail | gutter | reading column | gutter | slack), declared once on `#reader-page` beside
+  `--reader-column`, the reader's measure, which it is built from. It has to live there: a custom property
+  resolves where it is declared, and on `:root` the reader column does not exist yet, so the whole template went
+  invalid. Title and first paragraph now start within 0px of each other at 1024, 1280, 1440 and 1854, and under
+  every Aa size and measure. The measure is unchanged. The body sits where it did at 1440 and 1854; at 1280 it
+  moves 44px left (384 → 340px), because the body is now centred in the frame at every desktop width.
+- **The rail fills its column**: ~324px at 1440 and wider, 244px at 1280, never under `--rail-min` (12rem).
+  The gutter is `--text-gutter` = the paragraph numbers' hang (`--para-num-hang`, now also what MarkdownBody
+  uses) plus `--grid-gutter`.
+- **Cover** fills the rail column and scales as a whole: `BookCover fluid` drops the 200px caps on its
+  `min(<fixed>, <N>cqi)` sizes. Other covers are untouched.
+- **Portrait**: `LancetArch fit="tight"` crops the 200:380 box to the arch itself, which removes the blank
+  band above it (the apex sat 18% of the way down the old box). At rail width it is ~600px tall, 2x the stored
+  800px source on a 2x screen at worst; keylines keep their 2px/1px weight (`non-scaling-stroke`). The "The
+  Author" eyebrow is gone; the name is the block's `h2` at `--text-xl` in the display serif; dates · place · era
+  are one muted line; the tradition takes `.kicker`, the rail's one label style, in its tradition colour.
+  Stacked (below 1024px), the portrait caps at `--rail-stacked-max` (15rem) and is centred: a lancet
+  window frames what it holds, and off to one side it read as a thumbnail (Keith, 20 Nov). The phone hero is unchanged
+  (its cover was already an 84px thumbnail beside the title).
+- `/design` gains a **Layout tokens** section, printed live (`TokenValue`). `--rail-width` and
+  `--rail-breakpoint` are retired; the 1400px tier merged into the 1024px one.
+
+---
+
 ## 2026-11-20 — Unknown slugs answer 404, not 200
 
 Card: Return HTTP 404 for unknown text slugs

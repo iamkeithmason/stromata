@@ -381,11 +381,12 @@ export default async function TextPage({ params }: Props) {
             title (globals.css), so the text starts in the first screen —
             most readers land here straight from search. */}
         <div className="margin-cols rail-first frontispiece py-6 lg:py-20">
-          {/* Book cover — sits in the left margin rail, aligned with the
-              author rail in the reading container below */}
+          {/* Book cover — fills the rail column, the same column as the author
+              rail in the reading container below; a thumbnail on phones */}
           <div className="margin-rail flex justify-center lg:justify-start">
-            <div className="w-[84px] lg:w-[200px]">
+            <div className="w-[84px] lg:w-full">
               <BookCover
+                fluid
                 title={text.title}
                 authorName={author?.name ?? null}
                 deathYear={author?.death_year ?? null}
@@ -397,7 +398,8 @@ export default async function TextPage({ params }: Props) {
             </div>
           </div>
 
-          {/* Title block — aligned with the main reading column below */}
+          {/* Title block — starts on the reading column's left edge, the same
+              grid line as the body below (globals.css, --text-page-columns) */}
           <div className="margin-body flex flex-col items-start gap-3 text-left lg:gap-8">
             {heroKicker && (
               <p
