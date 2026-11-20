@@ -218,9 +218,15 @@
   --content-pad:      1.5rem;   /* px-6 — trims the 1024 card to a 976 inner */
   --reading-measure:  808px;    /* 10 columns — the long-form reading column */
   --frame-max:        1440px;   /* the wide page frame the marginalia lives in */
-  --rail-width:       200px;    /* marginalia rail (matches the book-cover width) */
   --rail-inset:       1.5rem;   /* rail gap from the page/frame edge */
-  --rail-breakpoint:  1400px;   /* below this there is no room to pull the rail out */
+  --rail-min:         12rem;    /* narrowest the text page's rail column gets */
+  --rail-stacked-max: 15rem;    /* cover / portrait cap when the rail stacks */
+  --para-num-hang:    2.5rem;   /* paragraph numbers hang this far left of the body */
+  --text-gutter:      calc(var(--para-num-hang) + var(--grid-gutter)); /* rail → body: the numbers plus a gutter */
+  /* --text-page-columns (the text page's grid) is defined on #reader-page,
+     beside --reader-column, which it depends on and which the reader's
+     settings change there: a custom property resolves where it is declared,
+     so declared here it would see no reader column and go invalid. */
 }
 
 /* =============================================================
@@ -575,6 +581,9 @@
 .book-cover-title { font-size: min(1rem, 8cqi); }
 .book-cover-title[data-length="long"] { font-size: min(0.875rem, 7cqi); }
 .book-cover-title-short { display: none; }
+/* A fluid cover (BookCover `fluid`) scales its title with its width past 200px. */
+.book-cover--fluid .book-cover-title { font-size: 8cqi; }
+.book-cover--fluid .book-cover-title[data-length="long"] { font-size: 7cqi; }
 
 @container (max-width: 200px) {
   .book-cover-title {
@@ -662,9 +671,24 @@ body {
    Normal and Wide rendered identically and the default ran to ~90 characters
    (Keith chose this fix, 26 Oct). The ID selector outranks the .margin-cols
    tier rules; the column still caps a large text size at the layout's width. */
+#reader-page {
+  --reader-column: calc(1.25rem * var(--reader-font-scale, 1) * var(--reader-measure, 30));
+  /* The text page's columns, one definition for its hero, body and footer
+     (.margin-cols, ≥1024px). --reader-column is the reading measure, set on
+     #reader-page from the reader's settings (ReaderSettings). The track after the body mirrors
+     the rail side, so the body stays centred in the frame.
+       rail | gutter (para numbers) | reading column | gutter | slack        */
+  --text-page-columns:
+    [frame-start] var(--rail-inset)
+    [rail-start] minmax(var(--rail-min), 1fr)
+    [rail-end] var(--text-gutter)
+    [read-start] minmax(0, var(--reader-column))
+    [read-end] var(--text-gutter) minmax(0, 1fr)
+    [wide-end] var(--rail-inset) [frame-end];
+}
 #reader-main {
   --text-prose: calc(1.25rem * var(--reader-font-scale, 1));
-  max-width: calc(var(--text-prose) * var(--reader-measure, 30));
+  max-width: var(--reader-column);
 }
 
 /* A jump target (a heading, or the paragraph an editorial section starts at)
@@ -700,18 +724,20 @@ body {
    Marginalia layout — reading column + a rail that lives in the margin
    =============================================================
 
-   Shared by the frontispiece hero (book cover + title) and the reading
-   container (author/provenance rail + body) so the two stay in one
-   vertical column. Three tiers:
+   The text page only. Its hero (book cover + title), its reading container
+   (author/provenance rail + body) and its footer are each a .margin-cols row,
+   and from 1024px every row lays out on the same grid, --text-page-columns, so the header's text, the body and the footer share one left edge
+   by construction rather than by matching numbers. It is declared on
+   #reader-page, next to the reading measure it is built from.
 
-     • < 1024px            stacked, reading body first, rail beneath.
-     • 1024px – <1400px    inline: rail (200px) left, body right, both
-                           within the 976px content area.
-     • ≥ 1400px            the rail lifts out into the left page margin
-                           (24px from the frame edge) and the reading
-                           body centres at its 808px measure — the page
-                           margin is now wide enough to hold the rail as
-                           true marginalia, matching the design. */
+     • < 1024px   stacked, reading body first, rail beneath (the hero keeps
+                  its cover as a thumbnail beside the title, .frontispiece).
+     • ≥ 1024px   rail | gutter | reading column | gutter | slack, in a frame
+                  up to --frame-max wide. The reading column is the reader's
+                  measure exactly; the rail takes what is left on its side
+                  (~244px at 1280, ~324px at 1440 and wider). Until 20 Nov
+                  2026 the body was centred inside an 808px column while the
+                  title sat at that column's edge, 104px apart. */
 .margin-cols {
   max-width: var(--content-max);
   margin-inline: auto;
@@ -734,12 +760,13 @@ body {
 }
 
 /* rail-first: keep the rail above the body when stacked (the frontispiece
-   hero wants the book cover over the title, not beneath it). Higher
-   specificity than the tier rules below, so it holds at every width — at
-   1024px+ rail-before-body still reads as rail-left, and at 1400px+ the grid
-   places by column, so order is moot there. */
+   hero wants the book cover over the title, not beneath it). On the grid,
+   columns place the items, so order is moot there. */
 .margin-cols.rail-first > .margin-rail { order: 1; }
 .margin-cols.rail-first > .margin-body { order: 2; }
+
+/* When the rail stacks, its pictures stay picture-sized, not screen-wide. */
+.author-rail-arch { max-width: var(--rail-stacked-max); }
 
 /* frontispiece: the reader's hero. Stacked tiers would put a 200px cover, the
    title, the summary and the chips above the text, so on a phone the first
@@ -759,46 +786,25 @@ body {
 
 @media (min-width: 1024px) {
   .margin-cols {
-    flex-direction: row;
-    align-items: flex-start;
-    gap: var(--grid-gutter);
-  }
-  .margin-cols > .margin-rail {
-    order: 0;
-    flex: 0 0 var(--rail-width);
-    width: var(--rail-width);
-  }
-  .margin-cols > .margin-body {
-    order: 0;
-    flex: 1 1 0;
-    max-width: var(--reading-measure);
-  }
-}
-
-@media (min-width: 1400px) {
-  .margin-cols {
     max-width: var(--frame-max);
     padding-inline: 0;
     display: grid;
-    grid-template-columns:
-      minmax(var(--rail-inset), 1fr)
-      minmax(0, var(--reading-measure))
-      minmax(var(--rail-inset), 1fr);
+    grid-template-columns: var(--text-page-columns);
     gap: 0;
     align-items: start;
   }
-  .margin-cols > .margin-rail {
-    grid-column: 1;
-    justify-self: start;
-    width: var(--rail-width);
-    margin-left: var(--rail-inset);
-  }
-  .margin-cols > .margin-body {
-    grid-column: 2;
-    width: 100%;
+  /* grid-row: auto-placement follows the stacked tier's `order`, which put
+     the rail in a second row beneath the body. */
+  .margin-cols > .margin-rail { grid-column: rail; grid-row: 1; }
+  .margin-cols > .margin-body { grid-column: read; grid-row: 1; }
+  /* The hero's title block starts on the reading column's edge but may run on
+     into the slack beside it, so a title is not held to a narrow reader
+     measure; --reading-measure keeps it wrapping where it always has. */
+  .margin-cols.frontispiece > .margin-body {
+    grid-column: read-start / wide-end;
     max-width: var(--reading-measure);
-    margin-inline: auto;
   }
+  .author-rail-arch { max-width: none; }
 }
 
 /* Author-rail bio teaser — clamp to ~6 lines and let it trail off with an
@@ -829,7 +835,7 @@ body {
    come from #reader-page, where ReaderSettings sets them. Specificity beats the
    .margin-cols > .margin-body tier rules. */
 .margin-cols > .margin-body.reader-measure {
-  max-width: calc(1.25rem * var(--reader-font-scale, 1) * var(--reader-measure, 30));
+  max-width: var(--reader-column);
 }
 
 /* =============================================================
