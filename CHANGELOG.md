@@ -7,6 +7,23 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-11-20 — Unknown slugs answer 404, not 200
+
+Card: Return HTTP 404 for unknown text slugs
+
+A mistyped text URL answered **200** with the not-found page and `noindex`, which Google reads as a soft 404.
+The text, author, collection and theme pages already call `notFound()`; the 200 came from the root
+`app/loading.tsx`. A loading file wraps every page beneath it in a Suspense boundary, so Next starts streaming
+the response, status line included, before the page's data fetch reaches `notFound()`, and by then the status
+cannot change. `app/loading.tsx` is deleted (Keith, 20 Nov: option (a) of the three on the card). The cost:
+a click to a page that is not yet cached shows the old page until the new one arrives, rather than a
+"Loading…" screen. Cached pages, which are nearly all of them, were never slow enough to show it.
+`app/error.tsx`, added beside it on 21 Sep, stays.
+
+Checked on `next dev` against the live database: before, `/texts/no-such-text-xyz` answered 200; after, 404 with
+"Page not found — The Stromata", as do unknown author, collection and theme slugs; `/texts/the-didache` still
+answers 200. Production can be checked with `curl -I` after the release.
+
 ## 2026-11-20 — Index the corpus's relationship foreign keys
 
 Card: Index Connected Corpus foreign keys
