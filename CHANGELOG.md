@@ -24,6 +24,23 @@ Checked on `next dev` against the live database: before, `/texts/no-such-text-xy
 "Page not found — The Stromata", as do unknown author, collection and theme slugs; `/texts/the-didache` still
 answers 200. Production can be checked with `curl -I` after the release.
 
+## 2026-11-20 — Index the corpus's relationship foreign keys
+
+Card: Index Connected Corpus foreign keys
+
+Migration `040_index_corpus_foreign_keys.sql`, **already applied to production** through the Supabase MCP on
+20 Nov. The performance advisor had flagged nine public foreign keys with no covering index: `texts.author_id`,
+`texts.genre_id`, `texts.read_next_text_id`, `text_themes.theme_id`, `authors.era_id`, `authors.tradition_id`,
+`authors.location_id`, `author_locations.author_id` and `collections.author_id`. Each is a join the public pages
+walk (an author's texts, a theme's texts, an era's or tradition's authors), and each delete of a parent row must
+check its child table. The two mostly-null columns (`collections.author_id`, a rare byline override, and
+`read_next_text_id`) get partial indexes. No schema semantics change.
+
+Checked: the advisor's `unindexed_foreign_keys` list fell from 14 to 5, and all 5 left are in the `hopper`
+schema, another project's tables sharing this database, deliberately left alone. A theme page's join (texts
+under `prayer`) moved from a scan of `text_themes`' primary key to a bitmap scan of the new index, 38 ms → 1 ms
+(the first run was also cold, so not all of that gain is the index). The tables are small (~570 texts), so this
+is preventative; the new indexes show as "unused" in the advisor until traffic exercises them.
 ## 2026-11-20 — On the Thoughts redirects to the Praktikos
 
 Card: Redirect the withdrawn On the Thoughts to the Praktikos
