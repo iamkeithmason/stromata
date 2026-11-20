@@ -25,6 +25,20 @@ light theme renders exactly as before. Checked: computed colours and before/afte
 page at 390px and 1440px from a local build (in the PR description, iamkeithmason/stromata#246), lint,
 types and 763 tests.
 
+## 2026-11-20 — Quiet the dark-theme hydration warning on text pages
+
+Card: none
+
+In `next dev`, a text page opened with the reader's dark theme saved showed the red "1 Issue" pill:
+React reported that `#reader-page` hydrated with `data-reader-theme="dark"`, an attribute the server
+had not rendered. The inline script in `app/texts/[slug]/page.tsx` sets it from localStorage before
+hydration, on purpose, to avoid a light flash; the server cannot know a visitor's preference without
+reading cookies, which would make the page uncacheable. The div now carries `suppressHydrationWarning`,
+which covers only its own attributes. Production was never affected: React does not compare attributes
+when hydrating a production build, and it never re-rendered the subtree. Checked with Playwright
+against a local build: the pill and the console error are gone in dark mode at 390px and 1440px, and
+light mode is unchanged.
+
 ## 2026-11-19 — Repair `main` after a stash-pop commit
 
 Card: none
