@@ -8,6 +8,10 @@ test('a digital pending prospect waits for the copyright check, with its death y
   })
   assert.equal(placeProspect({ status: 'pending', source_type: 'ccel' }).reason, 'Author death year not recorded yet')
   assert.match(placeProspect({ status: 'pending', source_type: 'ccel', death_year: 1923 }).reason, /fails the pre-1900 rule/)
+  assert.equal(
+    placeProspect({ status: 'pending', source_type: 'ccel', death_year: 1923, publication_year: 1905, copyright_ruling: 'Keith, 20 Nov 2026' }).reason,
+    'Cleared on publication date (1905); ruling recorded',
+  )
 })
 
 test('scanned sources go to the OCR lane however far along they are, until output exists', () => {

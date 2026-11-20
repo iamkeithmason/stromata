@@ -32,6 +32,7 @@ import { leadingH1Verdict } from './lib/leading-h1.mjs';
 import { needsSections } from './lib/sections.mjs';
 import { FLAG_WORDS, paragraphStats } from './lib/paragraphs.mjs';
 import { loadProspects, saveProspects, changedProspects } from './lib/prospect-store.mjs';
+import { copyrightClear } from './lib/copyright.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 dotenv.config({ path: path.join(__dirname, '..', '.env.local') });
@@ -136,17 +137,8 @@ async function resolveThemeIds(themeValues) {
   return ids;
 }
 
-// ---------------------------------------------------------------------------
 // Copyright re-verification (defense in depth — Stage 1 already checked this)
-// ---------------------------------------------------------------------------
-
-function copyrightClear(prospect) {
-  if (prospect.death_year && prospect.death_year < 1900) return true;
-  if (prospect.translation_copyright_clear && prospect.translator_death_year && prospect.translator_death_year < 1928) {
-    return true;
-  }
-  return false;
-}
+// lives in scripts/lib/copyright.mjs, imported above.
 
 // ---------------------------------------------------------------------------
 // Collection resolution (digital multi-chapter sources only)

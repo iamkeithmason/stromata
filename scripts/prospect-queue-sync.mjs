@@ -24,7 +24,7 @@ import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
 import { createClient } from '@supabase/supabase-js';
 import {
-  QUEUE_FILE, TABLE, readQueueFile, writeQueueFile, changedProspects, fromRow, toRow, isMissingTable, sortProspects,
+  QUEUE_FILE, TABLE, COLUMNS, readQueueFile, writeQueueFile, changedProspects, fromRow, toRow, isMissingTable, sortProspects,
 } from './lib/prospect-store.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -95,6 +95,18 @@ if (toDb) {
     console.log('\nDry run. Re-run with --write to apply.');
     process.exit(0);
   }
-  writeQueueFile(sortProspects(inDb), QUEUE_FILE);
+  // Keep the file's own order so a snapshot's diff shows only what changed; rows
+  // new to the file go at the end, in date order.
+  const byId = new Map(inDb.map((p) => [p.id, p]));
+  // A field the table holds empty comes back absent (fromRow drops nulls); write it
+  // as null where the file already had the key, so null-vs-absent is not churn.
+  const kept = inFile.filter((p) => byId.has(p.id)).map((p) => {
+    const db = byId.get(p.id);
+    const merged = { ...p, ...db };
+    for (const k of Object.keys(p)) if (COLUMNS.includes(k) && !(k in db)) merged[k] = null;
+    return merged;
+  });
+  const added = sortProspects(inDb.filter((p) => !fileIds.has(p.id)));
+  writeQueueFile([...kept, ...added], QUEUE_FILE);
   console.log(`Wrote ${inDb.length} prospects to ${path.relative(process.cwd(), QUEUE_FILE)}.`);
 }

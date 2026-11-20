@@ -28,6 +28,7 @@ hand-edit `prospect-queue.json`.
 
 **Checks you may not skip.**
 - HARD CONSTRAINTS 1–6. Never publish; never write `editorial_introduction`; never promote an author out of draft.
+- A prospect with `copyright_ruling` and a pre-1929 `publication_year` is cleared by Keith; don't re-hold it on the death-year rule. Never write a ruling yourself.
 - Before Stage 2, fetch the source and read its title and author. A 200 is not a check: on 20 Nov 2026 two of
   eight queued URLs pointed at the wrong page.
 - CCEL sources: `scripts/ingestion/ccel-to-markdown.mjs`. New Advent, Gutenberg, Wikisource, Wittenberg:

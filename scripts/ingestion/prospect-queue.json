@@ -1745,7 +1745,8 @@
       "translation_copyright_clear": true,
       "death_year": 1415,
       "translator_death_year": 1941,
-      "stage_1_notes": "Re-sourced from djvu.txt OCR (details-page fetch was wrong). Split into 23 chapters via split-into-chapters.mjs. Schaff 1915 translation, PD (pre-1929). Imported 23 text(s) on 2026-08-18."
+      "stage_1_notes": "Re-sourced from djvu.txt OCR (details-page fetch was wrong). Split into 23 chapters via split-into-chapters.mjs. Schaff 1915 translation, PD (pre-1929). Imported 23 text(s) on 2026-08-18.",
+      "stage_3_themes": []
     },
     {
       "id": "the-stromata-clement",
@@ -6467,11 +6468,13 @@
       "translator": null,
       "translator_death_year": null,
       "license": null,
-      "stage_1_notes": "Original English composition (Jowett wrote in English; no translation involved). Jowett d. 1923 — clears HARD CONSTRAINT 3's death_year < 1900 threshold only via the work's own age/publication date (this collection of sermons was first published 1907), not via the author's death year; STAGE 1 SHOULD RE-VERIFY the exact publication date and confirm no renewal before proceeding, since 1923 death alone does not satisfy the simplified 'pre-1900 death' shorthand. Notion's Reference URL (ccel.org/ccel/jowett, an author index page, not a work) was not usable directly — the actual work page (ccel.org/ccel/jowett/passion) and its plain-text cache export were found and verified reachable (HTTP 200) at sync time, per CLAUDE.md's CCEL cache-URL note. [2026-11-20 cloud run] HELD: Jowett d. 1923, so HARD CONSTRAINT 3 (author death_year < 1900) fails and pipeline-import.mjs would refuse it. Publication date (1905/1907) would clear it under US law, but CLAUDE.md does not authorise the publication-date rule for an author who wrote in English (the deviation it records is for translations). Needs Keith's ruling. Left pending.",
+      "stage_1_notes": "Original English composition (Jowett wrote in English; no translation involved). Jowett d. 1923 — clears HARD CONSTRAINT 3's death_year < 1900 threshold only via the work's own age/publication date (this collection of sermons was first published 1907), not via the author's death year; STAGE 1 SHOULD RE-VERIFY the exact publication date and confirm no renewal before proceeding, since 1923 death alone does not satisfy the simplified 'pre-1900 death' shorthand. Notion's Reference URL (ccel.org/ccel/jowett, an author index page, not a work) was not usable directly — the actual work page (ccel.org/ccel/jowett/passion) and its plain-text cache export were found and verified reachable (HTTP 200) at sync time, per CLAUDE.md's CCEL cache-URL note. [2026-11-20 cloud run] CLEARED (was held): Jowett d. 1923, so HARD CONSTRAINT 3 (author death_year < 1900) fails and pipeline-import.mjs would refuse it. Publication date (1905/1907) would clear it under US law, but CLAUDE.md does not authorise the publication-date rule for an author who wrote in English (the deviation it records is for translations). Needs Keith's ruling. Left pending. [2026-11-20] CLEARED by Keith on publication date (Revell 1905); see copyright_ruling. Eligible for the next run.",
       "stage_2_output": "",
       "stage_3_themes": [],
       "rejection_reason": "",
-      "notes": "Synced from Notion Content Prospect List 2026-09-28 (userDefined:ID 67, score 1.5). NEW AUTHOR — import will create a draft author stub. Checked Supabase and local queue for 'jowett' before adding: no match."
+      "notes": "Synced from Notion Content Prospect List 2026-09-28 (userDefined:ID 67, score 1.5). NEW AUTHOR — import will create a draft author stub. Checked Supabase and local queue for 'jowett' before adding: no match.",
+      "copyright_ruling": "Keith, 20 Nov 2026: cleared on publication date. Fleming H. Revell, New York, title page \"Copyright, 1905\" (CCEL plain-text export, read 20 Nov 2026); published before 1929, US public domain. Jowett d. 1923. Note: CCEL's header gives \"1817-1893\", which are Benjamin Jowett's dates, not J. H. Jowett's.",
+      "publication_year": 1905
     },
     {
       "id": "theological-tractates-boethius",
@@ -6569,7 +6572,8 @@
       "collection_slug": "confession-patrick",
       "translation_copyright_clear": false,
       "stage_1_notes": "Source field used: Cleared edition URL (resolves; CCEL Rights: Public Domain). Author d. c.461 is clear, but the CCEL text is a numbered-paragraph translation credited only to \"The Robot Wisdom Pages\" with no translator or date, so the translation is unattributed and may be a 20th-century rendering.",
-      "rejection_reason": "translation provenance unverified (no named translator/date; CCEL file credits only Robot Wisdom Pages) - HARD CONSTRAINT 3, rejected as uncertain. Re-queue if a dated pre-1929 edition (e.g. Wright 1889 / Hanson) is pinned."
+      "rejection_reason": "translation provenance unverified (no named translator/date; CCEL file credits only Robot Wisdom Pages) - HARD CONSTRAINT 3, rejected as uncertain. Re-queue if a dated pre-1929 edition (e.g. Wright 1889 / Hanson) is pinned.",
+      "stage_3_themes": []
     },
     {
       "id": "dialogue-catherine-siena",

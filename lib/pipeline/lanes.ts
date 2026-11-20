@@ -5,6 +5,8 @@
 // decorates each prospect with `_hasOutput` and `_liveStatus` first; this only
 // reads them.
 
+import { copyrightBasis } from '@/scripts/lib/copyright.mjs'
+
 export type LaneId =
   | 'copyright'
   | 'ocr'
@@ -43,6 +45,8 @@ export type LaneInput = {
   translator?: string | null
   stage_1_notes?: string
   rejection_reason?: string
+  publication_year?: number
+  copyright_ruling?: string
   _hasOutput?: boolean
   _liveStatus?: 'live' | 'draft' | 'unknown'
 }
@@ -97,6 +101,7 @@ export function placeProspect(p: LaneInput): LanePlacement {
 }
 
 function copyrightHint(p: LaneInput): string {
+  if (copyrightBasis(p) === 'publication-ruling') return `Cleared on publication date (${p.publication_year}); ruling recorded`
   if (p.death_year == null) return 'Author death year not recorded yet'
   if (p.death_year >= 1900) return `Author d. ${p.death_year}: fails the pre-1900 rule unless a ruling clears it`
   return p.translator ? `Author d. ${p.death_year}; translation by ${p.translator} to verify` : `Author d. ${p.death_year}`
