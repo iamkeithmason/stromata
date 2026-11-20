@@ -1862,7 +1862,7 @@
     },
     {
       "id": "all-of-grace-spurgeon",
-      "status": "pending",
+      "status": "imported",
       "added": "2026-09-08",
       "author": "Charles Haddon Spurgeon",
       "death_year": 1892,
@@ -1876,9 +1876,14 @@
       "translation_copyright_clear": true,
       "translator": "",
       "translator_death_year": null,
-      "stage_1_notes": "Source corrected 2026-09-21. Gutenberg ebook 27570 is NOT this work — it is *Buchanan's Journal of Man, July 1887*. The id came from Notion and the queue's own note flagged it as unverified ('CONFIRM the exact plain-text URL at Stage 2'); Stage 2 fetched it anyway and 108 KB of the wrong text was imported under Spurgeon's name and has now been deleted. Checked against Gutenberg's GUTINDEX.ALL on a mirror: All of Grace is not on Project Gutenberg at all. Spurgeon's PG works are 60669, 42657, 42558, 42518 and a Finnish volume (58297), so no id substitution would have fixed this. Re-pointed at CCEL's plain-text export (HTTP 200, 190,682 bytes, verified to open 'Title: All of Grace / Creator(s): Spurgeon, Charles Haddon'). Copyright basis unchanged: Spurgeon d. 1892, original English composition.",
-      "stage_2_output": "",
-      "stage_3_themes": [],
+      "stage_1_notes": "Source corrected 2026-09-21. Gutenberg ebook 27570 is NOT this work — it is *Buchanan's Journal of Man, July 1887*. The id came from Notion and the queue's own note flagged it as unverified ('CONFIRM the exact plain-text URL at Stage 2'); Stage 2 fetched it anyway and 108 KB of the wrong text was imported under Spurgeon's name and has now been deleted. Checked against Gutenberg's GUTINDEX.ALL on a mirror: All of Grace is not on Project Gutenberg at all. Spurgeon's PG works are 60669, 42657, 42558, 42518 and a Finnish volume (58297), so no id substitution would have fixed this. Re-pointed at CCEL's plain-text export (HTTP 200, 190,682 bytes, verified to open 'Title: All of Grace / Creator(s): Spurgeon, Charles Haddon'). Copyright basis unchanged: Spurgeon d. 1892, original English composition. [2026-11-20 cloud run] Stage 1 re-checked: Spurgeon d. 1892, original English (1886). Source re-verified by reading the file header (CCEL plain text, \"Title: All of Grace / Creator(s): Spurgeon, Charles Haddon\"). Stage 2: converted CCEL plain text to markdown with a one-off parser (no committed CCEL path yet); 21 chapter headings kept as ##. Single text, 34,342 words. Note draft written by the session (no Anthropic key). Imported 1 text(s) on 2026-11-20. Auto-corrected: all-of-grace: rejoined 4 mid-sentence page-break split(s).",
+      "stage_2_output": "scripts/ingestion/output/all-of-grace-spurgeon/",
+      "stage_3_themes": [
+        "salvation",
+        "repentance",
+        "pneumatology",
+        "providence"
+      ],
       "rejection_reason": "",
       "notes": "Synced from Notion Content Prospect List (Status: Text available, Value 3, Complexity 1, Effort 1), 2026-09-08. Spurgeon's short evangelistic treatise (1886), arguably his most widely read single work; original English composition, Spurgeon d. 1892 (<1900) so copyright is clear outright. The Notion row cites gutenberg.org/ebooks/27570, which is the wrong work — see stage_1_notes. **Fix the Notion row's Reference URL too, or the next sync re-introduces it.**"
     },
@@ -2268,7 +2273,7 @@
       "translation_copyright_clear": false,
       "translator": "Ann Bacon (1564); Henry Morley ed. (1888)",
       "translator_death_year": null,
-      "stage_1_notes": "Latin 1562; classic English translation by Ann Bacon, 1564 (public domain); also the 1888 Cassell edition ed. Henry Morley — copyright pre-verified (author pre-1900; PD English translation identified).",
+      "stage_1_notes": "Latin 1562; classic English translation by Ann Bacon, 1564 (public domain); also the 1888 Cassell edition ed. Henry Morley — copyright pre-verified (author pre-1900; PD English translation identified). [2026-11-20 cloud run] The staged output from the earlier run is Project Gutenberg's HTML landing page (site navigation), not the text: gutenberg.org/ebooks/17678 is the book page. Re-fetch from https://www.gutenberg.org/cache/epub/17678/pg17678.txt was attempted but Gutenberg answered \"Temporarily Down for Maintenance\". Left at stage-2-done; the bad output file must be replaced before import.",
       "stage_2_output": "",
       "stage_3_themes": [
         "scripture",
@@ -2790,7 +2795,7 @@
     },
     {
       "id": "on-rebaptism-de-rebaptismate-church",
-      "status": "pending",
+      "status": "imported",
       "added": "2026-09-11",
       "author": "Unknown (Early Church)",
       "death_year": 256,
@@ -2799,18 +2804,19 @@
       "title": "On Rebaptism / De Rebaptismate",
       "genre": "Treatise",
       "source_type": "newadvent",
-      "source_url": "https://www.newadvent.org/fathers/0512.htm",
+      "source_url": "https://www.newadvent.org/fathers/0515.htm",
       "collection_slug": "on-rebaptism-de-rebaptismate-church",
       "translation_copyright_clear": true,
       "translator": "Ernest Wallis (ANF)",
       "translator_death_year": null,
-      "stage_1_notes": "3rd-century anonymous North African treatise; ANF vol. 5 translation (pre-1928) is public domain. — copyright pre-verified (author pre-1900; PD English translation identified). URL AUDIT 2026-09-21: source_url 0512.htm actually serves \"On the Jewish Meats\" (Novatian), not \"On Rebaptism\" — wrong page reference. Needs the correct New Advent URL for the anonymous De Rebaptismate (ANF Vol. V) before Stage 2 can run. Left pending.",
-      "stage_2_output": "",
+      "stage_1_notes": "3rd-century anonymous North African treatise; ANF vol. 5 translation (pre-1928) is public domain. — copyright pre-verified (author pre-1900; PD English translation identified). URL AUDIT 2026-09-21: source_url 0512.htm actually serves \"On the Jewish Meats\" (Novatian), not \"On Rebaptism\" — wrong page reference. Needs the correct New Advent URL for the anonymous De Rebaptismate (ANF Vol. V) before Stage 2 can run. Left pending. [2026-11-20 cloud run] Stage 1: the queued URL (0512.htm) serves Novatian's On the Jewish Meats; the correct New Advent page is 0515.htm, title \"CHURCH FATHERS: On Re-Baptism (Anonymous)\", verified before fetching. Wallis, ANF V (1886). Stage 2: fetch-texts.mjs (standard path), 10,400 words. Note draft written by the session. Imported 1 text(s) on 2026-11-20. REVIEW NEEDED before publish: on-re-baptism: 3 prose paragraph(s) of 800+ words (longest 992); paragraph breaks will be proposed by the next `npm run generate:review-drafts`",
+      "stage_2_output": "scripts/ingestion/output/on-rebaptism-de-rebaptismate-church/",
       "stage_3_themes": [
         "sacraments",
+        "pneumatology",
         "salvation",
         "tradition",
-        "repentance"
+        "death"
       ],
       "rejection_reason": "",
       "notes": "From On the Ruin of Britain blog trawl (posts 1). NEW AUTHOR — import will create a draft author stub. Verified SAFE by ORB-trawl verification pass 2026-09-11."
@@ -4488,7 +4494,7 @@
       "translation_copyright_clear": true,
       "translator": "",
       "translator_death_year": null,
-      "stage_1_notes": "Original English composition, 1646; unquestionably public domain (no translation involved). — copyright pre-verified (author pre-1900; PD English translation identified).",
+      "stage_1_notes": "Original English composition, 1646; unquestionably public domain (no translation involved). — copyright pre-verified (author pre-1900; PD English translation identified). [2026-11-20 cloud run] HELD at Stage 1: source_url is a Wikisource versions/disambiguation page (196 words, links to the Portal), not the text. Needs a specific edition URL pinned before Stage 2. Left pending.",
       "stage_2_output": "",
       "stage_3_themes": [
         "salvation",
@@ -4560,7 +4566,7 @@
     },
     {
       "id": "revelations-of-divine-love-norwich",
-      "status": "pending",
+      "status": "imported",
       "added": "2026-09-11",
       "author": "Julian of Norwich",
       "death_year": 1416,
@@ -4568,21 +4574,20 @@
       "era": "late-medieval",
       "title": "Revelations of Divine Love (Showings)",
       "genre": "Meditation",
-      "source_type": "archive_online",
-      "source_url": "https://ccel.org/ccel/julian/revelations",
+      "source_type": "ccel",
+      "source_url": "https://ccel.org/ccel/j/julian/revelations/cache/revelations.txt",
       "collection_slug": "revelations-of-divine-love-norwich",
       "translation_copyright_clear": true,
       "translator": "Grace Warrack",
       "translator_death_year": null,
-      "stage_1_notes": "Author d. c. 1416; Grace Warrack's modernized English edition (1901) is public domain. — copyright pre-verified (author pre-1900; PD English translation identified).",
-      "stage_2_output": "",
+      "stage_1_notes": "Author d. c. 1416; Grace Warrack's modernized English edition (1901) is public domain. — copyright pre-verified (author pre-1900; PD English translation identified). [2026-11-20 cloud run] Stage 1 re-checked: Julian d. c. 1416; Grace Warrack version, Methuen 1901 (pre-1929). Source switched from the CCEL reading URL to its plain-text export (same edition; header reads \"Revelations of Divine Love / Translated by Grace Warrack / First published 1901\"). Stage 2: split as a collection of 18 texts by Warrack's own divisions (Prologue = ch. I-III, the sixteen Revelations, and \"Anent certain points\" ch. XLIV-LXIII), not 86 chapter texts; the scribe's postscript is the last section of the Sixteenth. Warrack's footnotes omitted. Three split chapter epigraphs (ch. XLI, LXIV, LXVIII) joined by hand. Imported 18 text(s) on 2026-11-20. Auto-corrected: revelations-of-divine-love-prologue: rejoined 1 mid-sentence page-break split(s) | revelations-of-divine-love-the-sixteenth-revelation: rejoined 3 mid-sentence page-break split(s).",
+      "stage_2_output": "scripts/ingestion/output/revelations-of-divine-love-norwich/",
       "stage_3_themes": [
         "contemplation",
         "prayer",
         "suffering",
         "salvation",
-        "providence",
-        "desire"
+        "providence"
       ],
       "rejection_reason": "",
       "notes": "From On the Ruin of Britain blog trawl (posts 112). NEW AUTHOR — import will create a draft author stub. MULTI-CHAPTER: import as a collection (output dir, one file per book/chapter). Source noted as other: https://ccel.org/ccel/julian/revelations. Verified SAFE by ORB-trawl verification pass 2026-09-11."
@@ -6462,7 +6467,7 @@
       "translator": null,
       "translator_death_year": null,
       "license": null,
-      "stage_1_notes": "Original English composition (Jowett wrote in English; no translation involved). Jowett d. 1923 — clears HARD CONSTRAINT 3's death_year < 1900 threshold only via the work's own age/publication date (this collection of sermons was first published 1907), not via the author's death year; STAGE 1 SHOULD RE-VERIFY the exact publication date and confirm no renewal before proceeding, since 1923 death alone does not satisfy the simplified 'pre-1900 death' shorthand. Notion's Reference URL (ccel.org/ccel/jowett, an author index page, not a work) was not usable directly — the actual work page (ccel.org/ccel/jowett/passion) and its plain-text cache export were found and verified reachable (HTTP 200) at sync time, per CLAUDE.md's CCEL cache-URL note.",
+      "stage_1_notes": "Original English composition (Jowett wrote in English; no translation involved). Jowett d. 1923 — clears HARD CONSTRAINT 3's death_year < 1900 threshold only via the work's own age/publication date (this collection of sermons was first published 1907), not via the author's death year; STAGE 1 SHOULD RE-VERIFY the exact publication date and confirm no renewal before proceeding, since 1923 death alone does not satisfy the simplified 'pre-1900 death' shorthand. Notion's Reference URL (ccel.org/ccel/jowett, an author index page, not a work) was not usable directly — the actual work page (ccel.org/ccel/jowett/passion) and its plain-text cache export were found and verified reachable (HTTP 200) at sync time, per CLAUDE.md's CCEL cache-URL note. [2026-11-20 cloud run] HELD: Jowett d. 1923, so HARD CONSTRAINT 3 (author death_year < 1900) fails and pipeline-import.mjs would refuse it. Publication date (1905/1907) would clear it under US law, but CLAUDE.md does not authorise the publication-date rule for an author who wrote in English (the deviation it records is for translations). Needs Keith's ruling. Left pending.",
       "stage_2_output": "",
       "stage_3_themes": [],
       "rejection_reason": "",
@@ -6493,7 +6498,7 @@
     },
     {
       "id": "monologion-anselm",
-      "status": "pending",
+      "status": "imported",
       "added": "2026-09-28",
       "author": "Anselm of Canterbury",
       "death_year": 1109,
@@ -6508,15 +6513,20 @@
       "translator": "Sidney Norton Deane",
       "translator_death_year": null,
       "license": null,
-      "stage_1_notes": "Death year 1109 (Anselm) independently clears the work. Sidney Norton Deane translation, The Open Court Publishing Co., 1903/1926 reprint — public domain by publication date. IMPORTANT — NOT a simple single-URL fetch: this CCEL cache file is Anselm's combined 'Basic Works' volume (Proslogium + Monologium + Appendix/Gaunilon + Cur Deus Homo) — the SAME file already used to import proslogion (already live in Supabase). Verified by fetching the file header at sync time: title reads 'Proslogium; Monologium; An Appendix in Behalf of the Fool by Gaunilon; and Cur Deus Homo'. Stage 2 must extract only the Monologium section (between its own heading and the Appendix/Cur Deus Homo that follows) rather than re-importing the whole volume or duplicating Proslogium — this needs a manual excerpt, not fetch-texts.mjs's default whole-page handling. Flagging rather than attempting the split at sync time.",
-      "stage_2_output": "",
-      "stage_3_themes": [],
+      "stage_1_notes": "Death year 1109 (Anselm) independently clears the work. Sidney Norton Deane translation, The Open Court Publishing Co., 1903/1926 reprint — public domain by publication date. IMPORTANT — NOT a simple single-URL fetch: this CCEL cache file is Anselm's combined 'Basic Works' volume (Proslogium + Monologium + Appendix/Gaunilon + Cur Deus Homo) — the SAME file already used to import proslogion (already live in Supabase). Verified by fetching the file header at sync time: title reads 'Proslogium; Monologium; An Appendix in Behalf of the Fool by Gaunilon; and Cur Deus Homo'. Stage 2 must extract only the Monologium section (between its own heading and the Appendix/Cur Deus Homo that follows) rather than re-importing the whole volume or duplicating Proslogium — this needs a manual excerpt, not fetch-texts.mjs's default whole-page handling. Flagging rather than attempting the split at sync time. [2026-11-20 cloud run] Stage 1 re-checked: Anselm d. 1109; Deane translation, Open Court 1903 (pre-1929). Stage 2: extracted ONLY the Monologium (Preface to Chapter LXXIX, stopping at the Gaunilon Appendix) from the combined CCEL Basic Works file, as the sync note required; Proslogium and Cur Deus Homo not included. Single text, 31,419 words, 79 chapter headings with Deane's chapter summaries in italics. Imported 1 text(s) on 2026-11-20.",
+      "stage_2_output": "scripts/ingestion/output/monologion-anselm/",
+      "stage_3_themes": [
+        "trinity",
+        "creation",
+        "contemplation",
+        "pneumatology"
+      ],
       "rejection_reason": "",
       "notes": "Synced from Notion Content Prospect List 2026-09-28 (userDefined:ID 256, score 1.5). Author already exists (non-draft, from the Proslogion import) — will be reused. Checked Supabase and local queue for 'anselm'/'monologion' before adding: only Proslogion exists — a distinct work, not a duplicate, but see the extraction note above before running Stage 2."
     },
     {
       "id": "spiritual-exercises-loyola",
-      "status": "pending",
+      "status": "imported",
       "added": "2026-09-28",
       "author": "Ignatius of Loyola",
       "death_year": 1556,
@@ -6524,16 +6534,23 @@
       "era": "reformation",
       "title": "The Spiritual Exercises",
       "genre": "Rule",
-      "source_type": "archive_online",
-      "source_url": "https://sacred-texts.com/chr/seil/index.htm",
+      "source_type": "ccel",
+      "source_url": "https://ccel.org/ccel/i/ignatius/exercises/cache/exercises.txt",
       "collection_slug": "spiritual-exercises-loyola",
       "translation_copyright_clear": true,
       "translator": "Elder Mullan, S.J.",
       "translator_death_year": 1925,
       "license": null,
-      "stage_1_notes": "Death year 1556 (Ignatius of Loyola) independently clears the work. Elder Mullan SJ translation (1909, P. J. Kenedy & Sons) — Mullan d. 1925, safely public domain on both the death-year shorthand and by publication date. SOURCE BLOCKED FROM THIS SESSION: sacred-texts.com returned HTTP 403 at sync time (both default and browser User-Agent) — this is CLAUDE.md's documented sacred-texts.com/Cloudflare blocking, not a dead link (check-prospect-urls.mjs would report this as 'blocked', not 'dead'). Needs re-verification from a session/network with access, or an alternate PD source for the same Mullan 1909 translation (Archive.org likely holds a scan), before Stage 2 can proceed.",
-      "stage_2_output": "",
-      "stage_3_themes": [],
+      "stage_1_notes": "Death year 1556 (Ignatius of Loyola) independently clears the work. Elder Mullan SJ translation (1909, P. J. Kenedy & Sons) — Mullan d. 1925, safely public domain on both the death-year shorthand and by publication date. SOURCE BLOCKED FROM THIS SESSION: sacred-texts.com returned HTTP 403 at sync time (both default and browser User-Agent) — this is CLAUDE.md's documented sacred-texts.com/Cloudflare blocking, not a dead link (check-prospect-urls.mjs would report this as 'blocked', not 'dead'). Needs re-verification from a session/network with access, or an alternate PD source for the same Mullan 1909 translation (Archive.org likely holds a scan), before Stage 2 can proceed. [2026-11-20 cloud run] Stage 1 re-checked: Ignatius d. 1556; Elder Mullan SJ translation (d. 1925), Kenedy 1914, translator's preface dated 1909; pre-1929 and translator pre-1928. sacred-texts.com still 403 (Cloudflare), so the source was switched to CCEL's plain-text export of the SAME Mullan translation (header: \"Mullan, Father Elder (Translator)\"; title page \"COPYRIGHT, 1914 BY P.J. KENEDY & SONS\"). Stage 2: Annotations through the Rules for thinking with the Church; Mullan's preface, contents, footnotes and index omitted. Single text, 28,307 words. Imported 1 text(s) on 2026-11-20.",
+      "stage_2_output": "scripts/ingestion/output/spiritual-exercises-loyola/",
+      "stage_3_themes": [
+        "prayer",
+        "contemplation",
+        "repentance",
+        "vocation",
+        "spiritual-warfare",
+        "obedience"
+      ],
       "rejection_reason": "",
       "notes": "Synced from Notion Content Prospect List 2026-09-28 (userDefined:ID 241, score 1.5). NEW AUTHOR — import will create a draft author stub. Checked Supabase and local queue for 'loyola'/'spiritual exercises' before adding: no match."
     },
@@ -6837,7 +6854,7 @@
       "notes": "Notion ID 232. Used Cleared edition URL."
     },
     {
-      "status": "staged",
+      "status": "imported",
       "added": "2026-11-12",
       "tradition": "patristic",
       "era": "nicene-post-nicene",
@@ -6854,7 +6871,7 @@
       "collection_slug": "letter-107-to-laeta-jerome",
       "translator": "W. H. Fremantle",
       "translator_death_year": 1916,
-      "stage_1_notes": "For the Fathers on Education print volume (Keith, 12 Nov 2026). Jerome d. 420; NPNF II.6 (1893) translation by Fremantle, Lewis and Martley, public domain by publication date. Source URL 200; page verified as Letter 107 to Laeta. Existence check: no text or output with this slug.",
+      "stage_1_notes": "For the Fathers on Education print volume (Keith, 12 Nov 2026). Jerome d. 420; NPNF II.6 (1893) translation by Fremantle, Lewis and Martley, public domain by publication date. Source URL 200; page verified as Letter 107 to Laeta. Existence check: no text or output with this slug. Imported 1 text(s) on 2026-11-20. REVIEW NEEDED before publish: letter-107-to-laeta: 1 prose paragraph(s) of 800+ words (longest 873); paragraph breaks will be proposed by the next `npm run generate:review-drafts`",
       "stage_2_output": "scripts/ingestion/output/letter-107-to-laeta-jerome/",
       "stage_3_themes": [
         "scripture",
@@ -6866,7 +6883,7 @@
       ]
     },
     {
-      "status": "staged",
+      "status": "imported",
       "added": "2026-11-12",
       "tradition": "patristic",
       "era": "nicene-post-nicene",
@@ -6883,7 +6900,7 @@
       "collection_slug": "on-catechising-the-uninstructed-augustine",
       "translator": "S. D. F. Salmond",
       "translator_death_year": 1905,
-      "stage_1_notes": "For the Fathers on Education print volume (Keith, 12 Nov 2026). Augustine d. 430; NPNF I.3 (1887), Salmond d. 1905, public domain. Source URL 200; page verified as De catechizandis rudibus. Existence check: no text or output with this slug.",
+      "stage_1_notes": "For the Fathers on Education print volume (Keith, 12 Nov 2026). Augustine d. 430; NPNF I.3 (1887), Salmond d. 1905, public domain. Source URL 200; page verified as De catechizandis rudibus. Existence check: no text or output with this slug. Imported 1 text(s) on 2026-11-20. REVIEW NEEDED before publish: on-the-catechising-of-the-uninstructed: 6 prose paragraph(s) of 800+ words (longest 1032); paragraph breaks will be proposed by the next `npm run generate:review-drafts`",
       "stage_2_output": "scripts/ingestion/output/on-catechising-the-uninstructed-augustine/",
       "stage_3_themes": [
         "preaching",
@@ -6894,7 +6911,7 @@
       ]
     },
     {
-      "status": "staged",
+      "status": "imported",
       "added": "2026-11-12",
       "tradition": "patristic",
       "era": "nicene-post-nicene",
@@ -6911,7 +6928,7 @@
       "collection_slug": "golden-book-chrysostom-evelyn",
       "translator": "John Evelyn",
       "translator_death_year": 1706,
-      "stage_1_notes": "Replaces the Laistner (1951, in copyright) draft 'address-on-vainglory-and-how-to-bring-up-children' for the Fathers on Education print volume (Keith, 12 Nov 2026; parked action 413d9194-805d-811a). Chrysostom d. 407; Evelyn d. 1706, translation 1659. EEBO-TCP Phase I transcription, CC0. Converted from TEI by a one-off script (line-end hyphens joined, 177 of 186 illegible letters restored from context by hand, 9 marked […]). Evelyn lacks the opening vainglory sections; the print introduction will summarise them (Keith, 12 Nov).",
+      "stage_1_notes": "Replaces the Laistner (1951, in copyright) draft 'address-on-vainglory-and-how-to-bring-up-children' for the Fathers on Education print volume (Keith, 12 Nov 2026; parked action 413d9194-805d-811a). Chrysostom d. 407; Evelyn d. 1706, translation 1659. EEBO-TCP Phase I transcription, CC0. Converted from TEI by a one-off script (line-end hyphens joined, 177 of 186 illegible letters restored from context by hand, 9 marked […]). Evelyn lacks the opening vainglory sections; the print introduction will summarise them (Keith, 12 Nov). Imported 1 text(s) on 2026-11-20.",
       "stage_2_output": "scripts/ingestion/output/golden-book-chrysostom-evelyn/",
       "stage_3_themes": [
         "virtue",
