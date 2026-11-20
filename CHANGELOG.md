@@ -7,6 +7,17 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-11-20 — On the Thoughts redirects to the Praktikos
+
+Card: Redirect the withdrawn On the Thoughts to the Praktikos
+
+*On the Thoughts* (Evagrius) was unpublished on 10 Nov for copyright and has answered not-found since, while
+search engines still send readers to it (4 entries 5–19 Nov, one from Bing). `/texts/on-the-thoughts` now
+redirects permanently (308, from `next.config.ts`, answered by the CDN) to `/texts/treatise-on-the-practical-life`,
+Evagrius's *Praktikos* in the cleared Dysinger translation, published (checked in Supabase on 20 Nov), the
+same pattern as Vainglory → Homily 21. If permission to republish *On the Thoughts* arrives, remove the
+redirect in the same PR that republishes it.
+
 ## 2026-11-20 — Reader dark theme: legible cover text and tradition label
 
 Card: none
