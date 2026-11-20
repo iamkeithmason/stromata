@@ -30,8 +30,9 @@ const ALLOWED = new Set([
   'app/texts/[slug]/page.tsx', // the reader
   'app/texts/[slug]/download/markdown/route.ts',
   'app/collections/[slug]/download/markdown/route.ts',
-  // A collection's stored PDF, built on admin saves and by the backfill, never per request.
+  // Stored PDFs, built on admin saves and by the backfills, never per request.
   'lib/pdf/collection-pdf.ts',
+  'lib/pdf/text-pdf.ts',
 ])
 
 // Editorial surfaces sit behind Keith's login and are not crawled.

@@ -693,7 +693,7 @@ time to think is before the run.
 2. **Before any bulk job, say which meter it draws on and roughly what one run costs**, in the
    script's header and in the PR. The jobs that matter here select `body` across the corpus:
    `build-corpus-index.mjs`, `strip-source-chrome.mjs` and `rejoin-text-paragraphs.mjs` without a
-   `--slug=`, `reformat-text-body.mjs`, `backfill-scripture-refs.ts`, `dedup-draft-texts.mjs`, `build-collection-pdfs.ts` (~22 MB per full run), and the
+   `--slug=`, `reformat-text-body.mjs`, `backfill-scripture-refs.ts`, `dedup-draft-texts.mjs`, `build-collection-pdfs.ts` (~22 MB per full run), `build-text-pdfs.ts` (~30 MB per full run), and the
    `generate-note-drafts`/`generate-summaries`/`repair-summaries` backfills. If you
    cannot estimate it, run it scoped (`--slug=`, `--drafts`) first and measure.
 3. **Fetch once, keep locally, and select only the columns you need.** A script that re-downloads
@@ -1405,6 +1405,7 @@ still apply per-file, still parallelize the same way. What changes is Stage 2/5a
 | `scripts/shrink-author-portraits.mjs` | Replace oversized author portraits in the `authors` bucket with display-sized copies (`scripts/lib/portrait-resize.mjs`, the same rule the admin upload route applies), repointing `authors.image_url` and keeping the originals. Dry-run default reads sizes from the bucket listing and costs no egress; `--write`, `--slug=`, `--min-kb=` | Maintenance only |
 | `scripts/propose-edition-metadata.mjs` | Read-only audit: propose structured edition fields (translator, series, volume, year, publisher, place, `is_translation`) from each text's three provenance columns, with a method and reason codes per row. Refuses write keys; `--slug=`/`--collection=`/`--include-drafts`/`--llm` (verbatim-evidence only; or `--llm-export=` + `--llm-answers=` to have any model, e.g. a subagent, answer without an API key)/`--input=`. Applies the curated `outputs/edition-audit/sourced-fields.json` (verbatim-cited or editor-confirmed values; `--sourced=none` to skip). Writes `outputs/edition-audit/YYYY-MM-DD/{proposals.json,proposals.csv,summary.md}`; the parser is `scripts/lib/edition-parse.mjs` | Edition metadata Step 1; before the Step 2 apply |
 | `scripts/build-collection-pdfs.ts` | Render every published collection's PDF and store it in Vercel Blob, where `/collections/[slug]/download/pdf` redirects (dry-run default, `--write`, `--slug=`). Admin saves rebuild a collection's PDF on their own; run this once after connecting the store, and after a CLI script edits a chapter body | Maintenance only |
+| `scripts/build-text-pdfs.ts` | Render every published text's PDF and store it in Vercel Blob, where `/texts/[slug]/download/pdf` redirects (dry-run default, `--write`, `--slug=`, `--author=`). Publishing or saving a text rebuilds its own PDF; run this once before the release that restored text PDFs, and with `--author=` after editing an author's name or dates | Maintenance only |
 | `scripts/generate-note-drafts.mjs` | Backfill note_draft in Supabase for existing texts | Maintenance only |
 | `scripts/generate-summaries.mjs` | Backfill summaries in Supabase | Maintenance only |
 | `scripts/repair-summaries.mjs` | Repair truncated summaries | Maintenance only |

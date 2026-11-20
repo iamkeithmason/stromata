@@ -686,15 +686,15 @@ async function checkDownloads(context, site) {
     (await findPageWith(context, site.texts, '[data-umami-event="collection-download"]', { limit: 12 })) ??
     (await findPageWith(context, site.texts, '[data-umami-event="text-download"]', { limit: 6 }));
   if (!found) {
-    row('text-download', 'markdown/print', 'skip', 'no download links found on any candidate text');
+    row('text-download', 'markdown/pdf', 'skip', 'no download links found on any candidate text');
     return;
   }
   for (const event of ['text-download', 'collection-download']) {
     if (ONLY && !ONLY.has(event)) continue; // both live on the same page
     const idProp = event === 'text-download' ? 'text' : 'collection';
-    // A text's PDF is the browser's print dialog since 18 Nov 2026 (format=print);
-    // a collection's is a stored file (format=pdf).
-    const formats = event === 'text-download' ? ['markdown', 'print'] : ['markdown', 'pdf'];
+    // Both are stored files since 20 Nov 2026 (format=print, the browser's
+    // print dialog, was a text's PDF from 18 to 20 Nov).
+    const formats = ['markdown', 'pdf'];
     for (const format of formats) {
       const sel = `[data-umami-event="${event}"][data-umami-event-format="${format}"]`;
       if (!(await found.page.locator(sel).first().count())) {
