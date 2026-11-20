@@ -25,12 +25,14 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import dotenv from 'dotenv';
+import { createClient } from '@supabase/supabase-js';
+import { loadProspects, saveProspects } from '../lib/prospect-store.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = path.resolve(__dirname, '..', '..');
 const STAGING_DIR = path.join(REPO_ROOT, 'content', 'staging');
 const OUTPUT_DIR = path.join(REPO_ROOT, 'scripts', 'ingestion', 'output');
-const QUEUE_PATH = path.join(REPO_ROOT, 'scripts', 'ingestion', 'prospect-queue.json');
 
 // A Book divider heading: "# … (Book II)" or "# Book II" etc. (H1 the Sourcer emits).
 const BOOK_RE = /^#\s+.*\bBook\s+([IVXLCDM]+|\d+)\b.*$/i;
@@ -93,7 +95,7 @@ function frontmatter(fields) {
   ].join('\n');
 }
 
-function main() {
+async function main() {
   const { opts, positional } = parseArgs(process.argv.slice(2));
   const slug = positional[0];
   if (!slug) {
@@ -161,19 +163,23 @@ function main() {
   };
 
   if (opts['write-queue'] && !opts.dry) {
-    const queue = JSON.parse(fs.readFileSync(QUEUE_PATH, 'utf8'));
-    if (queue.prospects.some((p) => p.id === slug || p.collection_slug === slug)) {
+    // The queue is the `prospects` table (migration 041), or the JSON file until it runs.
+    dotenv.config({ path: path.join(REPO_ROOT, '.env.local') });
+    const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+    const supabase = url && key ? createClient(url, key) : null;
+    const { source, prospects } = await loadProspects(supabase);
+    if (prospects.some((p) => p.id === slug || p.collection_slug === slug)) {
       console.log(`\n! queue already has an entry for "${slug}" — not appending (edit it by hand if needed).`);
     } else {
-      queue.prospects.push(entry);
-      fs.writeFileSync(QUEUE_PATH, JSON.stringify(queue, null, 2) + '\n', 'utf8');
-      console.log(`\n✓ Appended staged queue entry for "${slug}".`);
+      await saveProspects(supabase, source, source === 'db' ? [entry] : [...prospects, entry]);
+      console.log(`\n✓ Appended staged queue entry for "${slug}" (${source === 'db' ? 'prospects table' : 'prospect-queue.json'}).`);
     }
   } else {
-    console.log('\nAdd this to scripts/ingestion/prospect-queue.json → "prospects" (or re-run with --write-queue):\n');
+    console.log('\nAdd this to the prospect queue (or re-run with --write-queue):\n');
     console.log(JSON.stringify(entry, null, 2));
   }
 }
 
 const isMain = process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url);
-if (isMain) main();
+if (isMain) main().catch((err) => { console.error(err); process.exit(1); });

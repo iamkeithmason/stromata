@@ -49,7 +49,7 @@ export const ALL_THEMES: string[] = Object.values(THEME_CLUSTERS).flat()
 export const MAX_THEMES = 6
 
 export const SOURCE_TYPES = [
-  'newadvent', 'gutenberg', 'wikisource', 'archive_online', 'archive_ocr', 'gdrive_docx',
+  'newadvent', 'gutenberg', 'wikisource', 'wittenberg', 'ccel', 'archive_online', 'archive_ocr', 'gdrive_docx',
 ] as const
 
 export type SourceType = (typeof SOURCE_TYPES)[number]

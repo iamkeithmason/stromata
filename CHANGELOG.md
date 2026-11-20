@@ -7,6 +7,42 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-11-20 — Pipeline off localhost: the first cloud run, the queue in Supabase, lanes on /admin/pipeline
+
+Card: Pipeline off localhost: weekly cloud run, queue in Supabase, next-action labels
+
+The card's own test came first: one cloud session, no laptop, fetch to import. It worked. The Stromata cloud
+environment now carries `SUPABASE_SERVICE_ROLE_KEY`, the blocker that left PR #226's texts staged on 12 Nov.
+The run imported those three, then took five prospects through Stages 1–5a: *All of Grace*, the *Monologion*,
+Julian's *Revelations of Divine Love* (18 texts), *The Spiritual Exercises* and *On Re-Baptism*. 25 texts are
+in Drafts, all unpublished, checked by query. Run log: `scripts/ingestion/run-log/2026-11-20.md`.
+
+- **The queue moves to a table.** Migration `041_prospects.sql` creates `prospects` (one row per prospect, RLS on,
+  service role only; unknown keys ride in `extra` so nothing is dropped). Every caller now goes through
+  `scripts/lib/prospect-store.mjs`: `lib/pipeline/queue.ts`, `pipeline-import.mjs` (writes back only the rows it
+  changed), and the Sourcer's `stage-to-output.mjs`. **Until the migration is applied the store falls back to
+  `prospect-queue.json` and says so**, so this merges safely first. `scripts/prospect-queue-sync.mjs` backfills
+  (`--to-db`) and snapshots (`--to-file`). The admin console's pending count is now a head-only count.
+- **Lanes on `/admin/pipeline`**, the default view: each prospect grouped by what it waits for and who does it,
+  with a one-line reason, from Needs copyright check to Published. A held prospect shows its `HELD:` note.
+  Placement is pure (`lib/pipeline/lanes.ts`, tested). Once the table exists, the page edits prospects on
+  production; the script runners stay dev-only.
+- **CCEL has a committed path.** Four of the five top-scored prospects were CCEL plain-text exports, which
+  `fetch-texts.mjs` cannot read. `scripts/ingestion/ccel-to-markdown.mjs` (parser in `scripts/lib/ccel-text.mjs`,
+  tested) reads the header first, drops the footnote apparatus, keeps headings, and slices one work from a
+  combined file.
+- `SOURCE_TYPES` gains `ccel` and `wittenberg`, which queue rows already used; editing those rows in the form failed.
+- The weekly run's stored prompt is `docs/pipeline/weekly-run-prompt.md`, for Keith to approve as a scheduled task.
+
+What the run found: two of eight candidates pointed at the wrong page (Westminster's Wikisource link is a versions
+page; Re-Baptism's New Advent number served Novatian), and Jewel's staged file was Gutenberg's landing page. Reading
+the title before fetching caught all three. Jowett (d. 1923) is held for a ruling on the pre-1900 rule.
+
+Meters: the backfill sends ~380 KB once; `/admin/pipeline` reads the table per view (Keith only). No public route
+changes; nothing here touches the Hobby CPU budget.
+
+---
+
 ## 2026-11-20 — Text PDFs again, built once and stored
 
 Card: Downloads: pre-build every PDF and serve it as a static file (stop rendering PDFs per request)
@@ -35,6 +71,9 @@ route answers 302 to `…/texts/the-didache.pdf` with a store token and 503 with
 `next dev` passes 5/5, including `{"from":"text-reader","format":"pdf","text":"conference-9"}`; `next build`
 keeps `/texts/[slug]` at ● and the PDF route a ƒ redirect, like the collection route; `npm test` 765 pass,
 lint and `tsc` clean.
+
+---
+
 ## 2026-11-20 — In-flight check: one command to run before acting
 
 Card: In-flight check as one command every session runs before acting
@@ -57,6 +96,9 @@ ran minutes after #236 had made it). The check existed only as prose inside `/ne
   `Building:` claim (step 2a) is unchanged. **CLAUDE.md** asks every session acting on a ticket, a card or
   a content change to run it first, and to query the slug in Supabase by hand when texts are involved
   (the database is out of scope for v1).
+
+---
+
 ## 2026-11-20 — Text page: one grid for header and body, a rail that fills its column, author block hierarchy
 
 Card: Text page: shared header/body grid, full-width rail, author block hierarchy

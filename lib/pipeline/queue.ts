@@ -1,10 +1,15 @@
-// Server-side read/write access to the prospect queue
-// (scripts/ingestion/prospect-queue.json). Never import from a Client
-// Component — this uses the Node fs API.
+// Server-side read/write access to the prospect queue. Never import from a
+// Client Component.
+//
+// The queue is the `prospects` table (supabase/migrations/041_prospects.sql).
+// Until that migration has been applied, scripts/lib/prospect-store.mjs falls
+// back to scripts/ingestion/prospect-queue.json, so this module works either
+// way; `source` on the result says which store answered.
 
-import { promises as fs } from 'fs'
 import path from 'path'
 import type { Status } from './vocab'
+import { createServerClient } from '@/lib/supabase/server'
+import { loadProspects, saveProspects, changedProspects } from '@/scripts/lib/prospect-store.mjs'
 
 export const QUEUE_PATH = path.join(process.cwd(), 'scripts', 'ingestion', 'prospect-queue.json')
 
@@ -24,6 +29,7 @@ export type Prospect = {
   translation_copyright_clear?: boolean
   translator?: string
   translator_death_year?: number | null
+  license?: string
   docx_path?: string
   stage_1_notes?: string
   stage_2_output?: string
@@ -32,24 +38,36 @@ export type Prospect = {
   notes?: string
 }
 
-export type Queue = { prospects: Prospect[] }
+export type QueueSource = 'db' | 'file'
+export type Queue = { prospects: Prospect[]; source?: QueueSource }
 
-export async function readQueue(): Promise<Queue> {
-  const raw = await fs.readFile(QUEUE_PATH, 'utf8')
-  const parsed = JSON.parse(raw) as Queue
-  if (!parsed || !Array.isArray(parsed.prospects)) {
-    throw new Error('prospect-queue.json is malformed: missing prospects array')
-  }
-  return parsed
+// No credentials (a bare local checkout) means the file, as before.
+function client() {
+  if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) return null
+  return createServerClient()
 }
 
-// Atomic write: write to a sibling temp file, then rename into place so a
-// crash mid-write can never leave a truncated queue.
+export async function readQueue(): Promise<Queue> {
+  const { source, prospects } = await loadProspects(client(), { file: QUEUE_PATH })
+  return { source: source as QueueSource, prospects: prospects as Prospect[] }
+}
+
+// Persist a whole queue. Against the table only the prospects that differ from
+// what is stored are written; the file is rewritten atomically, as before.
 export async function writeQueue(queue: Queue): Promise<void> {
-  const tmp = `${QUEUE_PATH}.${process.pid}.tmp`
-  const body = JSON.stringify(queue, null, 2) + '\n'
-  await fs.writeFile(tmp, body, 'utf8')
-  await fs.rename(tmp, QUEUE_PATH)
+  const sb = client()
+  const { source, prospects: current } = await loadProspects(sb, { file: QUEUE_PATH })
+  const next = queue.prospects.map(stripUiFields)
+  if (source === 'db') {
+    await saveProspects(sb, 'db', changedProspects(current, next), { file: QUEUE_PATH })
+  } else {
+    await saveProspects(null, 'file', next, { file: QUEUE_PATH })
+  }
+}
+
+// UI-only fields (`_actions`, `_hasOutput`, ...) never reach either store.
+function stripUiFields(p: Prospect): Prospect {
+  return Object.fromEntries(Object.entries(p).filter(([k]) => !k.startsWith('_'))) as Prospect
 }
 
 // --- Pure transforms (side-effect free; unit-testable) ---
@@ -76,4 +94,17 @@ export function rejectProspect(queue: Queue, id: string, reason: string): Queue 
       p.id === id ? { ...p, status: 'rejected', rejection_reason: reason } : p
     ),
   }
+}
+
+// How many prospects sit at one status, for the admin console's nav card. A
+// head-only count against the table, so the dashboard never pulls the whole
+// queue (stage notes included) just to show one number.
+export async function countProspects(status: string): Promise<number> {
+  const sb = client()
+  if (sb) {
+    const { count, error } = await sb.from('prospects').select('id', { count: 'exact', head: true }).eq('status', status)
+    if (!error) return count ?? 0
+  }
+  const { prospects } = await readQueue()
+  return prospects.filter(p => p.status === status).length
 }

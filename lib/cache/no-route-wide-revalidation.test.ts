@@ -58,6 +58,9 @@ test('no revalidatePath call purges a whole dynamic route or layout', () => {
 // Admin routes whose writes no public page reads. Say why; keep it short.
 const NO_PUBLIC_WRITE: Record<string, string> = {
   'app/api/admin/texts/[id]/generate-note-draft/route.ts': 'note_draft is admin-only',
+  // Both write the prospects table (via lib/pipeline/queue.ts); no public page reads prospects.
+  'app/api/admin/pipeline/queue/route.ts': 'prospects table is admin-only',
+  'app/api/admin/pipeline/run/route.ts': 'prospects table is admin-only (dev-only route)',
 }
 
 const HELPERS = /from ['"]@\/lib\/(publishing\/publish-text|publishing\/revalidate-entities|authors\/revalidate)['"]/
