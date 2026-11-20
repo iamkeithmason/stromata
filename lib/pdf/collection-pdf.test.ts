@@ -35,3 +35,23 @@ test('a rebuild is scheduled for each collection page in a revalidation, once', 
   // Only the collection page itself: not the index, not a download, not a text.
   assert.deepEqual(collectionSlugsIn(['/collections', '/collections/a/download/pdf', '/texts/collections']), [])
 })
+
+test('a text stored path and URL follow the same rule, under texts/', async () => {
+  const { textPdfPathname, textPdfUrl } = await import('./text-pdf')
+  assert.equal(textPdfPathname('the-didache'), 'texts/the-didache.pdf')
+  assert.equal(textPdfPathname('../x y'), 'texts/---x-y.pdf')
+  assert.equal(
+    textPdfUrl('the-didache', { BLOB_READ_WRITE_TOKEN: 'vercel_blob_rw_AbC123xyz_secretpart' }),
+    'https://abc123xyz.public.blob.vercel-storage.com/texts/the-didache.pdf'
+  )
+  assert.equal(textPdfUrl('the-didache', {}), null)
+})
+
+test('CLI revalidation rebuilds the PDFs of the text pages it names, and nothing else', async () => {
+  const { textSlugsIn } = await import('./text-pdf-schedule')
+  assert.deepEqual(
+    textSlugsIn(['/', '/texts', '/texts/book-1', '/collections/confessions', '/texts/book-1', '/texts/book-2']),
+    ['book-1', 'book-2']
+  )
+  assert.deepEqual(textSlugsIn(['/texts/a/download/pdf', '/authors/texts']), [])
+})

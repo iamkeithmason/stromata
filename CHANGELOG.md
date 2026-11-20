@@ -7,6 +7,34 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-11-20 — Text PDFs again, built once and stored
+
+Card: Downloads: pre-build every PDF and serve it as a static file (stop rendering PDFs per request)
+
+From 18 Nov (#238) a text's PDF was the browser's own Print / Save as PDF. The card had already been rescoped
+by then: readers choose PDF for 88–94% of downloads, so Keith kept the real file (20 Nov: "follow the card").
+Texts now work as collections do since #238: no public request renders a PDF.
+
+- **Stored in Vercel Blob at `texts/<slug>.pdf`** (`lib/pdf/text-pdf.ts`), rendered with the same `TextDocument`
+  as before 18 Nov. `/texts/[slug]/download/pdf` is back as a redirect to the stored file, with no render and no
+  database read (503 without the store). The `next.config.ts` redirect from that address to the text page is gone.
+- **Rebuilt when the text itself changes** (`lib/pdf/text-pdf-schedule.ts`, in `after()`): `publishText`,
+  `revalidateText` (every admin save, plus the pre-rename slug, whose file is removed), the paragraph-break
+  approval, and `/api/revalidate` for the text pages a CLI script names. Deliberately not keyed on revalidated
+  paths, as collections are: publishing one chapter refreshes every sibling's page, and their PDFs do not change.
+  A failed build is logged and the save stands. Not covered: an author's name or dates, which every PDF prints;
+  run the backfill with `--author=` after such an edit.
+- **The Download row reads Markdown · PDF again**, firing `text-download` with `format=pdf`. The Print button
+  (`PrintButton.tsx`) is removed; the print stylesheet stays, so a browser printout is still clean.
+  `format=print` was sent from 18 to 20 Nov only.
+- **Backfill:** `npm run build:text-pdfs` (dry run; `--write`, `--slug=`, `--author=`), run locally. One full
+  run: ~30 MB Supabase egress (~0.6% of the cycle), 565 Blob writes, ~45 MB stored, ~7 minutes of local CPU.
+
+Checked: a dry run renders The Didache (29 KB, 1.4s locally) and reports a missing slug as `removed`; the
+route answers 302 to `…/texts/the-didache.pdf` with a store token and 503 without; the wire sweep against
+`next dev` passes 5/5, including `{"from":"text-reader","format":"pdf","text":"conference-9"}`; `next build`
+keeps `/texts/[slug]` at ● and the PDF route a ƒ redirect, like the collection route; `npm test` 765 pass,
+lint and `tsc` clean.
 ## 2026-11-20 — In-flight check: one command to run before acting
 
 Card: In-flight check as one command every session runs before acting
