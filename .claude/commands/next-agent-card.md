@@ -149,6 +149,8 @@ to promote — never promote a card to `Agent-ready` yourself.
    create a **draft** PR against `main` (set `base: "main"` explicitly). `main` is where work
    lands and `release` is what is live, so a merge into `main` deploys nothing — see CLAUDE.md
    "Vercel usage". Mirror any PR template, and `subscribe_pr_activity`.
+   Make the PR body's first line `Card: <exact Feature title>`, copied from Notion (CLAUDE.md
+   "Keeping the record current"); step 0's reconciliation matches on it.
    In the PR body, record that the review gate ran and what it surfaced (or "clean"). Never
    mark ready, never merge — Keith does that. Drive its CI to green per the babysit rules.
    Merged into `main` means reviewed and queued, not `Built` and not live: the card

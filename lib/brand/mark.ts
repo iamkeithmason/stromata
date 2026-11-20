@@ -39,3 +39,25 @@ export function markSvg(cut: MarkCut): string {
     `<path fill-rule="evenodd" d="${PUBLISHER_MARK[cut].d}"/></svg>\n`
   )
 }
+
+/**
+ * The site icon: the small cut in paper cream on the ink ground (--paper on
+ * --hero-ground), sized to fill most of the square because a favicon is shown at
+ * 16px. `rounded` gives a tab icon its own corners; the Apple touch icon is
+ * full-bleed, because iOS rounds it itself. Written to app/icon.svg by
+ * npm run mark:svg; the PNG and .ico sizes are rendered from the same SVG.
+ */
+export const ICON_COLOURS = { ground: '#1E2D3D', mark: '#F5F0E6' } as const
+
+export function markIconSvg({ rounded = true }: { rounded?: boolean } = {}): string {
+  // The small cut spans y 3.4–96.7 on its box; scale it to ~86% of the icon's height.
+  const scale = 0.92
+  const corner = rounded ? ' rx="18"' : ''
+  return (
+    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">` +
+    `<rect width="100" height="100"${corner} fill="${ICON_COLOURS.ground}"/>` +
+    `<path fill="${ICON_COLOURS.mark}" fill-rule="evenodd" ` +
+    `transform="translate(50 50) scale(${scale}) translate(-50 -50)" d="${PUBLISHER_MARK.small.d}"/>` +
+    `</svg>\n`
+  )
+}

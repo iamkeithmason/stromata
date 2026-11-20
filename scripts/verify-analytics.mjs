@@ -141,9 +141,14 @@ async function installInterceptor(context) {
     }
   );
 
-  // Downloads are <a href> to route handlers that render a PDF. We want the
-  // click event, not the file — abort the transfer so no PDF is ever built.
+  // Downloads are <a href> to route handlers that return a file. We want the
+  // click event, not the file, so abort the transfer.
   await context.route('**/download/**', (route) => route.abort());
+  // "Print / Save as PDF" calls window.print(). The click is what we check, not
+  // the dialog, so no page under test ever opens one.
+  await context.addInitScript(() => {
+    window.print = () => {};
+  });
 }
 
 function reset() {
@@ -409,6 +414,9 @@ function navSurfaces(site) {
   return [
     // text-open — every `from` PR #93 added, plus the surfaces already live.
     ['text-open', 'texts-index', ['/texts']],
+    ['text-open', 'ten-minutes', ['/ten-minutes']],
+    ['ten-minutes-open', 'short-reads', ['/']],
+    ['text-open', 'short-reads', ['/']],
     ['text-open', 'search-results', ['/search?q=augustine']],
     ['text-open', 'theme-page', site.themes],
     ['text-open', 'era-page', site.eras],
@@ -418,12 +426,15 @@ function navSurfaces(site) {
     ['text-open', 'scripture-page', site.scripture],
     // End-of-text "Continue exploring" (PR #150). Release prediction 2 counts these.
     ['text-open', 'read-next', site.texts],
+    // The homepage leads: the newest text, and the editor's pick (needs a featured text or a feast day today).
+    ['text-open', 'recency-lead', ['/']],
+    ['text-open', 'editorial-pick', ['/']],
     // author-open
     ['author-open', 'authors-index', ['/authors']],
     ['author-open', 'search-results', ['/search?q=augustine']],
     ['author-open', 'collection-page', site.collections],
     ['author-open', 'text-reader', site.texts],
-    ['author-open', 'featured-lead', ['/']],
+    ['author-open', 'recency-lead', ['/']],
     // collection-open — the two surfaces the brief names.
     ['collection-open', 'theme-page', site.themes],
     ['collection-open', 'scripture-page', site.scripture],
@@ -435,6 +446,7 @@ const NAV_EXPECT = {
   'text-open': { from: null, text: SLUG },
   'author-open': { from: null, author: true },
   'collection-open': { from: null, collection: SLUG },
+  'ten-minutes-open': { from: null },
 };
 
 async function checkNavEvents(context, site) {
@@ -674,13 +686,16 @@ async function checkDownloads(context, site) {
     (await findPageWith(context, site.texts, '[data-umami-event="collection-download"]', { limit: 12 })) ??
     (await findPageWith(context, site.texts, '[data-umami-event="text-download"]', { limit: 6 }));
   if (!found) {
-    row('text-download', 'markdown/pdf', 'skip', 'no download links found on any candidate text');
+    row('text-download', 'markdown/print', 'skip', 'no download links found on any candidate text');
     return;
   }
   for (const event of ['text-download', 'collection-download']) {
     if (ONLY && !ONLY.has(event)) continue; // both live on the same page
     const idProp = event === 'text-download' ? 'text' : 'collection';
-    for (const format of ['markdown', 'pdf']) {
+    // A text's PDF is the browser's print dialog since 18 Nov 2026 (format=print);
+    // a collection's is a stored file (format=pdf).
+    const formats = event === 'text-download' ? ['markdown', 'print'] : ['markdown', 'pdf'];
+    for (const format of formats) {
       const sel = `[data-umami-event="${event}"][data-umami-event-format="${format}"]`;
       if (!(await found.page.locator(sel).first().count())) {
         row(event, `format=${format}`, 'skip', 'not offered on this page');

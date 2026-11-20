@@ -35,6 +35,199 @@ sat at that column's edge. The rail was a fixed 200px, leaving a dead band betwe
 - `/design` gains a **Layout tokens** section, printed live (`TokenValue`). `--rail-width` and
   `--rail-breakpoint` are retired; the 1400px tier merged into the 1024px one.
 
+---
+
+## 2026-11-19 — Repair `main` after a stash-pop commit
+
+Card: none
+
+Commit f70f08f (celestial hero study) went to `main` with unresolved `git stash pop` markers in
+`app/page.tsx`, `app/components/CelestialField.tsx` and `app/globals.css`, so every PR's lint failed.
+The stash predated the phone-first hero work, so in each overlap the upstream side was the newer one.
+Resolved as: `page.tsx` keeps the live `NocturneField` hero and the dot-after-name author chips;
+`CelestialField.tsx` takes the stash (class hooks for the study and rounded SVG coordinates, which stop a
+server/browser hydration mismatch); `globals.css` keeps upstream in every overlap and adds the stash's
+new `celestial-study` treatment rules after the cover-title `@container` block (both sides left that
+block for the shared brace to close, so the join needed one more `}`; a local render caught it).
+Eleven `.DS_Store` files are untracked and now ignored. The `package-lock.json` change in that commit is
+npm's own metadata (`"dev": true` dropped from optional packages) and is left as is. Checked: lint,
+types, 746 tests, and a local render of `/` and `/design/celestial-hero` at 390px and 1440px with no
+console errors.
+
+## 2026-11-19 — The import says when it cannot reach Supabase
+
+Card: none
+
+Keith's import of the three Fathers on Education texts printed `Unknown tradition slug "patristic"` for all
+three, though `patristic` is in `traditions` and all three authors (Jerome, Augustine of Hippo, John
+Chrysostom) already exist. Every lookup had come back empty because the queries themselves failed:
+`resolveAuthor` ignored the `error` that supabase-js returns beside `data`, read "no author", tried to
+create one, and then read "no tradition". The queue was left at `staged`, so nothing was damaged.
+`pipeline-import.mjs` now reads one row of `traditions` before touching any prospect and stops with the
+database's own message (e.g. `Invalid API key`) and a pointer to `.env.local`, and both author-side
+lookups throw on a query error instead of treating it as a miss. Checked with a deliberately bad key: it
+prints `Invalid API key`, exits 1, and leaves the queue byte-for-byte unchanged.
+
+
+## 2026-11-19 — Weekly digest: the second-text rate and read-next clicks by pick
+
+Card: Weekly digest: track the second-text rate and read-next clicks by pick
+
+Repeat visits move slowly and swing with one-off spikes (13, 17, 30, 6, 20, 40 a week). The second-text rate
+moves faster, and it is the number onward-reading work (read-next, curated next reads) is meant to change. It
+was already on the wire and computed monthly by `monthly-metrics.mjs`, but the weekly digest neither printed
+nor recorded it.
+
+- **`scripts/analytics/digest.mjs` prints a "Reading depth" section**, and `--json` carries it as
+  `readingDepth`: `text-session-depth` depth 1, depth 2 and their ratio, and read-next clicks (`text-open`
+  from `read-next` or `text-sheet-read-next`) split by `pick` (editorial, author, theme, genre). Two more
+  read-only `event-data/values` GETs, the same call `monthly-metrics.mjs` makes. Depth 3+ stays uninstrumented.
+- **The arithmetic is a pure helper**, `scripts/analytics/reading-depth.mjs`, tested against the real week
+  of 9–16 Nov. `pick` is only sent from the two read-next surfaces, so the pick values are the read-next
+  clicks; the helper checks their sum against those surfaces' `from` counts and the digest flags a gap as a
+  wire problem instead of hiding it.
+- **`--from=` / `--to=`** pin an exact window, so a past week can be re-run and checked.
+- **The `stromata-analytics` skill** tells the weekly run to record `Second-text rate %` on the Growth Digest
+  row and cite the pick split in the page body.
+- **Notion:** Growth Digest gained a `Second-text rate %` number column; the "Week of 2026-11-16" row is 7.5.
+
+Checked against a direct `event-data/values` query for 2026-11-09T17:37Z → 2026-11-16T17:37Z: depth 1 = 200,
+depth 2 = 15 (7.5%); read-next 3 + text-sheet-read-next 1 = 4 clicks, picks editorial 2 and theme 2, which
+reconcile. `--range=7d` on 19 Nov reads 6 / 218 = 2.8%. Nothing under `app/` or `lib/` changes, so the site is
+unaffected.
+
+## 2026-11-18 — Downloads: a printable reader for texts, stored PDFs for collections
+
+Card: Downloads: printable text pages and pre-built collection PDFs (stop rendering PDFs per request)
+
+No public request renders a PDF any more. A text PDF cost ~1s of Vercel CPU and a collection ~9s (City of
+God), on every CDN miss and again after every deploy.
+
+- **Texts: Print / Save as PDF.** The text page has an `@media print` stylesheet (`app/globals.css`, "Print"):
+  everything but a print title block and the reading column is hidden by whitelist, so furniture added later
+  stays off paper; title, author with dates and source attribution lead; the body prints at 11.5pt with
+  `@page` margins, light ink whatever the reader's dark theme or text size; headings carry `break-after:
+  avoid` plus a 4em keep-with-next block for Safari, so none is left at a page foot. A colophon with the URL
+  and translation note closes it. The "PDF" link is now a **Print / Save as PDF** button
+  (`app/components/PrintButton.tsx`, `window.print()`), tracked as `text-download` with **`format=print`**,
+  `from` unchanged. Checked at 390px with the dark theme and a 1.3× text size set: Chromium's print-to-PDF
+  gives light, book-sized A4 pages with no orphaned heading.
+- **`/texts/[slug]/download/pdf` redirects permanently to `/texts/[slug]`** (`next.config.ts`, answered by
+  the CDN). Its route handler is deleted. Markdown is unchanged.
+- **Collections: built once, stored in Vercel Blob.** `lib/pdf/collection-pdf.ts` renders with the existing
+  `CollectionDocument` and writes `collections/<slug>.pdf` in place. `/collections/[slug]/download/pdf` only
+  redirects there (no render, no database read; 503 until the store is connected).
+- **Rebuilds ride on revalidation.** `revalidatePaths` and `revalidateEntity` schedule a rebuild, in `after()`,
+  for every `/collections/<slug>` they refresh (`lib/pdf/collection-pdf-schedule.ts`). Every publish, text
+  edit, collection save and review-queue approval already refreshes that page, so one hook covers the eight
+  admin routes, and a batch publish builds its collection once. An unpublished or renamed collection's old
+  file is removed. Not covered: CLI scripts that name only text pages; run the backfill after them.
+- **Backfill:** `npm run build:collection-pdfs` (dry run; `--write`, `--slug=`), via tsx, run locally.
+- **Also:** `npm run pipeline:status` read the queue with an `assert` import attribute, which Node 22+ refuses
+  (`ERR_IMPORT_ATTRIBUTE_MISSING`; found on Keith's Node 24). It now reads the file with `fs`, on any version.
+
+Storage, compared before choosing: collection PDFs measured ~1.45× their body text, 49 KB (Small Catechism)
+to 3.5 MB (City of God), ~32 MB for all 41. **Supabase Storage** needs no setup, but every download is egress
+on the 5 GB cycle shared with Paideia, overrun in Sept: at ~0.8 MB a file, 1,000 downloads is ~16% of it.
+**Vercel Blob** (chosen) bills its own meter: Hobby includes 1 GB stored and 10 GB transfer a month (per
+Vercel's pricing page; confirm there). It needs a store connected to the project, which sets
+`BLOB_READ_WRITE_TOKEN`. One full backfill: ~22 MB Supabase egress (~0.4% of the cycle), 41 Blob writes,
+~32 MB stored, a few minutes of local CPU and none on Vercel. A rebuild on an admin save: that collection's
+bodies (avg ~0.5 MB egress), one write, 0.5–9s of function CPU.
+
+---
+
+## 2026-11-17 — Vainglory redirects to Homily 21 on Ephesians
+
+*Address on Vainglory and How to Bring Up Children* (accession 1, the top landing page) was unpublished on
+10 Nov because its translation is in copyright. The redirect meant to carry its readers to a public-domain
+text on the same ground did not ship in the 16 Nov release, so the URL has answered not-found since.
+
+- **Redirect** (`next.config.ts`, permanent): `/texts/address-on-vainglory-and-how-to-bring-up-children` →
+  `/texts/homily-21-on-ephesians-on-children-and-parents`. It sits in a separate `texts` list beside the
+  author redirects, for any later withdrawn text.
+- **Ships with the weekly release, and Homily 21 must be published first** (it is a draft, `review_state =
+  'pending'`, at the time of writing), or the redirect lands readers on another not-found page.
+- Content side of the same ticket (Homilies 20 and 21: NPNF headers, provenance, summary drafts) is in
+  `scripts/ingestion/run-log/2026-11-17.md`.
+
+## 2026-11-17 — A check for PRs that name no card; pipeline runs close or update the earlier run PRs
+
+Card: none
+
+**Why.** The weekly review on 17 Nov found Planned cards whose work was live but whose PRs named no card
+(#224, the paragraph-breaks work), and three pipeline-run PRs piled up as drafts (#174, #205, #229), each
+changing `prospect-queue.json`. Keith asked for both to be routine rather than remembered.
+
+- **`Card: none`.** A PR that builds no card now says so on its `Card:` line instead of leaving the line
+  out (CLAUDE.md, "Keeping the record current"). The rule was written on 16 Nov (#228) with "leaves the
+  line out", which made a missing line mean either "no card" or "forgot", and no check can fail on that.
+- **`npm run check:cards`** (`scripts/check-card-names.mjs`): lists PRs merged into `main` since `release`
+  last moved and exits 1 on any without `Card: <exact title>` or `Card: none`. Routine PRs are exempt by title,
+  and PRs merged before 18 Nov predate the rule. It reads PR bodies through `gh api search/issues`, one or two
+  calls, no Supabase or Vercel meter. If GitHub can't be asked it exits 2, which reports as "not checked",
+  never as a pass. The judgement half is `scripts/lib/card-names.mjs`, with 8 tests on real PR titles. A
+  routine-title exemption is tested on all five routine shapes, and a body that only *mentions* `Card:`
+  mid-sentence (as #230's did) counts as missing.
+- **The Monday release routine runs it** before opening the promotion PR and lists what it finds (CLAUDE.md,
+  "Standing rule"). It reports; it does not block the promotion.
+- **Pipeline runs deal with earlier run PRs** (CLAUDE.md, "Run Log"). Close a run PR this run covers, with
+  `Supersedes #N`. Otherwise merge `main` into it (never a rebase or force-push), keep both sides' prospects,
+  and list it as still open. Applied by hand today: #229 merged, #174 closed (Ken's manual, its only
+  prospect, was imported in #229). #205 stays open because its three prospects (Interior Castle, Neale's
+  *Hymns of the Eastern Church*, Rogers' *Catholic Doctrine*) are in no other run.
+- **Usage reading, 17 Nov (Keith):** the Vercel 30-day Fluid Active CPU total is **3h 22m**, against 3h 47m on 6
+  Nov and the 4h Hobby allowance.
+
+Docs and scripts only: no public route, nothing deploys.
+
+
+---
+
+## 2026-11-17 — Authors index: duplicates merged, empty authors hidden
+
+The new authors page showed two Athanasiuses, two Clements of Rome and authors with nothing to read. Keith ruled
+to merge near-duplicates for simplicity, even where the split was scholarly ("Attributed"), and to hide authors
+with no live text.
+
+- **Data (applied directly in Supabase, nothing deleted).** Texts moved to the main record, and the duplicate
+  set to `draft: true`, which hides it and makes its page 404: `athanasius-traditional-attribution` →
+  `athanasius-of-alexandria` (the unpublished Athanasian Creed); `clement-of-rome-attributed` →
+  `clement-of-rome` (the published Second Epistle of Clement); `church-of-england-thomas-cranmer-et-al` →
+  `thomas-cranmer` (the unpublished Thirty-Nine Articles; a second record with the identical name). To undo
+  one, move its text back and clear `draft` in the author edit form.
+- **`/authors`** lists only authors with at least one published text. Their pages still answer by URL.
+- **Sitemap** lists the same set, so search engines are not pointed at empty author pages.
+- **Search** author results use the same rule: an inner join on published texts (`texts!inner(id)`, since anon
+  has column grants only on `texts`, an empty embed is refused) drops authors with nothing live.
+- **Redirects** (`next.config.ts`, permanent) send the three retired slugs to the merged author.
+
+## 2026-11-17 — A favicon from the publisher's mark
+
+The site had no favicon, so browser tabs, bookmarks and search results showed a blank page icon. It now uses the
+small cut of the publisher's mark in paper cream on the ink ground (`#F5F0E6` on `#1E2D3D`, the `--paper` and
+`--hero-ground` values), which holds its shape at 16px where the woodcut print cut would turn to mush.
+
+- **Next's file conventions, no metadata code.** `app/icon.svg` (modern browsers), `app/favicon.ico` (16, 32 and
+  48px, for older browsers and search results) and `app/apple-icon.png` (180px, full-bleed because iOS rounds it
+  itself). Checked against `next dev`: all three serve 200 and the `<head>` carries the three `<link>` tags.
+- **One source, as before.** `markIconSvg()` in `lib/brand/mark.ts` builds the icon from the stored path;
+  `npm run mark:svg` now writes `app/icon.svg` beside the mark files, and `lib/brand/mark.test.ts` fails if it drifts.
+  `npm run mark:icons` renders the .ico and PNG from the same SVG with Playwright; `-- --large=<dir>` also writes
+  1024px exports for use as a workspace icon.
+
+---
+
+## 2026-11-16 — PRs name their backlog card by exact title
+
+CLAUDE.md ("Keeping the record current") now asks every PR that builds a backlog card to carry
+`Card: <exact Feature title>` on the first line of its description, with the same title in its
+CHANGELOG entry. The weekly reconciliation routine flips a card to `Built` only when a PR or entry
+names it. PR #183 shipped the "Remove the duplicate page-mount text-open emitter" card without naming
+it, so the card still read `Planned` a week after it went live. Docs only; deploys nothing.
+
+---
+
 ## 2026-11-10 — Editorial paragraph breaks for walls of text: flag at import, Claude proposes, Keith approves
 
 Many published texts keep their source's typesetting, where a chapter is one paragraph; on a phone that is
@@ -385,6 +578,47 @@ one-off "Switch-over" block is removed from CLAUDE.md. The Monday release routin
 
 ---
 
+## 2026-11-09 — The featured text slot now has a read path
+
+Card: Wire up the featured text slot — the write path exists, the read path does not
+
+**What was wrong.** Migration 012 gave `texts` a `featured` flag, a start date and a curator's note, and gave `authors` a
+feast day. The admin forms wrote them, and the form's own label stated a selection rule ("the most recently featured
+wins; feast days take priority"), but nothing on the public site read any of it. The homepage section called the "featured
+lead" was only the newest text. Keith had already ticked one text and written its note on 22 Sep.
+
+**What changed.**
+- `lib/featured.ts` holds the rule as a pure function, `pickEditorial`: an author whose `feast_day` (stored `MM-DD`) is
+  today comes first; otherwise the featured text with the latest `featured_from` that has begun (an undated one ranks last);
+  otherwise nothing. Eight unit tests in `lib/featured.test.ts`, including a future start date and the feast-over-pick order.
+- The homepage reads the two candidate sets in parallel and, when there is a pick, shows an "Editor's pick" (or "Kept today",
+  on a feast) lead above "Recently added", with the curator's note set above the summary as an attributed, indented line
+  ("— the editor"), so it reads as a note to the reader and not as the generated summary. Nothing is shown when there is no
+  pick, and a failed read means no pick rather than an error page, since the slot is optional furniture. The existing
+  recency lead is unchanged.
+- The text's own page shows the same note above the summary (only for a text still marked featured), so a reader who
+  arrives from a search engine sees it too.
+- **Analytics rename, approved by Keith.** The recency lead's `from` was `featured-lead`; it is now `recency-lead`, and the
+  new slot sends `editorial-pick` (author, text and theme-chip links on both). Recorded in CLAUDE.md's property
+  vocabulary and its "Known legacy exceptions". `scripts/verify-analytics.mjs` renames its `author-open` row and gains
+  `text-open` rows for both values on `/`.
+
+**Not done.** The wire has not been observed: this needs a deployment, and previews are opt-in. The Events Register in Notion
+also needs the two `from` values. The feast-day branch is covered by the unit tests only; no author has a `feast_day` set yet.
+No migration; no new public columns (the `authors` grant already covers `feast_day`).
+
+
+**Follow-up, 19 Nov (Keith, on the preview).** The curator's note showed its Markdown raw: `*Psychomachia*`
+with the asterisks, and its three paragraphs run together. `EditorNote` (`app/components/EditorNote.tsx`,
+parser in `lib/note-inline.ts` with tests) now renders paragraphs, `*italics*`/`_italics_` and `**bold**`,
+on both the homepage pick and the text page. Keith then found the all-italic note hard to read, so it
+is now set upright at the reading size (`--text-prose`, 1.25rem, was 1rem italic), with italic kept for
+titles inside it; the gold rule and an italic "— the editor" line still mark it as the editor's. On phones
+only the first paragraph shows, with "Read more" for the rest, because at the reading size a three-paragraph
+note filled the first screen ahead of the text; from `md` up the whole note shows. `EditorNote` is a client
+component for that toggle only and fetches nothing, so both pages stay cached. No Markdown library in the hero: the note needs three rules, not a
+renderer.
+
 ## 2026-11-06 — `main` is where work lands, `release` is what is live
 
 **Usage check first.** The Fluid Active CPU 30-day total read **3h 47m** on 6 Nov (4h allowance), down from 4h 19m
@@ -405,6 +639,18 @@ so removing `main` from `deploymentEnabled` before Keith has flipped the Product
 old-style release from building. Order: merge the last old-style release, recreate `release` from `main`, Keith sets
 the Production Branch to `release`, a follow-up removes `main` from `deploymentEnabled` and the Monday routine's prompt
 is flipped.
+
+---
+
+## 2026-11-05 — Scripture citation quality: audited, with a plan (docs only)
+
+Backlog card *Scripture citation clustering & normalization quality*. A read-only audit of 193
+citations of Matthew 6, John 6, 1 Corinthians 11 and Romans 13 in `text_scripture_references`. Verse
+starts were right in every row; the one real loss is that a comma list ("11:20, 21") keeps the correct
+`osis` but a NULL `verse_end` (5 rows, 2.6%), because `parseReferences` fills `verseEnd` only for bcv
+`range` entities. Chapter-only citations are 8% of rows and should never merge verse-level ones. The
+write-up, deterministic clustering rules and a five-step bounded plan are in
+`docs/research/2026-11-05-scripture-citation-quality.md`. No code, schema or data changed.
 
 ---
 
@@ -1416,6 +1662,34 @@ the 30-day total is back under 4h; Keith decides whether to keep the branch. `re
 10) — done as the first PR *into* `release`, because changing `.claude/commands` would otherwise deploy the site.
 Keith also decided that a backlog card counts as `Built` once its change is on `main`, not when its PR merges into
 `release` (recorded in CLAUDE.md). Search Console now reads the sitemap: Success, 769 pages discovered.
+
+## 2026-10-05 — "I have ten minutes": a time-framed entrance to the library
+
+Card: Newcomer path: 'I have ten minutes'
+
+Added `/ten-minutes`, an entrance organised by the reader's available time rather than by
+theological concept, and a one-line link to it from the homepage between the hero and the seasonal
+panel. The page lists up to twelve published texts whose reading estimate is ten minutes or less
+(400–2,000 words, from the existing `texts.word_count`), with optional theme chips that narrow the
+list (client-side, so the page stays statically cached) and a "Browse the whole library" link out; publishing refreshes it via `textPaths`. Selection is data-driven rather than hand-curated,
+so a newly published short text appears without an edit: texts Keith has introduced himself
+(`editorial_introduction`) lead, then the longer text, then title. The rule lives in
+`lib/ten-minutes.ts` with unit tests. No schema change; existing browse and search routes are
+untouched. Analytics: new surface values `ten-minutes` (on `text-open`) and `homepage-entrance`;
+new events `ten-minutes-open`, `ten-minutes-theme`, `ten-minutes-continue` and `ten-minutes-view`,
+added to the CLAUDE.md vocabulary — the Notion Events Register still needs the matching rows, and
+the beacon has not yet been observed on the wire (it needs a deployment; see the PR).
+Backlog: Newcomer path: 'I have ten minutes'.
+
+
+**Follow-up, 19 Nov (Keith, on the preview).** The homepage entrance is now a **Short reads** row in the
+style of "Recently added" and "Reading history", placed between them: one row of covers (two on phones,
+three, then four), each with its reading time, and "Under 10 min · All →" to `/ten-minutes`. The row uses
+the page's own rule (`rankTenMinuteTexts`) through `variedRow`, which allows one text per author, because
+on the first render Augustine's Tractates on John took all four covers. Analytics: the surface
+`homepage-entrance` becomes `short-reads`, on `text-open` (the covers) and `ten-minutes-open` (the "All"
+link); `SectionHeader` gained an optional `asideEvent` for that link. The extra homepage query selects
+metadata only, no `body`. Rendered locally at 390px and 1440px.
 
 ## 2026-10-04 — Docs-only and content-only production commits no longer deploy
 

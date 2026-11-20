@@ -14,10 +14,16 @@ import { resolveSeason } from '@/lib/liturgical/year'
 import { readingMinutes } from '@/lib/reading-time'
 import { ThemeChip } from './components/ThemeChip'
 import { SectionHeader } from './components/SectionHeader'
+import { MIN_WORDS, TEN_MINUTES, rankTenMinuteTexts, variedRow, type TenMinuteText } from '@/lib/ten-minutes'
+import { feastKey, pickEditorial } from '@/lib/featured'
+import { EditorNote } from './components/EditorNote'
 
 // Incremental Static Regeneration: cache the rendered home page and revalidate
 // hourly. Safe given the manual publish cadence — newly published texts appear
 // within the window rather than requiring a redeploy.
+/** How many short reads the homepage row holds: a full row at the widest grid. */
+const SHORT_READS_ROW = 4
+
 export const revalidate = 3600
 
 // ── Types ──────────────────────────────────────────────────────────────────
@@ -73,6 +79,8 @@ type TextRow = {
   author: AuthorRef | null
   genre: { name: string } | null
   text_themes: { theme: { name: string; slug: string } | null }[]
+  featured_from?: string | null
+  featured_note?: string | null
 }
 
 // A collapsed feed entry: either an individual text or the representative
@@ -143,6 +151,53 @@ export default async function Home() {
   )
 
   const allTexts = (recentRaw ?? []) as unknown as TextRow[]
+
+  // ── Editorial pick — feast day, else the latest featured text ─────────
+  // Optional furniture: unlike the feed above, a failure here must not take
+  // the page down, so an error simply means no pick this render.
+  const today = new Date()
+  const pickSelect = `
+      id, title, slug, word_count, summary, editorial_introduction,
+      accession_number, created_at, collection_id, featured_from, featured_note,
+      author:authors!inner(name, slug, death_year, feast_day_note, tradition:traditions(slug)),
+      genre:genres(name),
+      text_themes(theme:themes(name, slug))
+    `
+  const [featuredRes, feastRes] = await Promise.all([
+    supabase.from('texts').select(pickSelect).eq('published', true).eq('featured', true)
+      .order('featured_from', { ascending: false, nullsFirst: false }).limit(10),
+    supabase.from('texts').select(pickSelect).eq('published', true)
+      .eq('author.feast_day', feastKey(today)).order('created_at', { ascending: false }).limit(10),
+  ])
+  const editorialPick = featuredRes.error || feastRes.error
+    ? null
+    : pickEditorial({
+        feastTexts: (feastRes.data ?? []) as unknown as (TextRow & { featured_from: string | null })[],
+        featured: (featuredRes.data ?? []) as unknown as (TextRow & { featured_from: string | null })[],
+        today,
+      })
+
+  // ── Short reads — the homepage row for /ten-minutes ───────────────────
+  // Same rule as the page (lib/ten-minutes.ts), first row only. Optional
+  // furniture: a failure here hides the row rather than taking the page down.
+  const { data: shortRaw, error: shortError } = await supabase
+    .from('texts')
+    .select(`
+      id, title, slug, word_count, summary, editorial_introduction, accession_number,
+      author:authors(name, slug, death_year, tradition:traditions(slug)),
+      genre:genres(name),
+      text_themes(theme:themes(name, slug))
+    `)
+    .eq('published', true)
+    .gte('word_count', MIN_WORDS)
+    .lte('word_count', TEN_MINUTES * 200)
+  const shortReads = shortError
+    ? []
+    : variedRow(
+        rankTenMinuteTexts((shortRaw ?? []) as unknown as (TextRow & TenMinuteText)[]),
+        SHORT_READS_ROW,
+        t => t.author?.slug ?? t.author?.name,
+      )
 
   // Tally per-collection: text count + accession number range (from batch)
   const collectionStats: Record<string, { count: number; minAcc: number | null; maxAcc: number | null }> = {}
@@ -244,7 +299,7 @@ export default async function Home() {
       </section>
 
       {/* ── Seasonal panel ───────────────────────────────────────────────── */}
-      <div className="pt-10 sm:pt-14">
+      <div className="pt-8">
         <SeasonalPanel season={season} />
       </div>
 
@@ -255,6 +310,42 @@ export default async function Home() {
 
       {/* ── Reading history ──────────────────────────────────────────────── */}
       <ReadingHistorySection />
+
+      {/* ── Editor's pick ────────────────────────────────────────────────── */}
+      {/* Absent when nothing is featured and no feast falls today; the
+          recency lead in "Recently added" then carries the top of the page. */}
+      {editorialPick && (
+        <section className="content-shell pt-10">
+          <SectionHeader title={editorialPick.kind === 'feast' ? 'Kept today' : 'Editor\u2019s pick'} />
+          <TextLead
+            text={editorialPick.text}
+            from="editorial-pick"
+            kicker={editorialPick.kind === 'feast' ? 'On the author\u2019s feast' : 'Editor\u2019s pick'}
+            note={editorialPick.text.featured_note}
+          />
+        </section>
+      )}
+
+      {/* ── Short reads ──────────────────────────────────────────────────── */}
+      {/* One row of the texts /ten-minutes offers: two covers on phones, three,
+          then four, matching the grid below. The full list is one click on. */}
+      {shortReads.length > 0 && (
+        <section className="content-shell pb-20">
+          <SectionHeader
+            title="Short reads"
+            aside="Under 10 min · All →"
+            asideHref="/ten-minutes"
+            asideEvent={{ 'data-umami-event': 'ten-minutes-open', 'data-umami-event-from': 'short-reads' }}
+          />
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-4 gap-y-6 sm:gap-6">
+            {shortReads.map((text, i) => (
+              <div key={text.id} className={i === 2 ? 'hidden md:block' : i === 3 ? 'hidden lg:block' : undefined}>
+                <ShortReadCard text={text} index={i} />
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* ── Recently added ───────────────────────────────────────────────── */}
       {feed.length > 0 && (
@@ -380,7 +471,19 @@ function FeedLead({ entry }: { entry: FeedEntry }) {
   return <TextLead text={entry.text} />
 }
 
-function TextLead({ text }: { text: TextRow }) {
+function TextLead({
+  text,
+  from = 'recency-lead',
+  kicker = 'New addition',
+  note,
+}: {
+  text: TextRow
+  /** The analytics `from` surface: 'recency-lead' (the newest text) or 'editorial-pick'. */
+  from?: 'recency-lead' | 'editorial-pick'
+  kicker?: string
+  /** The editor's line, shown above the summary. */
+  note?: string | null
+}) {
   const author = text.author
   const themes = text.text_themes.map(tt => tt.theme).filter(Boolean) as { name: string; slug: string }[]
   const editorialPara = leadParagraph(text.summary, text.editorial_introduction)
@@ -389,7 +492,7 @@ function TextLead({ text }: { text: TextRow }) {
     <div className="flex flex-col sm:flex-row gap-8 mb-14 pb-12" style={{ borderBottom: '1px solid var(--gold-rule)' }}>
       {/* Book cover — w-2/3 centered on mobile (matches grid cards), ~one grid column on desktop */}
       <div className="w-2/3 mx-auto sm:mx-0 sm:w-56 shrink-0">
-        <Link href={`/texts/${text.slug}`} className="block" data-umami-event="text-open" data-umami-event-from="featured-lead" data-umami-event-text={text.slug}>
+        <Link href={`/texts/${text.slug}`} className="block" data-umami-event="text-open" data-umami-event-from={from} data-umami-event-text={text.slug}>
           <BookCover
             title={text.title}
             authorName={author?.name ?? null}
@@ -403,16 +506,17 @@ function TextLead({ text }: { text: TextRow }) {
       </div>
 
       <div className="flex-1 flex flex-col justify-center">
-        <LeadKicker>New addition</LeadKicker>
-        <Link href={`/texts/${text.slug}`} className="hover:opacity-70 transition-opacity" style={{ textDecoration: 'none' }} data-umami-event="text-open" data-umami-event-from="featured-lead" data-umami-event-text={text.slug}>
+        <LeadKicker>{kicker}</LeadKicker>
+        <Link href={`/texts/${text.slug}`} className="hover:opacity-70 transition-opacity" style={{ textDecoration: 'none' }} data-umami-event="text-open" data-umami-event-from={from} data-umami-event-text={text.slug}>
           <LeadTitle>{text.title}</LeadTitle>
         </Link>
-        <LeadByline author={author} hasContent />
+        <LeadByline author={author} hasContent from={from} />
+        {note && note.trim() && <EditorsLine note={note} />}
         <LeadPara>
           {truncateAtWord(editorialPara, 280)}
         </LeadPara>
         <div className="flex flex-wrap items-center gap-3">
-          <Link href={`/texts/${text.slug}`} style={{ fontFamily: 'var(--serif)', fontSize: 'var(--text-label)', color: 'var(--gold-ink)', textDecoration: 'none', borderBottom: '1px solid var(--gold-rule)', paddingBottom: '1px' }} className="hover:opacity-70 transition-opacity" data-umami-event="text-open" data-umami-event-from="featured-lead" data-umami-event-text={text.slug}>
+          <Link href={`/texts/${text.slug}`} style={{ fontFamily: 'var(--serif)', fontSize: 'var(--text-label)', color: 'var(--gold-ink)', textDecoration: 'none', borderBottom: '1px solid var(--gold-rule)', paddingBottom: '1px' }} className="hover:opacity-70 transition-opacity" data-umami-event="text-open" data-umami-event-from={from} data-umami-event-text={text.slug}>
             Begin reading →
           </Link>
           <span style={{ color: 'var(--ink-faint)', fontSize: 'var(--text-sm)', fontFamily: 'var(--serif)' }}>
@@ -422,7 +526,7 @@ function TextLead({ text }: { text: TextRow }) {
         {themes.length > 0 && (
           <div className="flex flex-wrap gap-x-1.5 mt-4">
             {themes.map(t => (
-              <ThemeChip key={t.slug} href={`/themes/${t.slug}`} name={t.name} source="featured-lead" />
+              <ThemeChip key={t.slug} href={`/themes/${t.slug}`} name={t.name} source={from} />
             ))}
           </div>
         )}
@@ -441,7 +545,7 @@ function CollectionLead({ entry }: { entry: Extract<FeedEntry, { kind: 'collecti
     <div className="flex flex-col sm:flex-row gap-8 mb-14 pb-12" style={{ borderBottom: '1px solid var(--gold-rule)' }}>
       {/* Book cover — w-2/3 centered on mobile (matches grid cards), ~one grid column on desktop */}
       <div className="w-2/3 mx-auto sm:mx-0 sm:w-56 shrink-0">
-        <Link href={`/collections/${collection.slug}`} className="block" data-umami-event="collection-open" data-umami-event-from="featured-lead" data-umami-event-collection={collection.slug}>
+        <Link href={`/collections/${collection.slug}`} className="block" data-umami-event="collection-open" data-umami-event-from="recency-lead" data-umami-event-collection={collection.slug}>
           <StackedCover>
             <BookCover
               title={collection.title}
@@ -459,7 +563,7 @@ function CollectionLead({ entry }: { entry: Extract<FeedEntry, { kind: 'collecti
 
       <div className="flex-1 flex flex-col justify-center">
         <LeadKicker>New collection</LeadKicker>
-        <Link href={`/collections/${collection.slug}`} className="hover:opacity-70 transition-opacity" style={{ textDecoration: 'none' }} data-umami-event="collection-open" data-umami-event-from="featured-lead" data-umami-event-collection={collection.slug}>
+        <Link href={`/collections/${collection.slug}`} className="hover:opacity-70 transition-opacity" style={{ textDecoration: 'none' }} data-umami-event="collection-open" data-umami-event-from="recency-lead" data-umami-event-collection={collection.slug}>
           <LeadTitle>{collection.title}</LeadTitle>
         </Link>
         <LeadByline author={author} hasContent />
@@ -467,7 +571,7 @@ function CollectionLead({ entry }: { entry: Extract<FeedEntry, { kind: 'collecti
           {truncateAtWord(editorialPara, 280)}
         </LeadPara>
         <div className="flex flex-wrap items-center gap-3">
-          <Link href={`/collections/${collection.slug}`} style={{ fontFamily: 'var(--serif)', fontSize: 'var(--text-label)', color: 'var(--gold-ink)', textDecoration: 'none', borderBottom: '1px solid var(--gold-rule)', paddingBottom: '1px' }} className="hover:opacity-70 transition-opacity" data-umami-event="collection-open" data-umami-event-from="featured-lead" data-umami-event-collection={collection.slug}>
+          <Link href={`/collections/${collection.slug}`} style={{ fontFamily: 'var(--serif)', fontSize: 'var(--text-label)', color: 'var(--gold-ink)', textDecoration: 'none', borderBottom: '1px solid var(--gold-rule)', paddingBottom: '1px' }} className="hover:opacity-70 transition-opacity" data-umami-event="collection-open" data-umami-event-from="recency-lead" data-umami-event-collection={collection.slug}>
             Browse collection →
           </Link>
           <span style={{ color: 'var(--ink-faint)', fontSize: 'var(--text-sm)', fontFamily: 'var(--serif)' }}>
@@ -493,12 +597,12 @@ function LeadTitle({ children }: { children: React.ReactNode }) {
   )
 }
 
-function LeadByline({ author, hasContent }: { author: AuthorRef | null; hasContent: boolean }) {
+function LeadByline({ author, hasContent, from = 'recency-lead' }: { author: AuthorRef | null; hasContent: boolean; from?: string }) {
   if (!author) return null
   return (
     <p className="font-serif" style={{ fontSize: 'var(--text-base)', color: 'var(--ink)', marginBottom: hasContent ? '1rem' : '1.25rem' }}>
       {author.slug ? (
-        <Link data-umami-event="author-open" data-umami-event-from="featured-lead" data-umami-event-author={author.name} href={`/authors/${author.slug}`} className="hover:opacity-70 transition-opacity" style={{ color: 'var(--ink)', textDecoration: 'none' }}>
+        <Link data-umami-event="author-open" data-umami-event-from={from} data-umami-event-author={author.name} href={`/authors/${author.slug}`} className="hover:opacity-70 transition-opacity" style={{ color: 'var(--ink)', textDecoration: 'none' }}>
           {author.name}
         </Link>
       ) : author.name}
@@ -511,11 +615,53 @@ function LeadByline({ author, hasContent }: { author: AuthorRef | null; hasConte
   )
 }
 
+/** The editor's line: set apart and attributed, so it reads as a note to the reader and not as the summary. */
+function EditorsLine({ note }: { note: string }) {
+  return (
+    <blockquote
+      className="font-serif"
+      style={{ margin: '0 0 1rem', paddingLeft: '1rem', borderLeft: '2px solid var(--gold-rule)' }}
+    >
+      <EditorNote note={note} style={{ fontSize: 'var(--text-prose)', lineHeight: 1.6, color: 'var(--ink)' }} />
+      <footer style={{ fontSize: 'var(--text-label)', fontStyle: 'italic', color: 'var(--ink-mute)', marginTop: '0.5rem' }}>— the editor</footer>
+    </blockquote>
+  )
+}
+
 function LeadPara({ children }: { children: React.ReactNode }) {
   return (
     <p className="font-serif" style={{ fontSize: 'var(--text-base)', lineHeight: 1.65, color: 'var(--ink-soft)', maxWidth: '52ch', marginBottom: '1.25rem' }}>
       {children}
     </p>
+  )
+}
+
+/** A short read: the cover and its reading time, as in the grid below, without the chips. */
+function ShortReadCard({ text, index }: { text: TextRow; index: number }) {
+  const author = text.author
+  return (
+    <div className="w-full">
+      <Link
+        href={`/texts/${text.slug}`}
+        className="group block"
+        data-umami-event="text-open"
+        data-umami-event-from="short-reads"
+        data-umami-event-text={text.slug}
+      >
+        <BookCover
+          title={text.title}
+          authorName={author?.name ?? null}
+          deathYear={author?.death_year ?? null}
+          accessionNumber={text.accession_number}
+          traditionSlug={author?.tradition?.slug ?? null}
+          genre={text.genre?.name ?? null}
+          index={index}
+        />
+      </Link>
+      <div className="px-0.5 mt-3">
+        <p className="caption">~ {readingMinutes(text.word_count)} min</p>
+      </div>
+    </div>
   )
 }
 

@@ -15,6 +15,7 @@ type Slugged = { slug: string } | null
 type TextRow = {
   slug: string
   updated_at: string | null
+  author_id: string | null
   author: { tradition: Slugged; era: Slugged } | null
   text_themes: { theme: Slugged }[] | null
 }
@@ -29,10 +30,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     supabase
       .from('texts')
       .select(
-        'slug, updated_at, author:authors(tradition:traditions(slug), era:eras(slug)), text_themes(theme:themes(slug))'
+        'slug, updated_at, author_id, author:authors(tradition:traditions(slug), era:eras(slug)), text_themes(theme:themes(slug))'
       )
       .eq('published', true),
-    supabase.from('authors').select('slug, updated_at').eq('draft', false).not('slug', 'is', null),
+    supabase.from('authors').select('id, slug, updated_at').eq('draft', false).not('slug', 'is', null),
     supabase.from('collections').select('slug').eq('published', true),
     supabase.from('locations').select('slug'),
   ])
@@ -55,6 +56,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const staticPages: MetadataRoute.Sitemap = [
     { url: loc('/'), changeFrequency: 'daily', priority: 1 },
     { url: loc('/texts'), changeFrequency: 'daily', priority: 0.9 },
+    { url: loc('/ten-minutes'), changeFrequency: 'weekly', priority: 0.7 },
     { url: loc('/authors'), changeFrequency: 'weekly', priority: 0.8 },
     { url: loc('/locations'), changeFrequency: 'monthly', priority: 0.6 },
     { url: loc('/scripture'), changeFrequency: 'weekly', priority: 0.6 },
@@ -68,9 +70,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.8,
   }))
 
+  // Only authors with a published text, matching the /authors index.
+  const authorsWithTexts = new Set(textRows.map(t => t.author_id).filter(Boolean))
   const authorPages: MetadataRoute.Sitemap = (
-    (authorsRes.data ?? []) as { slug: string; updated_at: string | null }[]
-  ).map(a => ({
+    (authorsRes.data ?? []) as { id: string; slug: string; updated_at: string | null }[]
+  )
+    .filter(a => authorsWithTexts.has(a.id))
+    .map(a => ({
     url: loc(`/authors/${a.slug}`),
     lastModified: a.updated_at ? new Date(a.updated_at) : undefined,
     changeFrequency: 'monthly',
