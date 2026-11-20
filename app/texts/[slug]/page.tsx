@@ -325,7 +325,10 @@ export default async function TextPage({ params }: Props) {
   const license = resolveLicense(text.license)
 
   return (
-    <div id="reader-page" style={{ background: 'var(--paper)', paddingTop: '4rem' }} className="min-h-screen">
+    // suppressHydrationWarning: the inline script below sets data-reader-theme
+    // from localStorage before React hydrates, and the server cannot know it.
+    // It covers only this element's own attributes, not its children.
+    <div id="reader-page" suppressHydrationWarning style={{ background: 'var(--paper)', paddingTop: '4rem' }} className="min-h-screen">
       <JsonLd data={bookJsonLd} />
       <JsonLd data={breadcrumbJsonLd} />
       {/* Apply the reader's saved dark-theme preference before paint, to avoid a

@@ -145,6 +145,9 @@ export default function DesignPage() {
               <ColourSwatch token="--on-dark-gold-soft" backdrop="--season-trinitytide" label="Reversed gold, faint" />
               <ColourSwatch token="--cover-mid" label="Book-cover inner panel" />
               <ColourSwatch token="--cover-ornament" backdrop="--cover-mid" label="Genre ornament on a cover" />
+              <ColourSwatch token="--cover-ink" backdrop="--cover-mid" label="Cover title" />
+              <ColourSwatch token="--cover-ink-soft" backdrop="--cover-mid" label="Cover author" />
+              <ColourSwatch token="--cover-ink-mute" backdrop="--cover-mid" label="Cover date" />
               <ColourSwatch token="--cover-stack-back" label="Collection stack, rear spine" />
               <ColourSwatch token="--cover-stack-mid" label="Collection stack, middle spine" />
             </div>

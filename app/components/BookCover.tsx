@@ -162,7 +162,7 @@ export function BookCover({
             fontStyle: 'italic',
             fontWeight: 500,
             lineHeight: 1.15,
-            color: 'var(--ink)',
+            color: 'var(--cover-ink)',
             margin: 0,
             display: '-webkit-box',
             WebkitLineClamp: 5,
@@ -215,7 +215,7 @@ export function BookCover({
             style={{
               width: sz('20px', '10cqi'),
               height: 1,
-              background: 'var(--ink)',
+              background: 'var(--cover-ink)',
               opacity: 0.35,
               margin: `${sz('1rem', '8cqi')} auto`,
               flexShrink: 0,
@@ -230,7 +230,7 @@ export function BookCover({
       fontFeatureSettings: '"smcp" 1',
               fontSize: sz('0.8rem', '6.4cqi'),
               letterSpacing: '0.08em',
-              color: 'var(--ink-soft)',
+              color: 'var(--cover-ink-soft)',
               margin: 0,
             }}
           >
@@ -244,7 +244,7 @@ export function BookCover({
               fontFamily: 'var(--serif)',
               fontStyle: 'italic',
               fontSize: sz('0.8rem', '6.4cqi'),
-              color: 'var(--ink-mute)',
+              color: 'var(--cover-ink-mute)',
               margin: `${sz('5px', '2.5cqi')} 0 0`,
             }}
           >

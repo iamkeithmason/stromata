@@ -94,6 +94,13 @@
 
   --cover-mid:  #F5F0E6;   /* book-cover inner panel — a stable cream, NOT theme-flipped */
   --cover-ornament: #8A5F1E; /* genre ornament on the cover panel. --gold-ink's value, but NOT theme-flipped: covers stay cream in the reader dark theme */
+  /* Cover-panel ink: the light-theme --ink / --ink-soft / --ink-mute values, NOT
+     theme-flipped. The panel stays cream in the reader dark theme, so text on it
+     must stay dark; the flipped --ink family read 1.1–2.3:1 there (20 Nov 2026).
+     Against --cover-mid: 12.3:1, 7.8:1, 4.9:1 (AA). */
+  --cover-ink:      #1E2D3D;
+  --cover-ink-soft: #3D4B5C;
+  --cover-ink-mute: #61697A;
   --cover-stack-back: rgba(10, 8, 5, 0.50);   /* collection stack: rearmost spine behind a cover */
   --cover-stack-mid:  rgba(10, 8, 5, 0.28);   /* collection stack: middle spine */
 
@@ -1120,6 +1127,19 @@ body {
     font-feature-settings: "smcp" 1;
     font-size: var(--text-smallcaps);
     letter-spacing: 0.08em;
+  }
+
+  /* .tradition-label — a tradition's name in its cover colour. The colour comes
+     in as --tradition (set inline from lib/tradition-colors.ts). Those are dark
+     cover grounds, so in the reader dark theme the label mixes the hue half and
+     half with the (flipped, light) --ink: it keeps its tint and reads 5.4–7.6:1
+     against the dark --paper, where the raw colour read 1.4–3.2:1. */
+  .tradition-label {
+    color: var(--tradition, var(--ink-faint));
+  }
+  [data-reader-theme="dark"] .tradition-label {
+    color: var(--ink-faint); /* fallback where color-mix is unsupported */
+    color: color-mix(in srgb, var(--tradition, var(--ink-faint)) 50%, var(--ink));
   }
 
   .kicker {

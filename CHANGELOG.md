@@ -40,6 +40,83 @@ sat at that column's edge. The rail was a fixed 200px, leaving a dead band betwe
 
 ---
 
+## 2026-11-20 — Unknown slugs answer 404, not 200
+
+Card: Return HTTP 404 for unknown text slugs
+
+A mistyped text URL answered **200** with the not-found page and `noindex`, which Google reads as a soft 404.
+The text, author, collection and theme pages already call `notFound()`; the 200 came from the root
+`app/loading.tsx`. A loading file wraps every page beneath it in a Suspense boundary, so Next starts streaming
+the response, status line included, before the page's data fetch reaches `notFound()`, and by then the status
+cannot change. `app/loading.tsx` is deleted (Keith, 20 Nov: option (a) of the three on the card). The cost:
+a click to a page that is not yet cached shows the old page until the new one arrives, rather than a
+"Loading…" screen. Cached pages, which are nearly all of them, were never slow enough to show it.
+`app/error.tsx`, added beside it on 21 Sep, stays.
+
+Checked on `next dev` against the live database: before, `/texts/no-such-text-xyz` answered 200; after, 404 with
+"Page not found — The Stromata", as do unknown author, collection and theme slugs; `/texts/the-didache` still
+answers 200. Production can be checked with `curl -I` after the release.
+
+## 2026-11-20 — Index the corpus's relationship foreign keys
+
+Card: Index Connected Corpus foreign keys
+
+Migration `040_index_corpus_foreign_keys.sql`, **already applied to production** through the Supabase MCP on
+20 Nov. The performance advisor had flagged nine public foreign keys with no covering index: `texts.author_id`,
+`texts.genre_id`, `texts.read_next_text_id`, `text_themes.theme_id`, `authors.era_id`, `authors.tradition_id`,
+`authors.location_id`, `author_locations.author_id` and `collections.author_id`. Each is a join the public pages
+walk (an author's texts, a theme's texts, an era's or tradition's authors), and each delete of a parent row must
+check its child table. The two mostly-null columns (`collections.author_id`, a rare byline override, and
+`read_next_text_id`) get partial indexes. No schema semantics change.
+
+Checked: the advisor's `unindexed_foreign_keys` list fell from 14 to 5, and all 5 left are in the `hopper`
+schema, another project's tables sharing this database, deliberately left alone. A theme page's join (texts
+under `prayer`) moved from a scan of `text_themes`' primary key to a bitmap scan of the new index, 38 ms → 1 ms
+(the first run was also cold, so not all of that gain is the index). The tables are small (~570 texts), so this
+is preventative; the new indexes show as "unused" in the advisor until traffic exercises them.
+## 2026-11-20 — On the Thoughts redirects to the Praktikos
+
+Card: Redirect the withdrawn On the Thoughts to the Praktikos
+
+*On the Thoughts* (Evagrius) was unpublished on 10 Nov for copyright and has answered not-found since, while
+search engines still send readers to it (4 entries 5–19 Nov, one from Bing). `/texts/on-the-thoughts` now
+redirects permanently (308, from `next.config.ts`, answered by the CDN) to `/texts/treatise-on-the-practical-life`,
+Evagrius's *Praktikos* in the cleared Dysinger translation, published (checked in Supabase on 20 Nov), the
+same pattern as Vainglory → Homily 21. If permission to republish *On the Thoughts* arrives, remove the
+redirect in the same PR that republishes it.
+
+## 2026-11-20 — Reader dark theme: legible cover text and tradition label
+
+Card: none
+
+Two pieces of text on `/texts/[slug]` all but vanished in the reader's dark theme. The cover's title,
+author and date used `--ink`, `--ink-soft` and `--ink-mute`, which the reader-dark block flips to light
+values, while the panel behind them (`--cover-mid`) deliberately stays cream: 1.1–2.3:1. They now use
+three new `:root`-only tokens, `--cover-ink`, `--cover-ink-soft` and `--cover-ink-mute` (the light-theme
+values, never flipped: 12.3, 7.8 and 4.9:1 on the panel in both themes), shown on `/design` beside
+`--cover-ornament`. The author rail's tradition label took its colour straight from
+`lib/tradition-colors.ts`, whose dark cover grounds read 1.4–3.2:1 on the dark `--paper`. `AuthorAside`
+now passes the hue as a `--tradition` custom property and a `.tradition-label` class decides how to use
+it: unchanged in the light theme, and in the dark theme mixed half and half with the flipped `--ink`, so
+each tradition keeps its tint at 5.4–7.6:1 (browsers without `color-mix` get `--ink-faint`, 5.4:1). The
+light theme renders exactly as before. Checked: computed colours and before/after renders of the Pliny
+page at 390px and 1440px from a local build (in the PR description, iamkeithmason/stromata#246), lint,
+types and 763 tests.
+
+## 2026-11-20 — Quiet the dark-theme hydration warning on text pages
+
+Card: none
+
+In `next dev`, a text page opened with the reader's dark theme saved showed the red "1 Issue" pill:
+React reported that `#reader-page` hydrated with `data-reader-theme="dark"`, an attribute the server
+had not rendered. The inline script in `app/texts/[slug]/page.tsx` sets it from localStorage before
+hydration, on purpose, to avoid a light flash; the server cannot know a visitor's preference without
+reading cookies, which would make the page uncacheable. The div now carries `suppressHydrationWarning`,
+which covers only its own attributes. Production was never affected: React does not compare attributes
+when hydrating a production build, and it never re-rendered the subtree. Checked with Playwright
+against a local build: the pill and the console error are gone in dark mode at 390px and 1440px, and
+light mode is unchanged.
+
 ## 2026-11-19 — Repair `main` after a stash-pop commit
 
 Card: none

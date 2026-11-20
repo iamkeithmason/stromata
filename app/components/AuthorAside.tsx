@@ -70,7 +70,15 @@ export function AuthorAside({ name, slug, birthYear, deathYear, locationName, er
       {/* The rail's one label style: the same .kicker as "About this edition"
           and "Download", in the tradition's own colour. */}
       {tradition && (
-        <p className="kicker" style={{ color: traditionColor(tradition.slug), marginTop: '0.75rem' }}>
+        <p
+          className="kicker tradition-label"
+          style={{
+            // A custom property, not `color`: .tradition-label decides how the
+            // hue is used, so the reader dark theme can lighten it.
+            ['--tradition' as string]: traditionColor(tradition.slug),
+            marginTop: '0.75rem',
+          }}
+        >
           {tradition.name}
         </p>
       )}
