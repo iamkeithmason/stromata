@@ -7,6 +7,24 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-11-20 — Reader dark theme: legible cover text and tradition label
+
+Card: none
+
+Two pieces of text on `/texts/[slug]` all but vanished in the reader's dark theme. The cover's title,
+author and date used `--ink`, `--ink-soft` and `--ink-mute`, which the reader-dark block flips to light
+values, while the panel behind them (`--cover-mid`) deliberately stays cream: 1.1–2.3:1. They now use
+three new `:root`-only tokens, `--cover-ink`, `--cover-ink-soft` and `--cover-ink-mute` (the light-theme
+values, never flipped: 12.3, 7.8 and 4.9:1 on the panel in both themes), shown on `/design` beside
+`--cover-ornament`. The author rail's tradition label took its colour straight from
+`lib/tradition-colors.ts`, whose dark cover grounds read 1.4–3.2:1 on the dark `--paper`. `AuthorAside`
+now passes the hue as a `--tradition` custom property and a `.tradition-label` class decides how to use
+it: unchanged in the light theme, and in the dark theme mixed half and half with the flipped `--ink`, so
+each tradition keeps its tint at 5.4–7.6:1 (browsers without `color-mix` get `--ink-faint`, 5.4:1). The
+light theme renders exactly as before. Checked: computed colours and before/after renders of the Pliny
+page at 390px and 1440px from a local build (in the PR description, iamkeithmason/stromata#246), lint,
+types and 763 tests.
+
 ## 2026-11-19 — Repair `main` after a stash-pop commit
 
 Card: none
