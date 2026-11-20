@@ -61,11 +61,13 @@ export function AuthorAside({ name, slug, birthYear, deathYear, locationName, er
 
       {tradition && (
         <p
-          className="smallcaps"
+          className="smallcaps tradition-label"
           style={{
             fontSize: 'var(--text-sm)',
             letterSpacing: '0.14em',
-            color: traditionColor(tradition.slug),
+            // A custom property, not `color`: .tradition-label decides how the
+            // hue is used, so the reader dark theme can lighten it.
+            ['--tradition' as string]: traditionColor(tradition.slug),
             marginTop: '0.5rem',
           }}
         >
