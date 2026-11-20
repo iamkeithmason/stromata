@@ -35,6 +35,28 @@ route answers 302 to `…/texts/the-didache.pdf` with a store token and 503 with
 `next dev` passes 5/5, including `{"from":"text-reader","format":"pdf","text":"conference-9"}`; `next build`
 keeps `/texts/[slug]` at ● and the PDF route a ƒ redirect, like the collection route; `npm test` 765 pass,
 lint and `tsc` clean.
+## 2026-11-20 — In-flight check: one command to run before acting
+
+Card: In-flight check as one command every session runs before acting
+
+Sessions kept redoing work another session had done or was doing: four times since 27 Oct, twice on 17 Nov
+(an import of two Ephesians homilies a pipeline run had imported the day before, and a Homily 50 fix that
+ran minutes after #236 had made it). The check existed only as prose inside `/next-agent-card`.
+
+- **`npm run in-flight -- <words>`** (`scripts/in-flight.mjs`) takes two or three distinctive words (title,
+  slug, author) and lists, in one report: open PRs of any branch name, PRs merged in the last 7 days, remote
+  branches pushed in the last 3, prospect-queue entries, and run logs from the last 14 days with the lines
+  that matched. It ends with a verdict: `nothing in flight` or `N matches: read them before acting`. A source
+  it could not read is named as `Not checked`, and the verdict then never says "nothing in flight". It
+  writes nothing and exits 0; cost is two GitHub searches and a `git fetch`, no Supabase or Vercel meter.
+- **Matching** (`scripts/lib/in-flight.mjs`, unit-tested): every query word must start a word of the source,
+  with slug punctuation read as spaces, so `homily 50` finds `homily-50-on-matthew` but not Homily 1500.
+  The tests replay the real misses: `homily 50` on 17 Nov lists #236; `ephesians` lists the 16 Nov imports
+  in the queue and the run log; `mid-text navigation` on 2 Nov lists the open #184 before #187 began.
+- **`/next-agent-card` step 2** now runs it in place of its three hand-typed queries; the card-body
+  `Building:` claim (step 2a) is unchanged. **CLAUDE.md** asks every session acting on a ticket, a card or
+  a content change to run it first, and to query the slug in Supabase by hand when texts are involved
+  (the database is out of scope for v1).
 ## 2026-11-20 — Text page: one grid for header and body, a rail that fills its column, author block hierarchy
 
 Card: Text page: shared header/body grid, full-width rail, author block hierarchy
