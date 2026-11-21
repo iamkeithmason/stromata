@@ -7,6 +7,23 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-11-21 — A Chronicle genre; Eusebius's Church History filed under it
+
+Card: Add 'Chronicle / History' genre term to controlled vocabulary
+
+The genre vocabulary had no term for historical writing. Migration `042_chronicle_genre.sql` (**applied to
+production on 21 Nov**) adds **Chronicle**: annals or a narrative history of a people or a church, while the
+Life of one saint stays Hagiography (Keith, 20 Nov). It also moves the ten books of Eusebius's *Church
+History* from Treatise to Chronicle; Bede's *Ecclesiastical History*, which the card named, is not in the
+corpus yet. The term is added to every copy of the list (`lib/constants.ts`, `lib/pipeline/vocab.ts`,
+`scripts/sourcer/vocab.ts`, `scripts/scout/config.ts`, `scripts/ingestion/fetch-texts.mjs`, CLAUDE.md).
+
+Not done here: a cover ornament for Chronicle (a design job; covers fall back to the hairline rule, and the
+ornament test notes the gap), and the Notion Content Prospect List's `Genre` option, which has to be added by
+hand in the UI. The ten Eusebius text PDFs and the `church-history-caesarea` collection PDF were rebuilt so
+they print the new genre. Until this PR's release, the live admin edit form has no Chronicle option, so a
+Eusebius book edited there before then would need its genre re-set after the release.
+
 ## 2026-11-20 — Pipeline off localhost: the first cloud run, the queue in Supabase, lanes on /admin/pipeline
 
 Card: Pipeline off localhost: weekly cloud run, queue in Supabase, next-action labels
