@@ -164,11 +164,23 @@ export function locateSpan(volumeText, body, k = 12) {
   // Same-length blanks, so word offsets still index volumeText itself.
   const volTokens = tokenize(volumeText.replace(/\[\d+\]/g, m => ' '.repeat(m.length)))
   const volWords = volTokens.map(t => t.w)
-  const head = allIndicesOfSeq(volWords, bodyWords.slice(0, k))
-  if (head.length !== 1) return null
-  const tailSeq = bodyWords.slice(-k)
-  const tail = indexOfSeq(volWords, tailSeq, head[0])
+  // The body may open or close with New Advent's own furniture ("By St. John Cassian … Chapter 1"),
+  // laid out differently in the volume: slide over the first and last `slide` words for the first run
+  // of `k` that occurs exactly once (the head) and, after it, in order (the tail).
+  const slide = Math.min(200, Math.floor(bodyWords.length / 3))
+  let headAt = -1
+  for (let off = 0; off <= slide && headAt === -1; off += 2) {
+    const hits = allIndicesOfSeq(volWords, bodyWords.slice(off, off + k))
+    if (hits.length === 1) headAt = hits[0]
+  }
+  if (headAt === -1) return null
+  let tail = -1
+  for (let off = 0; off <= slide && tail === -1; off += 2) {
+    const end = bodyWords.length - off
+    tail = indexOfSeq(volWords, bodyWords.slice(end - k, end), headAt)
+  }
   if (tail === -1) return null
+  const head = [headAt]
   const start = volTokens[head[0]].start
   const end = volTokens[tail + k - 1].end
   // Pull the marker that sits right after the last word into the span too.
