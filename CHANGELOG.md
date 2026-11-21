@@ -7,6 +7,33 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-11-21 — Translators' notes: a dry-run backfill for the NPNF/ANF texts
+
+Card: Import translators' notes into published NPNF/ANF texts
+
+None of the 412 published texts translated in the Nicene and Ante-Nicene Fathers carries the translators'
+notes: New Advent, the source of most of them, drops them. `node scripts/backfill-translator-notes.mjs`
+takes them from CCEL's plain-text export of the volume each `source_attribution` cites (cached in `data/ccel/`,
+gitignored) and reports, per text, how many it can place. **Dry run only: nothing was written.** The method is
+`scripts/lib/translator-notes.mjs`, unit-tested (10 tests on real NPNF I/9 lines):
+
+- find the text in its volume by the first and last unique 12-word runs, sliding past New Advent's own front
+  matter; read the inline `[n]` markers in that span, ignoring the definition blocks and rules between chapters;
+- place each marker by the 8 words before it (or, where New Advent reordered those, the 8 after it), compared
+  after mapping New Advent's modernisations ("thou"→"you", "-eth"/"-est"); a marker that is not found exactly
+  once is reported, never guessed; a note inside a link goes after the link;
+- insert `[^1]…` and append the definitions, then prove the body is otherwise byte-identical.
+
+Dry run, 21 Nov (report: `outputs/translator-notes/2026-11-21.md`): 402 of 412 texts located; **274 with every
+note placed, 128 partial**; 38,363 of 39,164 notes placed (98.0%); 0 garbled; 0 bodies changed outside the
+notes. *On the Priesthood* places 176 of 178. 14,050 of the placed notes are only a Scripture reference, which
+New Advent already prints inline. Egress for the whole exercise, prototypes included, about 150 MB (~3% of the
+shared cycle).
+
+Before any `--write`: `texts.word_count` is a generated column over the whole body (migration 028), so notes
+would inflate word counts and reading times; it needs a migration to count the body without its notes block.
+The print kit's Greek corrections (`corrections.json`) are not in the repo, so that part of the card is open.
+
 ## 2026-11-20 — Pipeline off localhost: the first cloud run, the queue in Supabase, lanes on /admin/pipeline
 
 Card: Pipeline off localhost: weekly cloud run, queue in Supabase, next-action labels

@@ -73,6 +73,11 @@ test('every marker is placed after the words it glosses, through links and moder
   assert.ok(at(70).endsWith('(https://www.newadvent.org/bible/joh021.htm)'))
 })
 
+test('a definition stops at a section rule that follows it with no blank line', () => {
+  const defs = readDefinitions('   text\n\n   [9] Statuum.\n     ______________________________\n\n   Next section.\n')
+  assert.equal(defs.get(9), 'Statuum.')
+})
+
 test('a wrapped line that begins with a marker is text, not a definition', () => {
   const wrapped = CCEL.replace('the same\n   teachers. [42] We had', 'the same teachers.\n   [42] We had')
   assert.equal(readDefinitions(wrapped).get(42), 'Androgathius in philosophy, Libanius in rhetoric.')

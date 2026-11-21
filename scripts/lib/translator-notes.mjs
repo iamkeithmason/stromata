@@ -132,7 +132,8 @@ export function readDefinitions(volumeText) {
   let m
   while ((m = re.exec(volumeText))) {
     const n = Number(m[1])
-    if (!defs.has(n)) defs.set(n, m[2].replace(/\s+/g, ' ').trim())
+    // A block can run straight into the next section's rule with no blank line between.
+    if (!defs.has(n)) defs.set(n, m[2].split(/\n\s*_{5,}/)[0].replace(/\s+/g, ' ').trim())
     re.lastIndex = m.index + m[0].length
   }
   return defs
