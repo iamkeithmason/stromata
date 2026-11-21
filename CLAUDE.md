@@ -506,6 +506,27 @@ from there.
 
 ---
 
+## Cloud sessions — keys the proxy injects, and Node
+
+A cloud session never holds API keys itself: a key saved as a **network secret** on the session's environment
+is added to matching requests by the network proxy. For a script that wants the key in an environment
+variable, set the variable to a **placeholder in the format the code parses** and let the proxy overwrite the
+header. **Node needs `NODE_USE_ENV_PROXY=1` for this** (Node 22.21+): its built-in `fetch` otherwise ignores
+`HTTPS_PROXY`, goes direct, and sends the placeholder, so the request fails as "access denied" even though
+`curl` with the same placeholder works. Found on 21 Nov 2026, running `build-text-pdfs` from a cloud session:
+the Stromata environment keeps the Blob store's read-write token as a `vercel.com` secret (kept on purpose for
+reruns), and the run was
+
+```bash
+BLOB_READ_WRITE_TOKEN=vercel_blob_rw_46UQ7yQNx6KgstJ0_proxyinjected NODE_USE_ENV_PROXY=1 npx tsx scripts/build-text-pdfs.ts --write
+```
+
+The placeholder carries the real store ID (`store_46UQ7yQNx6KgstJ0`, not secret: it is in every file URL),
+because `@vercel/blob` sends it in its own header and the public URL is derived from it. Plus
+`.env.local` with the anon Supabase key, deleted afterwards.
+
+---
+
 ## Vercel usage — previews are opt-in, and batch small changes
 
 Stromata is on Vercel's **Hobby (free) tier**, and in Sept 2026 it went over the Fluid Active CPU
