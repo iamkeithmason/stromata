@@ -255,9 +255,23 @@ export function isScriptureOnly(def) {
   return new RegExp(`^(?:See |Cf\\. |Comp\\. )?${ref}(?:[;,] ?(?:${ref}|[ivxlc]+\\.? ?\\d+(?:[-–,] ?\\d+)*|\\d+(?:[-–] ?\\d+)?))*\\.?$`).test(String(def).trim())
 }
 
-/** Garbled or untranscribed Greek in a definition is flagged, never guessed. */
+/**
+ * Garbled or untranscribed Greek in a definition is flagged, never guessed. CCEL's transcription of
+ * NPNF Greek shows two kinds: a replacement character or "??", and Greek letters turned into Windows
+ * "smart" characters (™ › ‡ € …), as in "κατ™στησε" for κατέστησε in On the Priesthood (fixed against
+ * the 1889 scan in print/on-the-priesthood/corrections.json).
+ */
 export function looksGarbled(def) {
-  return /�|\?{2,}/.test(def)
+  return /�|\?{2,}|[™›‹‡†€ˆ]/.test(def) || isTransliteratedGreek(def)
+}
+
+/**
+ * CCEL's plain-text export spells Greek in Latin letters and marks what it couldn't render with "?"
+ * inside a word and ">" for a rough breathing ("hoi ten >imarmn?en eis?gontes" for οἱ τὴν εἱμαρμένην
+ * εἰσάγοντες). That is not the translator's note, so such a note is flagged like garbled Greek.
+ */
+export function isTransliteratedGreek(def) {
+  return /\p{L}\?\p{L}|(^|[\s"“(])>\p{L}/u.test(String(def))
 }
 
 /**
@@ -286,4 +300,44 @@ export function stripNotes(body) {
   return body
     .replace(/\n\n(\[\^\d+\]: .*\n?)+$/, '\n')
     .replace(/\[\^\d+\]/g, '')
+}
+
+/**
+ * Take a text's note wording from a checked edition (print/<collection>/notes.json) instead of CCEL's
+ * plain-text export, which transliterates Greek ("hoi ten >imarmn?en eis?gontes"). The edition lists the
+ * notes in reading order; CCEL's markers give the order and the places. The two are paired by position,
+ * and the pairing is only trusted when every note without Greek reads the same in both (compared on
+ * letters alone, so quotes, spacing and case don't matter).
+ *
+ * Returns { ok: true, definitions } (a Map from CCEL marker number to the edition's wording), or
+ * { ok: false, reason }.
+ */
+export function alignEditionNotes(markerNumbers, ccelDefinitions, editionNotes) {
+  if (markerNumbers.length !== editionNotes.length) {
+    return { ok: false, reason: `${markerNumbers.length} markers in CCEL, ${editionNotes.length} notes in the edition` }
+  }
+  const letters = s => String(s).replace(/œ/g, 'oe').replace(/Œ/g, 'Oe').replace(/æ/g, 'ae').replace(/Æ/g, 'Ae')
+    .normalize('NFKD').replace(/[^\p{L}]/gu, '').toLowerCase()
+  const hasGreek = s => /[Ͱ-Ͽἀ-῿]/.test(s)
+  const transliterated = s => /\w\?\w|(^|[\s"“(])>\w/.test(s)
+  const definitions = new Map()
+  const longerInCcel = []
+  for (let i = 0; i < markerNumbers.length; i++) {
+    const n = markerNumbers[i]
+    const ccel = ccelDefinitions.get(n)
+    const edition = editionNotes[i]
+    const comparable = ccel !== undefined && !hasGreek(edition) && !transliterated(ccel)
+    if (comparable && letters(ccel) !== letters(edition)) {
+      // A note that runs to a second paragraph can reach the edition cut at the break (On the
+      // Priesthood, Book III, note 3). CCEL's full wording is the translator's; it wins, and is reported.
+      if (letters(edition).length > 40 && letters(ccel).startsWith(letters(edition))) {
+        definitions.set(n, ccel)
+        longerInCcel.push(n)
+        continue
+      }
+      return { ok: false, reason: `note ${i + 1} (CCEL [${n}]) differs: "${String(ccel).slice(0, 40)}…" vs "${String(edition).slice(0, 40)}…"` }
+    }
+    definitions.set(n, edition)
+  }
+  return { ok: true, definitions, longerInCcel }
 }

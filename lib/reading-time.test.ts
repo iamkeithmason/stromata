@@ -2,12 +2,12 @@ import test from 'node:test'
 import assert from 'node:assert/strict'
 import { readingMinutes, readingTime, wordCount } from './reading-time'
 
-// The cases below were executed against the live Postgres on 2026-09-21, using
-// the generated-column expression from migration 028:
+// The cases below were executed against the live Postgres (2026-09-21, and the
+// footnote cases on 2026-11-21) using the generated-column expression, now migration 043's:
 //
-//   array_length(
-//     regexp_split_to_array(regexp_replace(body, '^\s+|\s+$', '', 'g'), '\s+'),
-//   1)
+//   array_length(regexp_split_to_array(regexp_replace(
+//     regexp_replace(regexp_replace(body, '^\[\^[^]]+\]:.*$', '', 'gn'), '\[\^[^]]+\]', '', 'g'),
+//   '^\s+|\s+$', '', 'g'), '\s+'), 1)
 //
 // and the `pg` figure here is what the database actually returned for each
 // input. They are the inputs where the two languages could plausibly disagree:
@@ -20,6 +20,10 @@ const PG_VERIFIED: [input: string, pg: number][] = [
   ['\n\n# Title\n\nword', 3],
   ['a  b\tc\n\nd', 4],
   ['  leading and trailing  \n', 3],
+  // Footnotes (migration 043), run against the live Postgres on 2026-11-21:
+  ['He went[^1] to Rome.[^2]\n\n[^1]: Acts xxviii. 14.\n[^2]: So Stephens, p. 3.\n', 4],
+  ["Text with [^ed1] editor marker.\n\n[^ed1]: Editor's note here.", 4],
+  ['[^1] at start\n\n[^1]: note', 2],
 ]
 
 test('wordCount matches the Postgres generated column on every verified case', () => {
@@ -31,6 +35,12 @@ test('wordCount matches the Postgres generated column on every verified case', (
         'the displayed reading time would depend on which one the page used',
     )
   }
+})
+
+test('footnotes do not count as reading', () => {
+  const plain = 'He went to Rome and stayed there two whole years.'
+  const noted = 'He went[^1] to Rome and stayed there two whole years.[^2]\n\n[^1]: A long note about the route, the ship, the winter at Malta and much else besides.\n[^2]: Acts xxviii. 30.\n'
+  assert.equal(wordCount(noted), wordCount(plain))
 })
 
 test('a real body counts the same in both languages', () => {

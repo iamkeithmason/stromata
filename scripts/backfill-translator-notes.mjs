@@ -13,6 +13,19 @@
  * `source_attribution` cites; each marker is placed by the words around it or not at all; the body
  * is byte-identical outside the inserted `[^n]` and the definitions block.
  *
+ * Notes that are only a Scripture reference are left out (Keith, 21 Nov 2026): New Advent already
+ * prints the reference inline, and on a phone each would be a tap with nothing new behind it. They
+ * are counted in the report, and an unplaced one does not hold a text back.
+ *
+ * Where a checked print edition exists, its notes are used instead of CCEL's wording:
+ * print/<collection-slug>/notes.json lists each text's notes in reading order, keeping the Greek that
+ * CCEL's plain-text export transliterates; they are paired with CCEL's markers by position, and only
+ * when every note without Greek reads the same in both (alignEditionNotes).
+ *
+ * A collection's corrections are applied to its notes when print/<collection-slug>/corrections.json
+ * exists (the print edition's checked fixes: `fixes` and `xrefs`, each [from, to, …]). A fix that
+ * matches no note is reported, so a stale file shows up.
+ *
  * --write is refused for any text with an unplaced marker, a garbled definition, existing footnotes,
  * or a body that changes outside the notes. It needs SUPABASE_SERVICE_ROLE_KEY and calls
  * revalidateSite() for the slugs it changed. **Run it only with Keith's approval** (the card's last
@@ -28,7 +41,8 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { createClient } from '@supabase/supabase-js'
 import {
-  applyNotes, ccelUrl, isScriptureOnly, locateSpan, looksGarbled, placeMarkers, readDefinitions, stripNotes, volumeFor,
+  alignEditionNotes, applyNotes, ccelUrl, isScriptureOnly, locateSpan, looksGarbled, placeMarkers, readDefinitions,
+  readMarkers, stripNotes, volumeFor,
 } from './lib/translator-notes.mjs'
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
@@ -44,6 +58,25 @@ if (!url || !key) {
 }
 const supabase = createClient(url, key)
 const CACHE = path.join(ROOT, 'data', 'ccel')
+
+/** The print edition's checked fixes for one collection's notes, or null when it has none. */
+function correctionsFor(collection) {
+  if (!collection) return null
+  const file = path.join(ROOT, 'print', collection, 'corrections.json')
+  if (!existsSync(file)) return null
+  const c = JSON.parse(readFileSync(file, 'utf8'))
+  // NFC on both sides: the same Greek can be stored precomposed or as letter + combining accent.
+  return [...(c.fixes ?? []), ...(c.xrefs ?? [])].map(([from, to]) => ({ from: from.normalize('NFC'), to: to.normalize('NFC'), used: 0 }))
+}
+const correctionSets = new Map()
+
+/** A checked edition's notes for one collection (print/<collection>/notes.json), keyed by text slug. */
+function editionNotesFor(collection) {
+  if (!collection) return null
+  const file = path.join(ROOT, 'print', collection, 'notes.json')
+  return existsSync(file) ? JSON.parse(readFileSync(file, 'utf8')) : null
+}
+const editionSets = new Map()
 
 async function volumeText(vol) {
   mkdirSync(CACHE, { recursive: true })
@@ -85,15 +118,38 @@ for (const t of await texts()) {
   try { vol = await volumeText(row.volume) } catch (e) { row.status = 'no-ccel'; row.detail = e.message; continue }
   const span = locateSpan(vol, t.body)
   if (!span) { row.status = 'not-located'; continue }
-  const { placed, unmatched, total } = placeMarkers(span, t.body)
-  const defs = readDefinitions(vol)
+  const { placed: found, unmatched: missed, total } = placeMarkers(span, t.body)
+  let defs = readDefinitions(vol)
+  const key = row.collection ?? ''
+  if (!editionSets.has(key)) editionSets.set(key, editionNotesFor(row.collection))
+  const edition = editionSets.get(key)?.[t.slug]
+  if (edition) {
+    const aligned = alignEditionNotes(readMarkers(span).markers.map(m => m.n), defs, edition)
+    if (!aligned.ok) { row.status = 'edition-mismatch'; row.detail = aligned.reason; continue }
+    defs = aligned.definitions
+    row.source = 'edition'
+    if (aligned.longerInCcel.length) row.detail = `CCEL's fuller wording kept for [${aligned.longerInCcel.join(',')}] (the edition's is cut short)`
+  }
+  if (!correctionSets.has(key)) correctionSets.set(key, correctionsFor(row.collection))
+  const fixes = correctionSets.get(key)
+  if (fixes) {
+    for (const [n, def] of defs) {
+      let d = def.normalize('NFC')
+      for (const f of fixes) if (d.includes(f.from)) { d = d.split(f.from).join(f.to); f.used++ }
+      defs.set(n, d)
+    }
+  }
+  const scriptureOnly = n => defs.has(n) && isScriptureOnly(defs.get(n))
+  const placed = found.filter(p => !scriptureOnly(p.n))
+  const unmatched = missed.filter(u => !scriptureOnly(u.n))
   row.markers = total
   row.placed = placed.length
   row.unmatched = unmatched
   row.missingDefs = placed.filter(p => !defs.has(p.n)).map(p => p.n)
-  row.scriptureOnly = placed.filter(p => defs.has(p.n) && isScriptureOnly(defs.get(p.n))).length
+  row.scriptureOnly = found.length - placed.length + missed.length - unmatched.length
   row.garbled = placed.filter(p => defs.has(p.n) && looksGarbled(defs.get(p.n))).map(p => p.n)
   row.status = total === 0 ? 'no-notes' : unmatched.length || row.missingDefs.length ? 'partial' : 'matched'
+  if (row.status === 'matched' && placed.length === 0) row.status = 'no-notes'
   if (row.status === 'matched') {
     const out = applyNotes(t.body, placed, defs)
     row.identical = stripNotes(out.body).trimEnd() === t.body.trimEnd()
@@ -112,13 +168,19 @@ for (const r of rows) {
   const n = r.markers !== undefined ? ` ${r.placed}/${r.markers}` : ''
   const extra = r.unmatched?.length ? `  unplaced: ${r.unmatched.slice(0, 3).map(u => `[${u.n}] "…${u.context}"`).join('; ')}${r.unmatched.length > 3 ? ' …' : ''}` : ''
   const flags = [r.garbled?.length ? `garbled [${r.garbled.join(',')}]` : '', r.written ? 'WRITTEN' : ''].filter(Boolean).join(' ')
-  console.log(`  ${r.status.padEnd(13)} ${(r.volume ?? '-').padEnd(8)} ${r.slug}${n}${flags ? ` ${flags}` : ''}${extra}`)
+  const from = r.source === 'edition' ? ' (notes from print/)' : ''
+  console.log(`  ${r.status.padEnd(13)} ${(r.volume ?? '-').padEnd(8)} ${r.slug}${n}${from}${flags ? ` ${flags}` : ''}${extra}${r.detail ? `  ${r.detail}` : ''}`)
 }
 const markers = rows.reduce((s, r) => s + (r.markers ?? 0), 0)
 const placed = rows.reduce((s, r) => s + (r.placed ?? 0), 0)
-console.log(`\nmatched ${by('matched')} · partial ${by('partial')} · no notes ${by('no-notes')} · not located ${by('not-located')} · no volume ${by('no-volume')} · no CCEL ${by('no-ccel')} · changed text ${by('changed-text')}`)
+console.log(`\nmatched ${by('matched')} · partial ${by('partial')} · no notes ${by('no-notes')} · not located ${by('not-located')} · no volume ${by('no-volume')} · no CCEL ${by('no-ccel')} · changed text ${by('changed-text')} · edition mismatch ${by('edition-mismatch')}`)
 const scripture = rows.reduce((s, r) => s + (r.scriptureOnly ?? 0), 0)
-console.log(`notes placed ${placed} of ${markers}${markers ? ` (${(100 * placed / markers).toFixed(1)}%)` : ''}; of those placed, ${scripture} are only a Scripture reference (New Advent already prints these inline)`)
+console.log(`notes placed ${placed} of ${markers - scripture} to import${markers - scripture ? ` (${(100 * placed / (markers - scripture)).toFixed(1)}%)` : ''}; ${scripture} left out as only a Scripture reference (New Advent already prints these inline)`)
+for (const [collection, fixes] of correctionSets) {
+  if (!fixes) continue
+  const unused = fixes.filter(f => !f.used)
+  console.log(`corrections for ${collection}: ${fixes.length - unused.length} of ${fixes.length} applied${unused.length ? `; unused: ${unused.map(f => JSON.stringify(f.from)).join(', ')}` : ''}`)
+}
 if (args.json) writeFileSync(args.json, JSON.stringify(rows, null, 2))
 
 if (write) {

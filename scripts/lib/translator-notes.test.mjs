@@ -5,7 +5,7 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import {
-  applyNotes, isScriptureOnly, locateSpan, norm, parseVolumeNumber, placeMarkers, readDefinitions,
+  alignEditionNotes, applyNotes, isScriptureOnly, locateSpan, looksGarbled, norm, parseVolumeNumber, placeMarkers, readDefinitions,
   stripNotes, volumeFor, withoutDefinitions,
 } from './translator-notes.mjs'
 
@@ -112,4 +112,36 @@ test('a note that is only a Scripture reference is recognised', () => {
   assert.ok(isScriptureOnly('1 Sam. x. 23.'))
   assert.ok(!isScriptureOnly('Androgathius in philosophy, Libanius in rhetoric.'))
   assert.ok(!isScriptureOnly('Matt. xxiv. 45. Some mss. of Chrysostom have the future here.'))
+})
+
+test('looksGarbled flags Greek turned into Windows smart characters, and leaves clean notes alone', () => {
+  // Real CCEL lines from NPNF I/9 (On the Priesthood), fixed in print/on-the-priesthood/corrections.json.
+  assert.equal(looksGarbled('οἱ την ›ιμαρμν™ην ἐισ€γοντες'), true)
+  assert.equal(looksGarbled('κατ™στησε'), true)
+  assert.equal(looksGarbled('‡φείλετο'), true)
+  assert.equal(looksGarbled('οἱ τὴν εἱμαρμένην εἰσάγοντες'), false)
+  assert.equal(looksGarbled('“See,” he says, ‘the Lord’s’ word — Matt. xxiv. 45.'), false)
+})
+
+test('alignEditionNotes pairs by order, keeps the Greek, and refuses a different note', () => {
+  const ccel = new Map([[42, 'Androgathius in philosophy, Libanius in rhetoric.'], [154, '"hoi ten >imarmn?en eis?gontes," sc. The Stoics.'], [88, 'A note. And its second paragraph.']])
+  const edition = ['Androgathius in philosophy, Libanius in rhetoric.', '“οἱ τὴν εἱμαρμένην εἰσάγοντες,” sc. The Stoics.', 'A note.']
+  // too short to trust as a prefix: refused
+  assert.equal(alignEditionNotes([42, 154, 88], ccel, edition).ok, false)
+  const long = 'A long note about the Eucharist that the edition cut at a paragraph break, as on 21 Nov 2026.'
+  ccel.set(88, `${long} The rest of it.`)
+  const ok = alignEditionNotes([42, 154, 88], ccel, [edition[0], edition[1], long])
+  assert.equal(ok.ok, true)
+  assert.equal(ok.definitions.get(154), edition[1])
+  assert.equal(ok.definitions.get(88), `${long} The rest of it.`)
+  assert.deepEqual(ok.longerInCcel, [88])
+  assert.equal(alignEditionNotes([42, 88], ccel, [long, edition[0]]).ok, false) // out of order
+  // Eubœa in the edition, Euboea in CCEL: the same note
+  assert.equal(alignEditionNotes([1], new Map([[1, 'The island of Euboea and the mainland of Greece.']]), ['The island of Eubœa and the mainland of Greece.']).ok, true)
+  assert.equal(alignEditionNotes([42], ccel, edition).ok, false)
+})
+
+test('transliterated Greek from CCEL plain text counts as garbled', () => {
+  assert.equal(looksGarbled('"hoi ten >imarmn?en eis?gontes," sc. The Stoics.'), true)
+  assert.equal(looksGarbled('Is it so? Yes.'), false)
 })

@@ -34,6 +34,28 @@ Before any `--write`: `texts.word_count` is a generated column over the whole bo
 would inflate word counts and reading times; it needs a migration to count the body without its notes block.
 The print kit's Greek corrections (`corrections.json`) are not in the repo, so that part of the card is open.
 
+**Later the same day: Keith's three calls, and what they changed.** (1) **Scripture-only notes are left out**:
+New Advent prints the reference inline already, and on a phone each would be a tap with nothing new behind it.
+An unplaced Scripture-only note no longer holds a text back. (2) **Migration 043** changes the generated
+`word_count` to leave out footnote definitions and references (Postgres 17 `set expression`, so the grant and
+comment stay); `lib/reading-time.ts` mirrors it, pinned by three new cases run against the live database. On
+21 Nov only 2 of 596 texts changed count, the two that already had footnotes. (3) **The print edition is now
+the source for On the Priesthood's notes**: `print/on-the-priesthood/notes.json` (Stephens's notes per book,
+from the print kit) and `corrections.json` (the 1889-checked Greek fixes). The dry run found why the first
+pass reported "0 garbled": CCEL's *plain-text* export spells Greek in Latin letters ("hoi ten >imarmn?en
+eis?gontes"), so there was no Greek to garble. The script now pairs the edition's notes with CCEL's markers by
+order, trusts the pairing only when every note without Greek reads the same in both, applies the corrections
+(NFC on both sides; 16 of 17 apply, the 17th belongs to an editor's note), and flags transliterated Greek as
+garbled anywhere else. `print/` goes on `SITE_IRRELEVANT` (nothing in `app/` or `lib/` reads it), with a test.
+
+Result: all six books of *On the Priesthood* are ready to write, **67 notes, every one placed**, Greek in Greek
+letters, 111 Scripture-only notes left out. One finding for the print edition: Stephens's note to Book III
+(CCEL [88], on the Eucharist as sacrifice) runs to a second paragraph quoting Chrysostom on Hebrews, and the
+printed book has only the first. The site takes CCEL's full wording. Corpus dry run with the new rules: 277
+texts ready to write (9,782 notes), 7 held for transliterated Greek, 81 partial. Greek in CCEL plain text that
+carries no `?` or `>` still reads as Latin letters and is not caught; CCEL's HTML keeps real Greek, so a
+better source exists for a later pass.
+
 ## 2026-11-20 — Pipeline off localhost: the first cloud run, the queue in Supabase, lanes on /admin/pipeline
 
 Card: Pipeline off localhost: weekly cloud run, queue in Supabase, next-action labels
