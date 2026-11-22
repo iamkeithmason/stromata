@@ -55,6 +55,55 @@ printed book has only the first. The site takes CCEL's full wording. Corpus dry 
 texts ready to write (9,782 notes), 7 held for transliterated Greek, 81 partial. Greek in CCEL plain text that
 carries no `?` or `>` still reads as Latin letters and is not caught; CCEL's HTML keeps real Greek, so a
 better source exists for a later pass.
+## 2026-11-21 — A Chronicle genre; Eusebius's Church History filed under it
+
+Card: Add 'Chronicle / History' genre term to controlled vocabulary
+
+The genre vocabulary had no term for historical writing. Migration `042_chronicle_genre.sql` (**applied to
+production on 21 Nov**) adds **Chronicle**: annals or a narrative history of a people or a church, while the
+Life of one saint stays Hagiography (Keith, 20 Nov). It also moves the ten books of Eusebius's *Church
+History* from Treatise to Chronicle; Bede's *Ecclesiastical History*, which the card named, is not in the
+corpus yet. The term is added to every copy of the list (`lib/constants.ts`, `lib/pipeline/vocab.ts`,
+`scripts/sourcer/vocab.ts`, `scripts/scout/config.ts`, `scripts/ingestion/fetch-texts.mjs`, CLAUDE.md).
+
+Not done here: a cover ornament for Chronicle (a design job; covers fall back to the hairline rule, and the
+ornament test notes the gap), and the Notion Content Prospect List's `Genre` option, which has to be added by
+hand in the UI. The ten Eusebius text PDFs and the `church-history-caesarea` collection PDF were rebuilt so
+they print the new genre. Until this PR's release, the live admin edit form has no Chronicle option, so a
+Eusebius book edited there before then would need its genre re-set after the release.
+## 2026-11-21 — Text page titles lead with the title for anonymous authors
+
+Card: Text page titles: title-first for anonymous authors
+
+A text by a placeholder author was titled "Unknown (Early Church) — The Didache | The Stromata" in search
+results and share previews. `lib/text-title.ts` now drops any author whose name starts "Unknown" or
+"Anonymous" (seven authors, 18 published texts on 21 Nov), so the page reads "The Didache | The Stromata".
+Named authors keep "Author — Title | The Stromata". The fallback description for a text with no summary
+follows the same rule, and a text with no author now uses "| The Stromata" like the rest instead of
+"— The Stromata". Checked on `next dev` against the live database: the Didache and the Epistle to Diognetus
+serve `<title>` and `og:title` "<Title> | The Stromata"; Cassian's Conference 9 is unchanged. Unit-tested.
+## 2026-11-21 — Ready for a public repository
+
+Card: none
+
+Keith plans to make this repository public: GitHub Actions minutes are free on public repositories, and
+Stromata was about half of the account's November allowance. A full-history scan (gitleaks across all
+15 branches, plus a check of every prospect ever held or rejected on copyright) found no live secrets and
+no held text in any commit; its two hits were the made-up tokens in `lib/pdf/collection-pdf.test.ts`. This
+PR is the groundwork before the switch, which stays Keith's to make in the repository settings.
+
+- **README.md**, new. A short public front page: what the site is, how it is built, and the rights position.
+  Keith chose no licence, so the code, design and editorial work are all rights reserved; the texts are
+  public domain.
+- **Font licences.** The repository redistributes IM Fell English, Junicode and Courier Prime, and the SIL
+  Open Font License requires its text to travel with the fonts. Each family's upstream `OFL.txt` now sits in
+  `public/fonts/` as `OFL-<Family>.txt`, copied unchanged from google/fonts (Courier Prime, IM Fell) and
+  psb1558/Junicode-font.
+- **Scout's PR trigger no longer includes `package.json` or `package-lock.json`.** Every dependency bump paid
+  for a full Scout dry-run, about 11 minutes and a round of Anthropic API calls; 12 such runs from 1 to 21
+  November. Going public makes the minutes free but not the API calls. Scout's own files still trigger it.
+
+---
 
 ## 2026-11-20 — Pipeline off localhost: the first cloud run, the queue in Supabase, lanes on /admin/pipeline
 
