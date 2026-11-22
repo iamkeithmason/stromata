@@ -32,7 +32,7 @@ export const ERAS = [
 export const GENRES = [
   'Homily', 'Sermon', 'Letter', 'Treatise', 'Essay', 'Meditation', 'Rule',
   'Prayer', 'Catechesis', 'Commentary', 'Dialogue', 'Hymn', 'Poem', 'Confession',
-  'Hagiography', 'Apology', 'Exegesis',
+  'Hagiography', 'Apology', 'Exegesis', 'Chronicle',
 ] as const
 
 // Theme clusters — max 6 per text (enforced in CLAUDE.md).

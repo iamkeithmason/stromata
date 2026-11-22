@@ -24,6 +24,7 @@ export const GENRES = [
   'Hagiography',
   'Apology',
   'Exegesis',
+  'Chronicle',
 ] as const;
 
 /** Theme slugs (max 6 per text), from the THEME_CLUSTERS tables in CLAUDE.md. */
