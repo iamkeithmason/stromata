@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { EditorNote } from '@/app/components/EditorNote'
 import { notFound } from 'next/navigation'
+import { textPageFallbackDescription, textPageTitle } from '@/lib/text-title'
 import { createPublicClient } from '@/lib/supabase/public'
 import { orThrow } from '@/lib/supabase/query'
 import MarkdownBody from '@/app/components/MarkdownBody'
@@ -62,21 +63,14 @@ export async function generateMetadata({ params }: Props) {
   if (!data) return { title: 'Text — The Stromata' }
 
   const author = (data.author as unknown as { name: string } | null)?.name
-  // Format: "Author Name — Text Title | The Stromata"
-  // Note: combined length can exceed 60 chars for long titles (e.g.
-  // "Augustine of Hippo — Exposition on Psalm 115 | The Stromata" = 60 chars).
-  // No programmatic truncation applied; flag for review if needed.
-  const title = author
-    ? `${author} — ${data.title} | The Stromata`
-    : `${data.title} — The Stromata`
+  // "Author — Title | The Stromata", or "Title | The Stromata" when the author is
+  // a placeholder ("Unknown (Early Church)"): lib/text-title.ts.
+  const title = textPageTitle(data.title, author)
 
   // Description is unconditional: prefer the editorial summary, else a sensible
-  // author + title fallback so every text page carries a description and per-page
-  // OG/Twitter cards.
+  // fallback so every text page carries a description and per-page OG/Twitter cards.
   // `||` (not `??`) so an empty-string summary also falls back to the template.
-  const description = (data.summary as string | null) || (author
-    ? `${author}'s ${data.title}, freely readable at The Stromata.`
-    : `${data.title}, freely readable at The Stromata.`)
+  const description = (data.summary as string | null) || textPageFallbackDescription(data.title, author)
   const canonical = `/texts/${slug}`
 
   return {

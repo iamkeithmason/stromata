@@ -7,6 +7,17 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-11-21 — Text page titles lead with the title for anonymous authors
+
+Card: Text page titles: title-first for anonymous authors
+
+A text by a placeholder author was titled "Unknown (Early Church) — The Didache | The Stromata" in search
+results and share previews. `lib/text-title.ts` now drops any author whose name starts "Unknown" or
+"Anonymous" (seven authors, 18 published texts on 21 Nov), so the page reads "The Didache | The Stromata".
+Named authors keep "Author — Title | The Stromata". The fallback description for a text with no summary
+follows the same rule, and a text with no author now uses "| The Stromata" like the rest instead of
+"— The Stromata". Checked on `next dev` against the live database: the Didache and the Epistle to Diognetus
+serve `<title>` and `og:title` "<Title> | The Stromata"; Cassian's Conference 9 is unchanged. Unit-tested.
 ## 2026-11-21 — Ready for a public repository
 
 Card: none
