@@ -139,6 +139,15 @@ test('production skips a screens-reference refresh (the weekly PDF)', () => {
   rmSync(dir, { recursive: true, force: true })
 })
 
+test('production skips a print-edition commit (print/ sources and build)', () => {
+  const dir = baseRepo()
+  commit(dir, 'Print: On the Priesthood corrections', {
+    'print/on-the-priesthood/corrections.json': '{}',
+  })
+  assert.equal(run(dir, prod()).code, 0)
+  rmSync(dir, { recursive: true, force: true })
+})
+
 test('production builds when the screens script itself changes', () => {
   const dir = baseRepo()
   commit(dir, 'Tweak the screens script', {

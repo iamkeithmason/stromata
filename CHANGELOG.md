@@ -7,6 +7,54 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-11-21 — Translators' notes: a dry-run backfill for the NPNF/ANF texts
+
+Card: Import translators' notes into published NPNF/ANF texts
+
+None of the 412 published texts translated in the Nicene and Ante-Nicene Fathers carries the translators'
+notes: New Advent, the source of most of them, drops them. `node scripts/backfill-translator-notes.mjs`
+takes them from CCEL's plain-text export of the volume each `source_attribution` cites (cached in `data/ccel/`,
+gitignored) and reports, per text, how many it can place. **Dry run only: nothing was written.** The method is
+`scripts/lib/translator-notes.mjs`, unit-tested (10 tests on real NPNF I/9 lines):
+
+- find the text in its volume by the first and last unique 12-word runs, sliding past New Advent's own front
+  matter; read the inline `[n]` markers in that span, ignoring the definition blocks and rules between chapters;
+- place each marker by the 8 words before it (or, where New Advent reordered those, the 8 after it), compared
+  after mapping New Advent's modernisations ("thou"→"you", "-eth"/"-est"); a marker that is not found exactly
+  once is reported, never guessed; a note inside a link goes after the link;
+- insert `[^1]…` and append the definitions, then prove the body is otherwise byte-identical.
+
+Dry run, 21 Nov (report: `outputs/translator-notes/2026-11-21.md`): 402 of 412 texts located; **274 with every
+note placed, 128 partial**; 38,363 of 39,164 notes placed (98.0%); 0 garbled; 0 bodies changed outside the
+notes. *On the Priesthood* places 176 of 178. 14,050 of the placed notes are only a Scripture reference, which
+New Advent already prints inline. Egress for the whole exercise, prototypes included, about 150 MB (~3% of the
+shared cycle).
+
+Before any `--write`: `texts.word_count` is a generated column over the whole body (migration 028), so notes
+would inflate word counts and reading times; it needs a migration to count the body without its notes block.
+The print kit's Greek corrections (`corrections.json`) are not in the repo, so that part of the card is open.
+
+**Later the same day: Keith's three calls, and what they changed.** (1) **Scripture-only notes are left out**:
+New Advent prints the reference inline already, and on a phone each would be a tap with nothing new behind it.
+An unplaced Scripture-only note no longer holds a text back. (2) **Migration 043** changes the generated
+`word_count` to leave out footnote definitions and references (Postgres 17 `set expression`, so the grant and
+comment stay); `lib/reading-time.ts` mirrors it, pinned by three new cases run against the live database. On
+21 Nov only 2 of 596 texts changed count, the two that already had footnotes. (3) **The print edition is now
+the source for On the Priesthood's notes**: `print/on-the-priesthood/notes.json` (Stephens's notes per book,
+from the print kit) and `corrections.json` (the 1889-checked Greek fixes). The dry run found why the first
+pass reported "0 garbled": CCEL's *plain-text* export spells Greek in Latin letters ("hoi ten >imarmn?en
+eis?gontes"), so there was no Greek to garble. The script now pairs the edition's notes with CCEL's markers by
+order, trusts the pairing only when every note without Greek reads the same in both, applies the corrections
+(NFC on both sides; 16 of 17 apply, the 17th belongs to an editor's note), and flags transliterated Greek as
+garbled anywhere else. `print/` goes on `SITE_IRRELEVANT` (nothing in `app/` or `lib/` reads it), with a test.
+
+Result: all six books of *On the Priesthood* are ready to write, **67 notes, every one placed**, Greek in Greek
+letters, 111 Scripture-only notes left out. One finding for the print edition: Stephens's note to Book III
+(CCEL [88], on the Eucharist as sacrifice) runs to a second paragraph quoting Chrysostom on Hebrews, and the
+printed book has only the first. The site takes CCEL's full wording. Corpus dry run with the new rules: 277
+texts ready to write (9,782 notes), 7 held for transliterated Greek, 81 partial. Greek in CCEL plain text that
+carries no `?` or `>` still reads as Latin letters and is not caught; CCEL's HTML keeps real Greek, so a
+better source exists for a later pass.
 ## 2026-11-21 — A Chronicle genre; Eusebius's Church History filed under it
 
 Card: Add 'Chronicle / History' genre term to controlled vocabulary
