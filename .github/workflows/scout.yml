@@ -27,12 +27,17 @@ on:
   # Validate the Scout on PRs that touch it — always a dry-run (writes nothing),
   # so every push gets a green/red signal without a manual dispatch. Scoped to
   # the Scout's own files so unrelated PRs don't trigger a paid agent run.
+  #
+  # package.json and package-lock.json were on this list until 21 Nov 2026 and
+  # came off it: any script added or dependency bumped anywhere in the repo
+  # touches them, and each such PR paid for a full dry-run (about 11 minutes of
+  # runner time plus Anthropic API calls; 12 runs in the first three weeks of
+  # November). A dependency change that breaks the Scout still shows on the next
+  # scheduled run, or on a manual dry-run dispatch.
   pull_request:
     paths:
       - 'scripts/scout/**'
       - '.github/workflows/scout.yml'
-      - 'package.json'
-      - 'package-lock.json'
 
 concurrency:
   # Per-workflow, per-ref: a new push to a PR supersedes its in-flight dry-run,

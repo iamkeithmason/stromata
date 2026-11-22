@@ -18,6 +18,28 @@ Named authors keep "Author — Title | The Stromata". The fallback description f
 follows the same rule, and a text with no author now uses "| The Stromata" like the rest instead of
 "— The Stromata". Checked on `next dev` against the live database: the Didache and the Epistle to Diognetus
 serve `<title>` and `og:title` "<Title> | The Stromata"; Cassian's Conference 9 is unchanged. Unit-tested.
+## 2026-11-21 — Ready for a public repository
+
+Card: none
+
+Keith plans to make this repository public: GitHub Actions minutes are free on public repositories, and
+Stromata was about half of the account's November allowance. A full-history scan (gitleaks across all
+15 branches, plus a check of every prospect ever held or rejected on copyright) found no live secrets and
+no held text in any commit; its two hits were the made-up tokens in `lib/pdf/collection-pdf.test.ts`. This
+PR is the groundwork before the switch, which stays Keith's to make in the repository settings.
+
+- **README.md**, new. A short public front page: what the site is, how it is built, and the rights position.
+  Keith chose no licence, so the code, design and editorial work are all rights reserved; the texts are
+  public domain.
+- **Font licences.** The repository redistributes IM Fell English, Junicode and Courier Prime, and the SIL
+  Open Font License requires its text to travel with the fonts. Each family's upstream `OFL.txt` now sits in
+  `public/fonts/` as `OFL-<Family>.txt`, copied unchanged from google/fonts (Courier Prime, IM Fell) and
+  psb1558/Junicode-font.
+- **Scout's PR trigger no longer includes `package.json` or `package-lock.json`.** Every dependency bump paid
+  for a full Scout dry-run, about 11 minutes and a round of Anthropic API calls; 12 such runs from 1 to 21
+  November. Going public makes the minutes free but not the API calls. Scout's own files still trigger it.
+
+---
 
 ## 2026-11-20 — Pipeline off localhost: the first cloud run, the queue in Supabase, lanes on /admin/pipeline
 
