@@ -19,8 +19,12 @@ export async function GET() {
 
   const { data: texts } = await supabase
     .from('texts')
-    .select('title, slug, created_at, author:authors(name), genre:genres(name)')
+    .select('title, slug, created_at, published_at, author:authors(name), genre:genres(name)')
     .eq('published', true)
+    // Date and order by publication, not import: a text imported in October and
+    // published in November must look new in November, or an RSS-to-email digest
+    // (Kit) that sends only items newer than its last run would skip it.
+    .order('published_at', { ascending: false, nullsFirst: false })
     .order('created_at', { ascending: false })
     .limit(50)
 
@@ -29,7 +33,7 @@ export async function GET() {
   const items = (texts ?? []).map(text => {
     const author = (text.author as unknown as { name: string } | null)?.name ?? ''
     const genre = (text.genre as unknown as { name: string } | null)?.name ?? ''
-    const pubDate = new Date(text.created_at as string).toUTCString()
+    const pubDate = new Date((text.published_at ?? text.created_at) as string).toUTCString()
     const link = `${siteUrl}/texts/${text.slug}`
     const description = [author, genre].filter(Boolean).join(' · ')
 

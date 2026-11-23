@@ -7,6 +7,36 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-11-22 — New texts by email: a Kit signup on every text page
+
+Card: New texts weekly: email signup for returning readers
+
+Retention is the bottleneck (Keith, 22 Nov: judged by returning readers per week). Cross-week returners have
+held at about 7–9 a week while traffic rose, and the site had no way to reach a reader who finished a text and
+left; RSS reaches a technical minority. This adds the return route.
+
+- **`app/components/EmailSignup.tsx`**, under "Read next" at the end of every text: one email field, a plain
+  HTML form posting straight to Kit (double opt-in), no client JavaScript and no `/api` route, so the page
+  stays cached. It opens Kit's confirmation in a new tab, so the reader keeps their place. 44px controls, and
+  the input and button stack at 390px.
+- **It renders nothing until `KIT_FORM_ACTION` is set** in `lib/email/signup.ts` (the Kit form's public action
+  URL, not a secret). `signupAction` accepts only https on Kit's own hosts, so a typo cannot post addresses
+  elsewhere; unit-tested.
+- **`email-signup`** fires on the button with `from=text-page`. It counts attempts; Kit holds confirmed
+  subscribers. To be added to the Events Register and wire-verified once the constant is set (with it null
+  there is nothing on the page to click).
+- **RSS dates and orders by `published_at`**, not `created_at` (the import date), so a text imported in October
+  and published in November reads as new in November and a date-based RSS-to-email digest does not skip it. All
+  565 published texts have `published_at`; `created_at` stays as the fallback.
+- **About** gains a short "New texts by email" section (`/about#email`): Kit holds the address, double opt-in,
+  unsubscribe in every email, never shared or sold. The form links to it.
+
+Keith's part: a Kit account and form with double opt-in, the RSS feed added as a digest at whichever cadence he
+likes (monthly is fine), then the form's action URL. An editorial letter is a Kit Broadcast he writes when he
+wants, which also covers the "Letter from the library" card. No code.
+
+---
+
 ## 2026-11-21 — Translators' notes: a dry-run backfill for the NPNF/ANF texts
 
 Card: Import translators' notes into published NPNF/ANF texts

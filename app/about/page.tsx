@@ -102,6 +102,20 @@ export default function AboutPage() {
           </p>
         </div>
 
+        {/* Section: Email */}
+        <div className="mt-12 mb-6">
+          <hr style={{ borderColor: '#1b1b1b', borderTopWidth: '1px' }} />
+        </div>
+        <h2 id="email" className="font-serif text-lg mb-5 scroll-mt-24" style={{ color: '#1b1b1b' }}>New texts by email</h2>
+        <div className="font-serif leading-loose space-y-6 text-base" style={{ color: '#1b1b1b' }}>
+          <p>
+            If you sign up for new texts by email, your address is held by Kit, the mailing service
+            that sends the emails, and is used for nothing else. You are added only after you click
+            the link in a confirmation email, every email has an unsubscribe link, and the address is
+            never shared or sold.
+          </p>
+        </div>
+
         {/* Section: Support */}
         <div className="mt-12 mb-6">
           <hr style={{ borderColor: '#1b1b1b', borderTopWidth: '1px' }} />
