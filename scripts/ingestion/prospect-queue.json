@@ -2260,7 +2260,7 @@
     },
     {
       "id": "an-apology-of-the-church-of-england-jewel",
-      "status": "stage-2-done",
+      "status": "imported",
       "added": "2026-09-11",
       "author": "John Jewel",
       "death_year": 1571,
@@ -2268,19 +2268,21 @@
       "era": "reformation",
       "title": "An Apology of the Church of England (Apologia Ecclesiae Anglicanae)",
       "genre": "Apology",
-      "source_type": "gutenberg",
-      "source_url": "https://www.gutenberg.org/ebooks/17678",
+      "source_type": "archive_online",
+      "source_url": "https://anglicanhistory.org/jewel/apology/01.html",
       "collection_slug": "an-apology-of-the-church-of-england-jewel",
       "translation_copyright_clear": false,
-      "translator": "Ann Bacon (1564); Henry Morley ed. (1888)",
+      "translator": "Ann Bacon (1564)",
       "translator_death_year": null,
-      "stage_1_notes": "Latin 1562; classic English translation by Ann Bacon, 1564 (public domain); also the 1888 Cassell edition ed. Henry Morley — copyright pre-verified (author pre-1900; PD English translation identified). [2026-11-20 cloud run] HELD: the staged output from the earlier run is Project Gutenberg's landing page, not the text. Detail: the file is Project Gutenberg's HTML landing page (site navigation), not the text: gutenberg.org/ebooks/17678 is the book page. Re-fetch from https://www.gutenberg.org/cache/epub/17678/pg17678.txt was attempted but Gutenberg answered \"Temporarily Down for Maintenance\". Left at stage-2-done; the bad output file must be replaced before import.",
-      "stage_2_output": "",
+      "stage_1_notes": "Latin 1562; classic English translation by Ann Bacon, 1564 (public domain); also the 1888 Cassell edition ed. Henry Morley — copyright pre-verified (author pre-1900; PD English translation identified). [2026-11-20 cloud run] (was held) the staged output from the earlier run is Project Gutenberg's landing page, not the text. Detail: the file is Project Gutenberg's HTML landing page (site navigation), not the text: gutenberg.org/ebooks/17678 is the book page. Re-fetch from https://www.gutenberg.org/cache/epub/17678/pg17678.txt was attempted but Gutenberg answered \"Temporarily Down for Maintenance\". Left at stage-2-done; the bad output file must be replaced before import. [2026-11-22 weekly run] Source moved to the Notion Cleared edition URL (anglicanhistory.org / Project Canterbury, parts 01–06 + recap), Gutenberg still answering \"Temporarily Down for Maintenance\". Verified before fetching: page title \"The Apology of the Church of England, by John Jewel (1888 edition)\", Morley's intro states \"That is the translation given in this volume\" of Lady Ann Bacon's 1564 English. Old Gutenberg landing-page output discarded. Staged as 7 texts (Parts I–VI, Recapitulation), 41,724 words. Imported 7 text(s) on 2026-11-22. REVIEW NEEDED before publish: an-apology-of-the-church-of-england-part-ii: 1 prose paragraph(s) of 800+ words (longest 810); paragraph breaks will be proposed by the next `npm run generate:review-drafts`",
+      "stage_2_output": "scripts/ingestion/output/an-apology-of-the-church-of-england-jewel/",
       "stage_3_themes": [
-        "scripture",
         "tradition",
+        "scripture",
         "sacraments",
-        "ministry"
+        "ministry",
+        "justice",
+        "conscience"
       ],
       "rejection_reason": "",
       "notes": "From On the Ruin of Britain blog trawl (posts 102). Verified SAFE by ORB-trawl verification pass 2026-09-11."
@@ -6412,7 +6414,7 @@
       "translation_copyright_clear": true,
       "translator": null,
       "translator_death_year": null,
-      "stage_1_notes": "Requested by a reader on Discord (2026-09-22), who noted the library had Keble's National Apostasy but not The Christian Year. COPYRIGHT: Keble d. 1866 (<1900). Original English verse, first published 1827 — no translator, so no translation-copyright question at all. Gutenberg ebook #4272, ed. Henry Morley, released 2003. SOURCE VERIFIED, not merely reachable: fetched pg4272.txt and read the header — 'Title: The Christian Year / Author: John Keble'. This is the check the Spurgeon All-of-Grace mis-fetch exists to enforce; a 200 alone would not have been enough. GENRE CALL — deliberate, flip it if you disagree: set to Poem rather than Hymn. The vocabulary note makes a could-be-either text a Hymn, but it also names 'devotional' explicitly under Poem, and Keble wrote these for private reading against the calendar rather than for singing; the familiar hymns ('New every morning is the love', 'Sun of my soul') are later adaptations of the verse, not its original form. The liturgical arrangement is the real argument for Hymn. NOTE FOR STAGE 2: this is a single-file collection of ~110 poems keyed to Sundays and feasts. Worth considering split-into-chapters so each poem is its own text and the collection maps onto the church year, which would also feed the seasonal panel.",
+      "stage_1_notes": "Requested by a reader on Discord (2026-09-22), who noted the library had Keble's National Apostasy but not The Christian Year. COPYRIGHT: Keble d. 1866 (<1900). Original English verse, first published 1827 — no translator, so no translation-copyright question at all. Gutenberg ebook #4272, ed. Henry Morley, released 2003. SOURCE VERIFIED, not merely reachable: fetched pg4272.txt and read the header — 'Title: The Christian Year / Author: John Keble'. This is the check the Spurgeon All-of-Grace mis-fetch exists to enforce; a 200 alone would not have been enough. GENRE CALL — deliberate, flip it if you disagree: set to Poem rather than Hymn. The vocabulary note makes a could-be-either text a Hymn, but it also names 'devotional' explicitly under Poem, and Keble wrote these for private reading against the calendar rather than for singing; the familiar hymns ('New every morning is the love', 'Sun of my soul') are later adaptations of the verse, not its original form. The liturgical arrangement is the real argument for Hymn. NOTE FOR STAGE 2: this is a single-file collection of ~110 poems keyed to Sundays and feasts. Worth considering split-into-chapters so each poem is its own text and the collection maps onto the church year, which would also feed the seasonal panel. [2026-11-22 weekly run] HELD: Gutenberg answered 503 \"Temporarily Down for Maintenance\" for pg4272.txt and 4272-0.txt again, and the existing staged file is a 212-word stub with no poems, so nothing was imported.",
       "stage_2_output": "",
       "stage_3_themes": [
         "liturgy",
@@ -6453,7 +6455,7 @@
     },
     {
       "id": "passion-for-souls-jowett",
-      "status": "pending",
+      "status": "imported",
       "added": "2026-09-28",
       "author": "J. H. Jowett",
       "death_year": 1923,
@@ -6468,9 +6470,16 @@
       "translator": null,
       "translator_death_year": null,
       "license": null,
-      "stage_1_notes": "Original English composition (Jowett wrote in English; no translation involved). Jowett d. 1923 — clears HARD CONSTRAINT 3's death_year < 1900 threshold only via the work's own age/publication date (this collection of sermons was first published 1907), not via the author's death year; STAGE 1 SHOULD RE-VERIFY the exact publication date and confirm no renewal before proceeding, since 1923 death alone does not satisfy the simplified 'pre-1900 death' shorthand. Notion's Reference URL (ccel.org/ccel/jowett, an author index page, not a work) was not usable directly — the actual work page (ccel.org/ccel/jowett/passion) and its plain-text cache export were found and verified reachable (HTTP 200) at sync time, per CLAUDE.md's CCEL cache-URL note. [2026-11-20 cloud run] CLEARED (was held): Jowett d. 1923, so HARD CONSTRAINT 3 (author death_year < 1900) fails and pipeline-import.mjs would refuse it. Publication date (1905/1907) would clear it under US law, but CLAUDE.md does not authorise the publication-date rule for an author who wrote in English (the deviation it records is for translations). Needs Keith's ruling. Left pending. [2026-11-20] CLEARED by Keith on publication date (Revell 1905); see copyright_ruling. Eligible for the next run.",
-      "stage_2_output": "",
-      "stage_3_themes": [],
+      "stage_1_notes": "Original English composition (Jowett wrote in English; no translation involved). Jowett d. 1923 — clears HARD CONSTRAINT 3's death_year < 1900 threshold only via the work's own age/publication date (this collection of sermons was first published 1907), not via the author's death year; STAGE 1 SHOULD RE-VERIFY the exact publication date and confirm no renewal before proceeding, since 1923 death alone does not satisfy the simplified 'pre-1900 death' shorthand. Notion's Reference URL (ccel.org/ccel/jowett, an author index page, not a work) was not usable directly — the actual work page (ccel.org/ccel/jowett/passion) and its plain-text cache export were found and verified reachable (HTTP 200) at sync time, per CLAUDE.md's CCEL cache-URL note. [2026-11-20 cloud run] CLEARED (was held): Jowett d. 1923, so HARD CONSTRAINT 3 (author death_year < 1900) fails and pipeline-import.mjs would refuse it. Publication date (1905/1907) would clear it under US law, but CLAUDE.md does not authorise the publication-date rule for an author who wrote in English (the deviation it records is for translations). Needs Keith's ruling. Left pending. [2026-11-20] CLEARED by Keith on publication date (Revell 1905); see copyright_ruling. Eligible for the next run. [2026-11-22 weekly run] Cleared by Keith's copyright_ruling (publication 1905). Source verified before staging: CCEL header \"Title: The Passion for Souls\", \"Print Basis: New York: Fleming H. Revell Company (1905)\", title page \"Copyright, 1905\". Staged with ccel-to-markdown.mjs, split into 7 sermon texts (21,354 words); publisher's ads and title-page matter dropped. Imported 7 text(s) on 2026-11-22. REVIEW NEEDED before publish: the-passion-for-souls-the-disciples-rest: 1 prose paragraph(s) of 800+ words (longest 1232); paragraph breaks will be proposed by the next `npm run generate:review-drafts`",
+      "stage_2_output": "scripts/ingestion/output/passion-for-souls-jowett/",
+      "stage_3_themes": [
+        "preaching",
+        "ministry",
+        "pneumatology",
+        "rest",
+        "suffering",
+        "eschatology"
+      ],
       "rejection_reason": "",
       "notes": "Synced from Notion Content Prospect List 2026-09-28 (userDefined:ID 67, score 1.5). NEW AUTHOR — import will create a draft author stub. Checked Supabase and local queue for 'jowett' before adding: no match.",
       "copyright_ruling": "Keith, 20 Nov 2026: cleared on publication date. Fleming H. Revell, New York, title page \"Copyright, 1905\" (CCEL plain-text export, read 20 Nov 2026); published before 1929, US public domain. Jowett d. 1923. Note: CCEL's header gives \"1817-1893\", which are Benjamin Jowett's dates, not J. H. Jowett's.",
@@ -6941,6 +6950,53 @@
         "desire",
         "marriage"
       ]
+    },
+    {
+      "id": "lectures-to-my-students-spurgeon",
+      "status": "pending",
+      "added": "2026-11-22",
+      "author": "Charles Haddon Spurgeon",
+      "death_year": 1892,
+      "tradition": "reformed",
+      "era": "modern",
+      "title": "Lectures to My Students",
+      "genre": "Sermon",
+      "source_type": "ccel",
+      "source_url": "https://www.ccel.org/ccel/spurgeon/lectures.html",
+      "collection_slug": "lectures-to-my-students-spurgeon",
+      "translation_copyright_clear": false,
+      "stage_1_notes": "[2026-11-22 weekly run] Synced from Notion (userDefined:ID 69, score 1.0). Copyright clear (Spurgeon d. 1892, original English). HELD: the Reference URL answers 404 and CCEL no longer lists the work for Spurgeon, so a working edition (Gutenberg or Archive.org) needs pinning as the Cleared edition URL.",
+      "stage_2_output": "",
+      "stage_3_themes": [],
+      "rejection_reason": "",
+      "notes": "Synced from Notion Content Prospect List 2026-11-22 (ID 69)."
+    },
+    {
+      "id": "morning-and-evening-spurgeon",
+      "status": "imported",
+      "added": "2026-11-22",
+      "author": "Charles Haddon Spurgeon",
+      "death_year": 1892,
+      "tradition": "reformed",
+      "era": "modern",
+      "title": "Morning and Evening",
+      "genre": "Meditation",
+      "source_type": "ccel",
+      "source_url": "https://ccel.org/ccel/s/spurgeon/morneve/cache/morneve.txt",
+      "collection_slug": "morning-and-evening-spurgeon",
+      "translation_copyright_clear": false,
+      "stage_1_notes": "[2026-11-22 weekly run] Synced from Notion (userDefined:ID 70, Value 3, Complexity 1, Effort 2, score 1.0; Reference URL ccel.org/ccel/spurgeon/morneve.html, no Cleared edition URL). Copyright: Spurgeon d. 1892, original English, no translation. Source verified before staging: CCEL plain-text export header \"Title: Morning and Evening: Daily Readings / Creator(s): Spurgeon, Charles Haddon / Rights: Public Domain\"; text uses the original KJV citations (not the modern Begg/ESV revision). Staged as 12 monthly texts (733 readings, ~261k words); split by month is an editorial call, flip it if a daily or weekly division reads better. Imported 12 text(s) on 2026-11-22.",
+      "stage_2_output": "scripts/ingestion/output/morning-and-evening-spurgeon/",
+      "stage_3_themes": [
+        "prayer",
+        "contemplation",
+        "christology",
+        "providence",
+        "salvation",
+        "scripture"
+      ],
+      "rejection_reason": "",
+      "notes": "Synced from Notion Content Prospect List 2026-11-22 (ID 70). Author exists (Charles Haddon Spurgeon, not draft)."
     }
   ]
 }
