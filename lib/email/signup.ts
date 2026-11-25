@@ -11,7 +11,7 @@
  * page calling /api is billed on every view (CLAUDE.md, "Keep public routes
  * cacheable"). Kit runs double opt-in, so nobody is added until they confirm.
  */
-export const KIT_FORM_ACTION: string | null = null
+export const KIT_FORM_ACTION: string | null = 'https://app.kit.com/forms/10242569/subscriptions'
 
 /** Kit's field name for the address in its HTML embed. */
 export const KIT_EMAIL_FIELD = 'email_address'
