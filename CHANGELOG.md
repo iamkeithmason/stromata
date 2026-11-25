@@ -24,7 +24,8 @@ left; RSS reaches a technical minority. This adds the return route.
   post addresses elsewhere; unit-tested.
 - **`email-signup`** fires on the button with `from=text-page`. It counts attempts; Kit holds confirmed
   subscribers. Registered in the Events Register. Not yet wire-verified: the cloud session that built it
-  cannot reach Umami, so it is verified from Keith's laptop before release.
+  cannot reach Umami, so it is verified from Keith's laptop before release. `verify-analytics.mjs` now
+  checks it (`--only=email-signup`) and aborts the request to Kit, so a sweep never subscribes a test address.
 - **RSS dates and orders by `published_at`**, not `created_at` (the import date), so a text imported in October
   and published in November reads as new in November and a date-based RSS-to-email digest does not skip it. All
   565 published texts have `published_at`; `created_at` stays as the fallback.
