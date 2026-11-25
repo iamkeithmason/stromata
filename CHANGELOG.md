@@ -7,6 +7,29 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-11-25 — Resume where you left off, from the Reading history cards
+
+Card: Reading progress indicator (scroll bar + resume-reading)
+
+Step 3 of the retention plan (judged by returning readers per week). The homepage Reading history already showed
+"~ 15 min left" on a text a reader had started; tapping it opened the text at the top. Now it puts them back
+where they were.
+
+- **`position`** joins each Reading history entry (`lib/reading-history.ts`): where the reader last was, 0–1 of the
+  scrollable height, beside `progress`, the furthest point reached. It is saved only from real scroll events, so
+  opening a text and leaving before scrolling never wipes the reader's place.
+- **`resumePoint`** decides whether a card offers to resume and where to land: nothing for a text not started
+  (< 5%) or finished (≥ 95%), never past the furthest point, and the furthest point for entries saved before
+  `position` existed. Unit-tested (7 cases).
+- **The card** links to `/texts/<slug>#resume`, reads "Resume · ~ 15 min left", and shows a thin gold line for how
+  far the reader got. Tokens only (`--gold`, `--rule`).
+- **The text page** (`ReadingProgressBar`) reads `#resume` and scrolls there. Next scrolls a client-side
+  navigation to the top after the page's effects run, and web fonts change the page height, so the restore is
+  re-applied over the first second, and stops the moment the reader scrolls, taps or presses a key. The hash
+  is dropped afterwards. No new analytics event: the card's existing `text-open` with `from=reading-history`
+  and `state=in-progress` already counts resume taps.
+- Pure client-side and localStorage; the page stays ● and nothing new is fetched.
+
 ## 2026-11-22 — New texts by email: a Kit signup on every text page
 
 Card: New texts weekly: email signup for returning readers
