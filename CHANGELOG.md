@@ -31,9 +31,9 @@ left; RSS reaches a technical minority. This adds the return route.
 - **About** gains a short "New texts by email" section (`/about#email`): Kit holds the address, double opt-in,
   unsubscribe in every email, never shared or sold. The form links to it.
 
-Keith's part: a Kit account and form with double opt-in, the RSS feed added as a digest at whichever cadence he
-likes (monthly is fine), then the form's action URL. An editorial letter is a Kit Broadcast he writes when he
-wants, which also covers the "Letter from the library" card. No code.
+Keith set up the Kit form (double opt-in) on 25 Nov. Kit's RSS-to-email and its connector both need a paid
+plan, so for now the update email is a Broadcast Keith writes by hand when he wants to; that also covers the
+"Letter from the library" card. No code.
 
 ---
 
