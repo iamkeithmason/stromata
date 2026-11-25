@@ -7,6 +7,40 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-11-22 — New texts by email: a Kit signup on every text page
+
+Card: New texts weekly: email signup for returning readers
+
+Retention is the bottleneck (Keith, 22 Nov: judged by returning readers per week). Cross-week returners have
+held at about 7–9 a week while traffic rose, and the site had no way to reach a reader who finished a text and
+left; RSS reaches a technical minority. This adds the return route.
+
+- **`app/components/EmailSignup.tsx`**, under "Read next" at the end of every text: one email field, a plain
+  HTML form posting straight to Kit (double opt-in), no client JavaScript and no `/api` route, so the page
+  stays cached. It opens Kit's confirmation in a new tab, so the reader keeps their place. 44px controls, and
+  the input and button stack at 390px.
+- **`KIT_FORM_ACTION`** in `lib/email/signup.ts` is Kit form 10242569's public action URL (not a secret);
+  setting it to null hides the form. `signupAction` accepts only https on Kit's own hosts, so a typo cannot
+  post addresses elsewhere; unit-tested.
+- **`email-signup`** fires on the button with `from=text-page`. It counts attempts; Kit holds confirmed
+  subscribers. Registered in the Events Register as Implemented. Wire-verified from Keith's laptop on 25 Nov
+  (the cloud session that built it cannot reach Umami). `verify-analytics.mjs` now
+  checks it (`--only=email-signup`) and aborts the request to Kit, so a sweep never subscribes a test address.
+- **RSS dates and orders by `published_at`**, not `created_at` (the import date), so a text imported in October
+  and published in November reads as new in November and a date-based RSS-to-email digest does not skip it. All
+  565 published texts have `published_at`; `created_at` stays as the fallback.
+- **`tailwind.config.ts` imports `@tailwindcss/typography`** instead of `require()`-ing it. Keith's `next dev`
+  crashed with "require is not defined" while compiling CSS: newer Node loads the .ts config as an ES module.
+  The bug was on `main` before this PR; it surfaced during this PR's laptop check.
+- **About** gains a short "New texts by email" section (`/about#email`): Kit holds the address, double opt-in,
+  unsubscribe in every email, never shared or sold. The form links to it.
+
+Keith set up the Kit form (double opt-in) on 25 Nov. Kit's RSS-to-email and its connector both need a paid
+plan, so for now the update email is a Broadcast Keith writes by hand when he wants to; that also covers the
+"Letter from the library" card. No code.
+
+---
+
 ## 2026-11-21 — Translators' notes: a dry-run backfill for the NPNF/ANF texts
 
 Card: Import translators' notes into published NPNF/ANF texts

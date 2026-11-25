@@ -144,6 +144,9 @@ async function installInterceptor(context) {
   // Downloads are <a href> to route handlers that return a file. We want the
   // click event, not the file, so abort the transfer.
   await context.route('**/download/**', (route) => route.abort());
+  // The email signup posts to Kit. Abort it, so a verification run never
+  // subscribes a test address to the real list.
+  await context.route(/^https:\/\/([a-z0-9-]+\.)*(kit|convertkit)\.com\//, (route) => route.abort());
   // "Print / Save as PDF" calls window.print(). The click is what we check, not
   // the dialog, so no page under test ever opens one.
   await context.addInitScript(() => {
@@ -623,6 +626,25 @@ async function checkCollectionNav(context, site) {
   await found.page.close();
 }
 
+async function checkEmailSignup(context, site) {
+  const page = await open(context, site.texts[0]);
+  const input = page.locator('#email-signup-address');
+  if (!(await input.count())) {
+    await failMissing(page, 'email-signup', 'end of text', 'email signup form');
+    await page.close();
+    return;
+  }
+  // A placeholder address; the Kit request it triggers is aborted above.
+  await input.fill('verify-analytics@example.invalid');
+  await expectEvent({
+    event: 'email-signup',
+    case: 'end-of-text form',
+    expect: { from: 'text-page' },
+    action: () => page.locator('button[data-umami-event="email-signup"]').click(),
+  });
+  await page.close();
+}
+
 async function checkCitationCopy(context, site) {
   const page = await open(context, site.texts[0]);
   const button = page.getByRole('button', { name: /cite this text/i }).first();
@@ -853,6 +875,7 @@ async function main() {
     ['theme chips', ['theme-click'], checkThemeClick],
     ['collection nav', ['collection-nav'], checkCollectionNav],
     ['citation', ['citation-copy'], checkCitationCopy],
+    ['email signup', ['email-signup'], checkEmailSignup],
     ['reader settings', ['reader-setting-change'], checkReaderSettings],
     ['downloads', ['text-download', 'collection-download'], checkDownloads],
     ['text page load', ['text-open'], checkNoTextOpenOnLoad],

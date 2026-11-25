@@ -25,6 +25,7 @@ import { CitationButton } from '@/app/components/CitationButton'
 import { resolveLicense } from '@/lib/licenses'
 import { PROVENANCE_INLINE_MAX, hostLabel, isBareUrl } from '@/lib/edition'
 import { ContinueExploring } from '@/app/components/ContinueExploring'
+import { EmailSignup } from '@/app/components/EmailSignup'
 import { pickReadNext, type ReadNextCandidate } from '@/lib/read-next'
 import { ReaderNav, ReaderNavTrigger } from '@/app/components/ReaderNav'
 import { buildOutline, readSections, showsRunningHead, type SectionsDoc } from '@/lib/reader/outline'
@@ -731,6 +732,7 @@ export default async function TextPage({ params }: Props) {
               </nav>
             )}
             <ContinueExploring picks={readNext} />
+            <EmailSignup from="text-page" />
           </main>
       </div>
 
