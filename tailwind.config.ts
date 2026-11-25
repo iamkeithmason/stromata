@@ -1,4 +1,5 @@
 import type { Config } from 'tailwindcss'
+import typography from '@tailwindcss/typography'
 
 const config: Config = {
   content: [
@@ -14,7 +15,9 @@ const config: Config = {
       },
     },
   },
-  plugins: [require('@tailwindcss/typography')],
+  // An import, not require(): newer Node loads this .ts file as an ES module,
+  // where require is undefined and `next dev` crashed compiling CSS (25 Nov 2026).
+  plugins: [typography],
 }
 
 export default config

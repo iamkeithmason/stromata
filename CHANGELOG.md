@@ -29,6 +29,9 @@ left; RSS reaches a technical minority. This adds the return route.
 - **RSS dates and orders by `published_at`**, not `created_at` (the import date), so a text imported in October
   and published in November reads as new in November and a date-based RSS-to-email digest does not skip it. All
   565 published texts have `published_at`; `created_at` stays as the fallback.
+- **`tailwind.config.ts` imports `@tailwindcss/typography`** instead of `require()`-ing it. Keith's `next dev`
+  crashed with "require is not defined" while compiling CSS: newer Node loads the .ts config as an ES module.
+  The bug was on `main` before this PR; it surfaced during this PR's laptop check.
 - **About** gains a short "New texts by email" section (`/about#email`): Kit holds the address, double opt-in,
   unsubscribe in every email, never shared or sold. The form links to it.
 
