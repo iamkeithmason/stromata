@@ -601,6 +601,98 @@ async function checkThemeClick(context, site) {
   await found.page.close();
 }
 
+/**
+ * The author page (Phase A, 26 Nov 2026). Every link that opens a text,
+ * collection or author carries a `section`, so the digest can tell which part
+ * of the page did the work; opening a collection's parts sends
+ * `collection-expand`; the era strip sends `era-click`. Augustine is first
+ * because he has every surface (short reads, collections, kindred authors);
+ * any author from the sitemap will do if his page has moved.
+ */
+async function checkAuthorPage(context, site) {
+  const candidates = ['/authors/augustine-of-hippo', ...site.authors];
+  const any = '[data-umami-event-from="author-page"][data-umami-event-section]';
+  const found = await findPageWith(context, candidates, any);
+  if (!found) {
+    row('text-open', 'author-page sections', 'fail', 'no author page carries a section-tagged link');
+    return;
+  }
+  const { page, path } = found;
+  const sel = (event, section) => `${linkSelector(event, 'author-page')}[data-umami-event-section="${section}"]`;
+  const has = async (selector) => (await page.locator(selector).count()) > 0;
+
+  for (const section of ['short-reads', 'work']) {
+    const selector = sel('text-open', section);
+    if (!(await has(selector))) {
+      row('text-open', `from=author-page section=${section}`, 'skip', `none on ${path}`);
+      continue;
+    }
+    await expectEvent({
+      event: 'text-open',
+      case: `from=author-page section=${section}`,
+      expect: { from: 'author-page', section, text: SLUG, author: true },
+      onPath: path,
+      action: () => clickFirst(page, selector),
+    });
+  }
+
+  const colSel = sel('collection-open', 'work');
+  if (await has(colSel)) {
+    await expectEvent({
+      event: 'collection-open',
+      case: 'from=author-page section=work',
+      expect: { from: 'author-page', section: 'work', collection: SLUG },
+      onPath: path,
+      action: () => clickFirst(page, colSel),
+    });
+    // Opening the parts list fires collection-expand and reveals the part links.
+    const summary = page.locator('details.work-parts > summary').first();
+    await expectEvent({
+      event: 'collection-expand',
+      case: 'from=author-page',
+      expect: { from: 'author-page', collection: SLUG },
+      onPath: path,
+      action: async () => {
+        await summary.scrollIntoViewIfNeeded();
+        await summary.click();
+      },
+    });
+    const partSel = `details.work-parts[open] ${sel('text-open', 'part')}`;
+    await expectEvent({
+      event: 'text-open',
+      case: 'from=author-page section=part',
+      expect: { from: 'author-page', section: 'part', text: SLUG, author: true },
+      onPath: path,
+      action: () => clickFirst(page, partSel),
+    });
+  } else {
+    row('collection-open', 'from=author-page section=work', 'skip', `no collection on ${path}`);
+  }
+
+  const eraSel = '[data-umami-event="era-click"][data-umami-event-from="author-page"]';
+  await expectEvent({
+    event: 'era-click',
+    case: 'from=author-page',
+    expect: { from: 'author-page', era: SLUG },
+    onPath: path,
+    action: () => clickFirst(page, eraSel),
+  });
+
+  const kinSel = '[data-umami-event="author-open"][data-umami-event-from="related-figures"][data-umami-event-section="kindred"]';
+  if (await has(kinSel)) {
+    await expectEvent({
+      event: 'author-open',
+      case: 'from=related-figures section=kindred',
+      expect: { from: 'related-figures', section: 'kindred', author: true },
+      onPath: path,
+      action: () => clickFirst(page, kinSel),
+    });
+  } else {
+    row('author-open', 'from=related-figures section=kindred', 'skip', `no kindred authors on ${path}`);
+  }
+  await page.close();
+}
+
 async function checkCollectionNav(context, site) {
   const selector = '[data-umami-event="collection-nav"]';
   const found = await findPageWith(context, site.texts, selector, { limit: 12 });
@@ -874,6 +966,7 @@ async function main() {
     ['session depth', ['text-session-depth'], checkSessionDepth],
     ['theme chips', ['theme-click'], checkThemeClick],
     ['collection nav', ['collection-nav'], checkCollectionNav],
+    ['author page', ['text-open', 'collection-open', 'collection-expand', 'era-click', 'author-open'], checkAuthorPage],
     ['citation', ['citation-copy'], checkCitationCopy],
     ['email signup', ['email-signup'], checkEmailSignup],
     ['reader settings', ['reader-setting-change'], checkReaderSettings],

@@ -7,6 +7,50 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-11-26 — Author pages, Phase A: works by form, Short reads, an era strip, ornament headings
+
+Card: Strengthen author pages as the primary reading entry point
+
+Author pages start more text opens than any other surface (6 of 18 attributed opens in the week to 23 Nov),
+while the second-text rate sat at 3.8%. Augustine's page listed 207 texts A to Z, "Exposition on Psalm 115"
+before the Confessions, with nothing to say where to begin. Keith chose this card on 26 Nov as the next
+retention build, with the genre ornaments he asked for on the form headings (9 Nov).
+
+- **Works, not texts.** `lib/works.ts` (pure, tested) rolls an author's published texts into works: a
+  published collection is one work with its parts in `collection_order` (natural title order where there is
+  none, so Tractate 2 comes before 10), a standalone text is a work of one. Works are grouped by form (genre;
+  a collection takes its parts' most common one) under small-caps headings, "Homilies · 1 work", most works
+  first. An author with one form gets no headings. Augustine reads as 12 works in 7 forms; the Tractates on
+  John are one row with 124 parts. The genre stops repeating on every row.
+- **Collection rows** link to the collection, give parts and hours, three themes, and a native `<details>`
+  "Show all N parts". The parts stay in the DOM, so every text is still crawlable; over 30 parts they set
+  in columns on desktop.
+- **Genre ornaments on the form headings,** the same woodcut masks the covers use (`public/ornaments/`),
+  in `--gold-ink`, `aria-hidden`, no event. Chronicle has none yet and shows the heading alone.
+- **Header as a title page.** The portrait sits centred and smaller above the name on a phone and beside it
+  from md. One small-caps metadata line (dates · tradition · era · place), a corpus line ("12 works · 207
+  parts · about 126 hours of reading", linking to the works), and an **era strip**: the nine eras in order,
+  the author's marked, each a 44px link to its era page (`app/components/EraStrip.tsx`). On a phone only the
+  author's era is named, once, under the strip.
+- **Biography** at the reading measure. On a phone a bio over 240 characters is clamped to about four lines
+  with a CSS-only "Continue reading" (a checkbox and label), so it works without JavaScript and shifts nothing.
+- **Short reads:** for an author with four or more works, up to three standalone texts or first parts under
+  30 minutes, shortest first. Labelled as a length fact, never "Start here". Tertullian has none: his
+  shortest work is 40 minutes.
+- **Kindred authors** move below the works and leave out authors with no published text.
+- **Freshness:** `collectionTextPaths` now also returns the author pages of a collection's chapters, since
+  those pages print the collection's title, so a collection save refreshes them.
+
+Analytics. Every link that opens something carries a `section`: `text-open` from=author-page section =
+`short-reads` | `work` | `part`; `collection-open` from=author-page section=`work` (a new surface for that
+event); `author-open` from=related-figures section=`kindred`. Two new events: `collection-expand`
+(from=author-page, collection=<slug>, fired through `whenTrackerReady` when a parts list opens) and
+`era-click` (from=author-page, era=<slug>). Recorded in the Events Register. `verify-analytics.mjs` gained an
+"author page" suite; against a local build it passed 7 of 7.
+
+Phase B (an editor's "Start here" and a "why read them" line) needs a schema change and waits for Keith's
+review of this one; the proposal is in the PR. Public route unchanged in the build table: `/authors/[slug]` ●.
+
 ## 2026-11-25 — Resume where you left off, from the Reading history cards
 
 Card: Reading progress indicator (scroll bar + resume-reading)

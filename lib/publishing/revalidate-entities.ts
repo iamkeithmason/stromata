@@ -97,7 +97,11 @@ export function revalidateEntity(
  * collection row, or to any one chapter, changes all of them. Unpublished
  * chapters have no public page to refresh.
  *
- * Selects `slug` only. Returns [] on any error: callers are best-effort.
+ * Also the author pages of those chapters' authors: since 26 Nov 2026 an author
+ * page lists its works with each collection's title, slug and published state
+ * (lib/works.ts), so a collection save changes them too.
+ *
+ * Selects slugs only. Returns [] on any error: callers are best-effort.
  */
 export async function collectionTextPaths(
   supabase: SupabaseClient,
@@ -107,11 +111,12 @@ export async function collectionTextPaths(
   try {
     const { data, error } = await supabase
       .from('texts')
-      .select('slug')
+      .select('slug, author:authors(slug)')
       .eq('collection_id', collectionId)
       .eq('published', true)
     if (error || !data) return []
-    return slugPaths('/texts', data)
+    const rows = data as unknown as { slug: string | null; author: { slug: string | null } | null }[]
+    return [...slugPaths('/texts', rows), ...slugPaths('/authors', rows.map(r => r.author ?? {}))]
   } catch {
     return []
   }

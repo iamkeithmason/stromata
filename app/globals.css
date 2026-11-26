@@ -1384,3 +1384,73 @@ article.prose-body > div:first-of-type > p::first-letter {
   .scripture-popover { display: none !important; }
   .scripture-ref { text-decoration: none; }
 }
+
+/* =============================================================
+   Author page (Phase A, 26 Nov 2026)
+   ============================================================= */
+
+/* The portrait: centred above the name and smaller on a phone, beside it from
+   md (the LancetArch keeps its own 200:380 proportion). */
+.author-portrait {
+  width: 88px;
+  aspect-ratio: 200 / 380;
+}
+@media (min-width: 768px) {
+  .author-portrait { width: 128px; }
+}
+
+/* The biography sits at the reading measure rather than the full shell. */
+.author-bio { max-width: var(--reading-measure); }
+
+/* Below md a long bio is clamped to about four lines, with a fade into the
+   paper. The toggle is a visually hidden checkbox and its label, so it works
+   without JavaScript; the height is fixed, so nothing shifts on load. */
+@media (max-width: 767.98px) {
+  .author-bio--clamp .author-bio-toggle:not(:checked) ~ .author-bio-body {
+    max-height: var(--author-bio-clamp, 8.4rem);
+    overflow: hidden;
+    -webkit-mask-image: linear-gradient(to bottom, #000 60%, transparent);
+    mask-image: linear-gradient(to bottom, #000 60%, transparent);
+  }
+  .author-bio-toggle:checked ~ .author-bio-label .author-bio-more { display: none; }
+  .author-bio-toggle:not(:checked) ~ .author-bio-label .author-bio-less { display: none; }
+  .author-bio-toggle:focus-visible ~ .author-bio-label {
+    outline: 2px solid var(--gold-ink);
+    outline-offset: 2px;
+  }
+  .author-bio-label { cursor: pointer; }
+}
+
+/* A form heading's woodcut ornament, drawn as a mask like the covers' (one
+   cached file per genre); the colour comes in inline as a token. */
+.form-ornament {
+  display: inline-block;
+  width: 1.5em;
+  height: 1.5em;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
+}
+
+/* "Show all 24 parts": a quiet summary with its own disclosure mark, a 44px
+   tap target. */
+.work-parts-summary {
+  list-style: none;
+  cursor: pointer;
+  color: var(--gold-ink);
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+}
+.work-parts-summary::-webkit-details-marker { display: none; }
+.work-parts-summary::before {
+  content: "▸";
+  display: inline-block;
+  width: 1em;
+  transition: transform var(--dur, 150ms) var(--ease, ease);
+}
+.work-parts[open] > .work-parts-summary::before { transform: rotate(90deg); }
+.work-parts-summary:hover { opacity: 0.7; }
