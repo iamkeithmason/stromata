@@ -259,12 +259,16 @@ export default async function AuthorPage({ params }: Props) {
     accession_number: t.accession_number,
   }))
   const works = buildWorks(workTexts, (collectionsRaw ?? []) as CollectionMeta[])
-  const groups = groupByForm(works)
+  const shorts = shortReads(works)
+  // A short read that is a standalone work is already shown in Short reads,
+  // so its cover is left off the shelves below (Keith, 26 Nov). A collection
+  // whose first part is a short read stays: its cover is the whole work.
+  const shortSlugs = new Set(shorts.map(sr => sr.slug))
+  const groups = groupByForm(works.filter(w => !(w.kind === 'text' && shortSlugs.has(w.slug))))
   // An author who wrote in one form gets no form headings: "Sermons · 1 work"
   // above a single sermon says nothing the row does not.
   const showFormHeadings = groups.length > 1
   const corpus = totals(works)
-  const shorts = shortReads(works)
   // Collections in the order their covers appear, for the contents lists.
   const collectionsInOrder = groups.flatMap(g => g.works).filter(w => w.kind === 'collection')
 
