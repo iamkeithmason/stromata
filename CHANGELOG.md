@@ -7,6 +7,84 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-11-26 — Author pages, Phase A: works by form, Short reads, an era strip, ornament headings
+
+Card: Strengthen author pages as the primary reading entry point
+
+Author pages start more text opens than any other surface (6 of 18 attributed opens in the week to 23 Nov),
+while the second-text rate sat at 3.8%. Augustine's page listed 207 texts A to Z, "Exposition on Psalm 115"
+before the Confessions, with nothing to say where to begin. Keith chose this card on 26 Nov as the next
+retention build, with the genre ornaments he asked for on the form headings (9 Nov).
+
+- **Works, not texts.** `lib/works.ts` (pure, tested) rolls an author's published texts into works: a
+  published collection is one work with its parts in `collection_order` (natural title order where there is
+  none, so Tractate 2 comes before 10), a standalone text is a work of one. Works are grouped by form (genre;
+  a collection takes its parts' most common one) under small-caps headings, "Homilies · 1 work", most works
+  first. An author with one form gets no headings. Augustine reads as 12 works in 7 forms; the Tractates on
+  John are one row with 124 parts. The genre stops repeating on every row.
+- **Every work is a book cover** (Keith, 26 Nov, chosen over covers for Short reads only), the same
+  `BookCover` the homepage uses: tradition ground, genre ornament, accession number (a collection shows its
+  range, "№ 383–404", and is drawn stacked; `StackedCover` moved out of the homepage into
+  `app/components/StackedCover.tsx` so both pages share it). Under each cover, length (and parts for a
+  collection); themes from sm up. Two-up on a phone. A form with one work takes half a row on a phone, and
+  from md the forms with three works or fewer flow side by side at the same cover width, so an author with
+  many one-work forms does not get a mostly empty shelf per form (Augustine on desktop: 5,650px of page
+  with a row per form, 3,900px flowing).
+- **Contents** follows the shelves: one native `<details>` per collection, "City of God · 22 parts", full
+  width because a parts list cannot sit under a half-width cover. The parts stay in the DOM, so every text is
+  still crawlable; over 30 parts they set in columns on desktop.
+- **Second pass, the same evening (Keith):** Short reads are covers too (threshold kept at 30 minutes). A
+  single text's cover takes the same footprint as a stacked collection (`CoverSlot`, the spine's 8px/5px), so
+  every cover on a shelf is one size with captions level (measured: 218×327 at 1440, 155×232 at 390, no row
+  off by more than 1px). The portrait became the frontispiece: from md a tall arch (drawn `tight`) in its own
+  column, 180px at md and 260px and sticky from lg, with the name, metadata, era strip and bio beside it,
+  which also closes the gap that sat under the era strip. Then an impeccable critique (design review plus
+  detector, `impeccable detect` clean on the source) and these fixes from it: a one-work form heading is just
+  "Letters", and narrow headings share a baseline, so shelves in a row start level; each collection cover
+  links to its contents ("Contents", which opens the `<details>` by its anchor); the Contents heading
+  matches the other sections; the disclosure marker hangs; the cover art is `aria-hidden` (the sr-only title
+  names the link, instead of "Stromata № 405 … c. 430" on every cover); 44px tap targets for the metadata
+  links, the corpus line and the parts; the metadata line never starts a line with "·"; the phone portrait and
+  bio clamp are smaller, so the first shelf comes up sooner.
+- **Genre ornaments on the form headings,** the same woodcut masks the covers use (`public/ornaments/`),
+  in `--gold-ink`, `aria-hidden`, no event. Chronicle has none yet and shows the heading alone.
+- **Begin with, the editor's pick (Phase B, Keith 26 Nov).** One work per author for a first-time reader,
+  with a line on why, shown as a larger cover above Short reads, with "Start reading" (or "Start with <first
+  part>" for a collection). Scaled by drafting rather than by hand: `npm run generate:review-drafts --
+  --begin-with` reads each non-draft author's published works (titles, lengths, summaries; never a body) and
+  drafts a pick into `authors.begin_with_draft` for every author with two or more texts (42 on 26 Nov) that
+  has none; a plain run does it too, so a new author is drafted when they reach two. Keith approves, edits or
+  skips each on a phone at `/admin/review/begin-with` (linked from the review queue), which writes
+  `authors.begin_with` and refreshes that author page only (`revalidateAuthorPage`, not all 208 of
+  Augustine's text pages). One set of rules in `scripts/lib/begin-with.mjs` (tested) serves the script, the
+  route and the page; a pick that no longer names a published work is simply not shown. The pick leaves the
+  shelves and Short reads, and the shelves also leave out works already in Short reads (Keith), so nothing
+  appears twice. Clicks carry `section=begin-with`. Migration `044_author_begin_with.sql` (two nullable jsonb
+  columns); the page selects `*`, so it renders unchanged before the migration is applied.
+- **Header as a title page.** The portrait sits centred and smaller above the name on a phone and beside it
+  from md. One small-caps metadata line (dates · tradition · era · place), a corpus line ("12 works · 207
+  parts · about 126 hours of reading", linking to the works), and an **era strip**: the nine eras in order,
+  the author's marked, each a 44px link to its era page (`app/components/EraStrip.tsx`). On a phone only the
+  author's era is named, once, under the strip.
+- **Biography** at the reading measure. On a phone a bio over 240 characters is clamped to about four lines
+  with a CSS-only "Continue reading" (a checkbox and label), so it works without JavaScript and shifts nothing.
+- **Short reads:** for an author with four or more works, up to three standalone texts or first parts under
+  30 minutes, shortest first. Labelled as a length fact, never "Start here". Tertullian has none: his
+  shortest work is 40 minutes.
+- **Kindred authors** move below the works, leave out authors with no published text, and are drawn as the homepage's lancet portrait cards (`AuthorCard`, name and dates; three across on a phone, six from lg). `AuthorCard` takes an optional `section` for the event.
+- **Freshness:** `collectionTextPaths` now also returns the author pages of a collection's chapters, since
+  those pages print the collection's title, so a collection save refreshes them.
+
+Analytics. Every link that opens something carries a `section`: `text-open` from=author-page section =
+`short-reads` | `work` | `part`; `collection-open` from=author-page section=`work` (a new surface for that
+event); `author-open` from=related-figures section=`kindred`. Two new events: `collection-expand`
+(from=author-page, collection=<slug>, fired through `whenTrackerReady` when a parts list opens) and
+`era-click` (from=author-page, era=<slug>). Recorded in the Events Register. `verify-analytics.mjs` gained an
+"author page" suite; against a local build it passed 7 of 7.
+
+Phase B (an editor's "Start here" and a "why read them" line) needs a schema change and waits for Keith's
+review of this one; the proposal is in the PR. Public route unchanged in the build table: `/authors/[slug]` ●.
+
 ## 2026-11-25 — Resume where you left off, from the Reading history cards
 
 Card: Reading progress indicator (scroll bar + resume-reading)

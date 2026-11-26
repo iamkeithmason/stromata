@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { createServerClient } from '@/lib/supabase/server'
 import { STANDALONE_SLUG, progressOf, type ReviewState } from '@/lib/review/queue'
 import { sameSections } from '@/scripts/lib/sections.mjs'
+import { samePick } from '@/scripts/lib/begin-with.mjs'
 import { draftState } from '@/scripts/lib/paragraphs.mjs'
 
 export const dynamic = 'force-dynamic'
@@ -74,6 +75,15 @@ export default async function ReviewQueuePage() {
   const paragraphsWaiting = ((paragraphRows ?? []) as { paragraphs_draft: unknown }[])
     .filter(r => draftState(r.paragraphs_draft) === 'pending').length
 
+  // Begin with picks, one per author; reviewed on their own page. A query that
+  // fails (before migration 044 is applied) just counts none waiting.
+  const { data: beginWithRows } = await supabase
+    .from('authors')
+    .select('begin_with_draft, begin_with')
+    .not('begin_with_draft', 'is', null)
+  const beginWithWaiting = ((beginWithRows ?? []) as { begin_with_draft: { skipped?: boolean } | null; begin_with: unknown }[])
+    .filter(r => !r.begin_with_draft?.skipped && !samePick(r.begin_with_draft, r.begin_with)).length
+
   const overall = progressOf(rows.map(r => r.review_state))
   const collectionCount = ordered.filter(g => g.slug !== STANDALONE_SLUG).length
 
@@ -97,6 +107,16 @@ export default async function ReviewQueuePage() {
         <span className="text-stone-800 font-medium">Sections</span>
         <span className="text-xs text-stone-400">
           {sectionsWaiting > 0 ? `${sectionsWaiting} to review` : 'none waiting'}
+        </span>
+      </Link>
+
+      <Link
+        href="/admin/review/begin-with"
+        className="mt-2 flex items-baseline justify-between border border-stone-200 rounded p-4 active:bg-stone-100 hover:border-stone-400 transition-colors"
+      >
+        <span className="text-stone-800 font-medium">Begin with</span>
+        <span className="text-xs text-stone-400">
+          {beginWithWaiting > 0 ? `${beginWithWaiting} to review` : 'none waiting'}
         </span>
       </Link>
 

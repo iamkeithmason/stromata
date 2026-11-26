@@ -1384,3 +1384,161 @@ article.prose-body > div:first-of-type > p::first-letter {
   .scripture-popover { display: none !important; }
   .scripture-ref { text-decoration: none; }
 }
+
+/* =============================================================
+   Author page (Phase A, 26 Nov 2026)
+   ============================================================= */
+
+/* The portrait and the intro grid. On a phone the portrait sits centred above
+   the name, small. From md it is the frontispiece: a tall arch in its own
+   column, beside the name, metadata, era strip and bio, so that column fills
+   beside it instead of leaving a gap under the strip. The arch is drawn tight
+   (152:282), without the empty frame above its apex. */
+.author-portrait {
+  width: 80px;
+  aspect-ratio: 152 / 282;
+  margin: 0 auto 1.25rem;
+}
+.author-intro-bio { margin-top: 2rem; }
+@media (min-width: 768px) {
+  .author-intro--portrait {
+    display: grid;
+    grid-template-columns: 180px minmax(0, 1fr);
+    grid-template-rows: auto 1fr;
+    column-gap: 2.5rem;
+    align-items: start;
+  }
+  .author-intro--portrait .author-portrait {
+    grid-row: 1 / span 2;
+    width: 100%;
+    margin: 0;
+  }
+  .author-intro--portrait .author-intro-head,
+  .author-intro--portrait .author-intro-bio { grid-column: 2; }
+}
+@media (min-width: 1024px) {
+  .author-intro--portrait { grid-template-columns: 260px minmax(0, 1fr); column-gap: 3.5rem; }
+  /* Stays in view beside a long biography. */
+  .author-intro--portrait .author-portrait { position: sticky; top: 5.5rem; }
+}
+
+/* The biography sits at the reading measure rather than the full shell. */
+.author-bio { max-width: var(--reading-measure); }
+
+/* Below md a long bio is clamped to about four lines, with a fade into the
+   paper. The toggle is a visually hidden checkbox and its label, so it works
+   without JavaScript; the height is fixed, so nothing shifts on load. */
+@media (max-width: 767.98px) {
+  .author-bio--clamp .author-bio-toggle:not(:checked) ~ .author-bio-body {
+    max-height: var(--author-bio-clamp, 6.2rem);
+    overflow: hidden;
+    -webkit-mask-image: linear-gradient(to bottom, #000 60%, transparent);
+    mask-image: linear-gradient(to bottom, #000 60%, transparent);
+  }
+  .author-bio-toggle:checked ~ .author-bio-label .author-bio-more { display: none; }
+  .author-bio-toggle:not(:checked) ~ .author-bio-label .author-bio-less { display: none; }
+  .author-bio-toggle:focus-visible ~ .author-bio-label {
+    outline: 2px solid var(--gold-ink);
+    outline-offset: 2px;
+  }
+  .author-bio-label { cursor: pointer; }
+}
+
+/* A form heading's woodcut ornament, drawn as a mask like the covers' (one
+   cached file per genre); the colour comes in inline as a token. */
+.form-ornament {
+  display: inline-block;
+  width: 1.5em;
+  height: 1.5em;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
+}
+
+/* "Show all 24 parts": a quiet summary with its own disclosure mark, a 44px
+   tap target. */
+.work-parts-summary {
+  list-style: none;
+  cursor: pointer;
+  color: var(--gold-ink);
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+}
+.work-parts-summary::-webkit-details-marker { display: none; }
+.work-parts-summary::before {
+  content: "▸";
+  display: inline-block;
+  width: 1em;
+  transition: transform var(--dur, 150ms) var(--ease, ease);
+}
+.work-parts[open] > .work-parts-summary::before { transform: rotate(90deg); }
+.work-parts-summary:hover { opacity: 0.7; }
+
+/* The author page's works as covers. On a phone each form group is a full-width
+   two-up grid. From md the groups flow side by side, each as wide as its covers,
+   so an author with many one-work forms does not get a row of empty shelf per
+   form: every cover is the same width (a third of the shell at md, a quarter
+   from lg) whichever group it sits in. A group with more works than fit in a
+   row (--wide) takes the full width. */
+.work-parts-summary > span { display: inline; }
+.work-parts-summary:has(> span) { align-items: baseline; padding: 0.6rem 0; }
+/* On a phone a one-work group takes half the width, so two of them share a row
+   instead of leaving half of each row empty. */
+.form-groups { display: flex; flex-wrap: wrap; align-items: flex-start; column-gap: 1rem; }
+.form-group { flex: none; width: 100%; }
+.form-group--single { width: calc((100% - 1rem) / 2); }
+.form-groups .form-group--single > ul.form-shelf { grid-template-columns: minmax(0, 1fr); }
+@media (min-width: 768px) {
+  .form-groups { column-gap: 1.5rem; }
+  .form-group { --cols: 3; }
+  .form-group--single:not(.form-group--narrow) { width: 100%; }
+  .form-group--narrow {
+    width: calc((100% - (var(--cols) - 1) * 1.5rem) / var(--cols) * var(--n) + (var(--n) - 1) * 1.5rem);
+  }
+  .form-groups .form-group--narrow > ul.form-shelf {
+    grid-template-columns: repeat(var(--n), minmax(0, 1fr));
+    column-gap: 1.5rem;
+  }
+}
+@media (min-width: 1024px) {
+  .form-group { --cols: 4; }
+}
+
+/* Critique pass, 26 Nov. */
+/* Covers carry an 8px right margin for the collection stack's spine; pull the
+   shelf out by the same amount so its right edge meets the gold rule. */
+@media (min-width: 768px) { .shelf-bleed { margin-right: -8px; } }
+/* Metadata links are real tap targets on a phone (44px), without changing
+   the line's look. */
+@media (max-width: 767.98px) {
+  .author-meta a { padding: 0.7rem 0; } /* inline: a larger hit area, same line height */
+}
+/* The "Contents" jump under a collection cover: a 44px target. */
+.contents-jump { min-height: 44px; }
+.contents-jump:hover { opacity: 0.7; }
+/* The parts summary: the marker hangs, so a wrapped title lines up under
+   itself, not under the triangle. */
+.work-parts-summary:has(> span) { display: flex; align-items: baseline; }
+.work-parts-summary::before { flex: none; width: 1.25em; }
+.work-parts { scroll-margin-top: 5rem; }
+/* Headings in a row of narrow groups end on one line, so their shelves start
+   level even when one heading wraps. */
+@media (min-width: 768px) {
+  .form-group--narrow > h3 { min-height: 3rem; align-items: flex-end; }
+}
+
+/* Begin with: the editor's pick. One cover, larger than a shelf cover on a
+   phone's half width, beside its title and the line on why. */
+.begin-with {
+  display: grid;
+  grid-template-columns: minmax(0, 42%) minmax(0, 1fr);
+  column-gap: 1.25rem;
+  align-items: center;
+}
+@media (min-width: 768px) {
+  .begin-with { grid-template-columns: 218px minmax(0, 1fr); column-gap: 2.5rem; }
+}
