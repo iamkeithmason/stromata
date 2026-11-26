@@ -193,11 +193,13 @@ export function LancetArch({ initial, label, imageUrl, focusX, focusY, zoom, laz
               objectPosition: position,
               transform: z !== 1 ? `scale(${z})` : undefined,
               transformOrigin: position,
+              filter: plate ? 'var(--plate-wash)' : undefined,
             }}
           />
           {/* The plate is darkened so the gold initial reads over any part
               of it (a token, so the tint is tuned in one place). */}
           {plate && <div style={{ position: 'absolute', inset: 0, background: 'var(--plate-tint)' }} />}
+          {plate && <div style={{ position: 'absolute', inset: 0, background: 'var(--plate-foot)' }} />}
           {/* A broad pool of shadow centred on the initial. The token centres
               it 56% down, where the letter sits in the full box; in the tight
               box the letter sits 51% down, so the layer is lifted 5%. */}
@@ -240,8 +242,8 @@ export function LancetArch({ initial, label, imageUrl, focusX, focusY, zoom, laz
               x="100"
               y="255"
               textAnchor="middle"
-              fontFamily="var(--serif)"
-              fontSize="120"
+              fontFamily="var(--serif-uncial)"
+              fontSize="108"
               fill="var(--plate-glow)"
               stroke="var(--plate-glow)"
               strokeWidth="12"
@@ -255,8 +257,8 @@ export function LancetArch({ initial, label, imageUrl, focusX, focusY, zoom, laz
               x="100"
               y="255"
               textAnchor="middle"
-              fontFamily="var(--serif)"
-              fontSize="120"
+              fontFamily="var(--serif-uncial)"
+              fontSize="108"
               fill="var(--gold)"
               stroke="var(--plate-letter-edge)"
               // A slight edge: the tight arch is drawn ~1.7x larger, so it

@@ -30,6 +30,12 @@ era and now get it; the one without (`unknown-early-church`) keeps the vellum ar
   shape (`--plate-glow`), with a thin dark edge (`--plate-letter-edge`). All on `:root` only; the colour
   tokens are swatched on `/design`. The pale engravings (Reformation, Post-Reformation, the Early Medieval
   ivory) are where the pool matters most.
+- **A warm wash, a darker foot, an uncial initial** (Keith, 26 Nov). `--plate-wash` (a sepia CSS filter)
+  brings the black-and-white engravings and the gilded mosaics into one warm set; `--plate-foot` darkens the
+  foot of the arch as the era page header's scrim does; and the initial is set in Uncial Antiqua
+  (Astigmatic, SIL OFL 1.1, self-hosted at `public/fonts/UncialAntiqua-Regular.woff2`, 20 KB, Latin subset)
+  through `--serif-uncial`, like a manuscript capital. The face is fetched only on pages that draw such an
+  arch. Uncial letterforms are wide, so the initial is set at 108 rather than 120.
 - **Everywhere `LancetArch` draws an author**: author cards (featured band, /authors, kindred authors), the
   reader's author rail, and the author page, which now gives every author with an era the frontispiece
   column a portrait had (previously no portrait meant no arch at all).

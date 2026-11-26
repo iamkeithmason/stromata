@@ -40,6 +40,17 @@
   font-display: swap;
 }
 
+/* Uncial Antiqua (Astigmatic, SIL OFL 1.1) — the initial in an era-plate arch
+   (an author with no portrait), Keith's choice on 26 Nov 2026. Latin subset;
+   fetched only on pages that draw such an arch. */
+@font-face {
+  font-family: "Uncial Antiqua";
+  src: url("/fonts/UncialAntiqua-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
 /* =============================================================
    Design tokens
    ============================================================= */
@@ -101,6 +112,13 @@
   --plate-glow:        rgba(8, 6, 4, 0.8);
   --plate-pool: radial-gradient(ellipse 62% 36% at 50% 56%, rgba(8, 6, 4, 0.7), rgba(8, 6, 4, 0.4) 50%, rgba(8, 6, 4, 0) 100%);
   --plate-letter-edge: rgba(10, 8, 5, 0.85);
+  /* A warm wash over the plate, so a black-and-white engraving and a gilded
+     mosaic read as one set beside the gold and vellum (a CSS filter). */
+  --plate-wash: sepia(0.6) saturate(0.85);
+  /* The foot of the arch a little darker, as the era page header's scrim. */
+  --plate-foot: linear-gradient(to top, rgba(8, 6, 4, 0.55) 0%, rgba(8, 6, 4, 0.2) 30%, rgba(8, 6, 4, 0) 55%);
+  /* The initial's face: an uncial capital, like a manuscript's. */
+  --serif-uncial: "Uncial Antiqua", "Junicode", Georgia, serif;
   --cover-mid:  #F5F0E6;   /* book-cover inner panel — a stable cream, NOT theme-flipped */
   --cover-ornament: #8A5F1E; /* genre ornament on the cover panel. --gold-ink's value, but NOT theme-flipped: covers stay cream in the reader dark theme */
   /* Cover-panel ink: the light-theme --ink / --ink-soft / --ink-mute values, NOT
