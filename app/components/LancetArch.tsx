@@ -5,7 +5,11 @@
  * wide (~1:1.9). Place inside a container pinned to the arch ratio:
  *   style={{ aspectRatio: '200 / 380', maxWidth: Npx }}
  *
- * Without `imageUrl` the author's `initial` is shown in a pure-SVG arch.
+ * Without `imageUrl` the author's `initial` is shown in the arch. When the
+ * author's era has a plate (`eraSlug`, lib/eras/plates.ts) the initial sits in
+ * the frame's gold, outlined dark, over a darkened window of that plate; the
+ * window moves with `seed` (the author's slug) so a row of same-era authors
+ * does not repeat one image. With no era it is the plain vellum arch, pure SVG.
  * With `imageUrl` the photo is drawn as an HTML <img> with object-fit: cover
  * (so it always fills the opening, cropping the overflow rather than
  * letterboxing) and clipped to the arch; the gold tracery is laid over it.
@@ -21,6 +25,8 @@
  * (see CHANGELOG 2026-09-15); `aspect-ratio` here removes the trap rather
  * than relying on every caller nesting the component just so.
  */
+
+import { archPlateCrop, eraArchPlate } from '@/lib/eras/plates'
 
 // The outer lancet outline in the 200×380 SVG coordinate space — used for the
 // vellum fill, the initial-only backing, and the gold keyline.
@@ -113,23 +119,34 @@ type Props = {
    * it: at rail width the full box left ~60px of blank space over the portrait.
    */
   fit?: 'frame' | 'tight'
+  /**
+   * The author's era slug. With no portrait, an era that has a plate puts a
+   * darkened window of it behind the initial; otherwise the vellum arch.
+   */
+  eraSlug?: string | null
+  /** Picks the plate window (the author's slug); defaults to `label`. */
+  seed?: string
 }
 
 const clamp = (n: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, n))
 
-export function LancetArch({ initial, label, imageUrl, focusX, focusY, zoom, lazy, fit = 'frame' }: Props) {
+export function LancetArch({ initial, label, imageUrl, focusX, focusY, zoom, lazy, fit = 'frame', eraSlug, seed }: Props) {
   const tight = fit === 'tight'
   const viewBox = tight ? `${TIGHT.x} ${TIGHT.y} ${TIGHT.w} ${TIGHT.h}` : '0 0 200 380'
   const ratio = tight ? LANCET_TIGHT_RATIO : '200 / 380'
-  // ── Portrait variant: HTML <img> (object-fit: cover) clipped to the arch ──
-  if (imageUrl) {
-    const clipId = clipIdFor(imageUrl + (tight ? '#tight' : ''))
+  const plateSrc = imageUrl ? null : eraArchPlate(eraSlug)
+  // ── Image variants: HTML <img> (object-fit: cover) clipped to the arch ──
+  // A portrait, or, with no portrait, the era plate behind the initial.
+  const src = imageUrl || plateSrc
+  if (src) {
+    const plate = !imageUrl && plateSrc ? archPlateCrop(seed ?? label, eraSlug!) : null
+    const clipId = clipIdFor(src + (seed ?? label) + (tight ? '#tight' : ''))
     const clip = `url(#${clipId})`
     // Normalise framing, defaulting to the centred / un-zoomed look so an
     // unframed portrait renders exactly as it did before framing existed.
-    const fx = clamp(focusX ?? 50, 0, 100)
-    const fy = clamp(focusY ?? 50, 0, 100)
-    const z = clamp(zoom ?? 1, 1, 5)
+    const fx = plate ? plate.x : clamp(focusX ?? 50, 0, 100)
+    const fy = plate ? plate.y : clamp(focusY ?? 50, 0, 100)
+    const z = plate ? plate.zoom : clamp(zoom ?? 1, 1, 5)
     const position = `${fx}% ${fy}%`
     return (
       <div
@@ -163,7 +180,7 @@ export function LancetArch({ initial, label, imageUrl, focusX, focusY, zoom, laz
           <div style={{ position: 'absolute', inset: 0, background: 'var(--vellum)' }} />
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src={imageUrl}
+            src={src}
             alt=""
             loading={lazy ? 'lazy' : undefined}
             decoding={lazy ? 'async' : undefined}
@@ -176,8 +193,28 @@ export function LancetArch({ initial, label, imageUrl, focusX, focusY, zoom, laz
               objectPosition: position,
               transform: z !== 1 ? `scale(${z})` : undefined,
               transformOrigin: position,
+              filter: plate ? 'var(--plate-wash)' : undefined,
             }}
           />
+          {/* The plate is darkened so the gold initial reads over any part
+              of it (a token, so the tint is tuned in one place). */}
+          {plate && <div style={{ position: 'absolute', inset: 0, background: 'var(--plate-tint)' }} />}
+          {plate && <div style={{ position: 'absolute', inset: 0, background: 'var(--plate-foot)' }} />}
+          {/* A broad pool of shadow centred on the initial. The token centres
+              it 56% down, where the letter sits in the full box; in the tight
+              box the letter sits 51% down, so the layer is lifted 5%. */}
+          {plate && (
+            <div
+              style={{
+                position: 'absolute',
+                left: 0,
+                right: 0,
+                top: tight ? '-5%' : 0,
+                bottom: tight ? '5%' : 0,
+                background: 'var(--plate-pool)',
+              }}
+            />
+          )}
         </div>
         {/* Gold tracery overlaid, unclipped so the keyline stays crisp */}
         <svg
@@ -190,6 +227,50 @@ export function LancetArch({ initial, label, imageUrl, focusX, focusY, zoom, laz
           aria-hidden
         >
           <ArchTracery fixedStroke={tight} />
+          {plate && (
+            <>
+            {/* A broad, soft shadow behind the letter: the darkening is
+                local to the initial, so the rest of the plate stays visible.
+                This is the tight half, a blur of the letter itself so the
+                shadow follows its shape; the broad pool is --plate-pool. */}
+            <defs>
+              <filter id={`${clipId}-glow`} x="-50%" y="-50%" width="200%" height="200%">
+                <feGaussianBlur stdDeviation="7" />
+              </filter>
+            </defs>
+            <text
+              x="100"
+              y="255"
+              textAnchor="middle"
+              fontFamily="var(--serif-uncial)"
+              fontSize="108"
+              fill="var(--plate-glow)"
+              stroke="var(--plate-glow)"
+              strokeWidth="12"
+              strokeLinejoin="round"
+              filter={`url(#${clipId}-glow)`}
+              aria-hidden
+            >
+              {initial}
+            </text>
+            <text
+              x="100"
+              y="255"
+              textAnchor="middle"
+              fontFamily="var(--serif-uncial)"
+              fontSize="108"
+              fill="var(--gold)"
+              stroke="var(--plate-letter-edge)"
+              // A slight edge: the tight arch is drawn ~1.7x larger, so it
+              // takes a thinner stroke to land at the same 2–3px.
+              strokeWidth={tight ? 2 : 3.5}
+              strokeLinejoin="round"
+              paintOrder="stroke"
+            >
+              {initial}
+            </text>
+            </>
+          )}
         </svg>
       </div>
     )

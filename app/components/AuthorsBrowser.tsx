@@ -190,6 +190,7 @@ export function AuthorsBrowser({
                   imageZoom: a.imageZoom,
                   traditionName: a.tradition?.name ?? null,
                   eraLabel: a.era?.label ?? null,
+                  eraSlug: a.era?.slug ?? null,
                 }}
               />
             </li>

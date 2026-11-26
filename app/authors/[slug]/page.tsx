@@ -7,6 +7,7 @@ import { createPublicClient } from '@/lib/supabase/public'
 import { orThrow } from '@/lib/supabase/query'
 import MarkdownBody from '@/app/components/MarkdownBody'
 import { LancetArch } from '@/app/components/LancetArch'
+import { eraArchPlate } from '@/lib/eras/plates'
 import { JsonLd } from '@/app/components/JsonLd'
 import { OG_IMAGE } from '@/lib/metadata'
 import { EraStrip, type EraRow } from '@/app/components/EraStrip'
@@ -73,6 +74,7 @@ type RelatedAuthor = {
   image_focus_x: number | null
   image_focus_y: number | null
   image_zoom: number | null
+  era: { slug: string } | null
 }
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
@@ -238,7 +240,7 @@ export default async function AuthorPage({ params }: Props) {
     traditionId
       ? supabase
           .from('authors')
-          .select('id, name, slug, birth_year, death_year, image_url, image_focus_x, image_focus_y, image_zoom, texts!inner(id)')
+          .select('id, name, slug, birth_year, death_year, image_url, image_focus_x, image_focus_y, image_zoom, era:eras(slug), texts!inner(id)')
           .eq('tradition_id', traditionId)
           .eq('texts.published', true)
           .neq('id', author.id)
@@ -293,6 +295,9 @@ export default async function AuthorPage({ params }: Props) {
   const locationCity = author.location as string | null
   const dates = formatDates(author.birth_year, author.death_year)
   const imageUrl = author.image_url as string | null
+  // No portrait: the frontispiece is the era's plate behind the initial, so
+  // every author with an era gets the arch column (only an era-less one does not).
+  const hasArch = Boolean(imageUrl || eraArchPlate(eraSlug))
   const initial = author.name.trim().charAt(0).toUpperCase() || '·'
   const canonicalUrl = `${SITE_URL}/authors/${slug}`
   const bio = !author.draft && author.bio ? (author.bio as string) : null
@@ -493,8 +498,8 @@ export default async function AuthorPage({ params }: Props) {
             page's frontispiece: a tall arch in its own column beside the name,
             metadata, era strip and biography, so the column fills beside it
             instead of leaving a gap under the strip. */}
-        <div className={`author-intro mb-10 ${imageUrl ? 'author-intro--portrait' : ''}`}>
-          {imageUrl && (
+        <div className={`author-intro mb-10 ${hasArch ? 'author-intro--portrait' : ''}`}>
+          {hasArch && (
             <div className="author-portrait">
               <LancetArch
                 initial={initial}
@@ -504,6 +509,8 @@ export default async function AuthorPage({ params }: Props) {
                 focusY={author.image_focus_y as number | null}
                 zoom={author.image_zoom as number | null}
                 fit="tight"
+                eraSlug={eraSlug}
+                seed={slug}
               />
             </div>
           )}
@@ -733,6 +740,7 @@ export default async function AuthorPage({ params }: Props) {
                       imageZoom: a.image_zoom,
                       traditionName: null,
                       eraLabel: null,
+                      eraSlug: a.era?.slug ?? null,
                     }}
                   />
                 </li>

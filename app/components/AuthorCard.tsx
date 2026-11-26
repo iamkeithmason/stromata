@@ -26,6 +26,8 @@ export type AuthorCardData = {
   imageZoom: number | null
   traditionName: string | null
   eraLabel: string | null
+  /** With no portrait, the arch shows this era's plate behind the initial. */
+  eraSlug: string | null
 }
 
 export function formatAuthorDates(birth: number | null, death: number | null): string {
@@ -82,6 +84,8 @@ export function AuthorCard({
           focusY={author.imageFocusY}
           zoom={author.imageZoom}
           lazy={lazy}
+          eraSlug={author.eraSlug}
+          seed={author.slug}
         />
       </div>
 

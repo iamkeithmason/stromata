@@ -100,3 +100,50 @@ export function resolveEraPlate(slug: string, override: EraPlateOverride | null)
   if (fallback && override?.plate_focus_y != null) return { ...fallback, focusY: override.plate_focus_y }
   return fallback
 }
+
+/**
+ * Arch plates: the era's plate behind the initial of an author with no portrait.
+ *
+ * Every lancet arch for a portrait-less author shows a small, darkened copy of
+ * their era's default plate, with the initial in the frame's gold. The copies
+ * live at public/plates/eras/arch/<slug>.jpg (960×480, 45–90 KB, made by
+ * scripts/build-era-arch-plates.sh); the 2000×1000 originals are too heavy to
+ * sit behind every card. An admin-uploaded era plate is not used here: it is a
+ * full-size file, and the arch would fetch it on every card.
+ *
+ * An author with no era (or an era with no plate) keeps the plain vellum arch.
+ */
+export function eraArchPlate(eraSlug: string | null | undefined): string | null {
+  if (!eraSlug || !DEFAULT_ERA_PLATES[eraSlug]) return null
+  return `/plates/eras/arch/${eraSlug}.jpg`
+}
+
+/** FNV-1a: a small, stable hash, so a crop is the same on every render. */
+function hash(seed: string): number {
+  let h = 0x811c9dc5
+  for (let i = 0; i < seed.length; i++) {
+    h ^= seed.charCodeAt(i)
+    h = Math.imul(h, 0x01000193)
+  }
+  return h >>> 0
+}
+
+export type ArchCrop = { x: number; y: number; zoom: number }
+
+/**
+ * Where in its era's plate an author's arch looks. The arch shows about a
+ * quarter of the plate's width, so a row of same-era authors would repeat one
+ * window if every arch used the centre. The author's slug picks the window:
+ * x across 8–92%, a little zoom (1–1.35), and y near the plate's own focus so
+ * the window stays on the people the plate was cropped around.
+ */
+export function archPlateCrop(seed: string, eraSlug: string): ArchCrop {
+  const h = hash(seed)
+  const focusY = DEFAULT_ERA_PLATES[eraSlug]?.focusY ?? 50
+  const x = 8 + (h % 1000) / 999 * 84
+  const zoom = 1 + ((h >>> 10) % 100) / 99 * 0.35
+  const dy = (((h >>> 17) % 100) / 99 - 0.5) * 20
+  const y = Math.min(100, Math.max(0, focusY + dy))
+  const round = (n: number) => Math.round(n * 10) / 10
+  return { x: round(x), y: round(y), zoom: Math.round(zoom * 100) / 100 }
+}
