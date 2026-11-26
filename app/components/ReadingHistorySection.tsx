@@ -1,8 +1,14 @@
 'use client'
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { getHistory, type ReadingHistoryEntry } from '@/lib/reading-history'
-import { PROGRESS_NOT_STARTED, PROGRESS_FINISHED } from './ReadingProgressBar'
+import {
+  getHistory,
+  resumePoint,
+  RESUME_HASH,
+  PROGRESS_NOT_STARTED,
+  PROGRESS_FINISHED,
+  type ReadingHistoryEntry,
+} from '@/lib/reading-history'
 import { BookCover } from './BookCover'
 import { SectionHeader } from './SectionHeader'
 
@@ -33,6 +39,10 @@ export function ReadingHistorySection() {
           const finished = p >= PROGRESS_FINISHED
           const inProgress = p >= PROGRESS_NOT_STARTED && !finished
           const label = progressLabel(entry)
+          // A card for a text the reader is partway through returns them to
+          // their place; the text page reads the hash and scrolls there.
+          const resumable = resumePoint(entry) != null
+          const href = `/texts/${entry.slug}${resumable ? RESUME_HASH : ''}`
           // `state` is conditional, but `from` must always be sent — otherwise
           // only in-progress reads were attributable to this surface.
           const umamiProps = inProgress
@@ -42,7 +52,8 @@ export function ReadingHistorySection() {
           return (
             <div key={entry.slug} className="w-full">
               <Link
-                href={`/texts/${entry.slug}`}
+                href={href}
+                aria-label={resumable ? `Resume ${entry.title}` : undefined}
                 className="group block"
                 data-umami-event="text-open"
                 data-umami-event-from="reading-history"
@@ -60,10 +71,19 @@ export function ReadingHistorySection() {
                 />
               </Link>
               <div className="px-0.5 mt-3">
+                {inProgress && (
+                  <div
+                    aria-hidden
+                    className="mb-2"
+                    style={{ height: 2, background: 'var(--rule)' }}
+                  >
+                    <div style={{ height: '100%', width: `${Math.round(p * 100)}%`, background: 'var(--gold)' }} />
+                  </div>
+                )}
                 {finished ? (
                   <p className="caption"><span style={{ color: 'var(--gold)' }}>✓</span> Finished</p>
                 ) : label ? (
-                  <p className="caption">{label}</p>
+                  <p className="caption">{resumable ? `Resume · ${label}` : label}</p>
                 ) : entry.readingMinutes ? (
                   <p className="caption">~ {entry.readingMinutes} min</p>
                 ) : null}
