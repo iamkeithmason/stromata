@@ -1530,3 +1530,15 @@ article.prose-body > div:first-of-type > p::first-letter {
 @media (min-width: 768px) {
   .form-group--narrow > h3 { min-height: 3rem; align-items: flex-end; }
 }
+
+/* Begin with: the editor's pick. One cover, larger than a shelf cover on a
+   phone's half width, beside its title and the line on why. */
+.begin-with {
+  display: grid;
+  grid-template-columns: minmax(0, 42%) minmax(0, 1fr);
+  column-gap: 1.25rem;
+  align-items: center;
+}
+@media (min-width: 768px) {
+  .begin-with { grid-template-columns: 218px minmax(0, 1fr); column-gap: 2.5rem; }
+}

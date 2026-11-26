@@ -15,6 +15,7 @@ import { StackedCover } from '@/app/components/StackedCover'
 import { ornamentUrl } from '@/lib/genres/ornaments'
 import {
   accessionLabel,
+  findBeginWith,
   buildWorks,
   corpusLine,
   formatDuration,
@@ -259,12 +260,17 @@ export default async function AuthorPage({ params }: Props) {
     accession_number: t.accession_number,
   }))
   const works = buildWorks(workTexts, (collectionsRaw ?? []) as CollectionMeta[])
-  const shorts = shortReads(works)
+  // The editor's pick (authors.begin_with, approved by Keith). It leaves the
+  // shelves and Short reads, so no work is shown twice.
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const beginWith = findBeginWith(works, (author as any).begin_with)
+  const rest = beginWith ? works.filter(w => w !== beginWith.work) : works
+  const shorts = shortReads(rest)
   // A short read that is a standalone work is already shown in Short reads,
   // so its cover is left off the shelves below (Keith, 26 Nov). A collection
   // whose first part is a short read stays: its cover is the whole work.
   const shortSlugs = new Set(shorts.map(sr => sr.slug))
-  const groups = groupByForm(works.filter(w => !(w.kind === 'text' && shortSlugs.has(w.slug))))
+  const groups = groupByForm(rest.filter(w => !(w.kind === 'text' && shortSlugs.has(w.slug))))
   // An author who wrote in one form gets no form headings: "Sermons · 1 work"
   // above a single sermon says nothing the row does not.
   const showFormHeadings = groups.length > 1
@@ -360,7 +366,7 @@ export default async function AuthorPage({ params }: Props) {
     )
   }
 
-  const textOpen = (textSlug: string, section: 'short-reads' | 'work' | 'part') => ({
+  const textOpen = (textSlug: string, section: 'begin-with' | 'short-reads' | 'work' | 'part') => ({
     'data-umami-event': 'text-open',
     'data-umami-event-from': 'author-page',
     'data-umami-event-section': section,
@@ -550,6 +556,63 @@ export default async function AuthorPage({ params }: Props) {
             </div>
           )}
         </div>
+
+        {/* ── Begin with ───────────────────────────────────────────────────── */}
+        {/* The editor's pick: one larger cover and a line on why. A collection's
+            cover opens the collection; "Start reading" opens its first part, so
+            the reader is one tap from the text either way. */}
+        {beginWith && (() => {
+          const w = beginWith.work
+          const first = w.kind === 'collection' ? w.parts[0] : w
+          return (
+            <section className="mb-10" aria-labelledby="begin-with">
+              <SectionTitle id="begin-with">Begin with</SectionTitle>
+              <div className="begin-with mt-4">
+                {w.kind === 'collection' ? (
+                  <Link
+                    href={`/collections/${w.slug}`}
+                    className="group block"
+                    data-umami-event="collection-open"
+                    data-umami-event-from="author-page"
+                    data-umami-event-section="begin-with"
+                    data-umami-event-collection={w.slug}
+                  >
+                    <div aria-hidden="true"><StackedCover>{coverOf(w, 0)}</StackedCover></div>
+                    <span className="sr-only">{w.title}</span>
+                  </Link>
+                ) : (
+                  <Link href={`/texts/${w.slug}`} className="group block" {...textOpen(w.slug, 'begin-with')}>
+                    <CoverSlot>{coverOf(w, 0)}</CoverSlot>
+                    <span className="sr-only">{w.title}</span>
+                  </Link>
+                )}
+                <div className="min-w-0">
+                  <h3 className="font-serif text-xl md:text-2xl leading-snug" style={{ color: 'var(--ink)' }}>
+                    {w.title}
+                  </h3>
+                  <p className="font-serif italic mt-2 md:text-lg" style={{ color: 'var(--ink-soft)' }}>
+                    {beginWith.note}
+                  </p>
+                  <p className="caption mt-3">
+                    {[w.kind === 'collection' ? `${w.parts.length} parts` : null, w.minutes > 0 ? formatDuration(w.minutes) : null]
+                      .filter(Boolean)
+                      .join(' · ')}
+                  </p>
+                  {first && (
+                    <Link
+                      href={`/texts/${first.slug}`}
+                      className="inline-flex items-center min-h-[44px] mt-2 hover:opacity-70 transition-opacity"
+                      style={{ color: 'var(--gold-ink)' }}
+                      {...textOpen(first.slug, 'begin-with')}
+                    >
+                      {w.kind === 'collection' ? `Start with ${first.title}` : 'Start reading'} →
+                    </Link>
+                  )}
+                </div>
+              </div>
+            </section>
+          )
+        })()}
 
         {/* ── Short reads ──────────────────────────────────────────────────── */}
         {/* A length fact, not an editor's choice, so never "Start here". */}

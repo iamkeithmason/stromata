@@ -2,6 +2,7 @@ import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import {
   accessionLabel,
+  findBeginWith,
   buildWorks,
   corpusLine,
   formatDuration,
@@ -186,4 +187,20 @@ test('cover labels: a text\'s number, a collection\'s range', () => {
   assert.equal(accessionLabel(bySlug.get('solo')!), '№ 07')
   assert.equal(accessionLabel(bySlug.get('tractates-john')!), '№ 100–105')
   assert.equal(accessionLabel(bySlug.get('bare')!), null)
+})
+
+test('a Begin with pick resolves only to a published work of the same kind', () => {
+  const works = buildWorks(
+    [
+      text({ slug: 'solo', title: 'Solo' }),
+      text({ slug: 'p1', collection_id: 'c1', collection_order: 1 }),
+    ],
+    [tractates],
+  )
+  assert.equal(findBeginWith(works, { kind: 'collection', slug: 'tractates-john', note: ' Why. ' })?.note, 'Why.')
+  assert.equal(findBeginWith(works, { kind: 'text', slug: 'solo', note: 'Why.' })?.work.slug, 'solo')
+  assert.equal(findBeginWith(works, { kind: 'text', slug: 'p1', note: 'A part is not a work.' }), null)
+  assert.equal(findBeginWith(works, { kind: 'text', slug: 'solo', note: '' }), null)
+  assert.equal(findBeginWith(works, null), null)
+  assert.equal(findBeginWith(works, 'junk'), null)
 })

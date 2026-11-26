@@ -284,3 +284,21 @@ export function accessionLabel(w: Work): string | null {
 
 /** Collapse a long parts list into columns on desktop beyond this many parts. */
 export const COMPACT_PARTS_OVER = 30
+
+/** A Begin with pick as stored on authors.begin_with (see scripts/lib/begin-with.mjs). */
+export type BeginWithPick = { kind: 'text' | 'collection'; slug: string; note: string }
+
+/**
+ * The work an author's Begin with pick names, or null when it does not resolve
+ * to one of their published works (unpublished, renamed, malformed): the page
+ * then simply shows no pick.
+ */
+export function findBeginWith(works: Work[], pick: unknown): { work: Work; note: string } | null {
+  if (!pick || typeof pick !== 'object') return null
+  const p = pick as Partial<BeginWithPick>
+  if ((p.kind !== 'text' && p.kind !== 'collection') || typeof p.slug !== 'string') return null
+  const note = typeof p.note === 'string' ? p.note.trim() : ''
+  if (!note) return null
+  const work = works.find(w => w.kind === p.kind && w.slug === p.slug)
+  return work ? { work, note } : null
+}

@@ -75,3 +75,18 @@ export async function revalidateAuthor(
     // smaller problem than a save that reports failure after committing.
   }
 }
+
+/**
+ * Revalidate one author page only. For a change that no other surface renders
+ * (the Begin with pick appears only on /authors/{slug}), so a save does not
+ * mark every one of the author's texts stale as `revalidateAuthor` does: for
+ * Augustine that would be 208 pages for crawlers to re-render.
+ */
+export function revalidateAuthorPage(slug: string | null | undefined): void {
+  if (!slug) return
+  try {
+    revalidatePath(`/authors/${slug}`)
+  } catch {
+    // Best-effort, as above.
+  }
+}

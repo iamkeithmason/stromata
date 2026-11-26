@@ -28,6 +28,16 @@
  *                                 at /admin/review/sections, not in the publish
  *                                 queue. A new import that meets the definition
  *                                 is picked up by the next run, with no flag.
+ *   authors.begin_with_draft    — the editor's "Begin with" pick for an author
+ *                                 page: one work and a line on why
+ *                                 (scripts/lib/begin-with.mjs). For every
+ *                                 non-draft author with two or more published
+ *                                 texts and no draft yet, so a new author is
+ *                                 picked up when they reach two. Reads titles
+ *                                 and summaries only, never a body: 42 authors
+ *                                 on 26 Nov 2026, about 1–3k input tokens each,
+ *                                 well under $1 on Opus. Reviewed at
+ *                                 /admin/review/begin-with.
  *   texts.paragraphs_draft      — proposed editorial paragraph breaks for
  *                                 texts with a prose paragraph of 800+ words
  *                                 (scripts/lib/paragraphs.mjs). Anchors only,
@@ -73,6 +83,8 @@
  *   node scripts/generate-review-drafts.mjs --paragraphs --tier=2    # … Tiers 1 and 2
  *   node scripts/generate-review-drafts.mjs --paragraphs --slug=<slug>
  *   node scripts/generate-review-drafts.mjs --paragraphs --dry-run   # the corpus report: tiers, candidates
+ *   node scripts/generate-review-drafts.mjs --begin-with             # only the authors' Begin with picks
+ *   node scripts/generate-review-drafts.mjs --begin-with --slug=<author-slug>
  */
 
 import dotenv from 'dotenv';
@@ -118,9 +130,19 @@ import {
   tierFor,
   validatePicks as validateBreakPicks,
 } from './lib/paragraphs.mjs';
+import {
+  BEGIN_WITH_MIN_TEXTS,
+  BEGIN_WITH_PROMPT,
+  candidatesFor,
+  cleanPick,
+  parseReply as parseBeginWithReply,
+  promptFor as beginWithPromptFor,
+  validatePick as validateBeginWithPick,
+} from './lib/begin-with.mjs';
 
 const SECTIONS_MODEL = process.env.SECTIONS_MODEL || NOTE_MODEL;
 const PARAGRAPHS_MODEL = process.env.PARAGRAPHS_MODEL || NOTE_MODEL;
+const BEGIN_WITH_MODEL = process.env.BEGIN_WITH_MODEL || NOTE_MODEL;
 // Texts per `paragraph_wall_stats` call; 60 measured at 0.2–0.7 s a page.
 const WALL_STATS_PAGE = 60;
 
@@ -145,6 +167,7 @@ const MODE = {
   limit: flagValue('--limit') ? parseInt(flagValue('--limit'), 10) : null,
   sections: hasFlag('--sections'),
   paragraphs: hasFlag('--paragraphs'),
+  beginWith: hasFlag('--begin-with'),
   tier: flagValue('--tier') ? parseInt(flagValue('--tier'), 10) : 1,
   slug: flagValue('--slug'),
 };
@@ -768,7 +791,121 @@ async function fillParagraphDrafts() {
 
 // ── Main ─────────────────────────────────────────────────────────────────────
 
+// ── Step 6: authors.begin_with_draft ─────────────────────────────────────────
+
+async function fillBeginWithDrafts() {
+  let query = supabase
+    .from('authors')
+    .select('id, name, slug, death_year, begin_with_draft')
+    .eq('draft', false)
+    .not('slug', 'is', null)
+    .order('name');
+  if (!MODE.force) query = query.is('begin_with_draft', null);
+  if (MODE.slug) query = query.eq('slug', MODE.slug);
+  const { data: authors, error } = await query;
+  if (error) {
+    console.error('Failed to load authors for Begin with:', error.message);
+    return 0;
+  }
+
+  // Metadata only: titles, lengths, summaries. No body is read.
+  const ids = (authors ?? []).map((a) => a.id);
+  if (!ids.length) {
+    console.log('Begin with: nothing to draft.\n');
+    return 0;
+  }
+  const { data: texts, error: textsError } = await supabase
+    .from('texts')
+    .select('author_id, slug, title, word_count, summary, collection_id, genre:genres(name)')
+    .eq('published', true)
+    .in('author_id', ids);
+  if (textsError) {
+    console.error('Failed to load texts for Begin with:', textsError.message);
+    return 0;
+  }
+  const collectionIds = [...new Set((texts ?? []).map((t) => t.collection_id).filter(Boolean))];
+  const { data: collections } = collectionIds.length
+    ? await supabase.from('collections').select('id, slug, title, description, published').in('id', collectionIds)
+    : { data: [] };
+
+  const byAuthor = new Map();
+  for (const t of texts ?? []) {
+    const list = byAuthor.get(t.author_id) ?? [];
+    list.push({ ...t, genre: [t.genre].flat()[0]?.name ?? null });
+    byAuthor.set(t.author_id, list);
+  }
+  const targets = (authors ?? []).filter((a) => (byAuthor.get(a.id)?.length ?? 0) >= BEGIN_WITH_MIN_TEXTS);
+  const slice = MODE.limit ? targets.slice(0, MODE.limit) : targets;
+  console.log(`Begin with: ${slice.length} author(s) (model: ${BEGIN_WITH_MODEL}).`);
+
+  let done = 0;
+  for (let i = 0; i < slice.length; i++) {
+    const author = slice[i];
+    const tag = `  [${i + 1}/${slice.length}] ${author.name}`;
+    const candidates = candidatesFor(byAuthor.get(author.id), collections ?? []);
+    if (candidates.length < 2) {
+      console.log(`${tag} — one work only; skipped`);
+      continue;
+    }
+    if (MODE.dryRun) {
+      console.log(`${tag} — ${candidates.length} works`);
+      done++;
+      continue;
+    }
+
+    let pick;
+    try {
+      const message = await anthropic.messages.create({
+        model: BEGIN_WITH_MODEL,
+        max_tokens: 300,
+        system: BEGIN_WITH_PROMPT,
+        messages: [{ role: 'user', content: beginWithPromptFor(author, candidates) }],
+      });
+      record(BEGIN_WITH_MODEL, {
+        inputTokens: message.usage?.input_tokens ?? 0,
+        outputTokens: message.usage?.output_tokens ?? 0,
+      });
+      pick = parseBeginWithReply(message.content?.[0]?.text);
+    } catch (err) {
+      console.error(`${tag} — ✗ ${err.message}`);
+      continue;
+    }
+    const problems = validateBeginWithPick(pick, candidates);
+    if (problems.length) {
+      console.error(`${tag} — ✗ unusable draft: ${problems.join(' ')}`);
+      continue;
+    }
+
+    const { error: writeError } = await supabase
+      .from('authors')
+      .update({ begin_with_draft: cleanPick(pick) })
+      .eq('id', author.id);
+    if (writeError) {
+      console.error(`${tag} — ✗ write error: ${writeError.message}`);
+      continue;
+    }
+    console.log(`${tag} — ✓ ${pick.slug}: ${cleanPick(pick).note}`);
+    done++;
+  }
+  console.log('');
+  return done;
+}
+
 async function main() {
+  if (MODE.beginWith) {
+    console.log(
+      `Drafting Begin with picks${MODE.slug ? ` for "${MODE.slug}"` : ''}` +
+      `${MODE.dryRun ? ' (dry run — no API calls, no writes)' : ''}` +
+      `${MODE.force ? ' (force — redrafting existing drafts)' : ''}\n`
+    );
+    const picks = await fillBeginWithDrafts();
+    console.log(`── Summary ─────────────────────────────────────────────────`);
+    console.log(`  Begin with picks ${MODE.dryRun ? 'would draft' : 'drafted'}: ${picks}`);
+    reportSpend();
+    if (!MODE.dryRun && picks > 0) console.log('\nReview them at /admin/review/begin-with.');
+    return;
+  }
+
   if (MODE.paragraphs) {
     console.log(
       `Drafting paragraph breaks${MODE.slug ? ` for "${MODE.slug}"` : ''}` +
@@ -814,10 +951,13 @@ async function main() {
   // not end the run; only a run scoped to a collection skips them.
   const sections = MODE.collection || MODE.standalone ? 0 : await fillSectionDrafts();
   const paragraphs = MODE.collection || MODE.standalone ? 0 : await fillParagraphDrafts();
+  // New authors reach two works through imports, so a plain run drafts their pick too.
+  const beginWith = MODE.collection || MODE.standalone ? 0 : await fillBeginWithDrafts();
   if (texts.length === 0) {
     console.log(`── Summary ─────────────────────────────────────────────────`);
     console.log(`  Sections ${MODE.dryRun ? 'would draft' : 'drafted'}: ${sections}`);
     console.log(`  Paragraph proposals ${MODE.dryRun ? 'would draft' : 'drafted'}: ${paragraphs}`);
+    console.log(`  Begin with picks ${MODE.dryRun ? 'would draft' : 'drafted'}: ${beginWith}`);
     reportSpend();
     return;
   }
@@ -847,6 +987,7 @@ async function main() {
   console.log(`  Collection descriptions ${verb}: ${descriptions}`);
   console.log(`  Sections ${verb}: ${sections}`);
   console.log(`  Paragraph proposals ${verb}: ${paragraphs}`);
+  console.log(`  Begin with picks ${verb}: ${beginWith}`);
   reportSpend();
   if (!MODE.dryRun) console.log('\nReview them at /admin/review.');
 }

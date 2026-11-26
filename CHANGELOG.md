@@ -48,6 +48,19 @@ retention build, with the genre ornaments he asked for on the form headings (9 N
   bio clamp are smaller, so the first shelf comes up sooner.
 - **Genre ornaments on the form headings,** the same woodcut masks the covers use (`public/ornaments/`),
   in `--gold-ink`, `aria-hidden`, no event. Chronicle has none yet and shows the heading alone.
+- **Begin with, the editor's pick (Phase B, Keith 26 Nov).** One work per author for a first-time reader,
+  with a line on why, shown as a larger cover above Short reads, with "Start reading" (or "Start with <first
+  part>" for a collection). Scaled by drafting rather than by hand: `npm run generate:review-drafts --
+  --begin-with` reads each non-draft author's published works (titles, lengths, summaries; never a body) and
+  drafts a pick into `authors.begin_with_draft` for every author with two or more texts (42 on 26 Nov) that
+  has none; a plain run does it too, so a new author is drafted when they reach two. Keith approves, edits or
+  skips each on a phone at `/admin/review/begin-with` (linked from the review queue), which writes
+  `authors.begin_with` and refreshes that author page only (`revalidateAuthorPage`, not all 208 of
+  Augustine's text pages). One set of rules in `scripts/lib/begin-with.mjs` (tested) serves the script, the
+  route and the page; a pick that no longer names a published work is simply not shown. The pick leaves the
+  shelves and Short reads, and the shelves also leave out works already in Short reads (Keith), so nothing
+  appears twice. Clicks carry `section=begin-with`. Migration `044_author_begin_with.sql` (two nullable jsonb
+  columns); the page selects `*`, so it renders unchanged before the migration is applied.
 - **Header as a title page.** The portrait sits centred and smaller above the name on a phone and beside it
   from md. One small-caps metadata line (dates · tradition · era · place), a corpus line ("12 works · 207
   parts · about 126 hours of reading", linking to the works), and an **era strip**: the nine eras in order,
