@@ -71,7 +71,7 @@ retention build, with the genre ornaments he asked for on the form headings (9 N
 - **Short reads:** for an author with four or more works, up to three standalone texts or first parts under
   30 minutes, shortest first. Labelled as a length fact, never "Start here". Tertullian has none: his
   shortest work is 40 minutes.
-- **Kindred authors** move below the works and leave out authors with no published text.
+- **Kindred authors** move below the works, leave out authors with no published text, and are drawn as the homepage's lancet portrait cards (`AuthorCard`, name and dates; three across on a phone, six from lg). `AuthorCard` takes an optional `section` for the event.
 - **Freshness:** `collectionTextPaths` now also returns the author pages of a collection's chapters, since
   those pages print the collection's title, so a collection save refreshes them.
 

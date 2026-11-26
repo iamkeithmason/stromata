@@ -45,6 +45,7 @@ export function AuthorCard({
   from,
   textCount,
   lazy,
+  section,
 }: {
   author: AuthorCardData
   /** The `from` surface for the author-open event (see CLAUDE.md vocabulary). */
@@ -52,6 +53,8 @@ export function AuthorCard({
   /** Shown under the tradition when given (the index); omitted on the homepage. */
   textCount?: number
   lazy?: boolean
+  /** The `section` qualifier for the author-open event, where the surface has sections (the author page's kindred row). */
+  section?: string
 }) {
   const dates = formatAuthorDates(author.birth_year, author.death_year)
   const era = author.eraLabel ? formatEra(author.eraLabel) : ''
@@ -63,6 +66,7 @@ export function AuthorCard({
       style={{ textDecoration: 'none' }}
       data-umami-event="author-open"
       data-umami-event-from={from}
+      data-umami-event-section={section}
       data-umami-event-author={author.name}
     >
       {/* Arch frame — cell pinned to 200:380 portrait ratio */}

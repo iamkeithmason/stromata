@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { AuthorCard } from '@/app/components/AuthorCard'
 import { SiteHeader } from '@/app/components/SiteHeader'
 import { TrackPageEvent } from '@/app/components/TrackPageEvent'
 import { notFound } from 'next/navigation'
@@ -68,6 +69,10 @@ type RelatedAuthor = {
   slug: string
   birth_year: number | null
   death_year: number | null
+  image_url: string | null
+  image_focus_x: number | null
+  image_focus_y: number | null
+  image_zoom: number | null
 }
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
@@ -233,7 +238,7 @@ export default async function AuthorPage({ params }: Props) {
     traditionId
       ? supabase
           .from('authors')
-          .select('id, name, slug, birth_year, death_year, texts!inner(id)')
+          .select('id, name, slug, birth_year, death_year, image_url, image_focus_x, image_focus_y, image_zoom, texts!inner(id)')
           .eq('tradition_id', traditionId)
           .eq('texts.published', true)
           .neq('id', author.id)
@@ -706,32 +711,32 @@ export default async function AuthorPage({ params }: Props) {
         {relatedAuthors.length > 0 && (
           <section className="mb-10" aria-labelledby="kindred">
             <SectionTitle id="kindred" aside={tradition ?? undefined}>Kindred authors</SectionTitle>
-            <ul className="divide-y" style={{ borderColor: 'var(--rule-soft)' }}>
-              {relatedAuthors.map(a => {
-                const aDates = formatDates(a.birth_year, a.death_year)
-                return (
-                  <li key={a.id}>
-                    <Link
-                      href={`/authors/${a.slug}`}
-                      className="flex items-baseline justify-between py-3 group hover:opacity-70 transition-opacity"
-                      style={{ textDecoration: 'none' }}
-                      data-umami-event="author-open"
-                      data-umami-event-from="related-figures"
-                      data-umami-event-section="kindred"
-                      data-umami-event-author={a.name}
-                    >
-                      <span className="font-serif" style={{ color: 'var(--ink)' }}>
-                        {a.name}
-                      </span>
-                      {aDates && (
-                        <span className="text-xs ml-4 shrink-0" style={{ color: 'var(--ink-mute)' }}>
-                          {aDates}
-                        </span>
-                      )}
-                    </Link>
-                  </li>
-                )
-              })}
+            {/* The homepage's lancet cards, so an onward author looks the same
+                wherever a reader meets one. Tradition is the section's aside
+                and the era strip sits above, so the cards carry name and
+                dates only (an era line overflowed three columns on a phone). */}
+            <ul className="grid grid-cols-3 lg:grid-cols-6 gap-x-4 gap-y-8 mt-4">
+              {relatedAuthors.map(a => (
+                <li key={a.id}>
+                  <AuthorCard
+                    from="related-figures"
+                    section="kindred"
+                    lazy
+                    author={{
+                      name: a.name,
+                      slug: a.slug,
+                      birth_year: a.birth_year,
+                      death_year: a.death_year,
+                      imageUrl: a.image_url,
+                      imageFocusX: a.image_focus_x,
+                      imageFocusY: a.image_focus_y,
+                      imageZoom: a.image_zoom,
+                      traditionName: null,
+                      eraLabel: null,
+                    }}
+                  />
+                </li>
+              ))}
             </ul>
           </section>
         )}
