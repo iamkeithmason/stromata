@@ -7,6 +7,30 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-11-26 — Era-plate arches for authors with no portrait
+
+Card: none
+
+An author with no portrait showed a plain vellum arch with a dark initial. Keith's idea (26 Nov): put the
+author's era plate behind the initial, darkened, with the letter in the frame's gold and a slight dark edge,
+so the arch looks designed even with no picture. 21 of the 22 published authors without a portrait have an
+era and now get it; the one without (`unknown-early-church`) keeps the vellum arch.
+
+- **Small copies of the plates.** `public/plates/eras/arch/<era>.jpg`, 960×480 at 45–90 KB (the originals
+  are 2000×1000, 290–600 KB). `scripts/build-era-arch-plates.sh` rebuilds them (ImageMagick). Admin-uploaded
+  era plates are not used in the arch: they are full-size files and would load behind every card.
+- **A different window per author.** The arch shows about a quarter of the plate's width, so
+  `archPlateCrop` in `lib/eras/plates.ts` picks the window from the author's slug (horizontal position, a
+  little zoom, vertical near the plate's focus). The same author always gets the same window; six
+  Ante-Nicene authors in a row do not repeat one image. Tested in `lib/eras/plates.test.ts`, which also
+  fails if an era plate has no arch copy.
+- **Two tokens**, `--plate-tint` (the darkening, 60%) and `--plate-letter-edge`, on `:root` only and shown
+  on `/design`. The tint is the one knob: lighter shows more of the plate, darker gives the gold more
+  contrast on the pale engravings (Reformation, Post-Reformation).
+- **Everywhere `LancetArch` draws an author**: author cards (featured band, /authors, kindred authors), the
+  reader's author rail, and the author page, which now gives every author with an era the frontispiece
+  column a portrait had (previously no portrait meant no arch at all).
+
 ## 2026-11-26 — Author pages, Phase A: works by form, Short reads, an era strip, ornament headings
 
 Card: Strengthen author pages as the primary reading entry point

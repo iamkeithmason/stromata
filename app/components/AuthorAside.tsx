@@ -10,6 +10,8 @@ type Props = {
   deathYear: number | null
   locationName: string | null
   eraName: string | null
+  /** With no portrait, the arch shows this era's plate behind the initial. */
+  eraSlug?: string | null
   tradition: { name: string; slug: string } | null
   bio: string | null
   imageUrl?: string | null
@@ -24,7 +26,7 @@ type Props = {
  * dates · place · era on one line, the tradition, a short biography clamped to
  * a few lines, and a link through to the full author page.
  */
-export function AuthorAside({ name, slug, birthYear, deathYear, locationName, eraName, tradition, bio, imageUrl, imageFocusX, imageFocusY, imageZoom }: Props) {
+export function AuthorAside({ name, slug, birthYear, deathYear, locationName, eraName, eraSlug, tradition, bio, imageUrl, imageFocusX, imageFocusY, imageZoom }: Props) {
   const initial = name.trim().charAt(0).toUpperCase() || '·'
   // Dates line: "354–430", falling back gracefully when a year is missing.
   const years = birthYear && deathYear
@@ -44,7 +46,7 @@ export function AuthorAside({ name, slug, birthYear, deathYear, locationName, er
           `tight` crops the arch's box to the arch, so nothing blank sits over
           it; it fills the rail column (capped when the rail stacks). */}
       <div className="author-rail-arch" style={{ aspectRatio: LANCET_TIGHT_RATIO, marginBottom: '1.25rem' }}>
-        <LancetArch fit="tight" initial={initial} label={`Initial ${initial} for ${name}`} imageUrl={imageUrl} focusX={imageFocusX} focusY={imageFocusY} zoom={imageZoom} />
+        <LancetArch fit="tight" initial={initial} label={`Initial ${initial} for ${name}`} imageUrl={imageUrl} focusX={imageFocusX} focusY={imageFocusY} zoom={imageZoom} eraSlug={eraSlug} seed={slug ?? name} />
       </div>
 
       <h2

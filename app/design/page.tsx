@@ -143,6 +143,8 @@ export default function DesignPage() {
               <ColourSwatch token="--on-dark-rule" backdrop="--season-trinitytide" label="Reversed hairline" />
               <ColourSwatch token="--on-dark-gold" backdrop="--season-trinitytide" label="Reversed gold" />
               <ColourSwatch token="--on-dark-gold-soft" backdrop="--season-trinitytide" label="Reversed gold, faint" />
+              <ColourSwatch token="--plate-tint" label="Era-plate arch: darkening over the plate" />
+              <ColourSwatch token="--plate-letter-edge" label="Era-plate arch: edge round the gold initial" />
               <ColourSwatch token="--cover-mid" label="Book-cover inner panel" />
               <ColourSwatch token="--cover-ornament" backdrop="--cover-mid" label="Genre ornament on a cover" />
               <ColourSwatch token="--cover-ink" backdrop="--cover-mid" label="Cover title" />

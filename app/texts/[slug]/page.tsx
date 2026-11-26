@@ -524,6 +524,7 @@ export default async function TextPage({ params }: Props) {
                   deathYear={author.death_year}
                   locationName={author.loc?.name ?? null}
                   eraName={eraName}
+                  eraSlug={author.era?.slug ?? null}
                   tradition={author.tradition}
                   bio={author.bio}
                   imageUrl={author.image_url}
