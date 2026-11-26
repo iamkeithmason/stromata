@@ -1,6 +1,7 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import {
+  accessionLabel,
   buildWorks,
   corpusLine,
   formatDuration,
@@ -168,4 +169,21 @@ test('formHeading pluralises every controlled-vocabulary genre', () => {
   assert.equal(formHeading('Homily', 3), 'Homilies · 3 works')
   assert.equal(formHeading('Letter', 1), 'Letters · 1 work')
   assert.equal(formHeading(null, 2), 'Other works · 2 works')
+})
+
+test('cover labels: a text\'s number, a collection\'s range', () => {
+  const works = buildWorks(
+    [
+      text({ slug: 'solo', title: 'A', accession_number: 7 }),
+      text({ slug: 'p1', collection_id: 'c1', collection_order: 1, accession_number: 105 }),
+      text({ slug: 'p2', collection_id: 'c1', collection_order: 2, accession_number: 100 }),
+      text({ slug: 'p3', collection_id: 'c1', collection_order: 3 }),
+      text({ slug: 'bare', title: 'Z' }),
+    ],
+    [tractates],
+  )
+  const bySlug = new Map(works.map(w => [w.slug, w]))
+  assert.equal(accessionLabel(bySlug.get('solo')!), '№ 07')
+  assert.equal(accessionLabel(bySlug.get('tractates-john')!), '№ 100–105')
+  assert.equal(accessionLabel(bySlug.get('bare')!), null)
 })

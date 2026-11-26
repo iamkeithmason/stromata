@@ -24,6 +24,8 @@ export type WorkText = {
   collection_order: number | null
   genre: string | null
   themes: string[]
+  /** The text's accession number, shown on its cover. Optional for callers that draw no cover. */
+  accession_number?: number | null
 }
 
 export type CollectionMeta = { id: string; title: string; slug: string; published: boolean }
@@ -40,6 +42,8 @@ export type Work =
       parts: Part[]
       minutes: number
       themes: string[]
+      /** Lowest and highest accession numbers among the parts, for the cover band. */
+      accessionRange: { min: number; max: number } | null
     }
   | {
       kind: 'text'
@@ -49,6 +53,7 @@ export type Work =
       form: string | null
       minutes: number
       themes: string[]
+      accession: number | null
     }
 
 export type FormGroup = { form: string | null; works: Work[] }
@@ -106,6 +111,12 @@ function topThemes(texts: WorkText[], limit = MAX_ROW_THEMES): string[] {
     .map(([name]) => name)
 }
 
+/** Min and max of the numbers present; null when there are none. */
+function range(values: (number | null)[]): { min: number; max: number } | null {
+  const ns = values.filter((v): v is number => v != null)
+  return ns.length > 0 ? { min: Math.min(...ns), max: Math.max(...ns) } : null
+}
+
 /**
  * Roll an author's texts up into works. A text whose collection is missing or
  * unpublished stands alone (the text page treats it the same way).
@@ -129,6 +140,7 @@ export function buildWorks(texts: WorkText[], collections: CollectionMeta[]): Wo
         form: t.genre,
         minutes: readingMinutes(t.word_count),
         themes: t.themes.slice(0, MAX_ROW_THEMES),
+        accession: t.accession_number ?? null,
       })
     }
   }
@@ -145,6 +157,7 @@ export function buildWorks(texts: WorkText[], collections: CollectionMeta[]): Wo
       parts: sorted.map(t => ({ id: t.id, title: t.title, slug: t.slug, minutes: readingMinutes(t.word_count) })),
       minutes: sorted.reduce((sum, t) => sum + readingMinutes(t.word_count), 0),
       themes: topThemes(sorted),
+      accessionRange: range(sorted.map(t => t.accession_number ?? null)),
     })
   }
 
@@ -248,6 +261,14 @@ const FORM_PLURALS: Record<string, string> = {
 export function formHeading(form: string | null, count: number): string {
   const name = form ? (FORM_PLURALS[form] ?? form) : 'Other works'
   return `${name} · ${plural(count, 'work', 'works')}`
+}
+
+/** "№ 12", or "№ 100–105" for a collection; null when nothing is numbered. */
+export function accessionLabel(w: Work): string | null {
+  if (w.kind === 'text') return w.accession != null ? `№ ${String(w.accession).padStart(2, '0')}` : null
+  const r = w.accessionRange
+  if (!r) return null
+  return r.min === r.max ? `№ ${r.min}` : `№ ${r.min}–${r.max}`
 }
 
 /** Collapse a long parts list into columns on desktop beyond this many parts. */

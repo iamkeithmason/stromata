@@ -22,9 +22,17 @@ retention build, with the genre ornaments he asked for on the form headings (9 N
   a collection takes its parts' most common one) under small-caps headings, "Homilies · 1 work", most works
   first. An author with one form gets no headings. Augustine reads as 12 works in 7 forms; the Tractates on
   John are one row with 124 parts. The genre stops repeating on every row.
-- **Collection rows** link to the collection, give parts and hours, three themes, and a native `<details>`
-  "Show all N parts". The parts stay in the DOM, so every text is still crawlable; over 30 parts they set
-  in columns on desktop.
+- **Every work is a book cover** (Keith, 26 Nov, chosen over covers for Short reads only), the same
+  `BookCover` the homepage uses: tradition ground, genre ornament, accession number (a collection shows its
+  range, "№ 383–404", and is drawn stacked; `StackedCover` moved out of the homepage into
+  `app/components/StackedCover.tsx` so both pages share it). Under each cover, length (and parts for a
+  collection); themes from sm up. Two-up on a phone. A form with one work takes half a row on a phone, and
+  from md the forms with three works or fewer flow side by side at the same cover width, so an author with
+  many one-work forms does not get a mostly empty shelf per form (Augustine on desktop: 5,650px of page
+  with a row per form, 3,900px flowing).
+- **Contents** follows the shelves: one native `<details>` per collection, "City of God · 22 parts", full
+  width because a parts list cannot sit under a half-width cover. The parts stay in the DOM, so every text is
+  still crawlable; over 30 parts they set in columns on desktop.
 - **Genre ornaments on the form headings,** the same woodcut masks the covers use (`public/ornaments/`),
   in `--gold-ink`, `aria-hidden`, no event. Chronicle has none yet and shows the heading alone.
 - **Header as a title page.** The portrait sits centred and smaller above the name on a phone and beside it

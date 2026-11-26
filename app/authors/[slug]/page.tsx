@@ -10,8 +10,11 @@ import { JsonLd } from '@/app/components/JsonLd'
 import { OG_IMAGE } from '@/lib/metadata'
 import { EraStrip, type EraRow } from '@/app/components/EraStrip'
 import { TrackedDetails } from '@/app/components/TrackedDetails'
+import { BookCover } from '@/app/components/BookCover'
+import { StackedCover } from '@/app/components/StackedCover'
 import { ornamentUrl } from '@/lib/genres/ornaments'
 import {
+  accessionLabel,
   buildWorks,
   corpusLine,
   formatDuration,
@@ -51,6 +54,7 @@ type TextRow = {
   title: string
   slug: string
   word_count: number | null
+  accession_number: number | null
   collection_id: string | null
   collection_order: number | null
   genre: { name: string } | null
@@ -196,7 +200,7 @@ export default async function AuthorPage({ params }: Props) {
   const texts = orThrow(
     await supabase
       .from('texts')
-      .select('id, title, slug, word_count, collection_id, collection_order, genre:genres(name), text_themes(theme:themes(name))')
+      .select('id, title, slug, word_count, accession_number, collection_id, collection_order, genre:genres(name), text_themes(theme:themes(name))')
       .eq('author_id', author.id)
       .eq('published', true)
       .order('title'),
@@ -252,6 +256,7 @@ export default async function AuthorPage({ params }: Props) {
     collection_order: t.collection_order,
     genre: t.genre?.name ?? null,
     themes: t.text_themes.map(tt => tt.theme?.name).filter((n): n is string => Boolean(n)),
+    accession_number: t.accession_number,
   }))
   const works = buildWorks(workTexts, (collectionsRaw ?? []) as CollectionMeta[])
   const groups = groupByForm(works)
@@ -260,6 +265,8 @@ export default async function AuthorPage({ params }: Props) {
   const showFormHeadings = groups.length > 1
   const corpus = totals(works)
   const shorts = shortReads(works)
+  // Collections in the order their covers appear, for the contents lists.
+  const collectionsInOrder = groups.flatMap(g => g.works).filter(w => w.kind === 'collection')
 
   // Derived display values
   const traditionObj = author.tradition as { name: string; slug: string } | null
@@ -357,72 +364,93 @@ export default async function AuthorPage({ params }: Props) {
     'data-umami-event-author': author.name,
   })
 
-  const renderWork = (w: Work) => {
+  // Every work is a cover, as on the homepage: a text opens the reader, a
+  // collection (drawn stacked) opens its collection page. The cover already
+  // carries the title, author, tradition ground and genre ornament, so the
+  // caption under it says only what the cover cannot: length, and parts.
+  const coverOf = (w: Work, i: number) => (
+    <BookCover
+      title={w.title}
+      authorName={author.name}
+      deathYear={author.death_year as number | null}
+      accessionNumber={null}
+      accessionDisplay={accessionLabel(w)}
+      traditionSlug={traditionObj?.slug ?? null}
+      genre={w.form}
+      index={i}
+    />
+  )
+
+  const renderWork = (w: Work, i: number) => {
     if (w.kind === 'text') {
       return (
-        <li key={w.id} className="py-4">
-          <Link
-            href={`/texts/${w.slug}`}
-            className="font-serif hover:opacity-70 transition-opacity"
-            style={{ color: 'var(--ink)' }}
-            {...textOpen(w.slug, 'work')}
-          >
-            {w.title}
+        <li key={w.id} className="min-w-0">
+          <Link href={`/texts/${w.slug}`} className="group block" {...textOpen(w.slug, 'work')}>
+            {coverOf(w, i)}
+            <span className="sr-only">{w.title}</span>
           </Link>
-          <WorkMeta minutes={w.minutes} themes={w.themes} />
+          <CoverCaption minutes={w.minutes} themes={w.themes} />
         </li>
       )
     }
-    const compact = w.parts.length > COMPACT_PARTS_OVER
     return (
-      <li key={w.id} className="py-4">
+      <li key={w.id} className="min-w-0">
         <Link
           href={`/collections/${w.slug}`}
-          className="font-serif hover:opacity-70 transition-opacity"
-          style={{ color: 'var(--ink)' }}
+          className="group block"
           data-umami-event="collection-open"
           data-umami-event-from="author-page"
           data-umami-event-section="work"
           data-umami-event-collection={w.slug}
         >
-          {w.title}
+          <StackedCover>{coverOf(w, i)}</StackedCover>
+          <span className="sr-only">{w.title}</span>
         </Link>
-        <WorkMeta
+        <CoverCaption
           lead={`${w.parts.length} ${w.parts.length === 1 ? 'part' : 'parts'}`}
           minutes={w.minutes}
           themes={w.themes}
         />
-        <TrackedDetails
-          className="work-parts mt-1"
-          summaryClassName="work-parts-summary text-sm"
-          summary={`Show all ${w.parts.length} parts`}
-          event="collection-expand"
-          data={{ from: 'author-page', collection: w.slug }}
-        >
-          <ol
-            className={`mt-2 mb-1 text-sm ${compact ? 'md:columns-2 lg:columns-3' : ''}`}
-            style={{ columnGap: '2rem' }}
-          >
-            {w.parts.map(p => (
-              <li key={p.id} className="break-inside-avoid">
-                <Link
-                  href={`/texts/${p.slug}`}
-                  className="flex items-baseline justify-between gap-3 py-2 hover:opacity-70 transition-opacity"
-                  style={{ color: 'var(--ink)' }}
-                  {...textOpen(p.slug, 'part')}
-                >
-                  <span>{p.title}</span>
-                  {p.minutes > 0 && (
-                    <span className="text-xs shrink-0" style={{ color: 'var(--ink-faint)' }}>
-                      {p.minutes} min
-                    </span>
-                  )}
-                </Link>
-              </li>
-            ))}
-          </ol>
-        </TrackedDetails>
       </li>
+    )
+  }
+
+  // A collection's full contents, as a disclosure list.
+  const renderParts = (w: Work) => {
+    if (w.kind !== 'collection') return null
+    const compact = w.parts.length > COMPACT_PARTS_OVER
+    return (
+      <TrackedDetails
+        key={w.id}
+        className="work-parts py-1"
+        summaryClassName="work-parts-summary text-sm"
+        summary={<span><span style={{ color: 'var(--ink)' }}>{w.title}</span> · {w.parts.length} parts</span>}
+        event="collection-expand"
+        data={{ from: 'author-page', collection: w.slug }}
+      >
+        <ol
+          className={`mt-2 mb-2 text-sm ${compact ? 'md:columns-2 lg:columns-3' : ''}`}
+          style={{ columnGap: '2rem' }}
+        >
+          {w.parts.map(p => (
+            <li key={p.id} className="break-inside-avoid">
+              <Link
+                href={`/texts/${p.slug}`}
+                className="flex items-baseline justify-between gap-3 py-2 hover:opacity-70 transition-opacity"
+                style={{ color: 'var(--ink)' }}
+                {...textOpen(p.slug, 'part')}
+              >
+                <span>{p.title}</span>
+                {p.minutes > 0 && (
+                  <span className="text-xs shrink-0" style={{ color: 'var(--ink-faint)' }}>
+                    {p.minutes} min
+                  </span>
+                )}
+              </Link>
+            </li>
+          ))}
+        </ol>
+      </TrackedDetails>
     )
   }
 
@@ -534,32 +562,50 @@ export default async function AuthorPage({ params }: Props) {
         {works.length > 0 && (
           <section id="works" className="mb-10" aria-labelledby="works-title">
             <SectionTitle id="works-title" aside={String(corpus.works)}>Works</SectionTitle>
-            {groups.map(g => {
-              const ornament = ornamentUrl(g.form)
-              return (
-                <div key={g.form ?? 'other'} className={showFormHeadings ? 'mb-6' : ''}>
-                  {showFormHeadings && (
-                    <h3 className="smallcaps flex items-center gap-2 mt-6 mb-1" style={{ color: 'var(--ink)' }}>
-                      {ornament && (
-                        <span
-                          aria-hidden="true"
-                          className="form-ornament shrink-0"
-                          style={{
-                            backgroundColor: 'var(--gold-ink)',
-                            WebkitMaskImage: `url(${ornament})`,
-                            maskImage: `url(${ornament})`,
-                          }}
-                        />
-                      )}
-                      {formHeading(g.form, g.works.length)}
-                    </h3>
-                  )}
-                  <ul className="divide-y" style={{ borderColor: 'var(--rule-soft)' }}>
-                    {g.works.map(renderWork)}
-                  </ul>
-                </div>
-              )
-            })}
+            <div className="form-groups">
+              {groups.map(g => {
+                const ornament = ornamentUrl(g.form)
+                // Up to three works fit in a row at every width from md, so
+                // those groups can share a row with their neighbours.
+                const narrow = showFormHeadings && g.works.length <= 3
+                return (
+                  <div
+                    key={g.form ?? 'other'}
+                    className={`form-group ${narrow ? 'form-group--narrow' : ''} ${showFormHeadings && g.works.length === 1 ? 'form-group--single' : ''} ${showFormHeadings ? 'mb-10' : 'mt-2'}`}
+                    style={narrow ? ({ '--n': g.works.length } as React.CSSProperties) : undefined}
+                  >
+                    {showFormHeadings && (
+                      <h3 className="smallcaps flex items-center gap-2 mt-8 mb-1" style={{ color: 'var(--ink)' }}>
+                        {ornament && (
+                          <span
+                            aria-hidden="true"
+                            className="form-ornament shrink-0"
+                            style={{
+                              backgroundColor: 'var(--gold-ink)',
+                              WebkitMaskImage: `url(${ornament})`,
+                              maskImage: `url(${ornament})`,
+                            }}
+                          />
+                        )}
+                        {formHeading(g.form, g.works.length)}
+                      </h3>
+                    )}
+                    <ul className="form-shelf grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-x-4 gap-y-6 sm:gap-6 mt-4">
+                      {g.works.map(renderWork)}
+                    </ul>
+                  </div>
+                )
+              })}
+            </div>
+
+            {/* A collection's parts can't sit under a half-width cover, so the
+                contents of every collection follow the shelves, full width. */}
+            {collectionsInOrder.length > 0 && (
+              <div className="mt-2">
+                <h3 className="smallcaps mb-1" style={{ color: 'var(--ink)' }}>Contents</h3>
+                {collectionsInOrder.map(renderParts)}
+              </div>
+            )}
           </section>
         )}
 
@@ -632,16 +678,16 @@ function SectionTitle({ id, aside, children }: { id: string; aside?: string; chi
   )
 }
 
-function WorkMeta({ lead, minutes, themes }: { lead?: string; minutes: number; themes: string[] }) {
+function CoverCaption({ lead, minutes, themes }: { lead?: string; minutes: number; themes: string[] }) {
   const bits = [lead, minutes > 0 ? formatDuration(minutes) : null].filter(Boolean)
   return (
-    <div className="text-xs mt-0.5" style={{ color: 'var(--ink-faint)' }}>
-      {bits.join(' · ')}
+    <div className="px-0.5 mt-3">
+      {bits.length > 0 && <p className="caption">{bits.join(' · ')}</p>}
+      {/* Themes hidden in the two-up phone grid, as on the homepage. */}
       {themes.length > 0 && (
-        <span style={{ color: 'var(--ink-mute)' }}>
-          {bits.length > 0 ? ' · ' : ''}
+        <p className="hidden sm:block text-xs mt-1" style={{ color: 'var(--ink-mute)' }}>
           {themes.join(' · ')}
-        </span>
+        </p>
       )}
     </div>
   )
