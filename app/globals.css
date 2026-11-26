@@ -92,10 +92,14 @@
   --on-dark-gold:      rgb(224, 200, 134);         /* gold legible on a dark/liturgical ground (lighter than --gold) */
   --on-dark-gold-soft: rgba(224, 200, 134, 0.55);  /* faint reversed gold (underlines) */
 
-  /* Era-plate arch (an author with no portrait): the darkening laid over the
-     plate, and the dark edge round the gold initial. On their own dark ground,
-     so NOT theme-flipped. */
-  --plate-tint:        rgba(14, 11, 8, 0.6);
+  /* Era-plate arch (an author with no portrait): a light darkening over the
+     whole plate, a broad soft pool of shadow behind the initial plus a blur of
+     the letter's own shape (so the darkening is local to the letter), and the
+     dark edge round the gold initial. On their
+     own dark ground, so NOT theme-flipped. */
+  --plate-tint:        rgba(14, 11, 8, 0.3);
+  --plate-glow:        rgba(8, 6, 4, 0.8);
+  --plate-pool: radial-gradient(ellipse 62% 36% at 50% 56%, rgba(8, 6, 4, 0.7), rgba(8, 6, 4, 0.4) 50%, rgba(8, 6, 4, 0) 100%);
   --plate-letter-edge: rgba(10, 8, 5, 0.85);
   --cover-mid:  #F5F0E6;   /* book-cover inner panel — a stable cream, NOT theme-flipped */
   --cover-ornament: #8A5F1E; /* genre ornament on the cover panel. --gold-ink's value, but NOT theme-flipped: covers stay cream in the reader dark theme */

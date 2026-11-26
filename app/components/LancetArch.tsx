@@ -198,6 +198,21 @@ export function LancetArch({ initial, label, imageUrl, focusX, focusY, zoom, laz
           {/* The plate is darkened so the gold initial reads over any part
               of it (a token, so the tint is tuned in one place). */}
           {plate && <div style={{ position: 'absolute', inset: 0, background: 'var(--plate-tint)' }} />}
+          {/* A broad pool of shadow centred on the initial. The token centres
+              it 56% down, where the letter sits in the full box; in the tight
+              box the letter sits 51% down, so the layer is lifted 5%. */}
+          {plate && (
+            <div
+              style={{
+                position: 'absolute',
+                left: 0,
+                right: 0,
+                top: tight ? '-5%' : 0,
+                bottom: tight ? '5%' : 0,
+                background: 'var(--plate-pool)',
+              }}
+            />
+          )}
         </div>
         {/* Gold tracery overlaid, unclipped so the keyline stays crisp */}
         <svg
@@ -211,6 +226,31 @@ export function LancetArch({ initial, label, imageUrl, focusX, focusY, zoom, laz
         >
           <ArchTracery fixedStroke={tight} />
           {plate && (
+            <>
+            {/* A broad, soft shadow behind the letter: the darkening is
+                local to the initial, so the rest of the plate stays visible.
+                This is the tight half, a blur of the letter itself so the
+                shadow follows its shape; the broad pool is --plate-pool. */}
+            <defs>
+              <filter id={`${clipId}-glow`} x="-50%" y="-50%" width="200%" height="200%">
+                <feGaussianBlur stdDeviation="7" />
+              </filter>
+            </defs>
+            <text
+              x="100"
+              y="255"
+              textAnchor="middle"
+              fontFamily="var(--serif)"
+              fontSize="120"
+              fill="var(--plate-glow)"
+              stroke="var(--plate-glow)"
+              strokeWidth="12"
+              strokeLinejoin="round"
+              filter={`url(#${clipId}-glow)`}
+              aria-hidden
+            >
+              {initial}
+            </text>
             <text
               x="100"
               y="255"
@@ -227,6 +267,7 @@ export function LancetArch({ initial, label, imageUrl, focusX, focusY, zoom, laz
             >
               {initial}
             </text>
+            </>
           )}
         </svg>
       </div>

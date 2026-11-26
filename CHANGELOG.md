@@ -24,9 +24,12 @@ era and now get it; the one without (`unknown-early-church`) keeps the vellum ar
   little zoom, vertical near the plate's focus). The same author always gets the same window; six
   Ante-Nicene authors in a row do not repeat one image. Tested in `lib/eras/plates.test.ts`, which also
   fails if an era plate has no arch copy.
-- **Two tokens**, `--plate-tint` (the darkening, 60%) and `--plate-letter-edge`, on `:root` only and shown
-  on `/design`. The tint is the one knob: lighter shows more of the plate, darker gives the gold more
-  contrast on the pale engravings (Reformation, Post-Reformation).
+- **The darkening is local to the letter** (Keith's revision, 26 Nov). A first pass darkened the whole plate
+  by 60%, which hid most of it. Now the plate takes a light 30% tint (`--plate-tint`), and the contrast comes
+  from a broad, soft pool of shadow centred on the initial (`--plate-pool`) plus a blur of the letter's own
+  shape (`--plate-glow`), with a thin dark edge (`--plate-letter-edge`). All on `:root` only; the colour
+  tokens are swatched on `/design`. The pale engravings (Reformation, Post-Reformation, the Early Medieval
+  ivory) are where the pool matters most.
 - **Everywhere `LancetArch` draws an author**: author cards (featured band, /authors, kindred authors), the
   reader's author rail, and the author page, which now gives every author with an era the frontispiece
   column a portrait had (previously no portrait meant no arch at all).
