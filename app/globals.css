@@ -109,8 +109,8 @@
      dark edge round the gold initial. On their
      own dark ground, so NOT theme-flipped. */
   --plate-tint:        rgba(14, 11, 8, 0.3);
-  --plate-glow:        rgba(8, 6, 4, 0.8);
-  --plate-pool: radial-gradient(ellipse 62% 36% at 50% 56%, rgba(8, 6, 4, 0.7), rgba(8, 6, 4, 0.4) 50%, rgba(8, 6, 4, 0) 100%);
+  --plate-glow:        rgba(8, 6, 4, 0.55);
+  --plate-pool: radial-gradient(ellipse 62% 36% at 50% 56%, rgba(8, 6, 4, 0.45), rgba(8, 6, 4, 0.22) 50%, rgba(8, 6, 4, 0) 100%);
   --plate-letter-edge: rgba(10, 8, 5, 0.85);
   /* A warm wash over the plate, so a black-and-white engraving and a gilded
      mosaic read as one set beside the gold and vellum (a CSS filter). */
