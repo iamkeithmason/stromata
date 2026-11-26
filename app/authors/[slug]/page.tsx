@@ -386,7 +386,7 @@ export default async function AuthorPage({ params }: Props) {
       return (
         <li key={w.id} className="min-w-0">
           <Link href={`/texts/${w.slug}`} className="group block" {...textOpen(w.slug, 'work')}>
-            {coverOf(w, i)}
+            <CoverSlot>{coverOf(w, i)}</CoverSlot>
             <span className="sr-only">{w.title}</span>
           </Link>
           <CoverCaption minutes={w.minutes} themes={w.themes} />
@@ -403,7 +403,7 @@ export default async function AuthorPage({ params }: Props) {
           data-umami-event-section="work"
           data-umami-event-collection={w.slug}
         >
-          <StackedCover>{coverOf(w, i)}</StackedCover>
+          <div aria-hidden="true"><StackedCover>{coverOf(w, i)}</StackedCover></div>
           <span className="sr-only">{w.title}</span>
         </Link>
         <CoverCaption
@@ -411,6 +411,15 @@ export default async function AuthorPage({ params }: Props) {
           minutes={w.minutes}
           themes={w.themes}
         />
+        {/* The parts list sits under Contents, after the shelves; this keeps
+            the cover and its list one tap apart. */}
+        <a
+          href={`#contents-${w.slug}`}
+          className="contents-jump inline-flex items-center text-sm px-0.5"
+          style={{ color: 'var(--gold-ink)' }}
+        >
+          Contents
+        </a>
       </li>
     )
   }
@@ -422,6 +431,7 @@ export default async function AuthorPage({ params }: Props) {
     return (
       <TrackedDetails
         key={w.id}
+        id={`contents-${w.slug}`}
         className="work-parts py-1"
         summaryClassName="work-parts-summary text-sm"
         summary={<span><span style={{ color: 'var(--ink)' }}>{w.title}</span> · {w.parts.length} parts</span>}
@@ -436,7 +446,7 @@ export default async function AuthorPage({ params }: Props) {
             <li key={p.id} className="break-inside-avoid">
               <Link
                 href={`/texts/${p.slug}`}
-                className="flex items-baseline justify-between gap-3 py-2 hover:opacity-70 transition-opacity"
+                className="flex items-baseline justify-between gap-3 py-3 hover:opacity-70 transition-opacity"
                 style={{ color: 'var(--ink)' }}
                 {...textOpen(p.slug, 'part')}
               >
@@ -463,12 +473,14 @@ export default async function AuthorPage({ params }: Props) {
 
       <main id="main-content" className="content-shell py-10 md:py-12">
 
-        {/* ── Header, set like a title page ─────────────────────────────── */}
-        {/* Phone: the portrait sits centred above the name, smaller. From md it
-            stands beside the name, as before. */}
-        <header className="mb-8 flex flex-col items-center text-center md:flex-row md:items-start md:text-left md:gap-8">
+        {/* ── Header and bio, set like a title page ─────────────────────────── */}
+        {/* Phone: the portrait sits centred above the name. From md it is the
+            page's frontispiece: a tall arch in its own column beside the name,
+            metadata, era strip and biography, so the column fills beside it
+            instead of leaving a gap under the strip. */}
+        <div className={`author-intro mb-10 ${imageUrl ? 'author-intro--portrait' : ''}`}>
           {imageUrl && (
-            <div className="author-portrait shrink-0 mb-5 md:mb-0 md:order-last">
+            <div className="author-portrait">
               <LancetArch
                 initial={initial}
                 label={author.name}
@@ -476,28 +488,32 @@ export default async function AuthorPage({ params }: Props) {
                 focusX={author.image_focus_x as number | null}
                 focusY={author.image_focus_y as number | null}
                 zoom={author.image_zoom as number | null}
+                fit="tight"
               />
             </div>
           )}
-          <div className="flex-1 min-w-0 w-full">
-            <h1 className="font-serif text-3xl mb-2" style={{ color: 'var(--ink)' }}>
+          <header className="author-intro-head text-center md:text-left">
+            <h1 className="font-serif text-3xl md:text-4xl mb-2" style={{ color: 'var(--ink)' }}>
               {author.name}
             </h1>
 
             {metaBits.length > 0 && (
-              <p className="smallcaps" style={{ color: 'var(--ink-mute)' }}>
+              <p className="author-meta smallcaps" style={{ color: 'var(--ink-mute)' }}>
                 {metaBits.map((bit, i) => (
                   <span key={i}>
-                    {i > 0 && <span aria-hidden="true"> · </span>}
                     {bit}
+                    {/* The dot is bound to the item before it (a no-break
+                        space), so a wrapped line ends with "·" and never
+                        starts with one. */}
+                    {i < metaBits.length - 1 && <span aria-hidden="true">{'\u00a0· '}</span>}
                   </span>
                 ))}
               </p>
             )}
 
             {works.length > 0 && (
-              <p className="mt-2 text-sm">
-                <a href="#works" className="inline-block py-1 hover:opacity-70 transition-opacity" style={{ color: 'var(--gold-ink)' }}>
+              <p className="mt-1 text-sm">
+                <a href="#works" className="inline-flex items-center min-h-[44px] hover:opacity-70 transition-opacity" style={{ color: 'var(--gold-ink)' }}>
                   {corpusLine(corpus)}
                 </a>
               </p>
@@ -506,52 +522,56 @@ export default async function AuthorPage({ params }: Props) {
             <div className="mt-4 text-left">
               <EraStrip eras={eras} active={eraSlug} from="author-page" />
             </div>
-          </div>
-        </header>
+          </header>
 
-        {/* ── Bio ──────────────────────────────────────────────────────────── */}
-        {/* Hidden for draft authors — the bio is an unreviewed pipeline stub
-            until Keith promotes the author from the admin edit form. On a phone a
-            long bio is clamped to about four lines, with a CSS-only toggle so it
-            works without JavaScript; from md it is shown whole, at the reading
-            measure. */}
-        {bio && (
-          <div className={`author-bio mb-10 ${clampBio ? 'author-bio--clamp' : ''}`}>
-            {clampBio && (
-              <input type="checkbox" id="author-bio-more" className="author-bio-toggle sr-only" />
-            )}
-            <div className="author-bio-body">
-              <MarkdownBody content={bio} numbered={false} />
+          {/* Hidden for draft authors — the bio is an unreviewed pipeline stub
+              until Keith promotes the author from the admin edit form. On a phone a
+              long bio is clamped to about four lines, with a CSS-only toggle so it
+              works without JavaScript; from md it is shown whole, at the reading
+              measure. */}
+          {bio && (
+            <div className={`author-bio author-intro-bio ${clampBio ? 'author-bio--clamp' : ''}`}>
+              {clampBio && (
+                <input type="checkbox" id="author-bio-more" className="author-bio-toggle sr-only" />
+              )}
+              <div className="author-bio-body">
+                <MarkdownBody content={bio} numbered={false} />
+              </div>
+              {clampBio && (
+                <label htmlFor="author-bio-more" className="author-bio-label md:hidden inline-block py-2 text-sm" style={{ color: 'var(--gold-ink)' }}>
+                  <span className="author-bio-more">Continue reading</span>
+                  <span className="author-bio-less">Show less</span>
+                </label>
+              )}
             </div>
-            {clampBio && (
-              <label htmlFor="author-bio-more" className="author-bio-label md:hidden inline-block py-2 text-sm" style={{ color: 'var(--gold-ink)' }}>
-                <span className="author-bio-more">Continue reading</span>
-                <span className="author-bio-less">Show less</span>
-              </label>
-            )}
-          </div>
-        )}
+          )}
+        </div>
 
         {/* ── Short reads ──────────────────────────────────────────────────── */}
         {/* A length fact, not an editor's choice, so never "Start here". */}
         {shorts.length > 0 && (
           <section className="mb-10" aria-labelledby="short-reads">
             <SectionTitle id="short-reads">Short reads</SectionTitle>
-            <ul className="divide-y" style={{ borderColor: 'var(--rule-soft)' }}>
-              {shorts.map(s => (
-                <li key={s.id}>
-                  <Link
-                    href={`/texts/${s.slug}`}
-                    className="flex items-baseline justify-between gap-4 py-3 group"
-                    {...textOpen(s.slug, 'short-reads')}
-                  >
-                    <span className="font-serif group-hover:opacity-70 transition-opacity" style={{ color: 'var(--ink)' }}>
-                      {s.title}
-                    </span>
-                    <span className="text-xs shrink-0" style={{ color: 'var(--ink-faint)' }}>
-                      {s.minutes} min
-                    </span>
+            {/* The same shelf as the works below, so every cover on the page is one
+                size. */}
+            <ul className="shelf-bleed grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-x-4 gap-y-6 sm:gap-6 mt-4">
+              {shorts.map((sr, i) => (
+                <li key={sr.id} className="min-w-0">
+                  <Link href={`/texts/${sr.slug}`} className="group block" {...textOpen(sr.slug, 'short-reads')}>
+                    <CoverSlot>
+                      <BookCover
+                        title={sr.title}
+                        authorName={author.name}
+                        deathYear={author.death_year as number | null}
+                        accessionNumber={sr.accession}
+                        traditionSlug={traditionObj?.slug ?? null}
+                        genre={sr.form}
+                        index={i}
+                      />
+                    </CoverSlot>
+                    <span className="sr-only">{sr.title}</span>
                   </Link>
+                  <CoverCaption minutes={sr.minutes} themes={[]} short />
                 </li>
               ))}
             </ul>
@@ -571,11 +591,11 @@ export default async function AuthorPage({ params }: Props) {
                 return (
                   <div
                     key={g.form ?? 'other'}
-                    className={`form-group ${narrow ? 'form-group--narrow' : ''} ${showFormHeadings && g.works.length === 1 ? 'form-group--single' : ''} ${showFormHeadings ? 'mb-10' : 'mt-2'}`}
+                    className={`form-group ${narrow ? 'form-group--narrow' : ''} ${showFormHeadings && g.works.length === 1 ? 'form-group--single' : ''} ${showFormHeadings ? 'mb-6' : 'mt-2'}`}
                     style={narrow ? ({ '--n': g.works.length } as React.CSSProperties) : undefined}
                   >
                     {showFormHeadings && (
-                      <h3 className="smallcaps flex items-center gap-2 mt-8 mb-1" style={{ color: 'var(--ink)' }}>
+                      <h3 className="smallcaps flex items-center gap-2 mt-6 mb-1" style={{ color: 'var(--ink)' }}>
                         {ornament && (
                           <span
                             aria-hidden="true"
@@ -590,7 +610,7 @@ export default async function AuthorPage({ params }: Props) {
                         {formHeading(g.form, g.works.length)}
                       </h3>
                     )}
-                    <ul className="form-shelf grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-x-4 gap-y-6 sm:gap-6 mt-4">
+                    <ul className="form-shelf shelf-bleed grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-x-4 gap-y-6 sm:gap-6 mt-4">
                       {g.works.map(renderWork)}
                     </ul>
                   </div>
@@ -601,8 +621,8 @@ export default async function AuthorPage({ params }: Props) {
             {/* A collection's parts can't sit under a half-width cover, so the
                 contents of every collection follow the shelves, full width. */}
             {collectionsInOrder.length > 0 && (
-              <div className="mt-2">
-                <h3 className="smallcaps mb-1" style={{ color: 'var(--ink)' }}>Contents</h3>
+              <div className="mt-4">
+                <SectionTitle id="contents-title">Contents</SectionTitle>
                 {collectionsInOrder.map(renderParts)}
               </div>
             )}
@@ -678,8 +698,19 @@ function SectionTitle({ id, aside, children }: { id: string; aside?: string; chi
   )
 }
 
-function CoverCaption({ lead, minutes, themes }: { lead?: string; minutes: number; themes: string[] }) {
-  const bits = [lead, minutes > 0 ? formatDuration(minutes) : null].filter(Boolean)
+/**
+ * A single cover takes the same footprint as a stacked collection (whose spine
+ * layers sit in an 8px right and 5px bottom margin), so texts and collections
+ * on one shelf are the same size and their captions start on the same line.
+ */
+function CoverSlot({ children }: { children: React.ReactNode }) {
+  // aria-hidden: the cover repeats "Stromata № 405 … Augustine of Hippo c. 430"
+  // on every link; the sr-only title beside it is the link's name.
+  return <div aria-hidden="true" style={{ marginRight: 8, marginBottom: 5 }}>{children}</div>
+}
+
+function CoverCaption({ lead, minutes, themes, short = false }: { lead?: string; minutes: number; themes: string[]; short?: boolean }) {
+  const bits = [lead, minutes > 0 ? (short ? `${minutes} min` : formatDuration(minutes)) : null].filter(Boolean)
   return (
     <div className="px-0.5 mt-3">
       {bits.length > 0 && <p className="caption">{bits.join(' · ')}</p>}

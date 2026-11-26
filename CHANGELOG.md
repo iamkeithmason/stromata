@@ -33,6 +33,19 @@ retention build, with the genre ornaments he asked for on the form headings (9 N
 - **Contents** follows the shelves: one native `<details>` per collection, "City of God · 22 parts", full
   width because a parts list cannot sit under a half-width cover. The parts stay in the DOM, so every text is
   still crawlable; over 30 parts they set in columns on desktop.
+- **Second pass, the same evening (Keith):** Short reads are covers too (threshold kept at 30 minutes). A
+  single text's cover takes the same footprint as a stacked collection (`CoverSlot`, the spine's 8px/5px), so
+  every cover on a shelf is one size with captions level (measured: 218×327 at 1440, 155×232 at 390, no row
+  off by more than 1px). The portrait became the frontispiece: from md a tall arch (drawn `tight`) in its own
+  column, 180px at md and 260px and sticky from lg, with the name, metadata, era strip and bio beside it,
+  which also closes the gap that sat under the era strip. Then an impeccable critique (design review plus
+  detector, `impeccable detect` clean on the source) and these fixes from it: a one-work form heading is just
+  "Letters", and narrow headings share a baseline, so shelves in a row start level; each collection cover
+  links to its contents ("Contents", which opens the `<details>` by its anchor); the Contents heading
+  matches the other sections; the disclosure marker hangs; the cover art is `aria-hidden` (the sr-only title
+  names the link, instead of "Stromata № 405 … c. 430" on every cover); 44px tap targets for the metadata
+  links, the corpus line and the parts; the metadata line never starts a line with "·"; the phone portrait and
+  bio clamp are smaller, so the first shelf comes up sooner.
 - **Genre ornaments on the form headings,** the same woodcut masks the covers use (`public/ornaments/`),
   in `--gold-ink`, `aria-hidden`, no event. Chronicle has none yet and shows the heading alone.
 - **Header as a title page.** The portrait sits centred and smaller above the name on a phone and beside it

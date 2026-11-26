@@ -30,7 +30,7 @@ export type WorkText = {
 
 export type CollectionMeta = { id: string; title: string; slug: string; published: boolean }
 
-export type Part = { id: string; title: string; slug: string; minutes: number }
+export type Part = { id: string; title: string; slug: string; minutes: number; form: string | null; accession: number | null }
 
 export type Work =
   | {
@@ -60,7 +60,7 @@ export type FormGroup = { form: string | null; works: Work[] }
 
 export type Totals = { works: number; parts: number; minutes: number }
 
-export type ShortRead = { id: string; title: string; slug: string; minutes: number }
+export type ShortRead = { id: string; title: string; slug: string; minutes: number; form: string | null; accession: number | null }
 
 /** Theme chips per row. */
 export const MAX_ROW_THEMES = 3
@@ -154,7 +154,14 @@ export function buildWorks(texts: WorkText[], collections: CollectionMeta[]): Wo
       title: c.title,
       slug: c.slug,
       form: mode(sorted.map(t => t.genre)),
-      parts: sorted.map(t => ({ id: t.id, title: t.title, slug: t.slug, minutes: readingMinutes(t.word_count) })),
+      parts: sorted.map(t => ({
+        id: t.id,
+        title: t.title,
+        slug: t.slug,
+        minutes: readingMinutes(t.word_count),
+        form: t.genre,
+        accession: t.accession_number ?? null,
+      })),
       minutes: sorted.reduce((sum, t) => sum + readingMinutes(t.word_count), 0),
       themes: topThemes(sorted),
       accessionRange: range(sorted.map(t => t.accession_number ?? null)),
@@ -209,7 +216,7 @@ export function shortReads(works: Work[]): ShortRead[] {
     const c = w.kind === 'collection' ? w.parts[0] : w
     if (!c) continue
     if (c.minutes > 0 && c.minutes < SHORT_READ_UNDER_MINUTES) {
-      candidates.push({ id: c.id, title: c.title, slug: c.slug, minutes: c.minutes })
+      candidates.push({ id: c.id, title: c.title, slug: c.slug, minutes: c.minutes, form: c.form, accession: c.accession })
     }
   }
   return candidates
@@ -257,10 +264,14 @@ const FORM_PLURALS: Record<string, string> = {
   Chronicle: 'Chronicles',
 }
 
-/** Heading for a form group: "Homilies · 3 works". */
+/**
+ * Heading for a form group: "Homilies · 3 works". A one-work group is just
+ * "Letters": "· 1 work" says what the single cover below already shows, and
+ * the shorter heading stays on one line beside its neighbours.
+ */
 export function formHeading(form: string | null, count: number): string {
   const name = form ? (FORM_PLURALS[form] ?? form) : 'Other works'
-  return `${name} · ${plural(count, 'work', 'works')}`
+  return count === 1 ? name : `${name} · ${plural(count, 'work', 'works')}`
 }
 
 /** "№ 12", or "№ 100–105" for a collection; null when nothing is numbered. */

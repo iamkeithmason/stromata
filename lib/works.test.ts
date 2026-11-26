@@ -167,7 +167,7 @@ test('formHeading pluralises every controlled-vocabulary genre', () => {
     assert.notEqual(formHeading(g, 2), `${g} · 2 works`, `${g} has no plural`)
   }
   assert.equal(formHeading('Homily', 3), 'Homilies · 3 works')
-  assert.equal(formHeading('Letter', 1), 'Letters · 1 work')
+  assert.equal(formHeading('Letter', 1), 'Letters')
   assert.equal(formHeading(null, 2), 'Other works · 2 works')
 })
 
