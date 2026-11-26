@@ -141,9 +141,17 @@ async function installInterceptor(context) {
     }
   );
 
-  // Downloads are <a href> to route handlers that render a PDF. We want the
-  // click event, not the file — abort the transfer so no PDF is ever built.
+  // Downloads are <a href> to route handlers that return a file. We want the
+  // click event, not the file, so abort the transfer.
   await context.route('**/download/**', (route) => route.abort());
+  // The email signup posts to Kit. Abort it, so a verification run never
+  // subscribes a test address to the real list.
+  await context.route(/^https:\/\/([a-z0-9-]+\.)*(kit|convertkit)\.com\//, (route) => route.abort());
+  // "Print / Save as PDF" calls window.print(). The click is what we check, not
+  // the dialog, so no page under test ever opens one.
+  await context.addInitScript(() => {
+    window.print = () => {};
+  });
 }
 
 function reset() {
@@ -409,6 +417,9 @@ function navSurfaces(site) {
   return [
     // text-open — every `from` PR #93 added, plus the surfaces already live.
     ['text-open', 'texts-index', ['/texts']],
+    ['text-open', 'ten-minutes', ['/ten-minutes']],
+    ['ten-minutes-open', 'short-reads', ['/']],
+    ['text-open', 'short-reads', ['/']],
     ['text-open', 'search-results', ['/search?q=augustine']],
     ['text-open', 'theme-page', site.themes],
     ['text-open', 'era-page', site.eras],
@@ -418,12 +429,15 @@ function navSurfaces(site) {
     ['text-open', 'scripture-page', site.scripture],
     // End-of-text "Continue exploring" (PR #150). Release prediction 2 counts these.
     ['text-open', 'read-next', site.texts],
+    // The homepage leads: the newest text, and the editor's pick (needs a featured text or a feast day today).
+    ['text-open', 'recency-lead', ['/']],
+    ['text-open', 'editorial-pick', ['/']],
     // author-open
     ['author-open', 'authors-index', ['/authors']],
     ['author-open', 'search-results', ['/search?q=augustine']],
     ['author-open', 'collection-page', site.collections],
     ['author-open', 'text-reader', site.texts],
-    ['author-open', 'featured-lead', ['/']],
+    ['author-open', 'recency-lead', ['/']],
     // collection-open — the two surfaces the brief names.
     ['collection-open', 'theme-page', site.themes],
     ['collection-open', 'scripture-page', site.scripture],
@@ -435,6 +449,7 @@ const NAV_EXPECT = {
   'text-open': { from: null, text: SLUG },
   'author-open': { from: null, author: true },
   'collection-open': { from: null, collection: SLUG },
+  'ten-minutes-open': { from: null },
 };
 
 async function checkNavEvents(context, site) {
@@ -611,6 +626,25 @@ async function checkCollectionNav(context, site) {
   await found.page.close();
 }
 
+async function checkEmailSignup(context, site) {
+  const page = await open(context, site.texts[0]);
+  const input = page.locator('#email-signup-address');
+  if (!(await input.count())) {
+    await failMissing(page, 'email-signup', 'end of text', 'email signup form');
+    await page.close();
+    return;
+  }
+  // A placeholder address; the Kit request it triggers is aborted above.
+  await input.fill('verify-analytics@example.invalid');
+  await expectEvent({
+    event: 'email-signup',
+    case: 'end-of-text form',
+    expect: { from: 'text-page' },
+    action: () => page.locator('button[data-umami-event="email-signup"]').click(),
+  });
+  await page.close();
+}
+
 async function checkCitationCopy(context, site) {
   const page = await open(context, site.texts[0]);
   const button = page.getByRole('button', { name: /cite this text/i }).first();
@@ -680,7 +714,10 @@ async function checkDownloads(context, site) {
   for (const event of ['text-download', 'collection-download']) {
     if (ONLY && !ONLY.has(event)) continue; // both live on the same page
     const idProp = event === 'text-download' ? 'text' : 'collection';
-    for (const format of ['markdown', 'pdf']) {
+    // Both are stored files since 20 Nov 2026 (format=print, the browser's
+    // print dialog, was a text's PDF from 18 to 20 Nov).
+    const formats = ['markdown', 'pdf'];
+    for (const format of formats) {
       const sel = `[data-umami-event="${event}"][data-umami-event-format="${format}"]`;
       if (!(await found.page.locator(sel).first().count())) {
         row(event, `format=${format}`, 'skip', 'not offered on this page');
@@ -838,6 +875,7 @@ async function main() {
     ['theme chips', ['theme-click'], checkThemeClick],
     ['collection nav', ['collection-nav'], checkCollectionNav],
     ['citation', ['citation-copy'], checkCitationCopy],
+    ['email signup', ['email-signup'], checkEmailSignup],
     ['reader settings', ['reader-setting-change'], checkReaderSettings],
     ['downloads', ['text-download', 'collection-download'], checkDownloads],
     ['text page load', ['text-open'], checkNoTextOpenOnLoad],

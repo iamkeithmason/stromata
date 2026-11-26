@@ -40,6 +40,7 @@ export function BookCover({
   readingMinutes,
   accessionDisplay,
   genre,
+  fluid = false,
 }: {
   title: string
   authorName: string | null
@@ -61,7 +62,18 @@ export function BookCover({
    * an unknown or missing genre keeps the rule.
    */
   genre?: string | null
+  /**
+   * Scale every dimension with the cover's width, past 200px too. By default
+   * each size is min(<fixed>, <N>cqi), so a cover wider than 200px keeps
+   * 200px-sized type and padding in a bigger panel. The reader's frontispiece
+   * fills its rail column (~320px on a wide screen) and passes this so the
+   * cover grows as a whole, keeping its proportions.
+   */
+  fluid?: boolean
 }) {
+  // The cqi term equals the fixed value at a 200px-wide cover (see globals.css),
+  // so a fluid cover is identical to a fixed one at 200px and below.
+  const sz = (fixed: string, cqi: string) => (fluid ? cqi : `min(${fixed}, ${cqi})`)
   const ground = traditionColor(traditionSlug)
   const ornament = ornamentUrl(genre)
   const shortTitle = shortenAtWord(title, SMALL_COVER_CHARS)
@@ -77,7 +89,7 @@ export function BookCover({
 
   return (
     <div
-      className="book-cover"
+      className={fluid ? 'book-cover book-cover--fluid' : 'book-cover'}
       style={{
         background: ground,
         aspectRatio: '2/3',
@@ -93,7 +105,7 @@ export function BookCover({
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
-          padding: 'min(0.65rem, 5.2cqi) min(1rem, 8cqi)',
+          padding: `${sz('0.65rem', '5.2cqi')} ${sz('1rem', '8cqi')}`,
           borderBottom: '1px solid var(--on-dark-rule)',
           flexShrink: 0,
         }}
@@ -102,7 +114,7 @@ export function BookCover({
           className="book-cover-band-label"
           style={{
             fontFamily: 'var(--serif-display)',
-            fontSize: 'min(0.5rem, 4cqi)',
+            fontSize: sz('0.5rem', '4cqi'),
             letterSpacing: '0.24em',
             color: 'var(--on-dark-soft)',
             textTransform: 'uppercase',
@@ -115,7 +127,7 @@ export function BookCover({
             className="book-cover-band-label"
             style={{
               fontFamily: 'monospace',
-              fontSize: 'min(0.5rem, 4cqi)',
+              fontSize: sz('0.5rem', '4cqi'),
               color: 'var(--on-dark-soft)',
               letterSpacing: '0.04em',
             }}
@@ -131,13 +143,13 @@ export function BookCover({
         style={{
           flex: 1,
           background: 'var(--cover-mid)',
-          margin: 'min(8px, 4cqi) min(10px, 5cqi)',
+          margin: `${sz('8px', '4cqi')} ${sz('10px', '5cqi')}`,
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'center',
           alignItems: 'center',
           textAlign: 'center',
-          padding: 'min(1rem, 8cqi) min(1.25rem, 10cqi)',
+          padding: `${sz('1rem', '8cqi')} ${sz('1.25rem', '10cqi')}`,
           overflow: 'hidden',
           minHeight: 0,
         }}
@@ -150,7 +162,7 @@ export function BookCover({
             fontStyle: 'italic',
             fontWeight: 500,
             lineHeight: 1.15,
-            color: 'var(--ink)',
+            color: 'var(--cover-ink)',
             margin: 0,
             display: '-webkit-box',
             WebkitLineClamp: 5,
@@ -183,9 +195,9 @@ export function BookCover({
             className="book-cover-ornament"
             style={{
               display: 'block',
-              width: 'min(28px, 14cqi)',
-              height: 'min(28px, 14cqi)',
-              margin: 'min(4px, 2cqi) auto',
+              width: sz('28px', '14cqi'),
+              height: sz('28px', '14cqi'),
+              margin: `${sz('4px', '2cqi')} auto`,
               flexShrink: 0,
               backgroundColor: 'var(--cover-ornament)',
               WebkitMaskImage: `url(${ornament})`,
@@ -201,11 +213,11 @@ export function BookCover({
         ) : (
           <div
             style={{
-              width: 'min(20px, 10cqi)',
+              width: sz('20px', '10cqi'),
               height: 1,
-              background: 'var(--ink)',
+              background: 'var(--cover-ink)',
               opacity: 0.35,
-              margin: 'min(1rem, 8cqi) auto',
+              margin: `${sz('1rem', '8cqi')} auto`,
               flexShrink: 0,
             }}
           />
@@ -216,9 +228,9 @@ export function BookCover({
             style={{
               fontFamily: 'var(--serif-smallcaps)',
       fontFeatureSettings: '"smcp" 1',
-              fontSize: 'min(0.8rem, 6.4cqi)',
+              fontSize: sz('0.8rem', '6.4cqi'),
               letterSpacing: '0.08em',
-              color: 'var(--ink-soft)',
+              color: 'var(--cover-ink-soft)',
               margin: 0,
             }}
           >
@@ -231,9 +243,9 @@ export function BookCover({
             style={{
               fontFamily: 'var(--serif)',
               fontStyle: 'italic',
-              fontSize: 'min(0.8rem, 6.4cqi)',
-              color: 'var(--ink-mute)',
-              margin: 'min(5px, 2.5cqi) 0 0',
+              fontSize: sz('0.8rem', '6.4cqi'),
+              color: 'var(--cover-ink-mute)',
+              margin: `${sz('5px', '2.5cqi')} 0 0`,
             }}
           >
             {year}
@@ -247,8 +259,8 @@ export function BookCover({
         style={{
           textAlign: 'center',
           padding: readingMinutes
-            ? 'min(0.4rem, 3.2cqi) min(1rem, 8cqi)'
-            : 'min(0.6rem, 4.8cqi) min(1rem, 8cqi)',
+            ? `${sz('0.4rem', '3.2cqi')} ${sz('1rem', '8cqi')}`
+            : `${sz('0.6rem', '4.8cqi')} ${sz('1rem', '8cqi')}`,
           borderTop: '1px solid var(--on-dark-rule)',
           display: 'flex',
           flexDirection: 'column',
@@ -266,8 +278,8 @@ export function BookCover({
           className="book-cover-s"
           style={{
             display: 'block',
-            width: 'min(0.875rem, 7cqi)',
-            height: 'min(0.875rem, 7cqi)',
+            width: sz('0.875rem', '7cqi'),
+            height: sz('0.875rem', '7cqi'),
             backgroundColor: 'var(--on-dark-soft)',
             WebkitMaskImage: `url(${markUrl('small')})`,
             maskImage: `url(${markUrl('small')})`,
@@ -283,7 +295,7 @@ export function BookCover({
           <span
             style={{
               fontFamily: 'var(--serif-display)',
-              fontSize: 'min(0.45rem, 3.6cqi)',
+              fontSize: sz('0.45rem', '3.6cqi'),
               letterSpacing: '0.2em',
               textTransform: 'uppercase',
               color: 'var(--on-dark-mute)',

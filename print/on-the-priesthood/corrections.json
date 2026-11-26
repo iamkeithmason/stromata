@@ -1,0 +1,112 @@
+{
+ "_about": "Fixes to Greek in Stephens's notes. Checked on 9 Nov 2026 against page images of the 1889 printing (Archive.org scan selectlibraryofn09auguuoft). 'ccel' = the online transcription garbled what 1889 printed correctly; 'misprint' = the 1889 printing itself was wrong and the fix corrects it.",
+ "fixes": [
+  [
+   "ίερωσύνης",
+   "ἱερωσύνης",
+   "ccel",
+   "Book I note on the episcopate (1889 p. 35): breathing lost in transcription"
+  ],
+  [
+   "κατ™στησε",
+   "κατέστησε",
+   "ccel",
+   "Book II, Matt. xxiv. 45 note (p. 39)"
+  ],
+  [
+   "›αυτοῦ",
+   "ἑαυτοῦ",
+   "ccel",
+   "Book IV opening note (p. 60)"
+  ],
+  [
+   "‡φείλετο",
+   "ἀφείλετο",
+   "ccel",
+   "Book IV opening note (p. 60)"
+  ],
+  [
+   "‡πολογίαν",
+   "ἀπολογίαν",
+   "ccel",
+   "Book IV opening note (p. 60)"
+  ],
+  [
+   "Διχοτομηθῆαι",
+   "Διχοτομηθῆναι",
+   "ccel",
+   "Book IV, Matt. xxiv. 51 note (p. 61): a letter dropped in transcription"
+  ],
+  [
+   "̓Ει δ'οὕτω σὺ ποιεις μοι ‡πόκτεινόνμε",
+   "Εἰ δ’ οὕτω σὺ ποιεῖς μοι ἀπόκτεινόν με",
+   "ccel",
+   "Book IV, Numb. xi. 15 LXX note (p. 61)"
+  ],
+  [
+   "'Εμπορίας",
+   "Ἐμπορίας",
+   "ccel",
+   "Book IV note on commerce (p. 63): breathing set as an apostrophe"
+  ],
+  [
+   "οἱ την ›ιμαρμν™ην ἐισ€γοντες",
+   "οἱ τὴν εἱμαρμένην εἰσάγοντες",
+   "ccel",
+   "Book IV note on the Stoics (p. 65)"
+  ],
+  [
+   "τ™ρθρον",
+   "τέρθρον",
+   "ccel",
+   "Book IV note on rhetorical artifice (p. 67)"
+  ],
+  [
+   "μανί‹",
+   "μανίᾳ",
+   "ccel",
+   "Book V, other reading (p. 72)"
+  ],
+  [
+   "τὰς λσιπὰς βχ€βας",
+   "τὰς λοιπὰς βλάβας",
+   "misprint",
+   "Book VI, other reading (p. 79): 1889 printed 'λσιπὰς βχάβας', a printer's error for 'the remaining injuries'"
+  ],
+  [
+   "Haud seio",
+   "Haud scio",
+   "misprint",
+   "1889 p. 64, note 8, prints 'seio'; the Latin is 'Haud scio an' (I hardly know whether). Checked against the scan, leaf 76."
+  ]
+ ],
+ "editor_notes": {
+  "τὰς λοιπὰς βλάβας": "[Ed.: the 1889 printing reads τὰς λσιπὰς βχάβας, a misprint.]",
+  "Haud scio": "[Ed.: the 1889 printing reads seio, a misprint.]"
+ },
+ "xrefs": [
+  [
+   "(see page 122)",
+   "(see [the 1889 volume, where the letter follows this treatise])",
+   "1889 prints '(see page )' with the number left blank; CCEL supplied 122."
+  ],
+  [
+   "but see below, p. 4, note 1.",
+   "but see below, [note 8].",
+   "p. 4 counts from the treatise's first page (1889 p. 33); the note on Chrysostom's age is Book I note 8 here."
+  ],
+  [
+   "See above, p. 61, note.",
+   "See above, [note 4].",
+   "1889 p. 61 holds the note on Matt. xxiv. 51 (Book IV note 4 here)."
+  ],
+  [
+   "see note 3, p. 21]",
+   "see [Book III, note 29]]",
+   "Stephens's 'p. 21' counts from the treatise's first page (1889 p. 53); note 3 there is Book III note 29 here. Found by the blind review, 9 Nov 2026."
+  ]
+ ],
+ "xref_ok": [
+  "Leipzig, 1834, p. 145, note 17"
+ ]
+}

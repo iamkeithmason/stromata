@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useMemo, useRef, useCallback, useEffect } from 'react'
+import LaneView from './LaneView'
 import { TRADITIONS, ERAS, GENRES, THEME_CLUSTERS, ALL_THEMES, MAX_THEMES, SOURCE_TYPES, STATUSES } from '@/lib/pipeline/vocab'
 
 type RunAction = 'fetch' | 'extract' | 'import' | 'dedup'
@@ -65,6 +66,8 @@ export default function PipelineClient({
 }) {
   const [prospects, setProspects] = useState<Prospect[]>(initialProspects)
   const [filter, setFilter] = useState<string>('active')
+  // Lanes (by next step) are the default; the status list keeps the runners and row actions.
+  const [view, setView] = useState<'lanes' | 'status'>('lanes')
   const [form, setForm] = useState<Prospect | null>(null)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -182,8 +185,15 @@ export default function PipelineClient({
         <span className="text-stone-400">OCR sources (archive_ocr) have no one-click button — they need manual landmark config, run via CLI or a Claude Code session.</span>
       </div>
 
+      <div className="flex items-center gap-1.5" role="tablist" aria-label="View">
+        <FilterChip label="by next step" active={view === 'lanes'} count={prospects.length} onClick={() => setView('lanes')} />
+        <FilterChip label="by status" active={view === 'status'} count={prospects.length} onClick={() => setView('status')} />
+      </div>
+
+      {view === 'lanes' && <LaneView prospects={prospects} onEdit={p => { setForm({ ...EMPTY, ...p }); setError(null) }} />}
+
       {/* Toolbar */}
-      <div className="flex items-center justify-between gap-3 flex-wrap">
+      <div className={`flex items-center justify-between gap-3 flex-wrap ${view === 'lanes' ? 'hidden' : ''}`}>
         <div className="flex items-center gap-1.5 flex-wrap">
           <FilterChip label="active" active={filter === 'active'} count={activeCount} onClick={() => setFilter('active')} />
           <FilterChip label="all" active={filter === 'all'} count={prospects.length} onClick={() => setFilter('all')} />
@@ -229,7 +239,7 @@ export default function PipelineClient({
       </div>
 
       {/* Table */}
-      <div className="border border-stone-200 rounded divide-y divide-stone-100">
+      <div className={`border border-stone-200 rounded divide-y divide-stone-100 ${view === 'lanes' ? 'hidden' : ''}`}>
         {visible.length === 0 && <p className="px-4 py-6 text-sm text-stone-400">No prospects in this view.</p>}
         {visible.map(p => (
           <div key={p.id} className="px-4 py-3 flex items-start justify-between gap-4">

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createServerClient } from '@/lib/supabase/server'
 import { revalidatePaths } from '@/lib/publishing/publish-text'
+import { scheduleTextPdfRebuilds } from '@/lib/pdf/text-pdf-schedule'
 import {
   applyBreaks,
   buildParagraphsDoc,
@@ -146,5 +147,6 @@ export async function PATCH(request: NextRequest, { params }: Params) {
   }
 
   revalidatePaths([`/texts/${text.slug}`])
+  scheduleTextPdfRebuilds([text.slug])
   return NextResponse.json({ ok: true, state: 'applied', breaks: doc.breaks.length })
 }

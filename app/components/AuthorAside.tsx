@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import MarkdownBody from '@/app/components/MarkdownBody'
-import { LancetArch } from '@/app/components/LancetArch'
+import { LancetArch, LANCET_TIGHT_RATIO } from '@/app/components/LancetArch'
 import { traditionColor } from '@/lib/tradition-colors'
 
 type Props = {
@@ -19,10 +19,10 @@ type Props = {
 }
 
 /**
- * The "The Author" block at the top of the reading page's left margin rail: a
- * lancet-arch initial, the author's name / dates / place / era / tradition, a
- * short biography clamped to a few lines, and a link through to the full author
- * page.
+ * The author block at the top of the reading page's left margin rail: the
+ * lancet-arch portrait (or initial), the author's name as the block's heading,
+ * dates · place · era on one line, the tradition, a short biography clamped to
+ * a few lines, and a link through to the full author page.
  */
 export function AuthorAside({ name, slug, birthYear, deathYear, locationName, eraName, tradition, bio, imageUrl, imageFocusX, imageFocusY, imageZoom }: Props) {
   const initial = name.trim().charAt(0).toUpperCase() || '·'
@@ -33,40 +33,50 @@ export function AuthorAside({ name, slug, birthYear, deathYear, locationName, er
       ? (deathYear < 600 ? `c. ${deathYear}` : `d. ${deathYear}`)
       : null
 
+  // One muted meta line: "d. 1546 · Germany · Reformation". It wraps at the
+  // middots' word boundaries when long.
+  const meta = [years, locationName, eraName].filter(Boolean) as string[]
+
   return (
     <section>
-      <p className="kicker" style={{ marginBottom: '1rem' }}>The Author</p>
-
-      <div style={{ aspectRatio: '200 / 380', maxWidth: '200px', margin: '0 0 1.25rem' }}>
-        <LancetArch initial={initial} label={`Initial ${initial} for ${name}`} imageUrl={imageUrl} focusX={imageFocusX} focusY={imageFocusY} zoom={imageZoom} />
+      {/* The portrait leads the block: the name below is its heading, so the
+          "The Author" eyebrow it used to carry said the same thing twice.
+          `tight` crops the arch's box to the arch, so nothing blank sits over
+          it; it fills the rail column (capped when the rail stacks). */}
+      <div className="author-rail-arch" style={{ aspectRatio: LANCET_TIGHT_RATIO, marginBottom: '1.25rem' }}>
+        <LancetArch fit="tight" initial={initial} label={`Initial ${initial} for ${name}`} imageUrl={imageUrl} focusX={imageFocusX} focusY={imageFocusY} zoom={imageZoom} />
       </div>
 
-      <p
-        className="font-serif"
-        style={{ fontSize: '1.125rem', color: 'var(--ink)', lineHeight: 1.25 }}
+      <h2
+        style={{ fontFamily: 'var(--serif-display)', fontSize: 'var(--text-xl)', color: 'var(--ink)', lineHeight: 1.2 }}
       >
         {name}
-      </p>
+      </h2>
 
-      {(years || locationName || eraName) && (
-        <div
+      {meta.length > 0 && (
+        <p
           className="font-serif"
           style={{ fontSize: 'var(--text-label)', color: 'var(--ink-mute)', lineHeight: 1.5, marginTop: '0.4rem' }}
         >
-          {years && <p>{years}</p>}
-          {locationName && <p>{locationName}</p>}
-          {eraName && <p>{eraName}</p>}
-        </div>
+          {meta.map((part, i) => (
+            <span key={i}>
+              {i > 0 && <span aria-hidden style={{ color: 'var(--ink-faint)' }}> · </span>}
+              {part}
+            </span>
+          ))}
+        </p>
       )}
 
+      {/* The rail's one label style: the same .kicker as "About this edition"
+          and "Download", in the tradition's own colour. */}
       {tradition && (
         <p
-          className="smallcaps"
+          className="kicker tradition-label"
           style={{
-            fontSize: 'var(--text-sm)',
-            letterSpacing: '0.14em',
-            color: traditionColor(tradition.slug),
-            marginTop: '0.5rem',
+            // A custom property, not `color`: .tradition-label decides how the
+            // hue is used, so the reader dark theme can lighten it.
+            ['--tradition' as string]: traditionColor(tradition.slug),
+            marginTop: '0.75rem',
           }}
         >
           {tradition.name}

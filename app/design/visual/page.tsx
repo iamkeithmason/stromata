@@ -50,6 +50,7 @@ const ERA_RINGS = [
 const GENRES = [
   'Homily', 'Sermon', 'Letter', 'Treatise', 'Essay', 'Meditation', 'Rule', 'Prayer', 'Catechesis',
   'Commentary', 'Dialogue', 'Hymn', 'Poem', 'Confession', 'Hagiography', 'Apology', 'Exegesis',
+  // Chronicle (042) has no ornament yet; covers fall back to the hairline rule.
 ]
 
 type AuthorRow = {

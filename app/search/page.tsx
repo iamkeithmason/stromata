@@ -166,10 +166,12 @@ export default async function SearchPage({ searchParams }: Props) {
       supabase.from('traditions').select('id, name').then(track),
       supabase.from('eras').select('id, label').then(track),
       supabase.from('authors')
-        .select('id, name, slug, tradition:traditions(name)')
+        .select('id, name, slug, tradition:traditions(name), texts!inner(id)')
         .ilike('name', pattern)
         .not('slug', 'is', null)
         .eq('draft', false)
+        // Only authors with a published text, matching the /authors index.
+        .eq('texts.published', true)
         .order('name')
         .limit(10)
         .then(track),
@@ -177,10 +179,11 @@ export default async function SearchPage({ searchParams }: Props) {
         ? words
             .reduce(
               (qb, w) => qb.ilike('name', `%${w}%`),
-              supabase.from('authors').select('id, name, slug, tradition:traditions(name)')
+              supabase.from('authors').select('id, name, slug, tradition:traditions(name), texts!inner(id)')
             )
             .not('slug', 'is', null)
             .eq('draft', false)
+            .eq('texts.published', true)
             .order('name')
             .limit(10)
             .then(track)

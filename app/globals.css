@@ -94,6 +94,13 @@
 
   --cover-mid:  #F5F0E6;   /* book-cover inner panel — a stable cream, NOT theme-flipped */
   --cover-ornament: #8A5F1E; /* genre ornament on the cover panel. --gold-ink's value, but NOT theme-flipped: covers stay cream in the reader dark theme */
+  /* Cover-panel ink: the light-theme --ink / --ink-soft / --ink-mute values, NOT
+     theme-flipped. The panel stays cream in the reader dark theme, so text on it
+     must stay dark; the flipped --ink family read 1.1–2.3:1 there (20 Nov 2026).
+     Against --cover-mid: 12.3:1, 7.8:1, 4.9:1 (AA). */
+  --cover-ink:      #1E2D3D;
+  --cover-ink-soft: #3D4B5C;
+  --cover-ink-mute: #61697A;
   --cover-stack-back: rgba(10, 8, 5, 0.50);   /* collection stack: rearmost spine behind a cover */
   --cover-stack-mid:  rgba(10, 8, 5, 0.28);   /* collection stack: middle spine */
 
@@ -190,6 +197,22 @@
   --cosmos-gold-light: #F3DEA0;
   --cosmos-gold-deep:  #9F7028;
 
+  /* Celestial hero study — original illuminated-cosmos palette. */
+  --cosmos-deep:       #091D34;
+  --cosmos-blue-deep:  #102A48;
+  --cosmos-mid:        #143452;
+  --cosmos-mid-deep:   #102C49;
+  --cosmos-blue:       #294F7D;
+  --cosmos-blue-mid:   #1B406B;
+  --cosmos-ring:       #9EB5D5;
+  --cosmos-ring-alt:   #80A2CE;
+  --cosmos-night:      #101C36;
+  --cosmos-copper:     #B77832;
+  --cosmos-earth:      #365B68;
+  --cosmos-gold:       #D7AD50;
+  --cosmos-gold-light: #F3DEA0;
+  --cosmos-gold-deep:  #9F7028;
+
   /* Reader body colours. Light values equal MarkdownBody's previous hardcodes
      EXACTLY, so light-mode reading is unchanged; the dark reader theme below
      overrides them. */
@@ -218,9 +241,15 @@
   --content-pad:      1.5rem;   /* px-6 — trims the 1024 card to a 976 inner */
   --reading-measure:  808px;    /* 10 columns — the long-form reading column */
   --frame-max:        1440px;   /* the wide page frame the marginalia lives in */
-  --rail-width:       200px;    /* marginalia rail (matches the book-cover width) */
   --rail-inset:       1.5rem;   /* rail gap from the page/frame edge */
-  --rail-breakpoint:  1400px;   /* below this there is no room to pull the rail out */
+  --rail-min:         12rem;    /* narrowest the text page's rail column gets */
+  --rail-stacked-max: 15rem;    /* cover / portrait cap when the rail stacks */
+  --para-num-hang:    2.5rem;   /* paragraph numbers hang this far left of the body */
+  --text-gutter:      calc(var(--para-num-hang) + var(--grid-gutter)); /* rail → body: the numbers plus a gutter */
+  /* --text-page-columns (the text page's grid) is defined on #reader-page,
+     beside --reader-column, which it depends on and which the reader's
+     settings change there: a custom property resolves where it is declared,
+     so declared here it would see no reader column and go invalid. */
 }
 
 /* =============================================================
@@ -575,6 +604,9 @@
 .book-cover-title { font-size: min(1rem, 8cqi); }
 .book-cover-title[data-length="long"] { font-size: min(0.875rem, 7cqi); }
 .book-cover-title-short { display: none; }
+/* A fluid cover (BookCover `fluid`) scales its title with its width past 200px. */
+.book-cover--fluid .book-cover-title { font-size: 8cqi; }
+.book-cover--fluid .book-cover-title[data-length="long"] { font-size: 7cqi; }
 
 @container (max-width: 200px) {
   .book-cover-title {
@@ -591,6 +623,237 @@
     clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap;
   }
   .book-cover-title-short { display: inline; }
+}
+
+/* Celestial treatments share one geometry and motion system. The selected
+   Nocturne palette is also used on the homepage. */
+.celestial-study[data-treatment="illuminated"] {
+  --cosmos-ring: #b8d2f2;
+  --cosmos-ring-alt: #3c79d8;
+  --cosmos-night: #081c42;
+  --cosmos-gold: #e6b94e;
+  --cosmos-gold-light: #ffe8a7;
+  --cosmos-gold-deep: #a76921;
+  --study-band-light: #96b8ec;
+  --study-band-dark: #0f4fbb;
+  --study-band-highlight: #e6d8ae;
+}
+
+.celestial-study[data-treatment="illuminated"] .celestial-hero {
+  background:
+    radial-gradient(circle at 55% 43%, #245caa 0%, #113c83 52%, #071e4c 100%);
+}
+
+.celestial-study[data-treatment="illuminated"] .celestial-hero::after {
+  content: '';
+  position: absolute;
+  z-index: 3;
+  inset: 13px;
+  border: 1px solid rgba(244, 214, 143, 0.46);
+  box-shadow: inset 0 0 0 6px rgba(6, 27, 68, 0.28), 0 0 0 1px rgba(8, 22, 47, 0.4);
+  pointer-events: none;
+}
+
+.celestial-study[data-treatment="illuminated"] .celestial-orbit {
+  opacity: 0.95;
+}
+
+.celestial-study[data-treatment="illuminated"] .celestial-vignette {
+  background:
+    linear-gradient(90deg, rgba(4, 16, 43, 0.6), rgba(4, 23, 64, 0.24) 50%, rgba(4, 15, 41, 0.3)),
+    linear-gradient(180deg, rgba(4, 14, 40, 0.26), transparent 30%, transparent 65%, rgba(3, 13, 38, 0.5));
+}
+
+.celestial-study:not([data-treatment="current"]) .celestial-hero-content::before,
+.celestial-hero--nocturne .celestial-hero-content::before {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  inset: -3rem -4rem;
+  border-radius: 50%;
+  background: radial-gradient(ellipse at center, rgba(7, 24, 53, 0.43), rgba(7, 24, 53, 0.2) 46%, transparent 74%);
+  pointer-events: none;
+}
+
+.celestial-study[data-treatment="spheres"] {
+  --cosmos-ring: #e0e8f3;
+  --cosmos-ring-alt: #76a3d8;
+  --cosmos-night: #07295b;
+  --cosmos-gold: #d3ad62;
+  --cosmos-gold-light: #f1ddb2;
+  --cosmos-gold-deep: #9a7136;
+  --study-sphere-light: #dbe9f7;
+  --study-sphere-dark: #2363ae;
+  --study-sphere-highlight: #f2ecdc;
+}
+
+.celestial-study[data-treatment="spheres"] .celestial-hero {
+  background:
+    radial-gradient(circle at 59% 43%, #3d6b9c 0%, #214e85 49%, #092a5d 100%);
+}
+
+.celestial-study[data-treatment="spheres"] .celestial-orbit {
+  opacity: 0.88;
+}
+
+.celestial-study[data-treatment="spheres"] .celestial-vignette {
+  background:
+    linear-gradient(90deg, rgba(7, 28, 59, 0.58), rgba(7, 28, 59, 0.3) 50%, rgba(7, 28, 59, 0.32)),
+    linear-gradient(180deg, rgba(4, 18, 39, 0.24), transparent 28%, transparent 65%, rgba(4, 18, 39, 0.52));
+}
+
+:is(.celestial-study[data-treatment^="nocturne"], .celestial-hero--nocturne) {
+  --cosmos-ring: #7c91a2;
+  --cosmos-ring-alt: #5e768b;
+  --cosmos-night: #0a1725;
+  --cosmos-gold: #ae885a;
+  --cosmos-gold-light: #d6bc89;
+  --cosmos-gold-deep: #6a4b31;
+  --on-dark-gold: #d9bb86;
+  --on-dark-gold-soft: rgba(217, 187, 134, 0.57);
+  --study-chart-band: #4e6577;
+  --study-chart-band-alt: #2c435a;
+  --study-chart-light: #788b98;
+  --study-chart-shadow: #2f495e;
+  --study-chart-alt-light: #526b7c;
+  --study-chart-alt-shadow: #192f44;
+  --study-chart-ink: #091624;
+  --study-chart-copper: #c4a57c;
+}
+
+:is(.celestial-study[data-treatment^="nocturne"] .celestial-hero, .celestial-hero--nocturne) {
+  background:
+    radial-gradient(circle at 56% 40%, #263e52 0%, #172c42 49%, #0b1b2d 100%);
+}
+
+:is(.celestial-study[data-treatment^="nocturne"], .celestial-hero--nocturne) .celestial-orbit {
+  opacity: 0.73;
+}
+
+:is(.celestial-study[data-treatment^="nocturne"], .celestial-hero--nocturne) .celestial-vignette {
+  background:
+    linear-gradient(90deg, rgba(6, 15, 26, 0.56), rgba(6, 15, 26, 0.28) 50%, rgba(6, 15, 26, 0.38)),
+    linear-gradient(180deg, rgba(4, 11, 21, 0.28), transparent 29%, transparent 64%, rgba(4, 11, 21, 0.65));
+}
+
+.celestial-study-controls {
+  padding-block: 3.5rem 4.5rem;
+}
+
+.celestial-study-controls h2 {
+  margin: 0.45rem 0 0.4rem;
+  font-family: var(--serif-display);
+  font-size: clamp(1.75rem, 3vw, 2.5rem);
+  color: var(--ink);
+}
+
+.celestial-study-intro,
+.celestial-study-caption p:last-child {
+  max-width: 48rem;
+  font-family: var(--serif);
+  font-size: var(--text-prose);
+  line-height: 1.55;
+  color: var(--ink-soft);
+}
+
+.celestial-study-switcher {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  min-height: 4.5rem;
+  padding: 0.6rem 1rem;
+  background: var(--paper);
+  border-bottom: 1px solid var(--rule);
+}
+
+.celestial-study-switcher-label {
+  margin-right: 0.5rem;
+  color: var(--ink-mute);
+  font-family: var(--serif);
+  font-size: 0.88rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.celestial-study-option {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  min-height: 3.1rem;
+  padding: 0.45rem 0.65rem;
+  border: 1px solid var(--rule);
+  background: var(--vellum);
+  color: var(--ink);
+  font-family: var(--serif);
+  font-size: 1.05rem;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 180ms ease, background-color 180ms ease, transform 160ms ease-out;
+}
+
+.celestial-study-option[aria-pressed="true"] {
+  border-color: var(--gold-ink);
+  background: var(--paper-deep);
+  box-shadow: inset 0 0 0 1px var(--gold-border);
+}
+
+.celestial-study-option:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+.celestial-study-option:active {
+  transform: scale(0.98);
+}
+
+.celestial-study-swatch {
+  flex: none;
+  width: 1.8rem;
+  height: 1.8rem;
+  border: 1px solid rgba(11, 29, 52, 0.35);
+  border-radius: 50%;
+  background: repeating-radial-gradient(circle at 110% 105%, transparent 0 5px, rgba(225, 195, 123, 0.65) 6px 7px, transparent 8px 12px), #173b61;
+}
+
+.celestial-study-swatch-illuminated {
+  background: repeating-radial-gradient(circle at 110% 105%, transparent 0 5px, rgba(249, 220, 144, 0.85) 6px 8px, transparent 9px 12px), #144b9b;
+}
+
+.celestial-study-swatch-spheres {
+  background: repeating-radial-gradient(circle at 110% 105%, transparent 0 4px, rgba(227, 237, 249, 0.9) 5px 7px, transparent 8px 11px), #255c99;
+}
+
+.celestial-study-swatch-nocturne {
+  background: repeating-radial-gradient(circle at 110% 105%, transparent 0 5px, rgba(197, 169, 133, 0.65) 6px 7px, transparent 8px 12px), #172c42;
+}
+
+.celestial-study-swatch-nocturne-gradient {
+  background: repeating-radial-gradient(circle at 110% 105%, transparent 0 5px, rgba(197, 169, 133, 0.65) 6px 7px, transparent 8px 12px), linear-gradient(135deg, #49677b, #172c42);
+}
+
+.celestial-study-caption {
+  padding-top: 1.1rem;
+  border-top: 1px solid var(--rule);
+}
+
+.celestial-study-caption .kicker {
+  margin-bottom: 0.5rem;
+}
+
+@media (max-width: 760px) {
+  .celestial-study-switcher {
+    flex-wrap: wrap;
+  }
+
+  .celestial-study-switcher-label {
+    flex-basis: 100%;
+    text-align: center;
+  }
+
+  .celestial-study-option {
+    flex: 1 1 calc(50% - 0.55rem);
+  }
 }
 
 /* Offset anchor-link scroll targets to clear the fixed site header (4rem)
@@ -662,9 +925,24 @@ body {
    Normal and Wide rendered identically and the default ran to ~90 characters
    (Keith chose this fix, 26 Oct). The ID selector outranks the .margin-cols
    tier rules; the column still caps a large text size at the layout's width. */
+#reader-page {
+  --reader-column: calc(1.25rem * var(--reader-font-scale, 1) * var(--reader-measure, 30));
+  /* The text page's columns, one definition for its hero, body and footer
+     (.margin-cols, ≥1024px). --reader-column is the reading measure, set on
+     #reader-page from the reader's settings (ReaderSettings). The track after the body mirrors
+     the rail side, so the body stays centred in the frame.
+       rail | gutter (para numbers) | reading column | gutter | slack        */
+  --text-page-columns:
+    [frame-start] var(--rail-inset)
+    [rail-start] minmax(var(--rail-min), 1fr)
+    [rail-end] var(--text-gutter)
+    [read-start] minmax(0, var(--reader-column))
+    [read-end] var(--text-gutter) minmax(0, 1fr)
+    [wide-end] var(--rail-inset) [frame-end];
+}
 #reader-main {
   --text-prose: calc(1.25rem * var(--reader-font-scale, 1));
-  max-width: calc(var(--text-prose) * var(--reader-measure, 30));
+  max-width: var(--reader-column);
 }
 
 /* A jump target (a heading, or the paragraph an editorial section starts at)
@@ -700,18 +978,20 @@ body {
    Marginalia layout — reading column + a rail that lives in the margin
    =============================================================
 
-   Shared by the frontispiece hero (book cover + title) and the reading
-   container (author/provenance rail + body) so the two stay in one
-   vertical column. Three tiers:
+   The text page only. Its hero (book cover + title), its reading container
+   (author/provenance rail + body) and its footer are each a .margin-cols row,
+   and from 1024px every row lays out on the same grid, --text-page-columns, so the header's text, the body and the footer share one left edge
+   by construction rather than by matching numbers. It is declared on
+   #reader-page, next to the reading measure it is built from.
 
-     • < 1024px            stacked, reading body first, rail beneath.
-     • 1024px – <1400px    inline: rail (200px) left, body right, both
-                           within the 976px content area.
-     • ≥ 1400px            the rail lifts out into the left page margin
-                           (24px from the frame edge) and the reading
-                           body centres at its 808px measure — the page
-                           margin is now wide enough to hold the rail as
-                           true marginalia, matching the design. */
+     • < 1024px   stacked, reading body first, rail beneath (the hero keeps
+                  its cover as a thumbnail beside the title, .frontispiece).
+     • ≥ 1024px   rail | gutter | reading column | gutter | slack, in a frame
+                  up to --frame-max wide. The reading column is the reader's
+                  measure exactly; the rail takes what is left on its side
+                  (~244px at 1280, ~324px at 1440 and wider). Until 20 Nov
+                  2026 the body was centred inside an 808px column while the
+                  title sat at that column's edge, 104px apart. */
 .margin-cols {
   max-width: var(--content-max);
   margin-inline: auto;
@@ -734,12 +1014,15 @@ body {
 }
 
 /* rail-first: keep the rail above the body when stacked (the frontispiece
-   hero wants the book cover over the title, not beneath it). Higher
-   specificity than the tier rules below, so it holds at every width — at
-   1024px+ rail-before-body still reads as rail-left, and at 1400px+ the grid
-   places by column, so order is moot there. */
+   hero wants the book cover over the title, not beneath it). On the grid,
+   columns place the items, so order is moot there. */
 .margin-cols.rail-first > .margin-rail { order: 1; }
 .margin-cols.rail-first > .margin-body { order: 2; }
+
+/* When the rail stacks, its pictures stay picture-sized, not screen-wide, and
+   the portrait is centred: a lancet window frames what it holds, and set off
+   to one side it read as a thumbnail rather than a window (Keith, 20 Nov). */
+.author-rail-arch { max-width: var(--rail-stacked-max); margin-inline: auto; }
 
 /* frontispiece: the reader's hero. Stacked tiers would put a 200px cover, the
    title, the summary and the chips above the text, so on a phone the first
@@ -759,46 +1042,25 @@ body {
 
 @media (min-width: 1024px) {
   .margin-cols {
-    flex-direction: row;
-    align-items: flex-start;
-    gap: var(--grid-gutter);
-  }
-  .margin-cols > .margin-rail {
-    order: 0;
-    flex: 0 0 var(--rail-width);
-    width: var(--rail-width);
-  }
-  .margin-cols > .margin-body {
-    order: 0;
-    flex: 1 1 0;
-    max-width: var(--reading-measure);
-  }
-}
-
-@media (min-width: 1400px) {
-  .margin-cols {
     max-width: var(--frame-max);
     padding-inline: 0;
     display: grid;
-    grid-template-columns:
-      minmax(var(--rail-inset), 1fr)
-      minmax(0, var(--reading-measure))
-      minmax(var(--rail-inset), 1fr);
+    grid-template-columns: var(--text-page-columns);
     gap: 0;
     align-items: start;
   }
-  .margin-cols > .margin-rail {
-    grid-column: 1;
-    justify-self: start;
-    width: var(--rail-width);
-    margin-left: var(--rail-inset);
-  }
-  .margin-cols > .margin-body {
-    grid-column: 2;
-    width: 100%;
+  /* grid-row: auto-placement follows the stacked tier's `order`, which put
+     the rail in a second row beneath the body. */
+  .margin-cols > .margin-rail { grid-column: rail; grid-row: 1; }
+  .margin-cols > .margin-body { grid-column: read; grid-row: 1; }
+  /* The hero's title block starts on the reading column's edge but may run on
+     into the slack beside it, so a title is not held to a narrow reader
+     measure; --reading-measure keeps it wrapping where it always has. */
+  .margin-cols.frontispiece > .margin-body {
+    grid-column: read-start / wide-end;
     max-width: var(--reading-measure);
-    margin-inline: auto;
   }
+  .author-rail-arch { max-width: none; margin-inline: 0; }
 }
 
 /* Author-rail bio teaser — clamp to ~6 lines and let it trail off with an
@@ -829,7 +1091,7 @@ body {
    come from #reader-page, where ReaderSettings sets them. Specificity beats the
    .margin-cols > .margin-body tier rules. */
 .margin-cols > .margin-body.reader-measure {
-  max-width: calc(1.25rem * var(--reader-font-scale, 1) * var(--reader-measure, 30));
+  max-width: var(--reader-column);
 }
 
 /* =============================================================
@@ -865,6 +1127,19 @@ body {
     font-feature-settings: "smcp" 1;
     font-size: var(--text-smallcaps);
     letter-spacing: 0.08em;
+  }
+
+  /* .tradition-label — a tradition's name in its cover colour. The colour comes
+     in as --tradition (set inline from lib/tradition-colors.ts). Those are dark
+     cover grounds, so in the reader dark theme the label mixes the hue half and
+     half with the (flipped, light) --ink: it keeps its tint and reads 5.4–7.6:1
+     against the dark --paper, where the raw colour read 1.4–3.2:1. */
+  .tradition-label {
+    color: var(--tradition, var(--ink-faint));
+  }
+  [data-reader-theme="dark"] .tradition-label {
+    color: var(--ink-faint); /* fallback where color-mix is unsupported */
+    color: color-mix(in srgb, var(--tradition, var(--ink-faint)) 50%, var(--ink));
   }
 
   .kicker {
@@ -995,4 +1270,117 @@ article.prose-body > div:first-of-type > p::first-letter {
 }
 .scripture-popover-link:hover {
   border-bottom-color: var(--gold);
+}
+
+/* =============================================================
+   Print — the text page as a printable reader (replaces the server PDF)
+   =============================================================
+
+   "Print / Save as PDF" on /texts/[slug] calls window.print(); this block is
+   what the browser lays out. Until 18 Nov 2026 each PDF was rendered on the
+   server per request (@react-pdf, ~1s of CPU a text). The browser now does the
+   work, on the reader's own device, for nothing.
+
+   Whitelist, not blacklist: every direct child of #reader-page is hidden except
+   the print title block and the reading container, so a piece of furniture
+   added later (a fixed button, a sheet, a banner) stays off paper without
+   anyone remembering to tag it. Inside the reading container the rail and the
+   navigation carry `print:hidden`.
+
+   The reader's dark theme and text size are screen preferences: paper is
+   always dark ink on white at book size. Colour literals are fine here; the
+   no-raw-colour lint rule covers `style` props, not this file. */
+.print-only { display: none; }
+
+@media print {
+  @page {
+    margin: 18mm 16mm 20mm;
+  }
+
+  /* Light tokens whatever the reader chose on screen. The ID outranks
+     [data-reader-theme="dark"], so this wins on a dark-theme page too. */
+  #reader-page {
+    --paper: #fff;
+    --paper-deep: #fff;
+    --vellum: #fff;
+    --ink: #111;
+    --ink-soft: #222;
+    --ink-mute: #444;
+    --ink-faint: #666;
+    --rule: #bbb;
+    --rule-soft: #ddd;
+    --reader-text: #111;
+    --reader-quote: #333;
+    --reader-quote-rule: #bbb;
+    --reader-hr: #bbb;
+    --gold-ink: #5a4a22;
+    color-scheme: light;
+    background: #fff !important;
+    padding-top: 0 !important;
+    min-height: 0 !important;
+  }
+
+  #reader-page > :not(.print-only):not(.print-keep) { display: none !important; }
+  .print-only { display: block; }
+
+  /* One column, the full width of the paper, at book size. */
+  #reader-page .margin-cols {
+    display: block !important;
+    max-width: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+  #reader-main {
+    --text-prose: 11.5pt !important;
+    max-width: none !important;
+    margin: 0 !important;
+  }
+  #reader-main .prose-body { line-height: 1.5; }
+
+  .print-title {
+    margin-bottom: 8mm;
+    padding-bottom: 5mm;
+    border-bottom: 0.5pt solid #bbb;
+    color: #111;
+  }
+  .print-title h1 {
+    font-family: var(--serif-display);
+    font-size: 22pt;
+    line-height: 1.15;
+    margin: 0 0 2mm;
+  }
+  .print-title .print-author { font-family: var(--serif); font-style: italic; font-size: 13pt; margin: 0 0 2mm; }
+  .print-title .print-source { font-family: var(--serif); font-size: 9pt; color: #444; margin: 0; }
+  .print-colophon {
+    margin-top: 10mm;
+    padding-top: 4mm;
+    border-top: 0.5pt solid #bbb;
+    font-family: var(--serif);
+    font-size: 8.5pt;
+    color: #444;
+  }
+
+  /* No heading left alone at the foot of a page. `break-after: avoid` is the
+     standard; Safari (every browser on an iPhone) honours it unevenly, so a
+     heading also carries an invisible 4em block beneath it that cannot be
+     split from it, which pushes it over when less than ~3 lines remain. */
+  #reader-main h1, #reader-main h2, #reader-main h3, #reader-main h4 {
+    break-after: avoid;
+    page-break-after: avoid;
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+  #reader-main h1::after, #reader-main h2::after, #reader-main h3::after, #reader-main h4::after {
+    content: "";
+    display: block;
+    height: 4em;
+    margin-bottom: -4em;
+  }
+  #reader-main p, #reader-main li { orphans: 3; widows: 3; }
+  #reader-main blockquote, #reader-main figure, #reader-main img { break-inside: avoid; page-break-inside: avoid; }
+
+  /* Links read as text on paper; tooltips and popovers never print. */
+  #reader-main a { color: inherit; text-decoration: none; }
+  .scripture-popover { display: none !important; }
+  .scripture-ref { text-decoration: none; }
 }

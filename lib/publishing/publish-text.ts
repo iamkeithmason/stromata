@@ -1,5 +1,7 @@
 import { revalidatePath } from 'next/cache'
 import { collectionTextPaths } from '@/lib/publishing/revalidate-entities'
+import { scheduleCollectionPdfRebuilds } from '@/lib/pdf/collection-pdf-schedule'
+import { scheduleTextPdfRebuilds } from '@/lib/pdf/text-pdf-schedule'
 import type { SupabaseClient } from '@supabase/supabase-js'
 import { fetchCollectionAuthors, type CollectionAuthorRef } from '@/lib/collections/author'
 
@@ -40,7 +42,10 @@ import { fetchCollectionAuthors, type CollectionAuthorRef } from '@/lib/collecti
  * NOT included, on purpose:
  *   /rss, /sitemap.xml, /llms.txt — `dynamic = 'force-dynamic'` + `revalidate = 0`.
  *     They are rendered per request and have nothing to invalidate.
- *   /texts/{slug}/download/*, /collections/{slug}/download/* — same.
+ *   /texts/{slug}/download/*, /collections/{slug}/download/* — CDN-cached
+ *     route handlers, not pages. Stored PDFs are rebuilt instead: a collection's
+ *     by `revalidatePaths` below, whenever `/collections/{slug}` is in the list;
+ *     a text's by `scheduleTextPdfRebuilds`, when that text itself changes.
  *   /search — rendered per request from the query string. Its Supabase reads go
  *     through the public client's hourly data cache like everything else, so a
  *     just-published text can take up to an hour to become findable by search.
@@ -77,6 +82,7 @@ export function textPaths(t: TextSurfaces): string[] {
   add('/')            // homepage — recent additions, featured band
   add('/texts')       // the texts index
   add('/authors')     // the authors index shows per-author text counts
+  add('/ten-minutes') // the short-reads entrance lists texts by reading time
   add(`/texts/${t.slug}`)
   if (t.authorSlug) add(`/authors/${t.authorSlug}`)
   if (t.collectionSlug) add(`/collections/${t.collectionSlug}`)
@@ -224,6 +230,9 @@ export async function publishText(
   ]
 
   if (!skipRevalidation) revalidatePaths(paths)
+  // This text's stored PDF, and only this one: a sibling's PDF has no prev/next.
+  // Scheduled even in a batch (skipRevalidation), which revalidates once at the end.
+  scheduleTextPdfRebuilds([text.slug])
 
   return { ok: true, id, title, slug: text.slug, paths }
 }
@@ -330,6 +339,8 @@ export async function revalidateText(
     for (const s of alsoTextSlugs) if (s) paths.push(`/texts/${s}`)
     paths.push(...(await collectionTextPaths(supabase, one(row.collection)?.id)))
     revalidatePaths([...new Set(paths)])
+    // The saved text's PDF; a pre-rename slug's file is removed (it renders null).
+    scheduleTextPdfRebuilds([row.slug, ...alsoTextSlugs])
   } catch {
     // Swallowed on purpose — see above.
   }
@@ -348,6 +359,8 @@ export function revalidatePaths(paths: string[]): void {
       /* one bad path must not stop the rest */
     }
   }
+  // A refreshed collection page means its stored PDF may be stale too.
+  scheduleCollectionPdfRebuilds(paths)
 }
 
 // ── internals ────────────────────────────────────────────────────────────────

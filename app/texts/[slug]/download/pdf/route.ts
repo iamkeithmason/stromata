@@ -1,50 +1,34 @@
-import { createPublicClient } from '@/lib/supabase/public'
-import { markdownFilename, type DownloadableText } from '@/lib/downloads'
-import { TextDocument } from '@/lib/pdf/TextDocument'
+import { textPdfPathname, textPdfUrl } from '@/lib/pdf/text-pdf'
 
 export const runtime = 'nodejs'
-export const dynamic = 'force-dynamic'
-export const revalidate = 0
 
-// CDN-cached for a WEEK (was a day until 2026-10-04): a PDF render is the most
-// CPU-expensive request on the site (~1s for a text, ~9s for a collection) and
-// the content is stable. Accepted trade-off: an edit to a text does not purge
-// this cache (revalidatePath does not reach a CDN-cached function response),
-// so a corrected text can be served from an older PDF for up to a week unless
-// the CDN cache is purged by hand (Vercel → Settings → Caches).
 // GET /texts/[slug]/download/pdf
-// Renders a published text as a styled PDF (server-side, @react-pdf/renderer).
+//
+// Redirects to the text's stored PDF. It never renders one: the file is built
+// when the text is published or edited (lib/pdf/text-pdf-schedule.ts), or by
+// `npm run build:text-pdfs`. Until 18 Nov 2026 this route rendered the PDF with
+// @react-pdf on every CDN miss (~0.7s of CPU each, mostly for crawlers); from
+// 18 to 20 Nov the address redirected to the text page's Print / Save as PDF.
+//
+// No database read: the stored file's URL is fixed by the slug, so the redirect
+// is pure string work, and the CDN holds it for a week. An unpublished text's
+// file is removed, so its redirect lands on the store's 404.
 export async function GET(_req: Request, { params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
-  const supabase = createPublicClient()
+  const url = textPdfUrl(slug)
 
-  const { data } = await supabase
-    .from('texts')
-    .select(`
-      title, slug, body, summary, editorial_introduction, accession_number,
-      source_attribution, provenance_notes, translation_notes,
-      genre:genres(name),
-      author:authors(name, tradition:traditions(name), era:eras(label))
-    `)
-    .eq('slug', slug)
-    .eq('published', true)
-    .single()
-
-  if (!data) {
-    return new Response('Not found', { status: 404 })
+  if (!url) {
+    // The Blob store is not connected to this deployment (BLOB_READ_WRITE_TOKEN).
+    return new Response(`The PDF of this text is not available yet (${textPdfPathname(slug)}).`, {
+      status: 503,
+      headers: { 'Content-Type': 'text/plain; charset=utf-8', 'Retry-After': '86400', 'Cache-Control': 'no-store' },
+    })
   }
 
-  // @react-pdf/renderer is ESM-only; a static top-level import compiles to a
-  // `require()` in Next's CommonJS route bundle, which throws ERR_REQUIRE_ESM
-  // on Node runtimes without CJS-requiring-ESM support. Dynamic import avoids
-  // that on any Node version.
-  const { renderToBuffer } = await import('@react-pdf/renderer')
-  const buffer = await renderToBuffer(await TextDocument({ text: data as unknown as DownloadableText }))
-
-  return new Response(new Uint8Array(buffer), {
+  return new Response(null, {
+    status: 302,
     headers: {
-      'Content-Type': 'application/pdf',
-      'Content-Disposition': `attachment; filename="${markdownFilename(slug).replace(/\.md$/, '.pdf')}"`,
+      Location: url,
       'Cache-Control': 'public, max-age=3600, s-maxage=604800, stale-while-revalidate=604800',
     },
   })

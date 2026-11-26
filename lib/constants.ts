@@ -46,6 +46,7 @@ export const GENRES = [
   { slug: 'hagiography', name: 'Hagiography' },
   { slug: 'apology', name: 'Apology' },
   { slug: 'exegesis', name: 'Exegesis' },
+  { slug: 'chronicle', name: 'Chronicle' },
 ]
 
 export const THEME_CLUSTERS = [

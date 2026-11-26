@@ -1,12 +1,18 @@
 'use client'
 import { useEffect, useRef, useCallback } from 'react'
-import { updateProgress, getHistory } from '@/lib/reading-history'
+import {
+  updateProgress,
+  updatePosition,
+  getHistory,
+  resumePoint,
+  RESUME_HASH,
+  PROGRESS_NOT_STARTED,
+  PROGRESS_FINISHED,
+} from '@/lib/reading-history'
 import { whenTrackerReady } from '@/lib/analytics/track-when-ready'
 
 const THROTTLE_MS = 100
 const READ_THRESHOLD = 0.75
-const PROGRESS_NOT_STARTED = 0.05
-const PROGRESS_FINISHED = 0.95
 
 export function ReadingProgressBar({ slug }: { slug: string }) {
   const barRef = useRef<HTMLDivElement>(null)
@@ -16,6 +22,10 @@ export function ReadingProgressBar({ slug }: { slug: string }) {
   const lastPersistRef = useRef(0)
   const rafRef = useRef(0)
   const cancelTrackRef = useRef<(() => void) | null>(null)
+  // Where the reader is now. Null until a real scroll event: the mount call to
+  // onScroll() always reads the top of the page, and saving that would wipe a
+  // reader's place if they opened the text and left before scrolling.
+  const positionRef = useRef<number | null>(null)
 
   const computeProgress = useCallback(() => {
     const doc = document.documentElement
@@ -29,6 +39,9 @@ export function ReadingProgressBar({ slug }: { slug: string }) {
     if (maxRef.current > 0) {
       updateProgress(slug, maxRef.current)
     }
+    if (positionRef.current != null) {
+      updatePosition(slug, positionRef.current)
+    }
   }, [slug])
 
   useEffect(() => {
@@ -38,13 +51,52 @@ export function ReadingProgressBar({ slug }: { slug: string }) {
       maxRef.current = entry.progress
     }
 
-    const onScroll = () => {
+    // A Reading history card links here with #resume: put the reader back where
+    // they were. On a client-side navigation Next scrolls the new page to the
+    // top after this effect has run, and web fonts arriving change the page
+    // height, so the restore is re-applied a few times over the first second,
+    // but only until the reader touches the page themselves. The hash is
+    // dropped only once that is over, so a remounted effect (React's dev
+    // double-run, or a fast re-render) still sees it.
+    let cancelResume = () => {}
+    if (window.location.hash === RESUME_HASH) {
+      const dropHash = () => {
+        if (window.location.hash !== RESUME_HASH) return
+        window.history.replaceState(window.history.state, '', window.location.pathname + window.location.search)
+      }
+      const at = resumePoint(entry)
+      if (at == null) dropHash()
+      else {
+        let readerMoved = false
+        const timers: number[] = []
+        const onInput = () => { readerMoved = true; dropHash() }
+        const inputs = ['wheel', 'touchstart', 'keydown', 'pointerdown'] as const
+        inputs.forEach(t => window.addEventListener(t, onInput, { passive: true, once: true }))
+        const restore = () => {
+          if (readerMoved) return
+          const doc = document.documentElement
+          const top = Math.round(at * (doc.scrollHeight - doc.clientHeight))
+          if (Math.abs(window.scrollY - top) > 4) window.scrollTo({ top, behavior: 'auto' })
+        }
+        requestAnimationFrame(restore)
+        for (const ms of [50, 150, 300, 600, 1000]) timers.push(window.setTimeout(restore, ms))
+        timers.push(window.setTimeout(dropHash, 1100))
+        document.fonts?.ready.then(restore)
+        cancelResume = () => {
+          readerMoved = true
+          timers.forEach(clearTimeout)
+          inputs.forEach(t => window.removeEventListener(t, onInput))
+        }
+      }
+    }
+
+    const onScroll = (event?: Event) => {
       const now = performance.now()
       if (now - lastTickRef.current < THROTTLE_MS) {
         if (!rafRef.current) {
           rafRef.current = requestAnimationFrame(() => {
             rafRef.current = 0
-            onScroll()
+            onScroll(event)
           })
         }
         return
@@ -52,6 +104,7 @@ export function ReadingProgressBar({ slug }: { slug: string }) {
       lastTickRef.current = now
 
       const current = computeProgress()
+      if (event) positionRef.current = current
       if (current > maxRef.current) {
         maxRef.current = current
       }
@@ -105,6 +158,7 @@ export function ReadingProgressBar({ slug }: { slug: string }) {
       document.removeEventListener('visibilitychange', onVisibilityChange)
       window.removeEventListener('pagehide', persist)
       if (rafRef.current) cancelAnimationFrame(rafRef.current)
+      cancelResume()
       // Stop waiting on a tracker for a page the reader has already left.
       cancelTrackRef.current?.()
       persist()

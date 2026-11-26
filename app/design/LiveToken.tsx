@@ -59,3 +59,18 @@ export function ColourSwatch({
     </div>
   )
 }
+
+/**
+ * A non-colour token (a length, a grid template), printed live from the
+ * computed CSS, for the same drift-proof reason as ColourSwatch. `scope` reads
+ */
+export function TokenValue({ token, label }: { token: string; label?: string }) {
+  const value = useTokenValue(token)
+  return (
+    <div className="flex flex-col gap-1">
+      <code style={{ fontSize: 'var(--text-sm)', color: 'var(--ink-mute)', fontFamily: 'monospace' }}>{token}</code>
+      <code style={{ fontSize: 'var(--text-sm)', color: 'var(--ink-faint)', fontFamily: 'monospace', whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>{value || '…'}</code>
+      {label && <span style={{ fontSize: 'var(--text-sm)', color: 'var(--ink-faint)' }}>{label}</span>}
+    </div>
+  )
+}

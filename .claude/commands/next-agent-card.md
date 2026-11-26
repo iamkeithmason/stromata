@@ -81,16 +81,15 @@ to promote — never promote a card to `Agent-ready` yourself.
    card that is not already in flight. "In flight" is decided by evidence, not by the card's
    `Status` — `Planned` reads the same whether a build exists or not, and on 2 Nov 2026 two
    sessions built the same card because of it (#184 and #187;
-   `docs/research/2026-11-02-claim-the-work-before-you-build.md`). For each candidate, all three:
-   - **Search open PRs by the card's title**, not by branch prefix (hand-started sessions use
-     `ccr-*` branches, not `claude/*`):
-     `gh api -X GET search/issues -f q='repo:iamkeithmason/stromata is:pr is:open in:title,body "<two or three distinctive words from the card title>"'`
-     and skim `mcp__github__list_pull_requests` (state open, sorted by updated) for the same
-     words.
+   `docs/research/2026-11-02-claim-the-work-before-you-build.md`). For each candidate, both:
+   - **Run `npm run in-flight -- <two or three distinctive words from the card title>`.** One
+     report covers open PRs of any branch name (hand-started sessions use `ccr-*`, not
+     `claude/*`), PRs merged in the last 7 days, remote branches pushed in the last 3 days,
+     prospect-queue entries and recent run logs. A line reading `Not checked: …` means that
+     source could not be read (GitHub search, usually); check it by hand before trusting the
+     verdict.
    - **Read the card body for a claim line** (`Building: …`, below) dated within the last
-     three days, and the `Notes` property for a PR link.
-   - **`git branch -r --sort=-committerdate | head -20`** for a branch pushed in the last
-     few days whose latest commit message names the card.
+     three days, and the `Notes` property for a PR link. The script cannot see Notion.
    Any hit means skip the card and say which PR or claim you found. If nothing qualifies,
    report that and stop.
 
@@ -149,6 +148,8 @@ to promote — never promote a card to `Agent-ready` yourself.
    create a **draft** PR against `main` (set `base: "main"` explicitly). `main` is where work
    lands and `release` is what is live, so a merge into `main` deploys nothing — see CLAUDE.md
    "Vercel usage". Mirror any PR template, and `subscribe_pr_activity`.
+   Make the PR body's first line `Card: <exact Feature title>`, copied from Notion (CLAUDE.md
+   "Keeping the record current"); step 0's reconciliation matches on it.
    In the PR body, record that the review gate ran and what it surfaced (or "clean"). Never
    mark ready, never merge — Keith does that. Drive its CI to green per the babysit rules.
    Merged into `main` means reviewed and queued, not `Built` and not live: the card

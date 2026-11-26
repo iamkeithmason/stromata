@@ -2,7 +2,7 @@ import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { existsSync, readFileSync } from 'node:fs'
 import { join } from 'node:path'
-import { PUBLISHER_MARK, markSvg, markUrl, type MarkCut } from './mark'
+import { PUBLISHER_MARK, markIconSvg, markSvg, markUrl, type MarkCut } from './mark'
 
 test('both cuts are one path on the 0 0 100 100 box', () => {
   for (const cut of ['print', 'small'] as MarkCut[]) {
@@ -24,4 +24,10 @@ test('public/mark matches the module exactly (run npm run mark:svg)', () => {
     assert.ok(existsSync(file), `missing ${file}`)
     assert.equal(readFileSync(file, 'utf8'), markSvg(cut), `${file} is stale`)
   }
+})
+
+test('app/icon.svg matches the module exactly (run npm run mark:svg)', () => {
+  const file = join(process.cwd(), 'app', 'icon.svg')
+  assert.ok(existsSync(file), `missing ${file}`)
+  assert.equal(readFileSync(file, 'utf8'), markIconSvg(), `${file} is stale`)
 })

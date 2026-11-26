@@ -56,6 +56,9 @@ SITE_IRRELEVANT=(
   # The screens reference PDF (npm run screens), refreshed after each release.
   # Nothing in app/ or lib/ reads docs/ (grepped 2026-10-27).
   "docs/screens/"
+  # Print editions' sources and build (epic "One Edition, Two Outputs"). Nothing in app/ or lib/
+  # reads print/ (grepped 2026-11-21: one comment in lib/pdf/TextDocument.tsx, no import).
+  "print/"
 )
 
 is_site_irrelevant() {

@@ -6,7 +6,9 @@ import { HERBAL_ORNAMENTS, ornamentFor, ornamentSlug, ornamentSvg, ornamentUrl }
 
 const dir = join(process.cwd(), 'public', 'ornaments')
 
-// The genres in CLAUDE.md's controlled vocabulary. Every one has an ornament.
+// The genres in CLAUDE.md's controlled vocabulary that have an ornament. Chronicle
+// (migration 042) has none yet and falls back to the hairline rule; add it here
+// with its ornament.
 const GENRES = [
   'Homily', 'Sermon', 'Letter', 'Treatise', 'Essay', 'Meditation', 'Rule', 'Prayer', 'Catechesis',
   'Commentary', 'Dialogue', 'Hymn', 'Poem', 'Confession', 'Hagiography', 'Apology', 'Exegesis',

@@ -316,7 +316,7 @@ const ALL_THEMES = Object.values(THEME_VOCABULARY).flat();
 const ALL_GENRES = [
   "Homily", "Sermon", "Letter", "Treatise", "Essay", "Meditation",
   "Rule", "Prayer", "Catechesis", "Commentary", "Dialogue", "Hymn", "Poem",
-  "Confession", "Hagiography", "Apology", "Exegesis",
+  "Confession", "Hagiography", "Apology", "Exegesis", "Chronicle",
 ];
 
 // ---------------------------------------------------------------------------

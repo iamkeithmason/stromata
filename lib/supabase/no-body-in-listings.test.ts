@@ -29,9 +29,10 @@ const ROOT = path.resolve(__dirname, '..', '..')
 const ALLOWED = new Set([
   'app/texts/[slug]/page.tsx', // the reader
   'app/texts/[slug]/download/markdown/route.ts',
-  'app/texts/[slug]/download/pdf/route.ts',
   'app/collections/[slug]/download/markdown/route.ts',
-  'app/collections/[slug]/download/pdf/route.ts',
+  // Stored PDFs, built on admin saves and by the backfills, never per request.
+  'lib/pdf/collection-pdf.ts',
+  'lib/pdf/text-pdf.ts',
 ])
 
 // Editorial surfaces sit behind Keith's login and are not crawled.

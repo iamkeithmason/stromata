@@ -150,7 +150,16 @@ What it exposes:
   tradition / era / genre / source_type / theme inputs are dropdowns bound to the controlled
   vocabularies below. The queue API (`/api/admin/pipeline/queue`) re-validates against those
   vocabularies and caps themes at 6, so HARD CONSTRAINTS 4 & 5 can't be violated through the UI.
-  Writes go to `prospect-queue.json` atomically (temp-file + rename).
+  Writes go to the `prospects` table, so this part works on **thestromata.com** too, from a phone (before
+  migration 041 they go to `prospect-queue.json`, which is read-only on production).
+- **Lanes, the default view** ("by next step"; "by status" keeps the list with the runners) — every
+  prospect, prospect to published, grouped by what it waits for and who does it: Needs copyright check
+  (Claude) · Needs hands-on OCR (Keith + Claude) · Cleared, waiting to be fetched (Claude) · Ready for
+  Keith to review · Staged, waiting for import · In Drafts (links to `/admin/review`) · Published ·
+  Rejected. Each row gives a one-line reason; a held prospect shows its `HELD:` note. So **write a held
+  prospect's reason as `HELD: <one sentence>.` in `stage_1_notes`** and it surfaces there. Placement is
+  `lib/pipeline/lanes.ts`, pure and tested; Drafts vs Published comes from `texts.published` via
+  `liveStatus.ts`, never a second copy of the texts.
 - **The visible ladder** — the UI models the real chain: **Fetch/Extract → Review → Mark staged →
   Run import → Drafts → publish**. `fetch-texts.mjs`/`extract-docx.mjs` don't touch the queue, so
   the run route advances a prospect to `stage-2-done` itself on a clean exit; the operator then
@@ -269,7 +278,7 @@ Two traps worth knowing:
 
 | Property | Meaning | Value form |
 |---|---|---|
-| `from` | the surface the click originated on | kebab-case surface name. Homepage: `seasonal-panel`, `featured-lead`, `homepage-grid`, `featured-band`, `reading-history`. Reader: `text-reader`, `text-page`, `related-figures`, `read-next`; the phone reading header and its sheet (PR #187): `text-hero-contents`, `text-running-head`, `text-sheet-contents`, `text-sheet-next`, `text-sheet-read-next`, `text-sheet-prev`, `text-sheet`. Browse and index: `texts-index`, `authors-index`, `locations-index`, `search-results`, `search-chip`. Entity pages: `author-page`, `collection-page`, `theme-page`, `era-page`, `tradition-page`, `scripture-page`, `location-page`. **The list is the vocabulary — a new surface gets a new value here, in the Events Register, and nowhere else.** |
+| `from` | the surface the click originated on | kebab-case surface name. Homepage: `seasonal-panel`, `recency-lead` (the newest text or collection; was `featured-lead` until 2026-11-09), `editorial-pick` (the editor's featured text or the author's feast day), `homepage-grid`, `featured-band`, `reading-history`, `short-reads`. Reader: `text-reader`, `text-page`, `related-figures`, `read-next`; the phone reading header and its sheet (PR #187): `text-hero-contents`, `text-running-head`, `text-sheet-contents`, `text-sheet-next`, `text-sheet-read-next`, `text-sheet-prev`, `text-sheet`. Browse and index: `ten-minutes`, `texts-index`, `authors-index`, `locations-index`, `search-results`, `search-chip`. Entity pages: `author-page`, `collection-page`, `theme-page`, `era-page`, `tradition-page`, `scripture-page`, `location-page`. **The list is the vocabulary — a new surface gets a new value here, in the Events Register, and nowhere else.** |
 | `text` | which text was opened | **slug**, never the title |
 | `collection` | which collection was opened | **slug** |
 | `author` | which author | display name (matches `authors.name`) |
@@ -332,6 +341,7 @@ cleared from the admin header), so the founder's own browsing never inflates the
   this date `text-read` values are titles and don't join to Supabase; after, they're slugs — the two
   spans aren't directly comparable. Surfaced by the `stromata-analytics` digest's Events Register
   reconciliation on its first run.
+- On **2026-11-09** the homepage lead's `from` value changed from `featured-lead` to **`recency-lead`**. The slot is simply the most recently added text or collection; the old name implied an editorial choice. The editorial slot (`texts.featured`, or an author's feast day) takes its own value, `editorial-pick`, so the two series are never merged. Keith approved the rename (backlog card "Wire up the featured text slot"). Counts under `featured-lead` before the date and `recency-lead` after are the same surface and are not directly comparable by name; `theme-click` from the lead sends the same value as its `source`.
 - From the **release after 2 Nov 2026** (the first one carrying this change), `text-open` counts
   **clicks only**. Until then every text page also sent a `text-open` on load, with no `from`, beside
   `text-view` carrying the same data, so `text-open` mixed page views into its click count and left a
@@ -496,6 +506,27 @@ from there.
 
 ---
 
+## Cloud sessions — keys the proxy injects, and Node
+
+A cloud session never holds API keys itself: a key saved as a **network secret** on the session's environment
+is added to matching requests by the network proxy. For a script that wants the key in an environment
+variable, set the variable to a **placeholder in the format the code parses** and let the proxy overwrite the
+header. **Node needs `NODE_USE_ENV_PROXY=1` for this** (Node 22.21+): its built-in `fetch` otherwise ignores
+`HTTPS_PROXY`, goes direct, and sends the placeholder, so the request fails as "access denied" even though
+`curl` with the same placeholder works. Found on 21 Nov 2026, running `build-text-pdfs` from a cloud session:
+the Stromata environment keeps the Blob store's read-write token as a `vercel.com` secret (kept on purpose for
+reruns), and the run was
+
+```bash
+BLOB_READ_WRITE_TOKEN=vercel_blob_rw_46UQ7yQNx6KgstJ0_proxyinjected NODE_USE_ENV_PROXY=1 npx tsx scripts/build-text-pdfs.ts --write
+```
+
+The placeholder carries the real store ID (`store_46UQ7yQNx6KgstJ0`, not secret: it is in every file URL),
+because `@vercel/blob` sends it in its own header and the public URL is derived from it. Plus
+`.env.local` with the anon Supabase key, deleted afterwards.
+
+---
+
 ## Vercel usage — previews are opt-in, and batch small changes
 
 Stromata is on Vercel's **Hobby (free) tier**, and in Sept 2026 it went over the Fluid Active CPU
@@ -558,7 +589,10 @@ The Production Branch is set in Vercel → Settings → **Environments** → Pro
   single production deploy. GitHub does not delete `main` when it is a PR's head, so there is no branch to
   recreate (the old direction deleted `release` each week). **Release day is Monday morning** (Keith,
   2026-10-10): a weekly routine opens the draft promotion PR then, only if `main` is ahead of `release` with
-  changes that touch the site; Keith merges it.
+  changes that touch the site; Keith merges it. **Before opening it, the routine runs `npm run
+  check:cards`** and lists, in the promotion PR and its report, every PR the check names as missing a
+  `Card:` line, so the card can be named before the release ships. A failing check does not stop the
+  promotion; exit 2 (GitHub could not be asked) is reported as "not checked", never as a pass.
 - **Never merge the promotion PR yourself** — leave it open, say what it carries, and let Keith merge it.
 - **The 100-deployments-a-day cap is shared with Paideia — check the release actually built.** Vercel's
   Hobby plan allows 100 deployments per day per *account*, and Stromata and Paideia share the account. Every
@@ -680,7 +714,7 @@ time to think is before the run.
 2. **Before any bulk job, say which meter it draws on and roughly what one run costs**, in the
    script's header and in the PR. The jobs that matter here select `body` across the corpus:
    `build-corpus-index.mjs`, `strip-source-chrome.mjs` and `rejoin-text-paragraphs.mjs` without a
-   `--slug=`, `reformat-text-body.mjs`, `backfill-scripture-refs.ts`, `dedup-draft-texts.mjs`, and the
+   `--slug=`, `reformat-text-body.mjs`, `backfill-scripture-refs.ts`, `dedup-draft-texts.mjs`, `build-collection-pdfs.ts` (~22 MB per full run), `build-text-pdfs.ts` (~30 MB per full run), `backfill-translator-notes.mjs` (~25 MB per full run), and the
    `generate-note-drafts`/`generate-summaries`/`repair-summaries` backfills. If you
    cannot estimate it, run it scoped (`--slug=`, `--drafts`) first and measure.
 3. **Fetch once, keep locally, and select only the columns you need.** A script that re-downloads
@@ -733,12 +767,39 @@ entry in the PR, and flipping the backlog card to `Built` once it is on `release
 **Before building any backlog card — by hand or by routine — check it is not already in flight, then
 claim it.** A card's `Status` cannot tell you: `Planned` reads the same whether a build exists or not.
 On 2 Nov 2026 two sessions built "Mid-text navigation on phones" on the same day (#184, closed; #187,
-merged), and the duplication showed only at the end, as clashing Events Register rows. So: search open
-PRs by the card's title (any branch name, not just `claude/*`), read the card body for a recent
+merged), and the duplication showed only at the end, as clashing Events Register rows. So: run
+`npm run in-flight -- <two or three words from the card title>`, read the card body for a recent
 `Building: …` line, then append your own `Building: <session URL> · <date> · branch <name>` to the card
 body before writing code, and the PR link as soon as it exists. If you answer a card's open question
 while a build is open, put the decision on that PR too. `/next-agent-card` steps 2 and 2a spell out
 the commands; `docs/research/2026-11-02-claim-the-work-before-you-build.md` has the reasoning.
+
+**The same check comes first for work that is not a card** (Keith, 17 Nov 2026): a ticket, a "do it now",
+an import, a fix to a published text. Run `npm run in-flight -- <title, slug or author>` before acting.
+It lists open PRs, PRs merged in the last 7 days, branches pushed in the last 3, prospect-queue entries
+and run logs from the last 14, and ends with a verdict; it writes nothing and costs two GitHub searches.
+It does not read the database, so when the work touches texts, also query the slug in Supabase. Four
+misses in three weeks prompted it, two on 17 Nov alone: an import of two Ephesians homilies a pipeline
+run had imported the day before, and a Homily 50 fix that ran minutes after #236 had made it.
+
+**A PR that builds a backlog card names the card by its exact title.** Put `Card: <exact Feature title>`
+on the first line of the PR description, and the same title in the CHANGELOG entry. Copy it from Notion
+rather than paraphrasing it: the weekly reconciliation flips `Planned` → `Built` only where a PR or
+CHANGELOG entry names the card, and it matches on the title. PR #183 removed the page-load `text-open`
+and went live on 9 Nov, but it never named "Remove the duplicate page-mount text-open emitter", so the
+card was still `Planned` a week later. One PR covering several cards gets one `Card:` line for each. A PR
+that builds no card says **`Card: none`** on that line instead of leaving it out (Keith, 17 Nov 2026): a
+missing line is then always a gap, never a pass. `npm run check:cards` (`scripts/check-card-names.mjs`) lists
+every PR merged into `main` since `release` last moved and exits 1 on any with neither. Routine PRs
+(Release, Analytics digest, Pipeline run, Sourcer, Screens reference) are exempt by title, and PRs merged
+before 18 Nov predate the rule. The judgement half is `scripts/lib/card-names.mjs`, unit-tested.
+
+**A PR that needs something done before it goes live says so in a `Before release:` line** (Keith, 17 Nov
+2026). One line per step, in the PR description, e.g. `Before release: publish <slug> in /admin/review`.
+The Monday release task copies every such line from the PRs a release carries into a "Before you merge"
+checklist at the top of the release PR, beside any migrations to apply. Use it for anything the code
+depends on that a merge cannot do: a text to publish, a setting to change, a migration. PR #234 was the
+first: its Vainglory redirect points at a text that was still a draft.
 
 ---
 
@@ -773,7 +834,7 @@ Stages 1–4 are automated and produce staged markdown output. **Stage 5a (impor
 
 1. **Never set `published: true` programmatically.**
 2. **Never write or promote `note_draft` into `editorial_introduction` programmatically.** (Note: the database column is `editorial_introduction`, not `editorial_note` — this is the field shown above the text body, populated only by Keith via the "Use this draft" button in the text edit form.)
-3. **Always verify `author.death_year < 1900` before Stage 1 exit.** If `translation_copyright_clear: true` is set explicitly in the prospect, a modern translation may be usable — but still verify before proceeding. If uncertain, reject. (`pipeline-import.mjs` re-verifies this at import time as well.)
+3. **Always verify `author.death_year < 1900` before Stage 1 exit.** If `translation_copyright_clear: true` is set explicitly in the prospect, a modern translation may be usable — but still verify before proceeding. If uncertain, reject. (`pipeline-import.mjs` re-verifies this at import time as well.) **A third ground, by Keith's ruling only** (20 Nov 2026, first used for J. H. Jowett, d. 1923): an edition published before 1929 clears when the prospect records both `publication_year` (< 1929, read from the title page) and `copyright_ruling` (who ruled, when, on what evidence). The year alone never clears; the ruling is Keith's to give, never inferred. The three grounds live in `scripts/lib/copyright.mjs`, which the import uses. Don't trust a source's catalogue dates for the author: CCEL's header for Jowett gives Benjamin Jowett's (1817–1893), which would have passed the death-year test for the wrong man.
 4. **All `tradition` / `era` / `genre` / `theme` values must come from the controlled vocabularies at the bottom of this file.** Do not invent values.
 5. **Assign at most 6 themes per text.**
 6. **Never set `authors.draft: false` programmatically.** The import script may create draft author stubs (`draft: true`) when an author isn't yet in the database, but only Keith promotes an author out of draft, from the author edit form.
@@ -782,7 +843,18 @@ Stages 1–4 are automated and produce staged markdown output. **Stage 5a (impor
 
 ## Prospect Queue
 
-**Location:** `scripts/ingestion/prospect-queue.json`
+**Location:** the Supabase table **`prospects`** (migration `041_prospects.sql`), one row per prospect, columns
+as in the schema below. Every reader and writer goes through `scripts/lib/prospect-store.mjs`
+(`lib/pipeline/queue.ts` for the admin app), so the row mapping exists once. **Until migration 041 has been
+applied, the store falls back to `scripts/ingestion/prospect-queue.json`** and says so (`Queue: prospect-queue.json
+(table not migrated yet)`); after it, the file is only an export. To move between them:
+`node scripts/prospect-queue-sync.mjs --to-db --write` (the one-off backfill, right after the migration) and
+`--to-file --write` (snapshot the table into the file for git). Both dry-run without `--write`.
+
+In a cloud session, read and edit the queue with a small Node script that imports `loadProspects` /
+`saveProspects` from the store (the session environment carries `SUPABASE_SERVICE_ROLE_KEY`; pass
+`NEXT_PUBLIC_SUPABASE_URL=https://hhfjfbuiuhhdhwhfwlpv.supabase.co` inline). Hand-editing the JSON file does
+nothing once the table exists.
 
 This is the Content Prospect List. Each item moves through a linear status chain:
 
@@ -933,11 +1005,13 @@ Before each pipeline run, pull new candidates from the Notion Content Prospect L
    - `projectwittenberg.org` → `wittenberg`
    - `archive.org/download/...djvu.txt` → `archive_ocr`
    - `archive.org` (other) → `archive_online`
-   - Other clean HTML (e.g. anglicanhistory.org, ccel.org) → `archive_online`
+   - `ccel.org` → `ccel` (stage the plain-text export with `scripts/ingestion/ccel-to-markdown.mjs`)
+   - Other clean HTML (e.g. anglicanhistory.org) → `archive_online`
 
    **death_year:** Not stored in Notion. Leave `null` — Stage 1 will research and fill it in. If the author's era strongly implies pre-1900 (e.g. Ante-Nicene, Early Medieval) it's safe to proceed.
 
-5. **Add to queue.** Append new prospects with `status: "pending"` and `added: "<today's date>"`. Generate `collection_slug` as `{short-title-kebab}-{author-surname-kebab}` (e.g. `small-catechism-luther`). Set `id` to the same value as `collection_slug`.
+5. **Add to queue.** Add new prospects (to the `prospects` table through `saveProspects`, or the file before
+   migration 041) with `status: "pending"` and `added: "<today's date>"`. Generate `collection_slug` as `{short-title-kebab}-{author-surname-kebab}` (e.g. `small-catechism-luther`). Set `id` to the same value as `collection_slug`.
 
 6. **Limit new additions.** Add at most 5 new prospects per run to keep each run manageable. Prefer high Score (Value × inverse of Complexity) and low Effort items first.
 
@@ -1081,6 +1155,17 @@ Keith will:
 
 ## Run Log
 
+**Before opening a pipeline-run PR, deal with the earlier ones** (Keith, 17 Nov 2026; three run PRs had piled
+up as drafts, each changing `prospect-queue.json`). List open PRs titled `Pipeline run …`. For each one:
+
+- **If this run covers it** (every prospect it adds or advances is in this run's queue at the same or a later
+  status), close it. In this run's PR body and run log, say `Supersedes #N` and why.
+- **If it does not**, bring it up to date: merge `main` into its branch (a merge commit, never a rebase or
+  force-push), resolve `prospect-queue.json` by keeping both sides' prospects, and push. Then list it in this
+  run's PR body as still open, with the prospects only it carries, so Keith can merge it first.
+
+Never fold another run's prospects into this run's commit: each run's record stays in its own PR and log.
+
 After each run, append a log entry to `scripts/ingestion/run-log/`:
 
 ```bash
@@ -1143,13 +1228,18 @@ Status: imported.
 | `modern` | Modern (1800–1900) |
 
 ### Genres (use `name`, not slug)
-Homily · Sermon · Letter · Treatise · Essay · Meditation · Rule · Prayer · Catechesis · Commentary · Dialogue · Hymn · Poem · Confession · Hagiography · Apology · Exegesis
+Homily · Sermon · Letter · Treatise · Essay · Meditation · Rule · Prayer · Catechesis · Commentary · Dialogue · Hymn · Poem · Confession · Hagiography · Apology · Exegesis · Chronicle
 
 `Hymn` is the liturgical and the sung; `Poem` is everything else in verse (narrative, allegorical,
 didactic, devotional). A text that could be either is a hymn. Added 2026-09-21 — migration
 `029_poem_genre.sql`; the Notion `Genre` select needs the option added by hand in the UI, because
 the API specifies select options by name only and an ALTER that rewrites the set blanks the column
 on every row.
+
+`Chronicle` is annals or a narrative history of a people or a church (Eusebius's *Church History*, Bede's
+*Ecclesiastical History*); the Life of one saint stays `Hagiography` (Keith, 20 Nov 2026; migration
+`042_chronicle_genre.sql`). It has no cover ornament yet. The Notion `Genre` select needs the option added by
+hand, as for Poem.
 
 ### Theme Clusters (use `slug`, max 6 per text)
 
@@ -1331,12 +1421,18 @@ still apply per-file, still parallelize the same way. What changes is Stage 2/5a
 | `scripts/lib/leading-h1.mjs` | Decides whether a body's opening `# H1` duplicates the title or is content: keep-list → structural veto → name test → reviewed drop-list. The judgement half; `source-chrome.mjs` stays mechanical | Auto via strip-source-chrome |
 | `scripts/strip-source-chrome.mjs` | Heal source-site chrome in already-imported Supabase texts (dry-run default, `--write`; `--slug=`/`--id=`/`--drafts` to scope, `--drop-leading-h1` for a duplicated title heading, **`--files` to apply the same verdict to the staged output markdown so the two stores cannot drift**) | Maintenance only |
 | `scripts/pipeline-import.mjs` | Import staged output into Supabase as `published: false` | Stage 5a |
+| `scripts/ingestion/ccel-to-markdown.mjs` | Stage a CCEL plain-text export (`…/cache/<work>.txt`) as output markdown with a frontmatter stub; `--start`/`--end` slice one work from a combined file, `--flat`, `--dry`. The judgement half is `scripts/lib/ccel-text.mjs`, unit-tested | Stage 2, `ccel` |
+| `scripts/lib/prospect-store.mjs` | The prospect queue's one access path: `loadProspects`/`saveProspects` against the `prospects` table, falling back to `prospect-queue.json` before migration 041; pure `toRow`/`fromRow`/`changedProspects`, unit-tested | Every queue read or write |
+| `scripts/prospect-queue-sync.mjs` | Copy the queue file → table (`--to-db`, the one-off backfill) or table → file (`--to-file`, a git snapshot). Dry-run default, `--write` | After migration 041; snapshots |
 | `scripts/lib/paragraphs.mjs` | Walls of text: the 800-word detector and tiers, sentence ends, break anchors, `applyBreaks` (refuses any change but whitespace), the drafting prompt. Mirrors `paragraph_wall_stats` (migration 038) | Auto via pipeline-import (flag), generate-review-drafts `--paragraphs`, /admin/review/paragraphs |
 | `scripts/rejoin-text-paragraphs.mjs` | Heal mid-sentence page-break splits in already-imported Supabase texts (dry-run default, `--write` to apply; `--slug=`/`--id=` to scope) | Maintenance only |
 | `scripts/dedup-draft-texts.mjs` | Find draft texts that duplicate a published text (matches on title + author *name*, so it catches the draft-author-stub case) and optionally delete the redundant draft (dry-run default, `--write` deletes HIGH-confidence body matches, `--force` includes lower-confidence, `--slug=` to scope, `--fuzzy` lists near-title matches). Never touches published rows, authors, or collections. | Maintenance only |
 | `scripts/check-prospect-urls.mjs` | Fetch every `Cleared edition URL` / `Additional edition URLs` / `Reference URL` in the Notion prospect list and report the ones that no longer answer. Read-only, and uses the **REST API with `NOTION_TOKEN`**, so it does not spend the MCP query budget. Distinguishes **dead (404/410) from blocked (403, e.g. sacred-texts behind Cloudflare)** — only dead exits non-zero, because failing on a 403 every run is how a check stops being read. **Reachability only: a 200 does not mean the URL holds the right work** — the read-the-title check before Stage 2 still stands. `--cleared-only`, `--status=`, `--json`, `--fail-on=any`. Assertion half in `scripts/lib/url-check.mjs`, unit-tested | Maintenance; before a sync |
 | `scripts/shrink-author-portraits.mjs` | Replace oversized author portraits in the `authors` bucket with display-sized copies (`scripts/lib/portrait-resize.mjs`, the same rule the admin upload route applies), repointing `authors.image_url` and keeping the originals. Dry-run default reads sizes from the bucket listing and costs no egress; `--write`, `--slug=`, `--min-kb=` | Maintenance only |
 | `scripts/propose-edition-metadata.mjs` | Read-only audit: propose structured edition fields (translator, series, volume, year, publisher, place, `is_translation`) from each text's three provenance columns, with a method and reason codes per row. Refuses write keys; `--slug=`/`--collection=`/`--include-drafts`/`--llm` (verbatim-evidence only; or `--llm-export=` + `--llm-answers=` to have any model, e.g. a subagent, answer without an API key)/`--input=`. Applies the curated `outputs/edition-audit/sourced-fields.json` (verbatim-cited or editor-confirmed values; `--sourced=none` to skip). Writes `outputs/edition-audit/YYYY-MM-DD/{proposals.json,proposals.csv,summary.md}`; the parser is `scripts/lib/edition-parse.mjs` | Edition metadata Step 1; before the Step 2 apply |
+| `scripts/build-collection-pdfs.ts` | Render every published collection's PDF and store it in Vercel Blob, where `/collections/[slug]/download/pdf` redirects (dry-run default, `--write`, `--slug=`). Admin saves rebuild a collection's PDF on their own; run this once after connecting the store, and after a CLI script edits a chapter body | Maintenance only |
+| `scripts/build-text-pdfs.ts` | Render every published text's PDF and store it in Vercel Blob, where `/texts/[slug]/download/pdf` redirects (dry-run default, `--write`, `--slug=`, `--author=`). Publishing or saving a text rebuilds its own PDF; run this once before the release that restored text PDFs, and with `--author=` after editing an author's name or dates | Maintenance only |
+| `scripts/backfill-translator-notes.mjs` | Put the NPNF/ANF translators' notes back into published texts, from CCEL's plain-text export of the volume each `source_attribution` cites (cached in `data/ccel/`). Dry-run default reports placed/unplaced per text; `--slug=`, `--collection=`, `--json=`; `--write` refuses any text with an unplaced marker, a garbled note or a body changed outside the notes, **and runs only with Keith's approval** (it edits published bodies). The method is `scripts/lib/translator-notes.mjs`, unit-tested | Maintenance; Keith approves the full run |
 | `scripts/generate-note-drafts.mjs` | Backfill note_draft in Supabase for existing texts | Maintenance only |
 | `scripts/generate-summaries.mjs` | Backfill summaries in Supabase | Maintenance only |
 | `scripts/repair-summaries.mjs` | Repair truncated summaries | Maintenance only |
@@ -1346,7 +1442,7 @@ still apply per-file, still parallelize the same way. What changes is Stage 2/5a
 ## Notes on Sources
 
 - **New Advent** (`newadvent`): static HTML — fetch-texts.mjs handles it directly. **Its site furniture is stripped twice, on purpose.** The cheerio selectors in `SOURCE_SELECTORS.newadvent` are the primary pass (they remove the masthead, A–Z bar, breadcrumb and `.pub` citation by container); `scripts/lib/source-chrome.mjs` is a second pass over the resulting *markdown*, and `assertNoChrome` aborts the page rather than writing it if a known tell survives. The second pass exists because a selector fails **silently**: when New Advent renamed nothing at all but the selectors simply hadn't been written yet, fourteen bodies went into Supabase carrying `A B C … Z`, `![New Advent](../images/logo.gif)`, a `Home > Fathers of the Church >` breadcrumb and `CONTACT US | ADVERTISE WITH NEW ADVENT` — and the import script imported them without a murmur. If you add or change a selector, add the matching markdown rule too; if you see a new tell, the rule goes in `source-chrome.mjs` (with a test), never as a one-off `.replace()` in the fetcher. Many works span multiple chapter pages; list all URLs in the `urls` array. **The June-2026 `/fathers/` breakage is RESOLVED as of 2026-08-29** — chapter pages (e.g. `/fathers/33041.htm`) serve their text normally again; verified via direct URL and `curl -sIL … | grep -i location` returning no redirect. (History: from ~June 2026 the `/fathers/` URLs silently redirected to the homepage regardless of fetch method — verified 2026-07-12 — and the workaround was the Archive.org OCR scan of the same volume; that workaround is no longer needed while the pages work, but re-check with a `curl` no-redirect probe before a run, since this has flipped before.) New Advent's per-work index page (e.g. `/fathers/3304.htm`) links the individual Book pages; for the Sourcer, pin the Book pages via the multi-part `Additional edition URLs` field.
-- **CCEL** (`ccel`): the reading pages render dynamically (a plain HTTP fetch of the `.html` gets the SPA shell), **but CCEL also exposes a plain-text Unicode export that IS directly fetchable**: `https://ccel.org/ccel/{letter}/{author}/{work}/cache/{work}.txt` (`{letter}` = the author's first character; e.g. Anselm's Basic Works: `https://ccel.org/ccel/a/anselm/basic_works/cache/basic_works.txt`). One file holds the whole work, no OCR, no browser needed. `ccel.org` is on the Sourcer allowlist, and the fetch tool derives the cache `.txt` from **either** the natural reading URL `/ccel/{author}/{work}/{work}` (no letter — e.g. `ccel.org/ccel/anselm/basic_works/basic_works`, `ccel.org/ccel/benedict/rule/rule`) **or** the storage form `/ccel/{letter}/{author}/{work}/…`, so you can pin whichever CCEL URL you have to hand. (Older fallbacks, no longer preferred: the Archive.org djvu.txt scan of the NPNF volumes `archive_ocr`, or browser-based extraction `ccel_browser` from the reading URL `ccel.org/ccel/{author}/{work}/{work}.i_1.html`, confirmed 2026-07-12 with Traherne's *Centuries of Meditations*.)
+- **CCEL** (`ccel`): the reading pages render dynamically (a plain HTTP fetch of the `.html` gets the SPA shell), **but CCEL also exposes a plain-text Unicode export that IS directly fetchable**: `https://ccel.org/ccel/{letter}/{author}/{work}/cache/{work}.txt` (`{letter}` = the author's first character; e.g. Anselm's Basic Works: `https://ccel.org/ccel/a/anselm/basic_works/cache/basic_works.txt`). One file holds the whole work, no OCR, no browser needed. **Stage it with `scripts/ingestion/ccel-to-markdown.mjs`** (`fetch-texts.mjs` treats every source as HTML and cannot): it reads the header first, drops the footnote apparatus and markers, keeps the headings, and `--start`/`--end` cut one work out of a combined file. Splitting a long work into a collection stays a judgement call made on its output (2026-11-20: Julian's *Revelations* went by Revelation, 18 texts, not by chapter, 86). `ccel.org` is on the Sourcer allowlist, and the fetch tool derives the cache `.txt` from **either** the natural reading URL `/ccel/{author}/{work}/{work}` (no letter — e.g. `ccel.org/ccel/anselm/basic_works/basic_works`, `ccel.org/ccel/benedict/rule/rule`) **or** the storage form `/ccel/{letter}/{author}/{work}/…`, so you can pin whichever CCEL URL you have to hand. (Older fallbacks, no longer preferred: the Archive.org djvu.txt scan of the NPNF volumes `archive_ocr`, or browser-based extraction `ccel_browser` from the reading URL `ccel.org/ccel/{author}/{work}/{work}.i_1.html`, confirmed 2026-07-12 with Traherne's *Centuries of Meditations*.)
 - **Project Gutenberg** (`gutenberg`): plain text — fetch-texts.mjs handles it. Use the plain text URL (not HTML).
 - **Wikisource** (`wikisource`): mediawiki HTML — fetch-texts.mjs handles it. Use the `/wiki/` URL.
 - **Project Wittenberg** (`wittenberg`, added 2026-09-21): static HTML at `projectwittenberg.org`, unchanged since ~2013 (stable `last-modified`, HTTP/2 200) — home to Luther and other Lutheran writers, e.g. the Small Catechism (`.../luther/little.book/web/book-1.html` … `book-6.html` + `book-appx.html`, one queue entry via the multi-URL `urls` array) and the 95 Theses (`.../luther/web/ninetyfive.html`). The site has no semantic containers at all (no `<nav>`/`<header>`/`<article>`), so `SOURCE_SELECTORS.wittenberg` matches chrome by text content the same way New Advent's ad paragraphs are matched, and `source-chrome.mjs` carries the matching markdown-level backstop. One tell — the "**Published in:**" edition-citation label — genuinely cannot be isolated at the DOM level: the source nests it as an unclosed `<p>` inside an unclosed `<p>`, so cheerio's `.text()` merges the label into the citation that follows before any selector can separate them; `wittenberg-published-in-label` in `source-chrome.mjs` is the *primary* defence for that one case, not the backstop, and is deliberately unconditional for that reason. **Copyright signal here is unusually strong**: translator pages carry an explicit dedication ("this text was translated … for Project Wittenberg by \<name\>, and is in the public domain") rather than relying on the death-year proxy — record that dedication text verbatim in `stage_1_notes` when it applies. The site also links index pages for other Lutheran figures beyond Luther (Andreae, Baier, Bente, Chemnitz, Gerhardt, Melanchthon, Walther, Wyneken) at `wittenberg-<name>.html` off the home page — a source of real breadth for the `lutheran` tradition, not just the catechism/theses.

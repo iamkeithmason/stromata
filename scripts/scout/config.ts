@@ -96,7 +96,7 @@ export const NOTION_ERAS = ERAS.map((e) => e.canonical);
 export const NOTION_GENRES = [
   'Homily', 'Sermon', 'Letter', 'Treatise', 'Essay', 'Meditation', 'Rule',
   'Prayer', 'Catechesis', 'Commentary', 'Dialogue', 'Hymn', 'Poem', 'Confession',
-  'Hagiography', 'Apology', 'Exegesis',
+  'Hagiography', 'Apology', 'Exegesis', 'Chronicle',
 ] as const;
 
 // ---------------------------------------------------------------------------

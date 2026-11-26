@@ -1,5 +1,7 @@
 import Link from 'next/link'
+import { EditorNote } from '@/app/components/EditorNote'
 import { notFound } from 'next/navigation'
+import { textPageFallbackDescription, textPageTitle } from '@/lib/text-title'
 import { createPublicClient } from '@/lib/supabase/public'
 import { orThrow } from '@/lib/supabase/query'
 import MarkdownBody from '@/app/components/MarkdownBody'
@@ -17,11 +19,13 @@ import { ThemeChip } from '@/app/components/ThemeChip'
 import { BookCover } from '@/app/components/BookCover'
 import { AuthorAside } from '@/app/components/AuthorAside'
 import { DownloadLinks } from '@/app/components/DownloadLinks'
+import { COLOPHON } from '@/lib/downloads'
 import { ReaderSettings } from '@/app/components/ReaderSettings'
 import { CitationButton } from '@/app/components/CitationButton'
 import { resolveLicense } from '@/lib/licenses'
 import { PROVENANCE_INLINE_MAX, hostLabel, isBareUrl } from '@/lib/edition'
 import { ContinueExploring } from '@/app/components/ContinueExploring'
+import { EmailSignup } from '@/app/components/EmailSignup'
 import { pickReadNext, type ReadNextCandidate } from '@/lib/read-next'
 import { ReaderNav, ReaderNavTrigger } from '@/app/components/ReaderNav'
 import { buildOutline, readSections, showsRunningHead, type SectionsDoc } from '@/lib/reader/outline'
@@ -60,21 +64,14 @@ export async function generateMetadata({ params }: Props) {
   if (!data) return { title: 'Text — The Stromata' }
 
   const author = (data.author as unknown as { name: string } | null)?.name
-  // Format: "Author Name — Text Title | The Stromata"
-  // Note: combined length can exceed 60 chars for long titles (e.g.
-  // "Augustine of Hippo — Exposition on Psalm 115 | The Stromata" = 60 chars).
-  // No programmatic truncation applied; flag for review if needed.
-  const title = author
-    ? `${author} — ${data.title} | The Stromata`
-    : `${data.title} — The Stromata`
+  // "Author — Title | The Stromata", or "Title | The Stromata" when the author is
+  // a placeholder ("Unknown (Early Church)"): lib/text-title.ts.
+  const title = textPageTitle(data.title, author)
 
   // Description is unconditional: prefer the editorial summary, else a sensible
-  // author + title fallback so every text page carries a description and per-page
-  // OG/Twitter cards.
+  // fallback so every text page carries a description and per-page OG/Twitter cards.
   // `||` (not `??`) so an empty-string summary also falls back to the template.
-  const description = (data.summary as string | null) || (author
-    ? `${author}'s ${data.title}, freely readable at The Stromata.`
-    : `${data.title}, freely readable at The Stromata.`)
+  const description = (data.summary as string | null) || textPageFallbackDescription(data.title, author)
   const canonical = `/texts/${slug}`
 
   return {
@@ -162,6 +159,7 @@ export default async function TextPage({ params }: Props) {
 
   const body = text.body as string
   const summary = text.summary as string | null
+  const featuredNote = (text.featured_note as string | null)?.trim() || null
   const editorialIntro = text.editorial_introduction as string | null
 
   // Era label without the parenthetical span, e.g. "Nicene & Post-Nicene".
@@ -322,7 +320,10 @@ export default async function TextPage({ params }: Props) {
   const license = resolveLicense(text.license)
 
   return (
-    <div id="reader-page" style={{ background: 'var(--paper)', paddingTop: '4rem' }} className="min-h-screen">
+    // suppressHydrationWarning: the inline script below sets data-reader-theme
+    // from localStorage before React hydrates, and the server cannot know it.
+    // It covers only this element's own attributes, not its children.
+    <div id="reader-page" suppressHydrationWarning style={{ background: 'var(--paper)', paddingTop: '4rem' }} className="min-h-screen">
       <JsonLd data={bookJsonLd} />
       <JsonLd data={breadcrumbJsonLd} />
       {/* Apply the reader's saved dark-theme preference before paint, to avoid a
@@ -334,6 +335,13 @@ export default async function TextPage({ params }: Props) {
             "try{var p=JSON.parse(localStorage.getItem('stromata:reader')||'{}');if(p&&p.theme==='dark'){document.currentScript.parentElement.setAttribute('data-reader-theme','dark')}}catch(e){}",
         }}
       />
+      {/* Paper only: what a printout or a saved PDF opens with. The hero above
+          is a dark screen ground and is not printed (globals.css, "Print"). */}
+      <header className="print-only print-title">
+        <h1>{text.title}</h1>
+        {author && <p className="print-author">{author.name}{lifespan(author.birth_year, author.death_year)}</p>}
+        {text.source_attribution && <p className="print-source">Source: {text.source_attribution}</p>}
+      </header>
       <ReadingProgressBar slug={slug} />
       <SiteHeader breadcrumb={author ? (() => {
         return (
@@ -368,11 +376,12 @@ export default async function TextPage({ params }: Props) {
             title (globals.css), so the text starts in the first screen —
             most readers land here straight from search. */}
         <div className="margin-cols rail-first frontispiece py-6 lg:py-20">
-          {/* Book cover — sits in the left margin rail, aligned with the
-              author rail in the reading container below */}
+          {/* Book cover — fills the rail column, the same column as the author
+              rail in the reading container below; a thumbnail on phones */}
           <div className="margin-rail flex justify-center lg:justify-start">
-            <div className="w-[84px] lg:w-[200px]">
+            <div className="w-[84px] lg:w-full">
               <BookCover
+                fluid
                 title={text.title}
                 authorName={author?.name ?? null}
                 deathYear={author?.death_year ?? null}
@@ -384,7 +393,8 @@ export default async function TextPage({ params }: Props) {
             </div>
           </div>
 
-          {/* Title block — aligned with the main reading column below */}
+          {/* Title block — starts on the reading column's left edge, the same
+              grid line as the body below (globals.css, --text-page-columns) */}
           <div className="margin-body flex flex-col items-start gap-3 text-left lg:gap-8">
             {heroKicker && (
               <p
@@ -408,6 +418,18 @@ export default async function TextPage({ params }: Props) {
               >
                 {text.title}
               </h1>
+              {text.featured && featuredNote && (
+                // The editor's line sits above the summary and is attributed, so a
+                // reader who arrives from search sees the pick as a note to them
+                // and does not mistake it for the generated summary below.
+                <blockquote
+                  className="font-serif"
+                  style={{ margin: 0, paddingLeft: '1rem', borderLeft: '2px solid var(--on-dark-gold-soft)', maxWidth: '30rem' }}
+                >
+                  <EditorNote note={featuredNote} linkColor="var(--on-dark-gold)" style={{ fontSize: 'var(--text-prose)', lineHeight: 1.6, color: 'var(--on-dark-body)' }} />
+                  <footer style={{ fontSize: 'var(--text-label)', fontStyle: 'italic', color: 'var(--on-dark-mute)', marginTop: '0.5rem' }}>— the editor</footer>
+                </blockquote>
+              )}
               {summary && (
                 <p
                   // On phones the introduction follows at once and says more,
@@ -489,10 +511,10 @@ export default async function TextPage({ params }: Props) {
       </section>
 
       {/* ─── Reading container — marginalia rail + main reading column ─── */}
-      <div className="margin-cols py-12 lg:py-16">
+      <div className="margin-cols print-keep py-12 lg:py-16">
           {/* Left margin rail: author · provenance (the summary now leads the
               frontispiece, so the author block sits at the top of the rail) */}
-          <aside className="margin-rail">
+          <aside className="margin-rail print:hidden">
             <div className="flex flex-col gap-8">
               {author && (
                 <AuthorAside
@@ -626,7 +648,7 @@ export default async function TextPage({ params }: Props) {
             {/* Phones: the theme chips moved out of the frontispiece land here,
                 after the introduction, where they no longer push the text down. */}
             {themes.length > 0 && (
-              <div className="flex flex-wrap gap-x-2 mb-10 lg:hidden">
+              <div className="flex flex-wrap gap-x-2 mb-10 lg:hidden print:hidden">
                 {themes.map(theme => (
                   <ThemeChip key={theme.slug} href={`/themes/${theme.slug}`} name={theme.name} source="text-page" />
                 ))}
@@ -638,10 +660,16 @@ export default async function TextPage({ params }: Props) {
               <MarkdownBody content={body} sections={locatedSections} />
             </article>
 
+            {/* Paper only: where the printout came from, and the terms. */}
+            <p className="print-only print-colophon">
+              {COLOPHON} {SITE_URL}/texts/{slug}
+              {text.translation_notes ? <><br />Translation: {text.translation_notes}</> : null}
+            </p>
+
             {/* Prev / next within collection */}
             {(prevText || nextText || collection) && (
               <nav
-                className="flex justify-between gap-4 mb-12 pt-6 border-t"
+                className="flex justify-between gap-4 mb-12 pt-6 border-t print:hidden"
                 style={{ borderColor: 'var(--rule)' }}
               >
                 {prevText ? (
@@ -704,6 +732,7 @@ export default async function TextPage({ params }: Props) {
               </nav>
             )}
             <ContinueExploring picks={readNext} />
+            <EmailSignup from="text-page" />
           </main>
       </div>
 

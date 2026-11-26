@@ -13,8 +13,8 @@
 // markdown — so they need not thread a count around. It is the same rule
 // applied to a body the caller was going to fetch anyway.
 //
-// The word-count expression in migration 028 is a deliberate mirror of the
-// `.trim().split(/\s+/)` below, and reading-time.test.ts pins the pair.
+// The word-count expression (migration 028, changed by 043 to leave out footnotes) is a deliberate
+// mirror of `wordCount` below, and reading-time.test.ts pins the pair.
 
 /** Words per minute assumed for the reading-time estimate. */
 const WORDS_PER_MINUTE = 200
@@ -31,9 +31,17 @@ export function readingMinutes(wordCount: number | null | undefined): number {
   return Math.ceil(raw / ROUND_TO_MINUTES) * ROUND_TO_MINUTES
 }
 
-/** Words in a body, counted exactly as migration 028's generated column does. */
+/**
+ * Footnotes are not reading: a `[^label]: …` definition line and a `[^label]` reference are dropped
+ * before counting (migration 043). A body with no footnotes counts exactly as before.
+ */
+export function withoutFootnotes(body: string): string {
+  return body.replace(/^\[\^[^\]]+\]:.*$/gm, '').replace(/\[\^[^\]]+\]/g, '')
+}
+
+/** Words in a body, counted exactly as the generated `texts.word_count` column does. */
 export function wordCount(body: string): number {
-  return body.trim().split(/\s+/).length
+  return withoutFootnotes(body).trim().split(/\s+/).length
 }
 
 /** Minutes for a body already in hand. Prefer `readingMinutes` in listings. */
