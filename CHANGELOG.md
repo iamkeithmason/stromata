@@ -49,6 +49,11 @@ and text-quality flags, and a check of its current themes.
   - *Theme proposals:* `theme_proposals` (migration 046, applied 28 Nov) holds proposed themes for Keith to accept
     or refuse; accepting one changes nothing in `themes`. Seeded with the eight from the trials and six clusters from
     the full run's gaps. The view `theme_gap_counts` counts every free topic the reads name, live.
+  - *Babylonian Captivity, 1916:* the published body does not match its stated edition (Steinhaeuser, 1916); it
+    matches the 1959 *Luther's Works* revision. Steinhaeuser's text is staged from the Archive.org scan
+    `worksofmartinlut02luth` (djvu XML) at `scripts/ingestion/output/babylonian-captivity-1916.md`, with running
+    heads, footnotes and marginal references removed by position (`scripts/ingestion/staging-tools/`). It replaces
+    nothing until Keith approves the swap.
 
 ## 2026-11-26 — Era-plate arches for authors with no portrait
 
