@@ -51,7 +51,7 @@ On this model flutes, whistles, and other wind instruments are made.
 
 (ii) By curtailing the subjects taught, that they may be proportionate to the duration of life.
 
-(iv) By seizing opportunities, and not letting them slip away unused.
+(iii) By seizing opportunities, and not letting them slip away unused.
 
 (iv) By unlocking the intellect, that it may grasp things with ease.
 

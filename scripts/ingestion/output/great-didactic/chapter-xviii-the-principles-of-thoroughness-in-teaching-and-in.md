@@ -185,7 +185,7 @@ The development of the branches above the earth is proportionate to that of the 
 
 40\. Therefore (i) With every subject of instruction the question of its practical use must be raised, that nothing useless may be learned.
 
-(ii) Whatever has been learned should be communicated by one pupil to the other, that no knowledge may remain unused. For in this sense only can we understand the saying: “Thy knowledge is of no avail if none other know that thou knowest.” No source of knowledge, therefore, should be opened, unless rivulets, flow from it. But of this will say more the following principle.
+(ii) Whatever has been learned should be communicated by one pupil to the other, that no knowledge may remain unused. For in this sense only can we understand the saying: “Thy knowledge is of no avail if none other know that thou knowest.” No source of knowledge, therefore, should be opened, unless rivulets flow from it. But of this will say more in the following principle.
 
 _Tenth Principle_
 
