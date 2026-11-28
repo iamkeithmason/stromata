@@ -2,7 +2,7 @@ import { test } from 'node:test'
 import assert from 'node:assert/strict'
 
 import { parseReferences } from '../../lib/scripture/index.ts'
-import { appearsIn, checkRead, normalise, parseReply, promptFor, readSchema } from './passage-reads.mjs'
+import { appearsIn, checkRead, normalise, parseReply, printedLiterally, promptFor, readSchema } from './passage-reads.mjs'
 
 const themes = ['repentance', 'sacraments', 'christology']
 const body = `Wash you, make you clean (Isaiah 1:16). Seest thou not the sinner? It is God's to grant grace,
@@ -100,4 +100,68 @@ test('the schema requires every field and allows nothing extra', () => {
 test('normalise and appearsIn match whole words only', () => {
   assert.equal(normalise('“Flee  unto *silence*!”'), 'flee unto silence')
   assert.equal(appearsIn('the art of teaching', 'art of teach'), false)
+})
+
+test('a Vulgate Psalm number the body prints is kept, not dropped (Pastoral Rule III)', () => {
+  const vbody = 'as it is said in another place, _When He slew them, then they sought Him_ Psalm 77:34. And Canticles 8:13 too.'
+  const r = checkRead({ ...base, named: [], scripture_cited: [{ ref: 'Ps 77:34' }, { ref: 'Ps 78:34' }, { ref: 'Song 8:13' }, { ref: 'Ps 77:12' }] },
+    { body: vbody, bodyRefs: parseReferences(vbody), parseRefs: parseReferences, themes })
+  assert.deepEqual(r.read.scripture_cited.map((s) => s.ref), ['Ps 77:34', 'Ps 78:34', 'Song 8:13'])
+  assert.deepEqual(r.dropped.map((d) => d.value), ['Ps 77:12'])
+})
+
+test('printedLiterally keeps numbered books apart', () => {
+  assert.equal(printedLiterally('see 1 Corinthians 15:53 here', '1 Cor 15:53'), true)
+  assert.equal(printedLiterally('see 1 Chronicles 15:53 here', '1 Cor 15:53'), false)
+})
+
+import { checkSection, rollUpThemes, sectionSchema, splitSections } from './passage-reads.mjs'
+
+const para = (n, w = 'word') => Array.from({ length: n }, () => w).join(' ')
+
+test('splitSections cuts on headings, merges short chapters and keeps every word', () => {
+  const body = [`## One\n\n${para(3000)}`, `## Two\n\n${para(200)}`, `## Three\n\n${para(2500)}`].join('\n\n')
+  const s = splitSections(body)
+  assert.equal(s.length, 2)
+  assert.equal(s[0].label, 'One to Two')
+  assert.equal(s[1].label, 'Three')
+  const words = (x) => (x.match(/\S+/g) ?? []).length
+  assert.equal(s.reduce((n, x) => n + x.words, 0), words(body))
+})
+
+test('splitSections chunks a body with no headings at paragraph breaks', () => {
+  const body = Array.from({ length: 30 }, () => para(500)).join('\n\n')
+  const s = splitSections(body)
+  assert.ok(s.length >= 3)
+  assert.ok(s.every((x) => x.words <= 8000))
+  assert.equal(s[0].label, 'Part 1')
+})
+
+test('a section read keeps vocabulary themes and printed references only', () => {
+  const section = { label: 'Part 1', starts_with: 'x', words: 40, body: 'Wash you, make you clean (Isaiah 1:16). Liberty of a Christian.' }
+  const r = checkSection(
+    { summary: 'On washing.', themes: ['repentance', 'liberty'], topics: ['Christian liberty'], scripture_cited: [{ ref: 'Isa 1:16' }, { ref: 'Gal 5:1' }], scripture_uncited: [] },
+    { section, bodyRefs: parseReferences(section.body), parseRefs: parseReferences, themes },
+  )
+  assert.deepEqual(r.section.themes, ['repentance'])
+  assert.deepEqual(r.section.topics, ['Christian liberty'])
+  assert.deepEqual(r.section.scripture_cited.map((x) => x.ref), ['Isa 1:16'])
+  assert.deepEqual(r.dropped.map((d) => d.value), ['liberty', 'Gal 5:1'])
+})
+
+test('rollUpThemes ranks themes by the words they cover', () => {
+  const r = rollUpThemes([{ words: 1000, themes: ['a', 'b'] }, { words: 5000, themes: ['b'] }, { words: 500, themes: ['c'] }])
+  assert.deepEqual(r.map((x) => x.theme), ['b', 'a', 'c'])
+  assert.equal(r[0].sections, 2)
+})
+
+test('a person marked stated but not in the body is kept as recognised', () => {
+  const { read, dropped } = check({ ...base, people: [{ name: 'Cyril of Jerusalem', role: 'author', basis: 'stated' }, { name: 'Golgotha', role: 'mentioned', basis: 'stated' }] })
+  assert.deepEqual(read.people.map((p) => p.basis), ['recognised', 'stated'])
+  assert.equal(dropped[0].field, 'people')
+})
+
+test('the section schema requires every field', () => {
+  const s = sectionSchema(themes)
+  assert.deepEqual([...s.required].sort(), Object.keys(s.properties).sort())
 })

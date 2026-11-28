@@ -31,6 +31,24 @@ and text-quality flags, and a check of its current themes.
   API key). Dry run on 28 Nov: 572 texts, 5.6M words, about $1.25 at Haiku 5.5 list prices.
 - **First batch:** the trial's ten texts, read 28 Nov through `--export`/`--answers` (no API key in the cloud
   session). 10 written, 2 items dropped (a name and an "Exod 20" cited without being printed).
+- **Full run:** 28 Nov on Keith's Mac, 562 written, 0 failed, $1.69 measured.
+- **Round two (Keith's brief, 28 Nov):**
+  - *Vulgate numbering.* The parser checks verse numbers against modern numbering, so it threw out references
+    the body really prints ("Psalm 77:34", "Canticles 8:13", "3 Kings"). `printedLiterally` now keeps any
+    reference printed as written, allowing the Psalm chapter to be one off; such a reference carries a note, since
+    it is either Vulgate numbering or a misprint in the edition (City of God XIV prints "1 John 8:36"). `--recheck`
+    re-applied the check to the stored reads with no API call: 73 references back across 38 texts.
+  - *Extra fields:* form, a one-line summary, people (author, subject, addressee or mentioned, each "stated" in the
+    text or "recognised"; one marked stated that the body does not name is relabelled), works quoted or concerned,
+    period, and one to three themes for the text's centre.
+  - *Section reads:* a text over 10,000 words also gets one call per section of about 5,000 words (cut on its
+    headings, else at paragraph breaks, by `splitSections`): a summary, one to three themes, up to three free
+    topics and its own checked Scripture, stored in `passage_reads.section_reads` and rolled up by words covered as
+    `read.theme_rollup`. `--sections` adds them to texts already read whole. `texts.sections` is empty on all 186
+    long texts, so it is not used. Nothing public reads any of this before the next-reads test ends (~24 Dec).
+  - *Theme proposals:* `theme_proposals` (migration 046, applied 28 Nov) holds proposed themes for Keith to accept
+    or refuse; accepting one changes nothing in `themes`. Seeded with the eight from the trials and six clusters from
+    the full run's gaps. The view `theme_gap_counts` counts every free topic the reads name, live.
 
 ## 2026-11-26 — Era-plate arches for authors with no portrait
 
