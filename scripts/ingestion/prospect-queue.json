@@ -3386,7 +3386,7 @@
       "era": "ante-nicene",
       "title": "Against Heresies / Adversus Haereses",
       "genre": "Treatise",
-      "source_type": "newadvent",
+      "source_type": "ccel",
       "source_url": "https://ccel.org/ccel/schaff/anf01.html",
       "collection_slug": "against-heresies-adversus-haereses-lyons",
       "translation_copyright_clear": true,
@@ -3403,7 +3403,7 @@
         "trinity"
       ],
       "rejection_reason": "",
-      "notes": "From On the Ruin of Britain blog trawl (posts 8). Source noted as ccel: https://ccel.org/ccel/schaff/anf01.html. Verified SAFE by ORB-trawl verification pass 2026-09-11."
+      "notes": "From On the Ruin of Britain blog trawl (posts 8). Source noted as ccel: https://ccel.org/ccel/schaff/anf01.html. Verified SAFE by ORB-trawl verification pass 2026-09-11.\nKeith, 25 Nov 2026: stage the WHOLE work (all five books), not only Book IV ch. 17–18. Source is the CCEL ANF Vol. 1 plain-text export (https://ccel.org/ccel/s/schaff/anf01/cache/anf01.txt); slice Against Heresies out with ccel-to-markdown --start/--end (the volume also holds Clement, Ignatius, Justin etc.) and split it into a collection by Book. source_type set to ccel (was newadvent)."
     },
     {
       "id": "a-learned-discourse-of-ceremonies-reta-andrewes",
@@ -3434,28 +3434,29 @@
     },
     {
       "id": "the-great-didactic-didactica-magna-comenius",
-      "status": "pending",
+      "status": "imported",
       "added": "2026-09-11",
       "author": "John Amos Comenius",
       "death_year": 1670,
       "tradition": "reformed",
       "era": "post-reformation",
-      "title": "The Great Didactic / Didactica Magna",
+      "title": "The Great Didactic",
       "genre": "Treatise",
       "source_type": "wikisource",
-      "source_url": "https://en.wikisource.org/wiki/The_Great_Didactic_of_John_Amos_Comenius",
-      "collection_slug": "the-great-didactic-didactica-magna-comenius",
+      "source_url": "https://en.wikisource.org/wiki/The_Great_Didactic_of_John_Amos_Comenius/The_Great_Didactic/Chapter_3",
+      "collection_slug": "great-didactic",
       "translation_copyright_clear": true,
       "translator": "M. W. Keatinge",
-      "translator_death_year": null,
-      "stage_1_notes": "Comenius d. 1670; M. W. Keatinge English translation published 1896 (part II reissued 1907/1910) is pre-1929 and public domain. — copyright pre-verified (author pre-1900; PD English translation identified).",
-      "stage_2_output": "",
+      "translator_death_year": 1934,
+      "stage_1_notes": "Comenius d. 1670; M. W. Keatinge English translation published 1896 (part II reissued 1907/1910) is pre-1929 and public domain. — copyright pre-verified (author pre-1900; PD English translation identified). 28 Nov 2026: repointed to the live collection great-didactic (front matter + Chapters I–II published May 2026); this run adds Chapters III–XXXIII from the Wikisource chapter pages (…/The_Great_Didactic/Chapter_3 to Chapter_33, all HTTP 200, proofread Keatinge 1896). Copyright: author d. 1670; Keatinge d. 1934 but translation published 1896 (US PD by publication; UK PD since 2005). Import clears on author death year. Imported 31 text(s) on 2026-11-28. Auto-corrected: chapter-iv-there-are-three-stages-in-the-preparation-for: rejoined 1 mid-sentence page-break split(s) | chapter-xii-it-is-possible-to-reform-schools: rejoined 1 mid-sentence page-break split(s) | chapter-xix-the-principles-of-conciseness-and-rapidity-in-teaching: rejoined 5 mid-sentence page-break split(s) | chapter-xvi-the-universal-requirements-of-teaching-and-of-learning: rejoined 4 mid-sentence page-break split(s) | chapter-xvii-the-principles-of-facility-in-teaching-and-in: rejoined 7 mid-sentence page-break split(s) | chapter-xviii-the-principles-of-thoroughness-in-teaching-and-in: rejoined 3 mid-sentence page-break split(s).",
+      "stage_2_output": "scripts/ingestion/output/great-didactic/",
       "stage_3_themes": [
         "vocation",
         "creation",
         "scripture",
         "virtue",
-        "work"
+        "work",
+        "providence"
       ],
       "rejection_reason": "",
       "notes": "From On the Ruin of Britain blog trawl (posts 1). Verified SAFE by ORB-trawl verification pass 2026-09-11."

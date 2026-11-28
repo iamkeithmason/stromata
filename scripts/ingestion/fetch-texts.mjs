@@ -189,7 +189,7 @@ const SOURCE_SELECTORS = {
     extractFn: ($) => {
       $(
         "style, script, link, .ws-noexport, .navigation-template, nav, .mw-editsection, " +
-          ".noprint, .wst-header, .wst-pagebreak, .mw-references-wrap, .reflist, sup.reference"
+          ".noprint, .wst-header, .wst-pagebreak, .mw-references-wrap, .reflist, sup.reference, .printfooter"
       ).remove();
       $("[style]").removeAttr("style"); // drop inline style attrs (mw layout hints)
       return $("#mw-content-text").html() || $("body").html() || "";
