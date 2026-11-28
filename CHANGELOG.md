@@ -7,6 +7,31 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-11-28 — Passage reads: a factual read of each text, from its body alone
+
+Card: none
+
+Keith asked (28 Nov) to build passage reads for the library after the ten-text trial in Notion (Field Notes,
+"Passage-read trial: ten Stromata texts"). A read gives a text's argument, the questions it answers, its moves,
+the people and places it names, the Scripture it cites and quotes without citing, lines worth quoting, provenance
+and text-quality flags, and a check of its current themes.
+
+- **Rules, all Keith's:** Haiku (`claude-haiku-5-5`), one text per call (batching put a verse from one text into
+  another's read in the trial), and the body only: the call never sees `editorial_introduction`, `note_draft` or
+  `summary`, which are not even selected.
+- **The check** (`checkRead` in `scripts/lib/passage-reads.mjs`, unit-tested): a cited verse is kept only if the
+  body prints that reference (parsed with `lib/scripture`); an uncited quotation only if its words are in the body;
+  quotable lines word for word; names only if the body holds them; themes and moves only from the vocabularies.
+  Everything removed is stored in `dropped` with its reason.
+- **Storage:** its own table, `passage_reads` (migration 045, applied 28 Nov), so no listing on `texts` can pull it.
+  RLS on, no policies; no public page reads it, so it changes nothing readers see, including the next-reads test.
+  `passage_read_candidates()` hashes bodies in the database, so a re-run reads only new or changed texts.
+- **Script:** `npx tsx scripts/generate-passage-reads.ts` (`--dry-run`, `--limit=`, `--slug=`, `--force`,
+  `--report=`; `--export`/`--answers` to have a Haiku outside the API answer the same prompts in a session with no
+  API key). Dry run on 28 Nov: 572 texts, 5.6M words, about $1.25 at Haiku 5.5 list prices.
+- **First batch:** the trial's ten texts, read 28 Nov through `--export`/`--answers` (no API key in the cloud
+  session). 10 written, 2 items dropped (a name and an "Exod 20" cited without being printed).
+
 ## 2026-11-26 — Era-plate arches for authors with no portrait
 
 Card: none
