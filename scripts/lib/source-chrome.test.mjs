@@ -535,7 +535,7 @@ test('every rule names its source site, is structural, or is conditional', () =>
   // quietly delete real content, so it must stay true.
   for (const rule of CHROME_RULES) {
     const pattern = rule.match.source;
-    const namesSite = /New ?Advent|newadvent|PROJECT GUTENBERG|Project Gutenberg|Transcriber|Wittenberg|Walther Library|Concordia Theological Seminary|Surface Mail|pwimage/i.test(pattern);
+    const namesSite = /New ?Advent|newadvent|PROJECT GUTENBERG|Project Gutenberg|Transcriber|Wittenberg|Walther Library|Concordia Theological Seminary|Surface Mail|pwimage|wikisource/i.test(pattern);
     assert.ok(
       namesSite || rule.structural === true || typeof rule.requires === 'string',
       `rule ${rule.id} is none of site-named, structural or conditional: ${pattern}`,
@@ -598,4 +598,16 @@ test('empty and missing input do not throw', () => {
   assert.equal(stripChrome('').output, '');
   assert.equal(stripChrome(null).output, '');
   assert.deepEqual(detectChrome(undefined), []);
+});
+
+test('the Wikisource print footer is stripped, prose that names Wikisource is kept', () => {
+  const doc = [
+    '6\\. Happier a thousand times is the man who shall bear his soul hence in purity and cleanliness.',
+    'Retrieved from "https://en.wikisource.org/w/index.php?title=The\\_Great\\_Didactic/Chapter\\_3&oldid=13526936"',
+  ].join('\n\n');
+  const { output, removed } = stripChrome(doc);
+  assert.deepEqual(removed.map(r => r.rule), ['wikisource-retrieved-from']);
+  assert.equal(output, '6\\. Happier a thousand times is the man who shall bear his soul hence in purity and cleanliness.');
+  const prose = 'The text was retrieved from Wikisource in November.';
+  assert.deepEqual(stripChrome(prose).removed, []);
 });

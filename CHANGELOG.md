@@ -7,6 +7,19 @@ Backlog, not here; this is what actually happened and why.
 
 ---
 
+## 2026-11-28 — Strip the Wikisource print footer
+
+Card: none
+
+Fetching the rest of Comenius's *Great Didactic* from Wikisource (run log `scripts/ingestion/run-log/2026-11-28.md`)
+put MediaWiki's print footer, `Retrieved from "https://en.wikisource.org/w/index.php?title=…&oldid=…"`, at the
+end of every chapter. It sits inside `#mw-content-text`, so the `wikisource` selector kept it, and
+`assertNoChrome` did not know it. Two fixes, as for the other sources: the selector in `fetch-texts.mjs` now
+removes `.printfooter`, and `scripts/lib/source-chrome.mjs` has a `wikisource-retrieved-from` tail rule as the
+markdown backstop, tested in `source-chrome.test.mjs` (which now accepts "wikisource" as a site name).
+
+---
+
 ## 2026-11-26 — Era-plate arches for authors with no portrait
 
 Card: none

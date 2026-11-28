@@ -63,6 +63,19 @@ const WS = '[\\s\\u00A0]';
  * belongs in the advisory list, not here. `source-chrome.test.mjs` enforces it.
  */
 export const CHROME_RULES = [
+  // --- Wikisource ------------------------------------------------------------
+  {
+    id: 'wikisource-retrieved-from',
+    source: 'wikisource',
+    kind: 'tail',
+    // MediaWiki's print footer, `Retrieved from "https://en.wikisource.org/w/index.php?title=…&oldid=…"`,
+    // sits inside #mw-content-text, so the wikisource selector in
+    // fetch-texts.mjs carried it into the body of every chapter of The Great
+    // Didactic (28 Nov 2026) and assertNoChrome did not know it. It names its
+    // site in the pattern, so it cannot match prose.
+    match: /^Retrieved from "https?:\/\/[a-z-]+\.wikisource\.org\//,
+    why: 'Wikisource print footer ("Retrieved from …oldid=…")',
+  },
   // --- New Advent -----------------------------------------------------------
   {
     id: 'newadvent-az-bar',
