@@ -87,4 +87,4 @@ For, owing to our corrupt nature, evil clings to us readily. The young must ther
 
 For our enemy Satan is on the watch not only while we sleep, but also while we wake, and as we sow good seed in the minds of our pupils he contrives to plant his own weeds there as well, and sometimes a corrupt nature brings forth weeds of its own accord, so that these evil dispositions must be kept in check by force. We must therefore strive against them by means of discipline, that is to say, by using blame or punishment, words or blows, as the occasion demands. This punishment should always be administered on the spot, that the vice may be choked as soon as it shows itself, or may be, as far as is possible, torn up by the roots. Discipline, therefore, should ever be watchful, not with the view of enforcing application to study (for learning is always attractive to the mind, if it be treated by the right method), but to ensure cleanly morals.
 
-But of discipline we will treat more particularly in chap. xxxi.
+But of discipline we will treat more particularly in chap. xxxi. [Ed.: school discipline is treated in Chapter XXVI.]

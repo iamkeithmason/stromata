@@ -181,7 +181,7 @@ _Fourth Problem_
 
 _How is it possible to teach everything according to one and the same method?_
 
-39\. That there is only one natural method for all the sciences, and only one for all the arts and languages, will be shown in chaps. xx., xxi., and xxii. Any deviations that may be necessary are not important enough to constitute a fresh class, and are due less to peculiarities in the subject-matter than to the teacher himself, who must be guided by the ability, or the reverse, of his pupils and by the progress that they make in the actual languages or arts that he is teaching. The universal adoption of the natural method, therefore, will be as great a boon to scholars as a plain and undeviating road is to travellers  It will be easier to point out special aberrations, if the universal principle be first laid down as indisputable.
+39\. That there is only one natural method for all the sciences, and only one for all the arts and languages, will be shown in chaps. xx., xxi., and xxii. Any deviations that may be necessary are not important enough to constitute a fresh class, and are due less to peculiarities in the subject-matter than to the teacher himself, who must be guided by the ability, or the reverse, of his pupils and by the progress that they make in the actual languages or arts that he is teaching. The universal adoption of the natural method, therefore, will be as great a boon to scholars as a plain and undeviating road is to travellers. It will be easier to point out special aberrations, if the universal principle be first laid down as indisputable.
 
 _Fifth Problem_
 
